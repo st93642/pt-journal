@@ -92,7 +92,9 @@ pub fn build_ui(app: &Application, model: AppModel) {
         move || {
             // clear
             while let Some(child) = steps_list_ref.first_child() { steps_list_ref.remove(&child); }
-            if let Some(phase) = model_rc.borrow().session.phases.get(model_rc.borrow().selected_phase) {
+            let model_borrow = model_rc.borrow();
+            let selected_phase = model_borrow.selected_phase;
+            if let Some(phase) = model_borrow.session.phases.get(selected_phase) {
             for (idx, step) in phase.steps.iter().enumerate() {
                 let row = ListBoxRow::new();
                 let hb = GtkBox::new(Orientation::Horizontal, 8);
@@ -129,8 +131,9 @@ pub fn build_ui(app: &Application, model: AppModel) {
                 // Toggle handler
                 let model_t = model_rc.clone();
                 cb.connect_toggled(move |c| {
-                    let sp = model_t.borrow().selected_phase;
-                    if let Some(step) = model_t.borrow_mut().session.phases.get_mut(sp).and_then(|p| p.steps.get_mut(idx)) {
+                    let mut model_borrow = model_t.borrow_mut();
+                    let sp = model_borrow.selected_phase;
+                    if let Some(step) = model_borrow.session.phases.get_mut(sp).and_then(|p| p.steps.get_mut(idx)) {
                         step.status = if c.is_active() { StepStatus::Done } else { StepStatus::Todo };
                     }
                 });
@@ -142,10 +145,10 @@ pub fn build_ui(app: &Application, model: AppModel) {
                 let notes_buf_s = notes_view_ref.buffer();
                 let checkbox_s = checkbox_ref.clone();
                 row.connect_activate(move |_| {
-                    // keep current selected_phase
-                    model_s.borrow_mut().selected_step = Some(idx);
-                    let sp = model_s.borrow().selected_phase;
-                    if let Some(step) = model_s.borrow().session.phases[sp].steps.get(idx) {
+                    let mut model_borrow = model_s.borrow_mut();
+                    model_borrow.selected_step = Some(idx);
+                    let sp = model_borrow.selected_phase;
+                    if let Some(step) = model_borrow.session.phases[sp].steps.get(idx) {
                         title_s.set_label(&step.title);
                         desc_buf_s.set_text(&step.description);
                         checkbox_s.set_active(matches!(step.status, StepStatus::Done));

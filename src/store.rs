@@ -1,7 +1,6 @@
 use crate::model::Session;
 use anyhow::Result;
 use directories::ProjectDirs;
-use serde_json;
 use std::fs;
 use std::path::{Path, PathBuf};
 

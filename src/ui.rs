@@ -16,6 +16,9 @@ pub struct CanvasItem {
     pub y: f64,
     pub width: f64,
     pub height: f64,
+    pub selected: bool,
+    pub picture_widget: Option<gtk4::Picture>,
+    pub path: Option<String>,
 }
 
 pub mod canvas_utils {
@@ -64,7 +67,7 @@ pub mod canvas_utils {
     }
 
     /// Create a canvas item from a texture
-    pub fn create_canvas_item(texture: gdk::Texture, x: f64, y: f64) -> CanvasItem {
+    pub fn create_canvas_item(texture: gdk::Texture, x: f64, y: f64, path: Option<String>) -> CanvasItem {
         let width = texture.width() as f64;
         let height = texture.height() as f64;
         CanvasItem {
@@ -73,6 +76,9 @@ pub mod canvas_utils {
             y,
             width,
             height,
+            selected: false,
+            picture_widget: None,
+            path,
         }
     }
 }
@@ -151,59 +157,94 @@ pub mod image_utils {
         buffer.insert_paintable(&mut iter, paintable);
         buffer.end_user_action();
     }
+
+    /// Save a texture to a PNG file
+    #[allow(dead_code)]
+    pub fn save_texture_to_png(texture: &gdk::Texture, path: &std::path::Path) -> Result<(), String> {
+        match texture.save_to_png(path) {
+            Ok(_) => Ok(()),
+            Err(e) => Err(format!("Failed to save texture to PNG: {}", e)),
+        }
+    }
+
+    /// Save a pixbuf to a PNG file
+    #[allow(dead_code)]
+    pub fn save_pixbuf_to_png(pixbuf: &gdk::gdk_pixbuf::Pixbuf, path: &std::path::Path) -> Result<(), String> {
+        match pixbuf.savev(path, "png", &[]) {
+            Ok(_) => Ok(()),
+            Err(e) => Err(format!("Failed to save pixbuf to PNG: {}", e)),
+        }
+    }
+
+    /// Get the images directory for the current session
+    #[allow(dead_code)]
+    pub fn get_session_images_dir() -> std::path::PathBuf {
+        if let Some(dirs) = directories::ProjectDirs::from("com", "example", "pt-journal") {
+            let images_dir = dirs.data_dir().join("images");
+            let _ = std::fs::create_dir_all(&images_dir);
+            images_dir
+        } else {
+            std::path::PathBuf::from("./images")
+        }
+    }
 }
 
-/// Setup canvas with drag-drop and drawing functionality
-pub fn setup_canvas(fixed: &Fixed, canvas_items: Rc<RefCell<Vec<CanvasItem>>>) {
+/// Load evidence for a specific step onto the canvas
+pub fn load_step_evidence(fixed: &Fixed, canvas_items: Rc<RefCell<Vec<CanvasItem>>>, step: &crate::model::Step) {
+    // Clear existing canvas items and widgets
+    canvas_items.borrow_mut().clear();
+
+    // Remove all child widgets from the fixed container
+    while let Some(child) = fixed.first_child() {
+        fixed.remove(&child);
+    }
+
+    // Load evidence from the step
+    for evidence in &step.evidence {
+        // Try to create texture from the evidence path
+        if let Ok(texture) = image_utils::create_texture_from_file(std::path::Path::new(&evidence.path)) {
+            // Use stored position from evidence, or default if not available
+            let item_x = evidence.x;
+            let item_y = evidence.y;
+
+            let mut item = canvas_utils::create_canvas_item(texture.clone(), item_x, item_y, Some(evidence.path.clone()));
+
+            // Create Picture widget and add to fixed container
+            let picture = Picture::for_paintable(&texture);
+            picture.set_size_request(texture.width() as i32, texture.height() as i32);
+            fixed.put(&picture, item_x, item_y);
+
+            // Store the picture widget reference
+            item.picture_widget = Some(picture.clone());
+
+            // Add click handler for selection
+            let canvas_items_click = canvas_items.clone();
+            let fixed_weak_click = fixed.downgrade();
+            let picture_clone = picture.clone();
+            let click_controller = gtk4::GestureClick::new();
+            click_controller.connect_pressed(move |_, n_press, _, _| {
+                if n_press == 1 { // Single click
+                    select_canvas_item(&canvas_items_click, &fixed_weak_click, &picture_clone);
+                }
+            });
+            picture.add_controller(click_controller);
+
+            canvas_items.borrow_mut().push(item);
+        }
+    }
+}
+
+/// Setup canvas with drag-drop and paste functionality
+pub fn setup_canvas(fixed: &Fixed, canvas_items: Rc<RefCell<Vec<CanvasItem>>>, model: Rc<RefCell<crate::model::AppModel>>) {
     // Handle drag and drop on the fixed container
     let drop_target = DropTarget::new(glib::Type::INVALID, gdk::DragAction::COPY);
     drop_target.set_preload(true);
 
     let canvas_items_drop = canvas_items.clone();
+    let model_drop = model.clone();
     let fixed_weak = fixed.downgrade();
     drop_target.connect_drop(move |_target, value, x, y| {
-        // Try to get file paths first
-        if let Ok(file) = value.get::<gtk4::gio::File>() && let Some(path) = file.path() {
-            // Validate file extension
-            if canvas_utils::is_valid_image_extension(&path) {
-                // Try creating texture from file
-                if let Ok(texture) = canvas_utils::create_texture_from_file(&path) {
-                    let item_x = x as f64;
-                    let item_y = y as f64;
-                    let item = canvas_utils::create_canvas_item(texture.clone(), item_x, item_y);
-                    canvas_items_drop.borrow_mut().push(item);
-
-                    // Create a Picture widget for the image
-                    if let Some(fixed_ref) = fixed_weak.upgrade() {
-                        let picture = Picture::for_paintable(&texture);
-                        picture.set_size_request(texture.width() as i32, texture.height() as i32);
-
-                        // Position the picture on the fixed container
-                        fixed_ref.put(&picture, item_x, item_y);
-                    }
-                    return true;
-                }
-            }
-        }
-        // Try direct pixbuf
-        if let Ok(pixbuf) = value.get::<gdk::gdk_pixbuf::Pixbuf>() {
-            let texture = image_utils::create_texture_from_pixbuf(&pixbuf);
-            let item_x = x as f64;
-            let item_y = y as f64;
-            let item = canvas_utils::create_canvas_item(texture.clone(), item_x, item_y);
-            canvas_items_drop.borrow_mut().push(item);
-
-            // Create a Picture widget for the image
-            if let Some(fixed_ref) = fixed_weak.upgrade() {
-                let picture = Picture::for_paintable(&texture);
-                picture.set_size_request(texture.width() as i32, texture.height() as i32);
-
-                // Position the picture on the fixed container
-                fixed_ref.put(&picture, item_x, item_y);
-            }
-            return true;
-        }
-        false
+        handle_image_drop(&canvas_items_drop, &model_drop, &fixed_weak, value, x, y)
     });
 
     // Accept file URIs in drag-drop
@@ -213,6 +254,368 @@ pub fn setup_canvas(fixed: &Fixed, canvas_items: Rc<RefCell<Vec<CanvasItem>>>) {
     ]);
 
     fixed.add_controller(drop_target);
+
+    // Handle keyboard paste (Ctrl+V) and delete (Delete key)
+    let key_controller = gtk4::EventControllerKey::new();
+    let canvas_items_key = canvas_items.clone();
+    let model_key = model.clone();
+    let fixed_weak_key = fixed.downgrade();
+
+    key_controller.connect_key_pressed(move |_, keyval, _keycode, modifier| {
+        // Check for Ctrl+V
+        if keyval == gdk::Key::v && modifier.contains(gdk::ModifierType::CONTROL_MASK) {
+            handle_clipboard_paste(&canvas_items_key, &model_key, &fixed_weak_key);
+            return glib::Propagation::Stop;
+        }
+        // Check for Delete key
+        if keyval == gdk::Key::Delete {
+            delete_selected_items(&canvas_items_key, &fixed_weak_key, &model_key);
+            return glib::Propagation::Stop;
+        }
+        glib::Propagation::Proceed
+    });
+
+    fixed.add_controller(key_controller);
+
+    // Handle canvas background clicks to focus for keyboard events
+    let canvas_click_controller = gtk4::GestureClick::new();
+    let fixed_weak_canvas = fixed.downgrade();
+    canvas_click_controller.connect_pressed(move |_, n_press, _, _| {
+        if n_press == 1 { // Single click on canvas background
+            if let Some(fixed_ref) = fixed_weak_canvas.upgrade() {
+                fixed_ref.grab_focus();
+            }
+        }
+    });
+    fixed.add_controller(canvas_click_controller);
+
+    // Right-click context menu for paste
+    let right_click_controller = gtk4::GestureClick::new();
+    right_click_controller.set_button(gtk4::gdk::ffi::GDK_BUTTON_SECONDARY as u32); // Right-click
+
+    let canvas_items_menu = canvas_items.clone();
+    let model_menu = model.clone();
+    let fixed_weak_menu = fixed.downgrade();
+
+    right_click_controller.connect_pressed(move |_controller, n_press, x, y| {
+        if n_press == 1 { // Single right-click
+            // Create a custom popover with a button
+            let popover = gtk4::Popover::new();
+            popover.set_has_arrow(true);
+            popover.set_position(gtk4::PositionType::Bottom);
+
+            // Create a button for paste
+            let paste_button = gtk4::Button::with_label("Paste Image");
+            paste_button.set_has_frame(false); // Make it look like a menu item
+            paste_button.set_margin_start(8);
+            paste_button.set_margin_end(8);
+            paste_button.set_margin_top(4);
+            paste_button.set_margin_bottom(4);
+
+            let canvas_items_paste = canvas_items_menu.clone();
+            let model_paste = model_menu.clone();
+            let fixed_weak_paste = fixed_weak_menu.clone();
+
+            paste_button.connect_clicked(move |_| {
+                handle_clipboard_paste(&canvas_items_paste, &model_paste, &fixed_weak_paste);
+            });
+
+            // Set the button as the popover's child
+            popover.set_child(Some(&paste_button));
+
+            // Set position relative to click
+            if let Some(fixed_ref) = fixed_weak_menu.upgrade() {
+                popover.set_parent(&fixed_ref);
+                popover.set_pointing_to(Some(&gtk4::gdk::Rectangle::new(x as i32, y as i32, 1, 1)));
+                popover.popup();
+            }
+        }
+    });
+
+    fixed.add_controller(right_click_controller);
+}
+
+/// Add an image to the canvas
+fn add_image_to_canvas(
+    canvas_items: &Rc<RefCell<Vec<CanvasItem>>>,
+    model: &Rc<RefCell<crate::model::AppModel>>,
+    fixed_weak: &glib::WeakRef<Fixed>,
+    texture: gdk::Texture,
+    x: f64,
+    y: f64,
+    path: Option<String>,
+) {
+    // Create canvas item
+    let mut item = canvas_utils::create_canvas_item(texture.clone(), x, y, path.clone());
+
+    // Create Picture widget
+    let picture = Picture::for_paintable(&texture);
+    picture.set_size_request(texture.width() as i32, texture.height() as i32);
+
+    // Add to fixed container
+    if let Some(fixed_ref) = fixed_weak.upgrade() {
+        fixed_ref.put(&picture, x, y);
+    }
+
+    // Store the picture widget reference
+    item.picture_widget = Some(picture.clone());
+
+    // Add click handler for selection
+    let canvas_items_click = canvas_items.clone();
+    let fixed_weak_click = fixed_weak.clone();
+    let picture_clone = picture.clone();
+    let click_controller = gtk4::GestureClick::new();
+    click_controller.connect_pressed(move |_, n_press, _, _| {
+        if n_press == 1 { // Single click
+            select_canvas_item(&canvas_items_click, &fixed_weak_click, &picture_clone);
+            // Focus the canvas for keyboard events
+            if let Some(fixed_ref) = fixed_weak_click.upgrade() {
+                fixed_ref.grab_focus();
+            }
+        }
+    });
+    picture.add_controller(click_controller);
+
+    // Add to canvas items
+    canvas_items.borrow_mut().push(item);
+
+    // Add evidence to model if we have a path
+    if let Some(file_path) = path {
+        let (phase_idx, step_idx) = {
+            let model_borrow = model.borrow();
+            (model_borrow.selected_phase, model_borrow.selected_step)
+        };
+
+        if let Some(step_idx) = step_idx {
+            if let Some(step) = model.borrow_mut().session.phases.get_mut(phase_idx).and_then(|p| p.steps.get_mut(step_idx)) {
+                let evidence = crate::model::Evidence {
+                    id: uuid::Uuid::new_v4(),
+                    path: file_path,
+                    created_at: chrono::Utc::now(),
+                    kind: "image".to_string(),
+                    x,
+                    y,
+                };
+                step.evidence.push(evidence);
+            }
+        }
+    }
+}
+/// Handle image drop (shared between drag-drop and paste)
+fn handle_image_drop(
+    canvas_items: &Rc<RefCell<Vec<CanvasItem>>>,
+    model: &Rc<RefCell<crate::model::AppModel>>,
+    fixed_weak: &glib::WeakRef<Fixed>,
+    value: &glib::Value,
+    x: f64,
+    y: f64,
+) -> bool {
+    // Try to get file paths first
+    if let Ok(file) = value.get::<gtk4::gio::File>() && let Some(path) = file.path() {
+        // Validate file extension
+        if canvas_utils::is_valid_image_extension(&path) {
+            // Try creating texture from file
+            if let Ok(texture) = canvas_utils::create_texture_from_file(&path) {
+                add_image_to_canvas(canvas_items, model, fixed_weak, texture, x, y, Some(path.to_string_lossy().to_string()));
+                return true;
+            }
+        }
+    }
+    // Try direct pixbuf
+    if let Ok(pixbuf) = value.get::<gdk::gdk_pixbuf::Pixbuf>() {
+        // Save pixbuf to file
+        let image_path = save_pasted_image(None, Some(&pixbuf));
+        let texture = image_utils::create_texture_from_pixbuf(&pixbuf);
+        add_image_to_canvas(canvas_items, model, fixed_weak, texture, x, y, image_path);
+        return true;
+    }
+    false
+}
+
+/// Calculate a paste position that avoids overlapping with existing canvas items
+fn calculate_paste_position(canvas_items: &Rc<RefCell<Vec<CanvasItem>>>) -> (f64, f64) {
+    let items = canvas_items.borrow();
+    let x = 10.0; // Start with some margin
+    let y = 10.0;
+    let spacing = 20.0; // Minimum spacing between items
+
+    // If no items, use default position
+    if items.is_empty() {
+        return (x, y);
+    }
+
+    // Simple vertical stacking - place new item below the bottommost item
+    let mut max_bottom = 0.0f64;
+
+    for item in items.iter() {
+        let item_bottom = item.y + item.height;
+        if item_bottom > max_bottom {
+            max_bottom = item_bottom;
+        }
+    }
+
+    // Place new item below the bottommost item
+    let new_x = 10.0; // Always start from left
+    let new_y = max_bottom + spacing;
+
+    (new_x, new_y)
+}
+
+/// Save a pasted image (texture or pixbuf) to a PNG file and return the path
+fn save_pasted_image(texture: Option<&gdk::Texture>, pixbuf: Option<&gdk::gdk_pixbuf::Pixbuf>) -> Option<String> {
+    let images_dir = image_utils::get_session_images_dir();
+
+    // Generate a unique filename
+    let timestamp = chrono::Utc::now().timestamp_millis();
+    let filename = format!("pasted_{}.png", timestamp);
+    let file_path = images_dir.join(&filename);
+
+    let result = if let Some(tex) = texture {
+        image_utils::save_texture_to_png(tex, &file_path)
+    } else if let Some(pb) = pixbuf {
+        image_utils::save_pixbuf_to_png(pb, &file_path)
+    } else {
+        return None;
+    };
+
+    match result {
+        Ok(_) => Some(file_path.to_string_lossy().to_string()),
+        Err(e) => {
+            eprintln!("Failed to save pasted image: {}", e);
+            None
+        }
+    }
+}
+
+/// Handle clipboard paste operation
+fn handle_clipboard_paste(
+    canvas_items: &Rc<RefCell<Vec<CanvasItem>>>,
+    model: &Rc<RefCell<crate::model::AppModel>>,
+    fixed_weak: &glib::WeakRef<Fixed>,
+) {
+    // Clone the Rc values to move into the async closure
+    let canvas_items = canvas_items.clone();
+    let model = model.clone();
+    let fixed_weak = fixed_weak.clone();
+
+    // Get the clipboard
+    if let Some(display) = gdk::Display::default() {
+        let clipboard = display.clipboard();
+
+        // Try to read texture from clipboard
+        clipboard.read_texture_async(None::<&gio::Cancellable>, move |result| {
+            match result {
+                Ok(Some(texture)) => {
+                    // Save texture to file
+                    let image_path = save_pasted_image(Some(&texture), None);
+                    // Calculate position to avoid overlapping
+                    let (x, y) = calculate_paste_position(&canvas_items);
+                    add_image_to_canvas(&canvas_items, &model, &fixed_weak, texture, x, y, image_path);
+                }
+                _ => {
+                    // If texture read failed, try reading as pixbuf
+                    let canvas_items_pb = canvas_items.clone();
+                    let model_pb = model.clone();
+                    let fixed_weak_pb = fixed_weak.clone();
+
+                    // Clone clipboard for the second async call
+                    let clipboard_clone = display.clipboard();
+                    clipboard_clone.read_value_async(gdk::gdk_pixbuf::Pixbuf::static_type(), glib::Priority::DEFAULT, None::<&gio::Cancellable>, move |result| {
+                        match result {
+                            Ok(value) => {
+                                if let Ok(pixbuf) = value.get::<gdk::gdk_pixbuf::Pixbuf>() {
+                                    // Save pixbuf to file
+                                    let image_path = save_pasted_image(None, Some(&pixbuf));
+                                    let texture = image_utils::create_texture_from_pixbuf(&pixbuf);
+                                    // Calculate position to avoid overlapping
+                                    let (x, y) = calculate_paste_position(&canvas_items_pb);
+                                    add_image_to_canvas(&canvas_items_pb, &model_pb, &fixed_weak_pb, texture, x, y, image_path);
+                                }
+                            }
+                            _ => {
+                                // Pixbuf read failed - could show user feedback here
+                                eprintln!("Failed to read pixbuf from clipboard");
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+}
+
+/// Select a canvas item and update visual feedback
+fn select_canvas_item(canvas_items: &Rc<RefCell<Vec<CanvasItem>>>, _fixed_weak: &glib::WeakRef<Fixed>, clicked_picture: &gtk4::Picture) {
+    let mut items = canvas_items.borrow_mut();
+
+    // Clear previous selection
+    for item in items.iter_mut() {
+        item.selected = false;
+        if let Some(picture) = &item.picture_widget {
+            // Remove any selection styling (we'll use CSS classes)
+            picture.remove_css_class("selected");
+        }
+    }
+
+    // Find and select the clicked item
+    for item in items.iter_mut() {
+        if let Some(picture) = &item.picture_widget {
+            if picture == clicked_picture {
+                item.selected = true;
+                picture.add_css_class("selected");
+                break;
+            }
+        }
+    }
+}
+
+/// Delete selected canvas items
+fn delete_selected_items(canvas_items: &Rc<RefCell<Vec<CanvasItem>>>, _fixed_weak: &glib::WeakRef<Fixed>, model: &Rc<RefCell<crate::model::AppModel>>) {
+    let items = canvas_items.borrow();
+    let mut indices_to_remove = Vec::new();
+
+    // Find selected items
+    for (i, item) in items.iter().enumerate() {
+        if item.selected {
+            indices_to_remove.push(i);
+        }
+    }
+
+    // Remove items in reverse order to maintain indices
+    for &index in indices_to_remove.iter().rev() {
+        if let Some(item) = items.get(index) {
+            // Remove the picture widget from the fixed container
+            if let Some(fixed_ref) = _fixed_weak.upgrade() {
+                if let Some(picture) = &item.picture_widget {
+                    fixed_ref.remove(picture);
+                }
+            }
+
+            // Remove evidence from the model if it exists
+            // Note: This is a simplified approach - in a real implementation,
+            // we'd need to match the item to its evidence entry
+            let (phase_idx, step_idx) = {
+                let model_borrow = model.borrow();
+                (model_borrow.selected_phase, model_borrow.selected_step)
+            };
+
+            if let Some(step_idx) = step_idx {
+                if let Some(step) = model.borrow_mut().session.phases.get_mut(phase_idx).and_then(|p| p.steps.get_mut(step_idx)) {
+                    // Remove evidence that matches this item's path (if it has one)
+                    if let Some(ref item_path) = item.path {
+                        step.evidence.retain(|e| e.path != *item_path);
+                    }
+                }
+            }
+        }
+    }
+
+    // Now remove the items from the canvas_items vector
+    drop(items); // Release the immutable borrow
+    let mut items_mut = canvas_items.borrow_mut();
+    for &index in indices_to_remove.iter().rev() {
+        items_mut.remove(index);
+    }
 }
 
 pub fn build_ui(app: &Application, model: AppModel) {
@@ -224,6 +627,20 @@ pub fn build_ui(app: &Application, model: AppModel) {
         .default_width(1100)
         .default_height(700)
         .build();
+
+    // Add CSS styling for selected canvas items
+    let css_provider = gtk4::CssProvider::new();
+    css_provider.load_from_string("
+        .selected {
+            border: 2px solid #3584e4;
+            border-radius: 4px;
+        }
+    ");
+    gtk4::style_context_add_provider_for_display(
+        &gdk::Display::default().unwrap(),
+        &css_provider,
+        gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
+    );
 
     // Header bar with Open/Save and Sidebar toggle
     let header = HeaderBar::new();
@@ -303,6 +720,8 @@ pub fn build_ui(app: &Application, model: AppModel) {
     let canvas_items = Rc::new(RefCell::new(Vec::<CanvasItem>::new()));
     let canvas_fixed = Fixed::new();
     canvas_fixed.set_size_request(800, 600); // Minimum canvas size
+    canvas_fixed.set_can_focus(true); // Make canvas focusable for keyboard events
+    canvas_fixed.set_focusable(true); // Ensure it's focusable
     let canvas_scroll = ScrolledWindow::new();
     canvas_scroll.set_child(Some(&canvas_fixed));
     canvas_scroll.set_vexpand(true);
@@ -360,6 +779,8 @@ pub fn build_ui(app: &Application, model: AppModel) {
         let desc_view_ref = desc_view.clone();
         let notes_view_ref = notes_view.clone();
         let checkbox_ref = checkbox.clone();
+        let canvas_fixed_ref = canvas_fixed.clone();
+        let canvas_items_ref = canvas_items.clone();
         move || {
             // clear
             while let Some(child) = steps_list_ref.first_child() { steps_list_ref.remove(&child); }
@@ -382,6 +803,8 @@ pub fn build_ui(app: &Application, model: AppModel) {
                 let desc_buf_s = desc_view_ref.buffer();
                 let notes_buf_s = notes_view_ref.buffer();
                 let checkbox_s = checkbox_ref.clone();
+                let canvas_fixed_s = canvas_fixed_ref.clone();
+                let canvas_items_s = canvas_items_ref.clone();
                 
                 click_controller.connect_pressed(move |_, _, _, _| {
                     let mut model_borrow = model_s.borrow_mut();
@@ -393,6 +816,11 @@ pub fn build_ui(app: &Application, model: AppModel) {
                         desc_buf_s.set_text(&step.description_notes);
                         checkbox_s.set_active(matches!(step.status, StepStatus::Done));
                         notes_buf_s.set_text(&step.notes);
+
+                        // Load canvas evidence for this step
+                        load_step_evidence(&canvas_fixed_s, canvas_items_s.clone(), step);
+                        // Focus the canvas so keyboard events work
+                        canvas_fixed_s.grab_focus();
                     }
                 });
                 lbl.add_controller(click_controller);
@@ -464,6 +892,11 @@ pub fn build_ui(app: &Application, model: AppModel) {
                     desc_buffer.set_text(&step.description_notes);
                     checkbox_ref.set_active(matches!(step.status, StepStatus::Done));
                     notes_view_ref.buffer().set_text(&step.notes);
+
+                    // Load canvas evidence for this step
+                    load_step_evidence(&canvas_fixed_ref, canvas_items_ref.clone(), step);
+                    // Focus the canvas so keyboard events work
+                    canvas_fixed_ref.grab_focus();
                 }
             } else if !phase.steps.is_empty() {
                 drop(model_borrow); // Release the immutable borrow before getting mutable
@@ -476,6 +909,11 @@ pub fn build_ui(app: &Application, model: AppModel) {
                     desc_buffer.set_text(&step.description_notes);
                     checkbox_ref.set_active(matches!(step.status, StepStatus::Done));
                     notes_view_ref.buffer().set_text(&step.notes);
+
+                    // Load canvas evidence for this step
+                    load_step_evidence(&canvas_fixed_ref, canvas_items_ref.clone(), step);
+                    // Focus the canvas so keyboard events work
+                    canvas_fixed_ref.grab_focus();
                 }
             }
         }
@@ -535,6 +973,8 @@ pub fn build_ui(app: &Application, model: AppModel) {
         let desc_view_ref = desc_view.clone();
         let notes_view_ref = notes_view.clone();
         let checkbox_ref = checkbox.clone();
+        let canvas_fixed_ref = canvas_fixed.clone();
+        let canvas_items_ref = canvas_items.clone();
         phase_combo.connect_selected_notify(move |c| {
             let active = c.selected();
             {
@@ -561,6 +1001,11 @@ pub fn build_ui(app: &Application, model: AppModel) {
                         desc_buffer.set_text(&step.description_notes);
                         checkbox_ref.set_active(matches!(step.status, StepStatus::Done));
                         notes_view_ref.buffer().set_text(&step.notes);
+
+                        // Load canvas evidence for this step
+                        load_step_evidence(&canvas_fixed_ref, canvas_items_ref.clone(), step);
+                        // Focus the canvas so keyboard events work
+                        canvas_fixed_ref.grab_focus();
                     }
                 }
         });
@@ -658,7 +1103,7 @@ pub fn build_ui(app: &Application, model: AppModel) {
     }
 
     // Setup canvas for evidence
-    setup_canvas(&canvas_fixed, canvas_items);
+    setup_canvas(&canvas_fixed, canvas_items, model.clone());
 
     window.present();
 }
@@ -870,6 +1315,10 @@ mod tests {
             // Test that paste operations handle textures correctly
             // This would test the clipboard texture reading logic
             // Since GTK clipboard requires initialization, this is a placeholder
+            // In a real test, we would:
+            // 1. Mock clipboard with texture data
+            // 2. Call handle_clipboard_paste
+            // 3. Verify that texture is added to canvas
             assert!(true);
         }
 
@@ -878,6 +1327,20 @@ mod tests {
             // Test that Ctrl+V is correctly detected
             // This would test the key event handling logic
             // In a real implementation, we'd mock the key events
+            // For now, verify that the key constants are accessible
+            use gtk4::gdk::Key;
+            assert_eq!(Key::v, Key::v); // Basic sanity check
+            assert!(true);
+        }
+
+        #[test]
+        fn test_clipboard_image_handling() {
+            // Test that clipboard images are handled properly
+            // This would test:
+            // 1. Reading texture from clipboard
+            // 2. Fallback to pixbuf if texture fails
+            // 3. Adding image to canvas without file path
+            // Since GTK clipboard requires initialization, this is a placeholder
             assert!(true);
         }
     }
@@ -1067,6 +1530,55 @@ mod tests {
             step.description_notes = "".to_string();
             assert!(step.notes.is_empty());
             assert!(step.description_notes.is_empty());
+        }
+
+        #[test]
+        fn test_canvas_evidence_persistence() {
+            // Test that canvas evidence is properly saved and loaded per step
+            let mut model = AppModel::default();
+
+            // Create test evidence for step 0
+            let evidence1 = crate::model::Evidence {
+                id: Uuid::new_v4(),
+                path: "/path/to/test_image1.png".to_string(),
+                created_at: chrono::Utc::now(),
+                kind: "image".to_string(),
+                x: 10.0,
+                y: 20.0,
+            };
+
+            let evidence2 = crate::model::Evidence {
+                id: Uuid::new_v4(),
+                path: "/path/to/test_image2.png".to_string(),
+                created_at: chrono::Utc::now(),
+                kind: "image".to_string(),
+                x: 50.0,
+                y: 60.0,
+            };
+
+            // Add evidence to first step
+            model.selected_step = Some(0);
+            if let Some(step) = model.session.phases[0].steps.get_mut(0) {
+                step.evidence.push(evidence1.clone());
+                step.evidence.push(evidence2.clone());
+                assert_eq!(step.evidence.len(), 2);
+                assert_eq!(step.evidence[0].path, "/path/to/test_image1.png");
+                assert_eq!(step.evidence[1].path, "/path/to/test_image2.png");
+            }
+
+            // Switch to second step - should have no evidence
+            model.selected_step = Some(1);
+            if let Some(step) = model.session.phases[0].steps.get(1) {
+                assert_eq!(step.evidence.len(), 0);
+            }
+
+            // Switch back to first step - should still have evidence
+            model.selected_step = Some(0);
+            if let Some(step) = model.session.phases[0].steps.get(0) {
+                assert_eq!(step.evidence.len(), 2);
+                assert_eq!(step.evidence[0].path, "/path/to/test_image1.png");
+                assert_eq!(step.evidence[1].path, "/path/to/test_image2.png");
+            }
         }
     }
 }

@@ -85,6 +85,8 @@ mod tests {
                 path: "/test/path.png".to_string(),
                 created_at: Utc::now(),
                 kind: "screenshot".to_string(),
+                x: 0.0,
+                y: 0.0,
             });
         }
 

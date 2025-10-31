@@ -434,6 +434,8 @@ mod tests {
                             path: format!("/evidence/phase{}_step{}.png", phase_idx, step_idx),
                             created_at: Utc::now(),
                             kind: "screenshot".to_string(),
+                            x: 0.0,
+                            y: 0.0,
                         });
                     } else if step_idx % 3 == 1 { // Every other third step
                         step.status = StepStatus::InProgress;
@@ -527,6 +529,8 @@ mod tests {
                             path: format!("evidence_{}.png", i),
                             created_at: Utc::now(),
                             kind: "test".to_string(),
+                            x: 0.0,
+                            y: 0.0,
                         });
                     }
                 }

@@ -17,6 +17,8 @@ pub struct Evidence {
     pub path: String,
     pub created_at: DateTime<Utc>,
     pub kind: String,
+    pub x: f64,
+    pub y: f64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -1573,6 +1575,8 @@ mod tests {
             path: "/path/to/file.png".to_string(),
             created_at: Utc::now(),
             kind: "screenshot".to_string(),
+            x: 100.0,
+            y: 200.0,
         };
 
         assert!(!evidence.path.is_empty());
@@ -1738,6 +1742,8 @@ mod tests {
             path: "/path/to/screenshot1.png".to_string(),
             created_at: Utc::now(),
             kind: "screenshot".to_string(),
+            x: 10.0,
+            y: 20.0,
         };
 
         let evidence2 = Evidence {
@@ -1745,6 +1751,8 @@ mod tests {
             path: "/path/to/log.txt".to_string(),
             created_at: Utc::now(),
             kind: "log".to_string(),
+            x: 50.0,
+            y: 60.0,
         };
 
         step.evidence.push(evidence1);

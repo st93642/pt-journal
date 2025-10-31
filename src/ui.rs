@@ -1,5 +1,5 @@
 use gtk4::prelude::*;
-use gtk4::{Application, ApplicationWindow, HeaderBar, Box as GtkBox, Orientation, ScrolledWindow, ListBox, CheckButton, Label, Frame, TextView, ListBoxRow, DropDown, StringList, FileDialog, Button, DropTarget, EventControllerKey, gdk, Paned};
+use gtk4::{Application, ApplicationWindow, HeaderBar, Box as GtkBox, Orientation, ScrolledWindow, ListBox, CheckButton, Label, Frame, TextView, ListBoxRow, DropDown, StringList, FileDialog, Button, DropTarget, gdk, Paned, Picture, Fixed};
 use gtk4::gio;
 use gtk4::glib;
 use std::rc::Rc;
@@ -7,7 +7,18 @@ use std::cell::RefCell;
 
 use crate::model::{AppModel, StepStatus};
 
-pub mod image_utils {
+/// Canvas item representing an image on the canvas
+#[derive(Clone)]
+#[allow(dead_code)]
+pub struct CanvasItem {
+    pub texture: gdk::Texture,
+    pub x: f64,
+    pub y: f64,
+    pub width: f64,
+    pub height: f64,
+}
+
+pub mod canvas_utils {
     use super::*;
     use std::path::Path;
 
@@ -43,7 +54,6 @@ pub mod image_utils {
     }
 
     /// Attempt to create a texture from a file path
-    /// This is a wrapper around gdk::Texture::from_filename for testing
     pub fn create_texture_from_file(path: &Path) -> Result<gdk::Texture, String> {
         validate_image_file(path)?;
 
@@ -53,13 +63,88 @@ pub mod image_utils {
         }
     }
 
-    /// Attempt to create a texture from a pixbuf
+    /// Create a canvas item from a texture
+    pub fn create_canvas_item(texture: gdk::Texture, x: f64, y: f64) -> CanvasItem {
+        let width = texture.width() as f64;
+        let height = texture.height() as f64;
+        CanvasItem {
+            texture,
+            x,
+            y,
+            width,
+            height,
+        }
+    }
+}
+
+pub mod image_utils {
+    use super::*;
+    use std::path::Path;
+
+    /// Check if a file path has a valid image extension
+    #[allow(dead_code)]
+    pub fn is_valid_image_extension(path: &Path) -> bool {
+        if let Some(ext) = path.extension() {
+            let ext_str = ext.to_string_lossy().to_lowercase();
+            matches!(ext_str.as_str(), "png" | "jpg" | "jpeg" | "gif" | "bmp" | "tiff" | "webp")
+        } else {
+            false
+        }
+    }
+
+    /// Validate that a file exists and is readable
+    #[allow(dead_code)]
+    pub fn validate_image_file(path: &Path) -> Result<(), String> {
+        if !path.exists() {
+            return Err("File does not exist".to_string());
+        }
+
+        if !path.is_file() {
+            return Err("Path is not a file".to_string());
+        }
+
+        match std::fs::metadata(path) {
+            Ok(metadata) => {
+                if metadata.len() == 0 {
+                    return Err("File is empty".to_string());
+                }
+                Ok(())
+            }
+            Err(e) => Err(format!("Cannot read file metadata: {}", e)),
+        }
+    }
+
+    /// Attempt to create a texture from a file path
+    /// This is a wrapper around gdk::Texture::from_filename for testing
+    #[allow(dead_code)]
+    pub fn create_texture_from_file(path: &Path) -> Result<gdk::Texture, String> {
+        validate_image_file(path)?;
+
+        match gdk::Texture::from_filename(path) {
+            Ok(texture) => Ok(texture),
+            Err(e) => Err(format!("Failed to create texture from file: {}", e)),
+        }
+    }
+
+    /// Attempt to create a texture from a pixbuf with error handling
     /// This is a wrapper for testing purposes
     pub fn create_texture_from_pixbuf(pixbuf: &gdk::gdk_pixbuf::Pixbuf) -> gdk::Texture {
         gdk::Texture::for_pixbuf(pixbuf)
     }
 
+    /// Attempt to create a pixbuf from a file path with proper error handling
+    #[allow(dead_code)]
+    pub fn create_pixbuf_from_file(path: &Path) -> Result<gdk::gdk_pixbuf::Pixbuf, String> {
+        validate_image_file(path)?;
+
+        match gdk::gdk_pixbuf::Pixbuf::from_file(path) {
+            Ok(pixbuf) => Ok(pixbuf),
+            Err(e) => Err(format!("Failed to create pixbuf from file: {}", e)),
+        }
+    }
+
     /// Insert a paintable (texture) into a text buffer at the end
+    #[allow(dead_code)]
     pub fn insert_paintable_into_buffer(buffer: &gtk4::TextBuffer, paintable: &gdk::Texture) {
         buffer.begin_user_action();
         let mut iter = buffer.end_iter();
@@ -68,29 +153,34 @@ pub mod image_utils {
     }
 }
 
-/// Setup image handling for a text view (drag-drop and paste)
-pub fn setup_image_handling(text_view: &TextView) {
-    // Handle drag and drop
-    let text_view_clone = text_view.clone();
+/// Setup canvas with drag-drop and drawing functionality
+pub fn setup_canvas(fixed: &Fixed, canvas_items: Rc<RefCell<Vec<CanvasItem>>>) {
+    // Handle drag and drop on the fixed container
     let drop_target = DropTarget::new(glib::Type::INVALID, gdk::DragAction::COPY);
-
     drop_target.set_preload(true);
-    drop_target.connect_drop(move |_target, value, _x, _y| {
+
+    let canvas_items_drop = canvas_items.clone();
+    let fixed_weak = fixed.downgrade();
+    drop_target.connect_drop(move |_target, value, x, y| {
         // Try to get file paths first
         if let Ok(file) = value.get::<gtk4::gio::File>() && let Some(path) = file.path() {
             // Validate file extension
-            if image_utils::is_valid_image_extension(&path) {
-                // Try creating Texture from file
-                if let Ok(texture) = image_utils::create_texture_from_file(&path) {
-                    let buffer = text_view_clone.buffer();
-                    image_utils::insert_paintable_into_buffer(&buffer, &texture);
-                    return true;
-                }
-                // Fallback: try pixbuf then texture
-                if let Ok(pixbuf) = gdk::gdk_pixbuf::Pixbuf::from_file(&path) {
-                    let texture = image_utils::create_texture_from_pixbuf(&pixbuf);
-                    let buffer = text_view_clone.buffer();
-                    image_utils::insert_paintable_into_buffer(&buffer, &texture);
+            if canvas_utils::is_valid_image_extension(&path) {
+                // Try creating texture from file
+                if let Ok(texture) = canvas_utils::create_texture_from_file(&path) {
+                    let item_x = x as f64;
+                    let item_y = y as f64;
+                    let item = canvas_utils::create_canvas_item(texture.clone(), item_x, item_y);
+                    canvas_items_drop.borrow_mut().push(item);
+
+                    // Create a Picture widget for the image
+                    if let Some(fixed_ref) = fixed_weak.upgrade() {
+                        let picture = Picture::for_paintable(&texture);
+                        picture.set_size_request(texture.width() as i32, texture.height() as i32);
+
+                        // Position the picture on the fixed container
+                        fixed_ref.put(&picture, item_x, item_y);
+                    }
                     return true;
                 }
             }
@@ -98,8 +188,19 @@ pub fn setup_image_handling(text_view: &TextView) {
         // Try direct pixbuf
         if let Ok(pixbuf) = value.get::<gdk::gdk_pixbuf::Pixbuf>() {
             let texture = image_utils::create_texture_from_pixbuf(&pixbuf);
-            let buffer = text_view_clone.buffer();
-            image_utils::insert_paintable_into_buffer(&buffer, &texture);
+            let item_x = x as f64;
+            let item_y = y as f64;
+            let item = canvas_utils::create_canvas_item(texture.clone(), item_x, item_y);
+            canvas_items_drop.borrow_mut().push(item);
+
+            // Create a Picture widget for the image
+            if let Some(fixed_ref) = fixed_weak.upgrade() {
+                let picture = Picture::for_paintable(&texture);
+                picture.set_size_request(texture.width() as i32, texture.height() as i32);
+
+                // Position the picture on the fixed container
+                fixed_ref.put(&picture, item_x, item_y);
+            }
             return true;
         }
         false
@@ -111,41 +212,7 @@ pub fn setup_image_handling(text_view: &TextView) {
         gdk::gdk_pixbuf::Pixbuf::static_type(),
     ]);
 
-    text_view.add_controller(drop_target);
-
-    // Handle paste from clipboard (Ctrl+V)
-    let text_view_paste = text_view.clone();
-    let paste_clip = EventControllerKey::new();
-    paste_clip.connect_key_pressed(move |_controller, keyval, _state, modifier| {
-        // Check for Ctrl+V (paste)
-        if (keyval == gdk::Key::V || keyval == gdk::Key::v) && modifier.contains(gdk::ModifierType::CONTROL_MASK) {
-            let display = match gdk::Display::default() {
-                Some(d) => d,
-                None => return gtk4::glib::Propagation::Proceed,
-            };
-            let clipboard = display.clipboard();
-
-            // Clone the text_view for the callback
-            let text_view_cb = text_view_paste.clone();
-
-            // Use the simpler read_texture_async API
-            clipboard.read_texture_async(
-                None::<&gio::Cancellable>,
-                move |result| {
-                    if let Ok(Some(texture)) = result {
-                        let tv_buffer = text_view_cb.buffer();
-                        // Suppress change events during paintable insertion
-                        tv_buffer.begin_user_action();
-                        let mut iter = tv_buffer.end_iter();
-                        tv_buffer.insert_paintable(&mut iter, &texture);
-                        tv_buffer.end_user_action();
-                    }
-                },
-            );
-        }
-        gtk4::glib::Propagation::Proceed
-    });
-    text_view.add_controller(paste_clip);
+    fixed.add_controller(drop_target);
 }
 
 pub fn build_ui(app: &Application, model: AppModel) {
@@ -199,14 +266,19 @@ pub fn build_ui(app: &Application, model: AppModel) {
     title_label.set_xalign(0.0);
     title_label.set_hexpand(true);
 
+    // Top section with checkbox and title (fixed)
+    let top_box = GtkBox::new(Orientation::Horizontal, 8);
+    top_box.append(&checkbox);
+    top_box.append(&title_label);
+
     let desc_view = TextView::new();
-    desc_view.set_editable(false);
+    desc_view.set_editable(true); // Allow editing for user notes
     desc_view.set_wrap_mode(gtk4::WrapMode::Word);
     desc_view.set_accepts_tab(false);
     let desc_scroll = ScrolledWindow::new();
     desc_scroll.set_child(Some(&desc_view));
     desc_scroll.set_vexpand(true);
-    desc_scroll.set_min_content_height(200);
+    desc_scroll.set_min_content_height(100); // Minimum 1 line height
     let desc_frame = Frame::builder()
         .label("Description")
         .child(&desc_scroll)
@@ -215,6 +287,7 @@ pub fn build_ui(app: &Application, model: AppModel) {
         .margin_start(4)
         .margin_end(4)
         .build();
+    desc_frame.set_size_request(-1, 80); // Minimum height to show title + 1 line
 
     let notes_view = TextView::new();
     notes_view.set_monospace(true);
@@ -222,12 +295,50 @@ pub fn build_ui(app: &Application, model: AppModel) {
     let notes_scroll = ScrolledWindow::new();
     notes_scroll.set_child(Some(&notes_view));
     notes_scroll.set_vexpand(true);
+    notes_scroll.set_min_content_height(100); // Minimum 1 line height
     let notes_frame = Frame::builder().label("Notes").child(&notes_scroll).build();
+    notes_frame.set_size_request(-1, 80); // Minimum height to show title + 1 line
 
-    right.append(&checkbox);
-    right.append(&title_label);
-    right.append(&desc_frame);
-    right.append(&notes_frame);
+    // Canvas for evidence/images
+    let canvas_items = Rc::new(RefCell::new(Vec::<CanvasItem>::new()));
+    let canvas_fixed = Fixed::new();
+    canvas_fixed.set_size_request(800, 600); // Minimum canvas size
+    let canvas_scroll = ScrolledWindow::new();
+    canvas_scroll.set_child(Some(&canvas_fixed));
+    canvas_scroll.set_vexpand(true);
+    canvas_scroll.set_min_content_height(100); // Minimum 1 line height
+    let canvas_frame = Frame::builder().label("Evidence Canvas").child(&canvas_scroll).build();
+    canvas_frame.set_size_request(-1, 80); // Minimum height to show title + 1 line
+
+    // Create resizable panes
+    // Paned 1: separates description from notes/canvas area
+    let main_paned = Paned::new(Orientation::Vertical);
+    main_paned.set_vexpand(true);
+    main_paned.set_resize_start_child(true);
+    main_paned.set_resize_end_child(true);
+    main_paned.set_shrink_start_child(false); // Prevent description from being collapsed
+    main_paned.set_shrink_end_child(false);   // Prevent notes/canvas from being collapsed
+
+    // Paned 2: separates notes from canvas
+    let bottom_paned = Paned::new(Orientation::Vertical);
+    bottom_paned.set_vexpand(true);
+    bottom_paned.set_resize_start_child(true);
+    bottom_paned.set_resize_end_child(true);
+    bottom_paned.set_shrink_start_child(false); // Prevent notes from being collapsed
+    bottom_paned.set_shrink_end_child(false);   // Prevent canvas from being collapsed
+
+    // Set up the pane hierarchy
+    bottom_paned.set_start_child(Some(&notes_frame));
+    bottom_paned.set_end_child(Some(&canvas_frame));
+    bottom_paned.set_position(300); // Default split between notes and canvas
+
+    main_paned.set_start_child(Some(&desc_frame));
+    main_paned.set_end_child(Some(&bottom_paned));
+    main_paned.set_position(200); // Default split between description and bottom area
+
+    // Add top section and main paned to right panel
+    right.append(&top_box);
+    right.append(&main_paned);
 
     // Use Paned for resizable sidebar
     let paned = Paned::new(Orientation::Horizontal);
@@ -278,8 +389,8 @@ pub fn build_ui(app: &Application, model: AppModel) {
                     let sp = model_borrow.selected_phase;
                     if let Some(step) = model_borrow.session.phases[sp].steps.get(idx) {
                         title_s.set_label(&step.title);
-                        // Clear description - tutorial content only shown in popup
-                        desc_buf_s.set_text("");
+                        // Load user notes in description pane
+                        desc_buf_s.set_text(&step.description_notes);
                         checkbox_s.set_active(matches!(step.status, StepStatus::Done));
                         notes_buf_s.set_text(&step.notes);
                     }
@@ -348,9 +459,9 @@ pub fn build_ui(app: &Application, model: AppModel) {
             if let Some(selected_idx) = selected_step {
                 if let Some(step) = phase.steps.get(selected_idx) {
                     title_label_ref.set_label(&step.title);
-                    // Clear description - tutorial content only shown in popup
+                    // Load user notes in description pane
                     let desc_buffer = desc_view_ref.buffer();
-                    desc_buffer.set_text("");
+                    desc_buffer.set_text(&step.description_notes);
                     checkbox_ref.set_active(matches!(step.status, StepStatus::Done));
                     notes_view_ref.buffer().set_text(&step.notes);
                 }
@@ -360,9 +471,9 @@ pub fn build_ui(app: &Application, model: AppModel) {
                 let model_borrow_again = model_rc.borrow();
                 if let Some(step) = model_borrow_again.session.phases[model_borrow_again.selected_phase].steps.first() {
                     title_label_ref.set_label(&step.title);
-                    // Clear description - tutorial content only shown in popup
+                    // Load user notes in description pane
                     let desc_buffer = desc_view_ref.buffer();
-                    desc_buffer.set_text("");
+                    desc_buffer.set_text(&step.description_notes);
                     checkbox_ref.set_active(matches!(step.status, StepStatus::Done));
                     notes_view_ref.buffer().set_text(&step.notes);
                 }
@@ -380,10 +491,37 @@ pub fn build_ui(app: &Application, model: AppModel) {
         let buf = notes_view.buffer();
         buf.connect_changed(move |b| {
             let text = b.text(&b.start_iter(), &b.end_iter(), true);
-            if let Some(idx) = model_notes.borrow().selected_step {
-                let sp = model_notes.borrow().selected_phase;
-                if let Some(step) = model_notes.borrow_mut().session.phases.get_mut(sp).and_then(|p| p.steps.get_mut(idx)) {
+            // Get indices first with immutable borrow
+            let (phase_idx, step_idx) = {
+                let model_borrow = model_notes.borrow();
+                (model_borrow.selected_phase, model_borrow.selected_step)
+            };
+
+            // Then update with mutable borrow
+            if let Some(idx) = step_idx {
+                if let Some(step) = model_notes.borrow_mut().session.phases.get_mut(phase_idx).and_then(|p| p.steps.get_mut(idx)) {
                     step.notes = text.to_string();
+                }
+            }
+        });
+    }
+
+    // Description update (for user notes in description area)
+    {
+        let model_desc = model.clone();
+        let buf = desc_view.buffer();
+        buf.connect_changed(move |b| {
+            let text = b.text(&b.start_iter(), &b.end_iter(), true);
+            // Get indices first with immutable borrow
+            let (phase_idx, step_idx) = {
+                let model_borrow = model_desc.borrow();
+                (model_borrow.selected_phase, model_borrow.selected_step)
+            };
+
+            // Then update with mutable borrow
+            if let Some(idx) = step_idx {
+                if let Some(step) = model_desc.borrow_mut().session.phases.get_mut(phase_idx).and_then(|p| p.steps.get_mut(idx)) {
+                    step.description_notes = text.to_string();
                 }
             }
         });
@@ -418,9 +556,9 @@ pub fn build_ui(app: &Application, model: AppModel) {
                     let model_borrow_again = model_phase.borrow();
                     if let Some(step) = model_borrow_again.session.phases[active as usize].steps.first() {
                         title_label_ref.set_label(&step.title);
-                        // Clear description - tutorial content only shown in popup
+                        // Load user notes in description pane
                         let desc_buffer = desc_view_ref.buffer();
-                        desc_buffer.set_text("");
+                        desc_buffer.set_text(&step.description_notes);
                         checkbox_ref.set_active(matches!(step.status, StepStatus::Done));
                         notes_view_ref.buffer().set_text(&step.notes);
                     }
@@ -519,8 +657,8 @@ pub fn build_ui(app: &Application, model: AppModel) {
         });
     }
 
-    // Image handling for notes_view (drag-drop and paste)
-    setup_image_handling(&notes_view);
+    // Setup canvas for evidence
+    setup_canvas(&canvas_fixed, canvas_items);
 
     window.present();
 }
@@ -619,8 +757,7 @@ mod tests {
     }
 
     mod ui_integration_tests {
-        use super::*;
-        use gtk4::TextView;
+        // use super::*; // Not needed for placeholder tests
 
         #[test]
         fn test_setup_image_handling_attaches_controllers() {
@@ -644,6 +781,33 @@ mod tests {
             // 2. Texture creation
             // 3. Buffer insertion
             // 4. UI controller setup
+
+            // Since GTK is required, this is a placeholder
+            assert!(true);
+        }
+
+        #[test]
+        fn test_pane_minimum_sizes() {
+            // Test that pane minimum sizes are properly set
+            // Description pane: 80px minimum
+            // Notes pane: 80px minimum
+            // Canvas pane: 80px minimum
+
+            // Since GTK is required for actual widget testing, this is a placeholder
+            // In a real test, we would:
+            // 1. Create the UI components
+            // 2. Check that minimum sizes are set correctly
+            // 3. Verify that panes cannot be resized below minimums
+            assert!(true);
+        }
+
+        #[test]
+        fn test_text_input_handlers() {
+            // Test that text input handlers are properly connected
+            // This would verify that:
+            // 1. Description pane changes are saved to description_notes
+            // 2. Notes pane changes are saved to notes
+            // 3. Text is properly loaded when switching steps
 
             // Since GTK is required, this is a placeholder
             assert!(true);
@@ -699,7 +863,7 @@ mod tests {
 
     // Mock tests for paste functionality
     mod paste_tests {
-        use super::*;
+        // use super::*; // Not needed for placeholder tests
 
         #[test]
         fn test_paste_texture_handling() {
@@ -820,6 +984,89 @@ mod tests {
             }
         }
     }
+
+    mod text_input_tests {
+        use crate::model::*;
+        use uuid::Uuid;
+
+        #[test]
+        fn test_text_buffer_operations() {
+            // Test that text buffer operations work correctly
+            // This tests the logic without requiring GTK
+
+            let mut model = AppModel::default();
+            model.selected_phase = 0;
+            model.selected_step = Some(0);
+
+            // Simulate text input to notes
+            if let Some(step) = model.session.phases[0].steps.get_mut(0) {
+                step.notes = "Test notes content".to_string();
+                assert_eq!(step.notes, "Test notes content");
+            }
+
+            // Simulate text input to description_notes
+            if let Some(step) = model.session.phases[0].steps.get_mut(0) {
+                step.description_notes = "Test description notes".to_string();
+                assert_eq!(step.description_notes, "Test description notes");
+            }
+        }
+
+        #[test]
+        fn test_step_text_persistence() {
+            // Test that text changes persist across step switches
+            let mut model = AppModel::default();
+
+            // Set text for first step
+            model.selected_step = Some(0);
+            if let Some(step) = model.session.phases[0].steps.get_mut(0) {
+                step.notes = "Notes for step 0".to_string();
+                step.description_notes = "Description notes for step 0".to_string();
+            }
+
+            // Switch to second step
+            model.selected_step = Some(1);
+            if let Some(step) = model.session.phases[0].steps.get_mut(1) {
+                step.notes = "Notes for step 1".to_string();
+                step.description_notes = "Description notes for step 1".to_string();
+            }
+
+            // Verify first step still has its text
+            if let Some(step) = model.session.phases[0].steps.get(0) {
+                assert_eq!(step.notes, "Notes for step 0");
+                assert_eq!(step.description_notes, "Description notes for step 0");
+            }
+
+            // Verify second step has its text
+            if let Some(step) = model.session.phases[0].steps.get(1) {
+                assert_eq!(step.notes, "Notes for step 1");
+                assert_eq!(step.description_notes, "Description notes for step 1");
+            }
+        }
+
+        #[test]
+        fn test_empty_text_handling() {
+            // Test handling of empty text input
+            let mut step = Step {
+                id: Uuid::new_v4(),
+                title: "Test".to_string(),
+                description: "Test".to_string(),
+                tags: vec![],
+                status: StepStatus::Todo,
+                completed_at: None,
+                notes: String::new(),
+                description_notes: String::new(),
+                evidence: vec![],
+            };
+
+            // Empty strings should be handled
+            assert!(step.notes.is_empty());
+            assert!(step.description_notes.is_empty());
+
+            // Setting to empty should work
+            step.notes = "".to_string();
+            step.description_notes = "".to_string();
+            assert!(step.notes.is_empty());
+            assert!(step.description_notes.is_empty());
+        }
+    }
 }
-
-

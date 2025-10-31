@@ -87,6 +87,7 @@ mod tests {
                 status: StepStatus::Todo,
                 completed_at: None,
                 notes: String::new(),
+                description_notes: String::new(),
                 evidence: vec![],
             };
 
@@ -279,11 +280,11 @@ mod tests {
             assert_eq!(loaded_session.notes_global, session.notes_global);
             assert_eq!(loaded_session.phases.len(), session.phases.len());
 
-            for (phase_idx, (original_phase, loaded_phase)) in session.phases.iter().zip(&loaded_session.phases).enumerate() {
+            for (_phase_idx, (original_phase, loaded_phase)) in session.phases.iter().zip(&loaded_session.phases).enumerate() {
                 assert_eq!(loaded_phase.name, original_phase.name);
                 assert_eq!(loaded_phase.steps.len(), original_phase.steps.len());
 
-                for (step_idx, (original_step, loaded_step)) in original_phase.steps.iter().zip(&loaded_phase.steps).enumerate() {
+                for (_step_idx, (original_step, loaded_step)) in original_phase.steps.iter().zip(&loaded_phase.steps).enumerate() {
                     assert_eq!(loaded_step.title, original_step.title);
                     assert_eq!(loaded_step.description, original_step.description);
                     assert_eq!(loaded_step.status, original_step.status);
@@ -453,13 +454,13 @@ mod tests {
             assert_eq!(loaded.phases.len(), session.phases.len());
 
             // Verify each phase
-            for (phase_idx, (original_phase, loaded_phase)) in session.phases.iter().zip(&loaded.phases).enumerate() {
+            for (_phase_idx, (original_phase, loaded_phase)) in session.phases.iter().zip(&loaded.phases).enumerate() {
                 assert_eq!(loaded_phase.name, original_phase.name);
                 assert_eq!(loaded_phase.notes, original_phase.notes);
                 assert_eq!(loaded_phase.steps.len(), original_phase.steps.len());
 
                 // Verify each step
-                for (step_idx, (original_step, loaded_step)) in original_phase.steps.iter().zip(&loaded_phase.steps).enumerate() {
+                for (_step_idx, (original_step, loaded_step)) in original_phase.steps.iter().zip(&loaded_phase.steps).enumerate() {
                     assert_eq!(loaded_step.title, original_step.title);
                     assert_eq!(loaded_step.description, original_step.description);
                     assert_eq!(loaded_step.status, original_step.status);
@@ -468,7 +469,7 @@ mod tests {
                     assert_eq!(loaded_step.evidence.len(), original_step.evidence.len());
 
                     // Verify evidence
-                    for (evidence_idx, (orig_ev, loaded_ev)) in original_step.evidence.iter().zip(&loaded_step.evidence).enumerate() {
+                    for (_evidence_idx, (orig_ev, loaded_ev)) in original_step.evidence.iter().zip(&loaded_step.evidence).enumerate() {
                         assert_eq!(loaded_ev.path, orig_ev.path);
                         assert_eq!(loaded_ev.kind, orig_ev.kind);
                         assert_eq!(loaded_ev.created_at, orig_ev.created_at);
@@ -596,6 +597,7 @@ mod tests {
                 status: StepStatus::Todo,
                 completed_at: None,
                 notes: String::new(),
+                description_notes: String::new(),
                 evidence: vec![],
             };
 
@@ -703,7 +705,6 @@ mod tests {
         use super::*;
         use proptest::prelude::*;
         use crate::model::*;
-        use chrono::Utc;
 
         proptest! {
             #[test]

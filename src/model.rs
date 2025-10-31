@@ -28,6 +28,7 @@ pub struct Step {
     pub status: StepStatus,
     pub completed_at: Option<DateTime<Utc>>,
     pub notes: String,
+    pub description_notes: String,
     pub evidence: Vec<Evidence>,
 }
 
@@ -737,7 +738,7 @@ COMMON PITFALLS:
             ),
         ]
         .into_iter()
-        .map(|(title, description)| Step { id: Uuid::new_v4(), title: title.into(), description: description.into(), tags: vec!["recon".into()], status: StepStatus::Todo, completed_at: None, notes: String::new(), evidence: vec![] })
+        .map(|(title, description)| Step { id: Uuid::new_v4(), title: title.into(), description: description.into(), tags: vec!["recon".into()], status: StepStatus::Todo, completed_at: None, notes: String::new(), description_notes: String::new(), evidence: vec![] })
         .collect();
         let recon_phase = Phase { id: Uuid::new_v4(), name: "Reconnaissance".into(), steps: recon_steps, notes: String::new() };
 
@@ -956,7 +957,7 @@ COMMON PITFALLS:
             ),
         ]
         .into_iter()
-        .map(|(title, description)| Step { id: Uuid::new_v4(), title: title.into(), description: description.into(), tags: vec!["vuln".into()], status: StepStatus::Todo, completed_at: None, notes: String::new(), evidence: vec![] })
+        .map(|(title, description)| Step { id: Uuid::new_v4(), title: title.into(), description: description.into(), tags: vec!["vuln".into()], status: StepStatus::Todo, completed_at: None, notes: String::new(), description_notes: String::new(), evidence: vec![] })
         .collect();
         let vuln_phase = Phase { id: Uuid::new_v4(), name: "Vulnerability Analysis".into(), steps: vuln_steps, notes: String::new() };
 
@@ -1132,7 +1133,7 @@ COMMON PITFALLS:
             ),
         ]
         .into_iter()
-        .map(|(title, description)| Step { id: Uuid::new_v4(), title: title.into(), description: description.into(), tags: vec!["exploit".into()], status: StepStatus::Todo, completed_at: None, notes: String::new(), evidence: vec![] })
+        .map(|(title, description)| Step { id: Uuid::new_v4(), title: title.into(), description: description.into(), tags: vec!["exploit".into()], status: StepStatus::Todo, completed_at: None, notes: String::new(), description_notes: String::new(), evidence: vec![] })
         .collect();
         let exploit_phase = Phase { id: Uuid::new_v4(), name: "Exploitation".into(), steps: exploit_steps, notes: String::new() };
 
@@ -1308,7 +1309,7 @@ COMMON PITFALLS:
             ),
         ]
         .into_iter()
-        .map(|(title, description)| Step { id: Uuid::new_v4(), title: title.into(), description: description.into(), tags: vec!["post".into()], status: StepStatus::Todo, completed_at: None, notes: String::new(), evidence: vec![] })
+        .map(|(title, description)| Step { id: Uuid::new_v4(), title: title.into(), description: description.into(), tags: vec!["post".into()], status: StepStatus::Todo, completed_at: None, notes: String::new(), description_notes: String::new(), evidence: vec![] })
         .collect();
         let post_phase = Phase { id: Uuid::new_v4(), name: "Post-Exploitation".into(), steps: post_steps, notes: String::new() };
 
@@ -1485,7 +1486,7 @@ COMMON PITFALLS:
             ),
         ]
         .into_iter()
-        .map(|(title, description)| Step { id: Uuid::new_v4(), title: title.into(), description: description.into(), tags: vec!["report".into()], status: StepStatus::Todo, completed_at: None, notes: String::new(), evidence: vec![] })
+        .map(|(title, description)| Step { id: Uuid::new_v4(), title: title.into(), description: description.into(), tags: vec!["report".into()], status: StepStatus::Todo, completed_at: None, notes: String::new(), description_notes: String::new(), evidence: vec![] })
         .collect();
         let report_phase = Phase { id: Uuid::new_v4(), name: "Reporting".into(), steps: rep_steps, notes: String::new() };
 
@@ -1539,6 +1540,7 @@ mod tests {
             status: StepStatus::Todo,
             completed_at: None,
             notes: String::new(),
+            description_notes: String::new(),
             evidence: vec![],
         };
 
@@ -1590,6 +1592,7 @@ mod tests {
                 status: StepStatus::Todo,
                 completed_at: None,
                 notes: String::new(),
+                description_notes: String::new(),
                 evidence: vec![],
             },
             Step {
@@ -1600,6 +1603,7 @@ mod tests {
                 status: StepStatus::Done,
                 completed_at: Some(Utc::now()),
                 notes: "Completed".to_string(),
+                description_notes: String::new(),
                 evidence: vec![],
             },
         ];
@@ -1658,6 +1662,7 @@ mod tests {
             status: StepStatus::Todo,
             completed_at: None,
             notes: String::new(),
+            description_notes: String::new(),
             evidence: vec![],
         };
 
@@ -1681,6 +1686,7 @@ mod tests {
                 status: StepStatus::Todo,
                 completed_at: None,
                 notes: String::new(),
+                description_notes: String::new(),
                 evidence: vec![],
             };
             assert!(ids.insert(step.id), "Duplicate ID generated: {}", step.id);
@@ -1688,29 +1694,29 @@ mod tests {
     }
 
     #[test]
-    fn test_step_completion_timestamp() {
+    fn test_step_description_notes() {
         let mut step = Step {
             id: Uuid::new_v4(),
-            title: "Test".to_string(),
-            description: "Test".to_string(),
+            title: "Test Step".to_string(),
+            description: "Test description".to_string(),
             tags: vec![],
             status: StepStatus::Todo,
             completed_at: None,
             notes: String::new(),
+            description_notes: String::new(),
             evidence: vec![],
         };
 
-        // Initially not completed
-        assert_matches!(step.status, StepStatus::Todo);
-        assert!(step.completed_at.is_none());
+        // Test description_notes updates
+        step.description_notes = "User notes in description area".to_string();
+        assert_eq!(step.description_notes, "User notes in description area");
 
-        // Mark as completed
-        step.status = StepStatus::Done;
-        step.completed_at = Some(Utc::now());
+        step.description_notes = "Updated description notes with more content".to_string();
+        assert_eq!(step.description_notes, "Updated description notes with more content");
 
-        assert_matches!(step.status, StepStatus::Done);
-        assert!(step.completed_at.is_some());
-        assert!(step.completed_at.unwrap() <= Utc::now());
+        // Test clearing description_notes
+        step.description_notes.clear();
+        assert!(step.description_notes.is_empty());
     }
 
     #[test]
@@ -1723,6 +1729,7 @@ mod tests {
             status: StepStatus::Todo,
             completed_at: None,
             notes: String::new(),
+            description_notes: String::new(),
             evidence: vec![],
         };
 

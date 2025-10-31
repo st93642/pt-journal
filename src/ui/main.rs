@@ -1,622 +1,13 @@
 use gtk4::prelude::*;
-use gtk4::{Application, ApplicationWindow, HeaderBar, Box as GtkBox, Orientation, ScrolledWindow, ListBox, CheckButton, Label, Frame, TextView, ListBoxRow, DropDown, StringList, FileDialog, Button, DropTarget, gdk, Paned, Picture, Fixed};
-use gtk4::gio;
 use gtk4::glib;
+use gtk4::{Application, ApplicationWindow, HeaderBar, Box as GtkBox, Orientation, ScrolledWindow, ListBox, CheckButton, Label, Frame, TextView, ListBoxRow, DropDown, StringList, FileDialog, Button, gdk, Paned, Fixed};
+use gtk4::gio;
 use std::rc::Rc;
 use std::cell::RefCell;
 
 use crate::model::{AppModel, StepStatus};
-
-/// Canvas item representing an image on the canvas
-#[derive(Clone)]
-#[allow(dead_code)]
-pub struct CanvasItem {
-    pub texture: gdk::Texture,
-    pub x: f64,
-    pub y: f64,
-    pub width: f64,
-    pub height: f64,
-    pub selected: bool,
-    pub picture_widget: Option<gtk4::Picture>,
-    pub path: Option<String>,
-}
-
-pub mod canvas_utils {
-    use super::*;
-    use std::path::Path;
-
-    /// Check if a file path has a valid image extension
-    pub fn is_valid_image_extension(path: &Path) -> bool {
-        if let Some(ext) = path.extension() {
-            let ext_str = ext.to_string_lossy().to_lowercase();
-            matches!(ext_str.as_str(), "png" | "jpg" | "jpeg" | "gif" | "bmp" | "tiff" | "webp")
-        } else {
-            false
-        }
-    }
-
-    /// Validate that a file exists and is readable
-    pub fn validate_image_file(path: &Path) -> Result<(), String> {
-        if !path.exists() {
-            return Err("File does not exist".to_string());
-        }
-
-        if !path.is_file() {
-            return Err("Path is not a file".to_string());
-        }
-
-        match std::fs::metadata(path) {
-            Ok(metadata) => {
-                if metadata.len() == 0 {
-                    return Err("File is empty".to_string());
-                }
-                Ok(())
-            }
-            Err(e) => Err(format!("Cannot read file metadata: {}", e)),
-        }
-    }
-
-    /// Attempt to create a texture from a file path
-    pub fn create_texture_from_file(path: &Path) -> Result<gdk::Texture, String> {
-        validate_image_file(path)?;
-
-        match gdk::Texture::from_filename(path) {
-            Ok(texture) => Ok(texture),
-            Err(e) => Err(format!("Failed to create texture from file: {}", e)),
-        }
-    }
-
-    /// Create a canvas item from a texture
-    pub fn create_canvas_item(texture: gdk::Texture, x: f64, y: f64, path: Option<String>) -> CanvasItem {
-        let width = texture.width() as f64;
-        let height = texture.height() as f64;
-        CanvasItem {
-            texture,
-            x,
-            y,
-            width,
-            height,
-            selected: false,
-            picture_widget: None,
-            path,
-        }
-    }
-}
-
-pub mod image_utils {
-    use super::*;
-    use std::path::Path;
-
-    /// Check if a file path has a valid image extension
-    #[allow(dead_code)]
-    pub fn is_valid_image_extension(path: &Path) -> bool {
-        if let Some(ext) = path.extension() {
-            let ext_str = ext.to_string_lossy().to_lowercase();
-            matches!(ext_str.as_str(), "png" | "jpg" | "jpeg" | "gif" | "bmp" | "tiff" | "webp")
-        } else {
-            false
-        }
-    }
-
-    /// Validate that a file exists and is readable
-    #[allow(dead_code)]
-    pub fn validate_image_file(path: &Path) -> Result<(), String> {
-        if !path.exists() {
-            return Err("File does not exist".to_string());
-        }
-
-        if !path.is_file() {
-            return Err("Path is not a file".to_string());
-        }
-
-        match std::fs::metadata(path) {
-            Ok(metadata) => {
-                if metadata.len() == 0 {
-                    return Err("File is empty".to_string());
-                }
-                Ok(())
-            }
-            Err(e) => Err(format!("Cannot read file metadata: {}", e)),
-        }
-    }
-
-    /// Attempt to create a texture from a file path
-    /// This is a wrapper around gdk::Texture::from_filename for testing
-    #[allow(dead_code)]
-    pub fn create_texture_from_file(path: &Path) -> Result<gdk::Texture, String> {
-        validate_image_file(path)?;
-
-        match gdk::Texture::from_filename(path) {
-            Ok(texture) => Ok(texture),
-            Err(e) => Err(format!("Failed to create texture from file: {}", e)),
-        }
-    }
-
-    /// Attempt to create a texture from a pixbuf with error handling
-    /// This is a wrapper for testing purposes
-    pub fn create_texture_from_pixbuf(pixbuf: &gdk::gdk_pixbuf::Pixbuf) -> gdk::Texture {
-        gdk::Texture::for_pixbuf(pixbuf)
-    }
-
-    /// Attempt to create a pixbuf from a file path with proper error handling
-    #[allow(dead_code)]
-    pub fn create_pixbuf_from_file(path: &Path) -> Result<gdk::gdk_pixbuf::Pixbuf, String> {
-        validate_image_file(path)?;
-
-        match gdk::gdk_pixbuf::Pixbuf::from_file(path) {
-            Ok(pixbuf) => Ok(pixbuf),
-            Err(e) => Err(format!("Failed to create pixbuf from file: {}", e)),
-        }
-    }
-
-    /// Insert a paintable (texture) into a text buffer at the end
-    #[allow(dead_code)]
-    pub fn insert_paintable_into_buffer(buffer: &gtk4::TextBuffer, paintable: &gdk::Texture) {
-        buffer.begin_user_action();
-        let mut iter = buffer.end_iter();
-        buffer.insert_paintable(&mut iter, paintable);
-        buffer.end_user_action();
-    }
-
-    /// Save a texture to a PNG file
-    #[allow(dead_code)]
-    pub fn save_texture_to_png(texture: &gdk::Texture, path: &std::path::Path) -> Result<(), String> {
-        match texture.save_to_png(path) {
-            Ok(_) => Ok(()),
-            Err(e) => Err(format!("Failed to save texture to PNG: {}", e)),
-        }
-    }
-
-    /// Save a pixbuf to a PNG file
-    #[allow(dead_code)]
-    pub fn save_pixbuf_to_png(pixbuf: &gdk::gdk_pixbuf::Pixbuf, path: &std::path::Path) -> Result<(), String> {
-        match pixbuf.savev(path, "png", &[]) {
-            Ok(_) => Ok(()),
-            Err(e) => Err(format!("Failed to save pixbuf to PNG: {}", e)),
-        }
-    }
-
-    /// Get the images directory for the current session
-    #[allow(dead_code)]
-    pub fn get_session_images_dir() -> std::path::PathBuf {
-        if let Some(dirs) = directories::ProjectDirs::from("com", "example", "pt-journal") {
-            let images_dir = dirs.data_dir().join("images");
-            let _ = std::fs::create_dir_all(&images_dir);
-            images_dir
-        } else {
-            std::path::PathBuf::from("./images")
-        }
-    }
-}
-
-/// Load evidence for a specific step onto the canvas
-pub fn load_step_evidence(fixed: &Fixed, canvas_items: Rc<RefCell<Vec<CanvasItem>>>, step: &crate::model::Step) {
-    // Clear existing canvas items and widgets
-    canvas_items.borrow_mut().clear();
-
-    // Remove all child widgets from the fixed container
-    while let Some(child) = fixed.first_child() {
-        fixed.remove(&child);
-    }
-
-    // Load evidence from the step
-    for evidence in &step.evidence {
-        // Try to create texture from the evidence path
-        if let Ok(texture) = image_utils::create_texture_from_file(std::path::Path::new(&evidence.path)) {
-            // Use stored position from evidence, or default if not available
-            let item_x = evidence.x;
-            let item_y = evidence.y;
-
-            let mut item = canvas_utils::create_canvas_item(texture.clone(), item_x, item_y, Some(evidence.path.clone()));
-
-            // Create Picture widget and add to fixed container
-            let picture = Picture::for_paintable(&texture);
-            picture.set_size_request(texture.width() as i32, texture.height() as i32);
-            fixed.put(&picture, item_x, item_y);
-
-            // Store the picture widget reference
-            item.picture_widget = Some(picture.clone());
-
-            // Add click handler for selection
-            let canvas_items_click = canvas_items.clone();
-            let fixed_weak_click = fixed.downgrade();
-            let picture_clone = picture.clone();
-            let click_controller = gtk4::GestureClick::new();
-            click_controller.connect_pressed(move |_, n_press, _, _| {
-                if n_press == 1 { // Single click
-                    select_canvas_item(&canvas_items_click, &fixed_weak_click, &picture_clone);
-                }
-            });
-            picture.add_controller(click_controller);
-
-            canvas_items.borrow_mut().push(item);
-        }
-    }
-}
-
-/// Setup canvas with drag-drop and paste functionality
-pub fn setup_canvas(fixed: &Fixed, canvas_items: Rc<RefCell<Vec<CanvasItem>>>, model: Rc<RefCell<crate::model::AppModel>>) {
-    // Handle drag and drop on the fixed container
-    let drop_target = DropTarget::new(glib::Type::INVALID, gdk::DragAction::COPY);
-    drop_target.set_preload(true);
-
-    let canvas_items_drop = canvas_items.clone();
-    let model_drop = model.clone();
-    let fixed_weak = fixed.downgrade();
-    drop_target.connect_drop(move |_target, value, x, y| {
-        handle_image_drop(&canvas_items_drop, &model_drop, &fixed_weak, value, x, y)
-    });
-
-    // Accept file URIs in drag-drop
-    drop_target.set_types(&[
-        gtk4::gio::File::static_type(),
-        gdk::gdk_pixbuf::Pixbuf::static_type(),
-    ]);
-
-    fixed.add_controller(drop_target);
-
-    // Handle keyboard paste (Ctrl+V) and delete (Delete key)
-    let key_controller = gtk4::EventControllerKey::new();
-    let canvas_items_key = canvas_items.clone();
-    let model_key = model.clone();
-    let fixed_weak_key = fixed.downgrade();
-
-    key_controller.connect_key_pressed(move |_, keyval, _keycode, modifier| {
-        // Check for Ctrl+V
-        if keyval == gdk::Key::v && modifier.contains(gdk::ModifierType::CONTROL_MASK) {
-            handle_clipboard_paste(&canvas_items_key, &model_key, &fixed_weak_key);
-            return glib::Propagation::Stop;
-        }
-        // Check for Delete key
-        if keyval == gdk::Key::Delete {
-            delete_selected_items(&canvas_items_key, &fixed_weak_key, &model_key);
-            return glib::Propagation::Stop;
-        }
-        glib::Propagation::Proceed
-    });
-
-    fixed.add_controller(key_controller);
-
-    // Handle canvas background clicks to focus for keyboard events
-    let canvas_click_controller = gtk4::GestureClick::new();
-    let fixed_weak_canvas = fixed.downgrade();
-    canvas_click_controller.connect_pressed(move |_, n_press, _, _| {
-        if n_press == 1 { // Single click on canvas background
-            if let Some(fixed_ref) = fixed_weak_canvas.upgrade() {
-                fixed_ref.grab_focus();
-            }
-        }
-    });
-    fixed.add_controller(canvas_click_controller);
-
-    // Right-click context menu for paste
-    let right_click_controller = gtk4::GestureClick::new();
-    right_click_controller.set_button(gtk4::gdk::ffi::GDK_BUTTON_SECONDARY as u32); // Right-click
-
-    let canvas_items_menu = canvas_items.clone();
-    let model_menu = model.clone();
-    let fixed_weak_menu = fixed.downgrade();
-
-    right_click_controller.connect_pressed(move |_controller, n_press, x, y| {
-        if n_press == 1 { // Single right-click
-            // Create a custom popover with a button
-            let popover = gtk4::Popover::new();
-            popover.set_has_arrow(true);
-            popover.set_position(gtk4::PositionType::Bottom);
-
-            // Create a button for paste
-            let paste_button = gtk4::Button::with_label("Paste Image");
-            paste_button.set_has_frame(false); // Make it look like a menu item
-            paste_button.set_margin_start(8);
-            paste_button.set_margin_end(8);
-            paste_button.set_margin_top(4);
-            paste_button.set_margin_bottom(4);
-
-            let canvas_items_paste = canvas_items_menu.clone();
-            let model_paste = model_menu.clone();
-            let fixed_weak_paste = fixed_weak_menu.clone();
-
-            paste_button.connect_clicked(move |_| {
-                handle_clipboard_paste(&canvas_items_paste, &model_paste, &fixed_weak_paste);
-            });
-
-            // Set the button as the popover's child
-            popover.set_child(Some(&paste_button));
-
-            // Set position relative to click
-            if let Some(fixed_ref) = fixed_weak_menu.upgrade() {
-                popover.set_parent(&fixed_ref);
-                popover.set_pointing_to(Some(&gtk4::gdk::Rectangle::new(x as i32, y as i32, 1, 1)));
-                popover.popup();
-            }
-        }
-    });
-
-    fixed.add_controller(right_click_controller);
-}
-
-/// Add an image to the canvas
-fn add_image_to_canvas(
-    canvas_items: &Rc<RefCell<Vec<CanvasItem>>>,
-    model: &Rc<RefCell<crate::model::AppModel>>,
-    fixed_weak: &glib::WeakRef<Fixed>,
-    texture: gdk::Texture,
-    x: f64,
-    y: f64,
-    path: Option<String>,
-) {
-    // Create canvas item
-    let mut item = canvas_utils::create_canvas_item(texture.clone(), x, y, path.clone());
-
-    // Create Picture widget
-    let picture = Picture::for_paintable(&texture);
-    picture.set_size_request(texture.width() as i32, texture.height() as i32);
-
-    // Add to fixed container
-    if let Some(fixed_ref) = fixed_weak.upgrade() {
-        fixed_ref.put(&picture, x, y);
-    }
-
-    // Store the picture widget reference
-    item.picture_widget = Some(picture.clone());
-
-    // Add click handler for selection
-    let canvas_items_click = canvas_items.clone();
-    let fixed_weak_click = fixed_weak.clone();
-    let picture_clone = picture.clone();
-    let click_controller = gtk4::GestureClick::new();
-    click_controller.connect_pressed(move |_, n_press, _, _| {
-        if n_press == 1 { // Single click
-            select_canvas_item(&canvas_items_click, &fixed_weak_click, &picture_clone);
-            // Focus the canvas for keyboard events
-            if let Some(fixed_ref) = fixed_weak_click.upgrade() {
-                fixed_ref.grab_focus();
-            }
-        }
-    });
-    picture.add_controller(click_controller);
-
-    // Add to canvas items
-    canvas_items.borrow_mut().push(item);
-
-    // Add evidence to model if we have a path
-    if let Some(file_path) = path {
-        let (phase_idx, step_idx) = {
-            let model_borrow = model.borrow();
-            (model_borrow.selected_phase, model_borrow.selected_step)
-        };
-
-        if let Some(step_idx) = step_idx {
-            if let Some(step) = model.borrow_mut().session.phases.get_mut(phase_idx).and_then(|p| p.steps.get_mut(step_idx)) {
-                let evidence = crate::model::Evidence {
-                    id: uuid::Uuid::new_v4(),
-                    path: file_path,
-                    created_at: chrono::Utc::now(),
-                    kind: "image".to_string(),
-                    x,
-                    y,
-                };
-                step.evidence.push(evidence);
-            }
-        }
-    }
-}
-/// Handle image drop (shared between drag-drop and paste)
-fn handle_image_drop(
-    canvas_items: &Rc<RefCell<Vec<CanvasItem>>>,
-    model: &Rc<RefCell<crate::model::AppModel>>,
-    fixed_weak: &glib::WeakRef<Fixed>,
-    value: &glib::Value,
-    x: f64,
-    y: f64,
-) -> bool {
-    // Try to get file paths first
-    if let Ok(file) = value.get::<gtk4::gio::File>() && let Some(path) = file.path() {
-        // Validate file extension
-        if canvas_utils::is_valid_image_extension(&path) {
-            // Try creating texture from file
-            if let Ok(texture) = canvas_utils::create_texture_from_file(&path) {
-                add_image_to_canvas(canvas_items, model, fixed_weak, texture, x, y, Some(path.to_string_lossy().to_string()));
-                return true;
-            }
-        }
-    }
-    // Try direct pixbuf
-    if let Ok(pixbuf) = value.get::<gdk::gdk_pixbuf::Pixbuf>() {
-        // Save pixbuf to file
-        let image_path = save_pasted_image(None, Some(&pixbuf));
-        let texture = image_utils::create_texture_from_pixbuf(&pixbuf);
-        add_image_to_canvas(canvas_items, model, fixed_weak, texture, x, y, image_path);
-        return true;
-    }
-    false
-}
-
-/// Calculate a paste position that avoids overlapping with existing canvas items
-fn calculate_paste_position(canvas_items: &Rc<RefCell<Vec<CanvasItem>>>) -> (f64, f64) {
-    let items = canvas_items.borrow();
-    let x = 10.0; // Start with some margin
-    let y = 10.0;
-    let spacing = 20.0; // Minimum spacing between items
-
-    // If no items, use default position
-    if items.is_empty() {
-        return (x, y);
-    }
-
-    // Simple vertical stacking - place new item below the bottommost item
-    let mut max_bottom = 0.0f64;
-
-    for item in items.iter() {
-        let item_bottom = item.y + item.height;
-        if item_bottom > max_bottom {
-            max_bottom = item_bottom;
-        }
-    }
-
-    // Place new item below the bottommost item
-    let new_x = 10.0; // Always start from left
-    let new_y = max_bottom + spacing;
-
-    (new_x, new_y)
-}
-
-/// Save a pasted image (texture or pixbuf) to a PNG file and return the path
-fn save_pasted_image(texture: Option<&gdk::Texture>, pixbuf: Option<&gdk::gdk_pixbuf::Pixbuf>) -> Option<String> {
-    let images_dir = image_utils::get_session_images_dir();
-
-    // Generate a unique filename
-    let timestamp = chrono::Utc::now().timestamp_millis();
-    let filename = format!("pasted_{}.png", timestamp);
-    let file_path = images_dir.join(&filename);
-
-    let result = if let Some(tex) = texture {
-        image_utils::save_texture_to_png(tex, &file_path)
-    } else if let Some(pb) = pixbuf {
-        image_utils::save_pixbuf_to_png(pb, &file_path)
-    } else {
-        return None;
-    };
-
-    match result {
-        Ok(_) => Some(file_path.to_string_lossy().to_string()),
-        Err(e) => {
-            eprintln!("Failed to save pasted image: {}", e);
-            None
-        }
-    }
-}
-
-/// Handle clipboard paste operation
-fn handle_clipboard_paste(
-    canvas_items: &Rc<RefCell<Vec<CanvasItem>>>,
-    model: &Rc<RefCell<crate::model::AppModel>>,
-    fixed_weak: &glib::WeakRef<Fixed>,
-) {
-    // Clone the Rc values to move into the async closure
-    let canvas_items = canvas_items.clone();
-    let model = model.clone();
-    let fixed_weak = fixed_weak.clone();
-
-    // Get the clipboard
-    if let Some(display) = gdk::Display::default() {
-        let clipboard = display.clipboard();
-
-        // Try to read texture from clipboard
-        clipboard.read_texture_async(None::<&gio::Cancellable>, move |result| {
-            match result {
-                Ok(Some(texture)) => {
-                    // Save texture to file
-                    let image_path = save_pasted_image(Some(&texture), None);
-                    // Calculate position to avoid overlapping
-                    let (x, y) = calculate_paste_position(&canvas_items);
-                    add_image_to_canvas(&canvas_items, &model, &fixed_weak, texture, x, y, image_path);
-                }
-                _ => {
-                    // If texture read failed, try reading as pixbuf
-                    let canvas_items_pb = canvas_items.clone();
-                    let model_pb = model.clone();
-                    let fixed_weak_pb = fixed_weak.clone();
-
-                    // Clone clipboard for the second async call
-                    let clipboard_clone = display.clipboard();
-                    clipboard_clone.read_value_async(gdk::gdk_pixbuf::Pixbuf::static_type(), glib::Priority::DEFAULT, None::<&gio::Cancellable>, move |result| {
-                        match result {
-                            Ok(value) => {
-                                if let Ok(pixbuf) = value.get::<gdk::gdk_pixbuf::Pixbuf>() {
-                                    // Save pixbuf to file
-                                    let image_path = save_pasted_image(None, Some(&pixbuf));
-                                    let texture = image_utils::create_texture_from_pixbuf(&pixbuf);
-                                    // Calculate position to avoid overlapping
-                                    let (x, y) = calculate_paste_position(&canvas_items_pb);
-                                    add_image_to_canvas(&canvas_items_pb, &model_pb, &fixed_weak_pb, texture, x, y, image_path);
-                                }
-                            }
-                            _ => {
-                                // Pixbuf read failed - could show user feedback here
-                                eprintln!("Failed to read pixbuf from clipboard");
-                            }
-                        }
-                    });
-                }
-            }
-        });
-    }
-}
-
-/// Select a canvas item and update visual feedback
-fn select_canvas_item(canvas_items: &Rc<RefCell<Vec<CanvasItem>>>, _fixed_weak: &glib::WeakRef<Fixed>, clicked_picture: &gtk4::Picture) {
-    let mut items = canvas_items.borrow_mut();
-
-    // Clear previous selection
-    for item in items.iter_mut() {
-        item.selected = false;
-        if let Some(picture) = &item.picture_widget {
-            // Remove any selection styling (we'll use CSS classes)
-            picture.remove_css_class("selected");
-        }
-    }
-
-    // Find and select the clicked item
-    for item in items.iter_mut() {
-        if let Some(picture) = &item.picture_widget {
-            if picture == clicked_picture {
-                item.selected = true;
-                picture.add_css_class("selected");
-                break;
-            }
-        }
-    }
-}
-
-/// Delete selected canvas items
-fn delete_selected_items(canvas_items: &Rc<RefCell<Vec<CanvasItem>>>, _fixed_weak: &glib::WeakRef<Fixed>, model: &Rc<RefCell<crate::model::AppModel>>) {
-    let items = canvas_items.borrow();
-    let mut indices_to_remove = Vec::new();
-
-    // Find selected items
-    for (i, item) in items.iter().enumerate() {
-        if item.selected {
-            indices_to_remove.push(i);
-        }
-    }
-
-    // Remove items in reverse order to maintain indices
-    for &index in indices_to_remove.iter().rev() {
-        if let Some(item) = items.get(index) {
-            // Remove the picture widget from the fixed container
-            if let Some(fixed_ref) = _fixed_weak.upgrade() {
-                if let Some(picture) = &item.picture_widget {
-                    fixed_ref.remove(picture);
-                }
-            }
-
-            // Remove evidence from the model if it exists
-            // Note: This is a simplified approach - in a real implementation,
-            // we'd need to match the item to its evidence entry
-            let (phase_idx, step_idx) = {
-                let model_borrow = model.borrow();
-                (model_borrow.selected_phase, model_borrow.selected_step)
-            };
-
-            if let Some(step_idx) = step_idx {
-                if let Some(step) = model.borrow_mut().session.phases.get_mut(phase_idx).and_then(|p| p.steps.get_mut(step_idx)) {
-                    // Remove evidence that matches this item's path (if it has one)
-                    if let Some(ref item_path) = item.path {
-                        step.evidence.retain(|e| e.path != *item_path);
-                    }
-                }
-            }
-        }
-    }
-
-    // Now remove the items from the canvas_items vector
-    drop(items); // Release the immutable borrow
-    let mut items_mut = canvas_items.borrow_mut();
-    for &index in indices_to_remove.iter().rev() {
-        items_mut.remove(index);
-    }
-}
+use crate::ui::canvas_utils::CanvasItem;
+use crate::ui::canvas::{load_step_evidence, setup_canvas};
 
 pub fn build_ui(app: &Application, model: AppModel) {
     let model = Rc::new(RefCell::new(model));
@@ -629,18 +20,20 @@ pub fn build_ui(app: &Application, model: AppModel) {
         .build();
 
     // Add CSS styling for selected canvas items
-    let css_provider = gtk4::CssProvider::new();
-    css_provider.load_from_string("
-        .selected {
-            border: 2px solid #3584e4;
-            border-radius: 4px;
-        }
-    ");
-    gtk4::style_context_add_provider_for_display(
-        &gdk::Display::default().unwrap(),
-        &css_provider,
-        gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
-    );
+    if let Some(display) = gdk::Display::default() {
+        let css_provider = gtk4::CssProvider::new();
+        css_provider.load_from_string("
+            .selected {
+                border: 2px solid #3584e4;
+                border-radius: 4px;
+            }
+        ");
+        gtk4::style_context_add_provider_for_display(
+            &display,
+            &css_provider,
+            gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
+        );
+    }
 
     // Header bar with Open/Save and Sidebar toggle
     let header = HeaderBar::new();
@@ -966,9 +359,9 @@ pub fn build_ui(app: &Application, model: AppModel) {
     }
 
     // Phase selection change
-    {
+    let phase_combo_handler_id = {
         let model_phase = model.clone();
-        let rebuild = rebuild_steps.clone();
+        let steps_list_ref = steps_list.clone();
         let title_label_ref = title_label.clone();
         let desc_view_ref = desc_view.clone();
         let notes_view_ref = notes_view.clone();
@@ -982,19 +375,119 @@ pub fn build_ui(app: &Application, model: AppModel) {
                 model_borrow.selected_phase = active as usize;
                 model_borrow.selected_step = None;
             }
-            rebuild();
-            
-            // Auto-select first step of new phase
+
+            // Rebuild steps list for the new phase (inline logic to avoid borrowing conflicts)
+            while let Some(child) = steps_list_ref.first_child() {
+                steps_list_ref.remove(&child);
+            }
+
             let model_borrow = model_phase.borrow();
-            if let Some(phase) = model_borrow.session.phases.get(active as usize)
-                && !phase.steps.is_empty() {
+            let selected_phase = model_borrow.selected_phase;
+            if let Some(phase) = model_borrow.session.phases.get(selected_phase) {
+                for (idx, step) in phase.steps.iter().enumerate() {
+                    let row = ListBoxRow::new();
+                    let row_box = GtkBox::new(Orientation::Horizontal, 8);
+
+                    let cb = CheckButton::new();
+                    cb.set_active(matches!(step.status, StepStatus::Done));
+                    let lbl = Label::new(Some(&step.title));
+                    lbl.set_xalign(0.0);
+
+                    // Make the label clickable instead of the whole row
+                    let click_controller = gtk4::GestureClick::new();
+                    let model_s = model_phase.clone();
+                    let title_s = title_label_ref.clone();
+                    let desc_buf_s = desc_view_ref.buffer();
+                    let notes_buf_s = notes_view_ref.buffer();
+                    let checkbox_s = checkbox_ref.clone();
+                    let canvas_fixed_s = canvas_fixed_ref.clone();
+                    let canvas_items_s = canvas_items_ref.clone();
+
+                    click_controller.connect_pressed(move |_, _, _, _| {
+                        let mut model_borrow = model_s.borrow_mut();
+                        model_borrow.selected_step = Some(idx);
+                        let sp = model_borrow.selected_phase;
+                        if let Some(step) = model_borrow.session.phases[sp].steps.get(idx) {
+                            title_s.set_label(&step.title);
+                            // Load user notes in description pane
+                            desc_buf_s.set_text(&step.description_notes);
+                            checkbox_s.set_active(matches!(step.status, StepStatus::Done));
+                            notes_buf_s.set_text(&step.notes);
+
+                            // Load canvas evidence for this step
+                            load_step_evidence(&canvas_fixed_s, canvas_items_s.clone(), step);
+                            // Focus the canvas so keyboard events work
+                            canvas_fixed_s.grab_focus();
+                        }
+                    });
+                    lbl.add_controller(click_controller);
+
+                    let info_btn = gtk4::Button::from_icon_name("dialog-information-symbolic");
+                    info_btn.set_valign(gtk4::Align::Center);
+                    info_btn.set_tooltip_text(Some("Show explanation"));
+
+                    // Create popover upfront with content
+                    let popover = gtk4::Popover::new();
+                    let pop_box = GtkBox::new(Orientation::Vertical, 6);
+
+                    // Use ScrolledWindow with TextView for long content
+                    let scrolled = ScrolledWindow::new();
+                    scrolled.set_min_content_height(300);
+                    scrolled.set_min_content_width(500);
+                    scrolled.set_max_content_height(500);
+                    scrolled.set_max_content_width(700);
+                    scrolled.set_propagate_natural_height(true);
+                    scrolled.set_propagate_natural_width(true);
+                    let text_view = TextView::new();
+                    text_view.set_editable(false);
+                    text_view.set_wrap_mode(gtk4::WrapMode::Word);
+                    text_view.set_size_request(480, 280);
+                    text_view.buffer().set_text(&step.description);
+                    scrolled.set_child(Some(&text_view));
+
+                    pop_box.append(&scrolled);
+                    popover.set_child(Some(&pop_box));
+                    popover.set_has_arrow(true);
+                    popover.set_position(gtk4::PositionType::Bottom);
+
+                    // Set parent and popup on click
+                    let pop_clone = popover.clone();
+                    info_btn.connect_clicked(move |btn| {
+                        pop_clone.set_parent(btn);
+                        pop_clone.popup();
+                    });
+
+                    row_box.append(&cb);
+                    row_box.append(&lbl);
+                    row_box.append(&info_btn);
+                    row.set_child(Some(&row_box));
+
+                    // Toggle handler
+                    let model_t = model_phase.clone();
+                    let cb_clone = cb.clone();
+                    cb.connect_toggled(move |c| {
+                        let mut model_borrow = model_t.borrow_mut();
+                        let sp = model_borrow.selected_phase;
+                        if let Some(step) = model_borrow.session.phases.get_mut(sp).and_then(|p| p.steps.get_mut(idx)) {
+                            step.status = if c.is_active() { StepStatus::Done } else { StepStatus::Todo };
+                        }
+                    });
+
+                    // Prevent checkbox from consuming click events
+                    cb_clone.set_can_focus(false);
+
+                    steps_list_ref.append(&row);
+                }
+
+                // Auto-select first step of new phase
+                if !phase.steps.is_empty() {
                     drop(model_borrow); // Release immutable borrow
                     {
                         let mut model_borrow_mut = model_phase.borrow_mut();
                         model_borrow_mut.selected_step = Some(0);
                     }
                     let model_borrow_again = model_phase.borrow();
-                    if let Some(step) = model_borrow_again.session.phases[active as usize].steps.first() {
+                    if let Some(step) = model_borrow_again.session.phases[selected_phase].steps.first() {
                         title_label_ref.set_label(&step.title);
                         // Load user notes in description pane
                         let desc_buffer = desc_view_ref.buffer();
@@ -1008,8 +501,9 @@ pub fn build_ui(app: &Application, model: AppModel) {
                         canvas_fixed_ref.grab_focus();
                     }
                 }
-        });
-    }
+            }
+        })
+    };
 
     // Open dialog
     {
@@ -1017,14 +511,26 @@ pub fn build_ui(app: &Application, model: AppModel) {
         let model_ref = model.clone();
         let phase_model_ref = phase_model.clone();
         let phase_combo_ref = phase_combo.clone();
-        let rebuild = rebuild_steps.clone();
+        let steps_list_ref = steps_list.clone();
+        let title_label_ref = title_label.clone();
+        let desc_view_ref = desc_view.clone();
+        let notes_view_ref = notes_view.clone();
+        let checkbox_ref = checkbox.clone();
+        let canvas_fixed_ref = canvas_fixed.clone();
+        let canvas_items_ref = canvas_items.clone();
         btn_open.connect_clicked(move |_| {
             let dialog = FileDialog::new();
             dialog.set_title("Open Session");
             let m = model_ref.clone();
             let pm = phase_model_ref.clone();
             let pc = phase_combo_ref.clone();
-            let rb = rebuild.clone();
+            let sl = steps_list_ref.clone();
+            let tl = title_label_ref.clone();
+            let dv = desc_view_ref.clone();
+            let nv = notes_view_ref.clone();
+            let cb = checkbox_ref.clone();
+            let cf = canvas_fixed_ref.clone();
+            let ci = canvas_items_ref.clone();
             dialog.open(Some(&window_ref), None::<&gio::Cancellable>, move |res| {
                 if let Ok(file) = res && let Some(path) = file.path() {
                     match crate::store::load_session(&path) {
@@ -1033,18 +539,148 @@ pub fn build_ui(app: &Application, model: AppModel) {
                             m.borrow_mut().selected_phase = 0;
                             m.borrow_mut().selected_step = None;
                             m.borrow_mut().current_path = Some(path.clone());
-                            // rebuild phase model
-                            while pm.n_items() > 0 { pm.remove(0); }
-                            for p in &m.borrow().session.phases { pm.append(&p.name); }
-                            pc.set_selected(0);
-                            rb();
                             
-                            // Auto-select first step
-                            if let Some(phase) = m.borrow().session.phases.first()
-                                && !phase.steps.is_empty() {
-                                m.borrow_mut().selected_step = Some(0);
-                                // rebuild() will handle UI updates
-                            }
+                            // Defer ALL UI rebuilding to avoid borrowing conflicts
+                            let pm_clone = pm.clone();
+                            let sl_clone = sl.clone();
+                            let tl_clone = tl.clone();
+                            let dv_clone = dv.clone();
+                            let nv_clone = nv.clone();
+                            let cb_clone = cb.clone();
+                            let cf_clone = cf.clone();
+                            let ci_clone = ci.clone();
+                            let m_clone = m.clone();
+                            let pc_clone = pc.clone();
+                            glib::idle_add_local_once(move || {
+                                // Block the phase combo signal handler to prevent recursive triggering
+                                glib::signal::signal_handler_block(&pc_clone, &phase_combo_handler_id);
+                                
+                                // Create new phase model items
+                                let model_borrow = m_clone.borrow();
+                                let phase_names: Vec<&str> = model_borrow.session.phases.iter().map(|p| p.name.as_str()).collect();
+                                
+                                // Replace all items in the phase model at once to avoid triggering handlers multiple times
+                                pm_clone.splice(0, pm_clone.n_items(), &phase_names);
+                                
+                                // Unblock the signal handler
+                                glib::signal::signal_handler_unblock(&pc_clone, &phase_combo_handler_id);
+                                
+                                // Rebuild steps list for the new phase
+                                while let Some(child) = sl_clone.first_child() { sl_clone.remove(&child); }
+                                let model_borrow = m_clone.borrow();
+                                let selected_phase = model_borrow.selected_phase;
+                                if let Some(phase) = model_borrow.session.phases.get(selected_phase) {
+                                    for (idx, step) in phase.steps.iter().enumerate() {
+                                        let row = ListBoxRow::new();
+                                        let row_box = GtkBox::new(Orientation::Horizontal, 8);
+
+                                        let cb_widget = CheckButton::new();
+                                        cb_widget.set_active(matches!(step.status, StepStatus::Done));
+                                        let lbl = Label::new(Some(&step.title));
+                                        lbl.set_xalign(0.0);
+
+                                        // Make the label clickable instead of the whole row
+                                        let click_controller = gtk4::GestureClick::new();
+                                        let model_s = m_clone.clone();
+                                        let title_s = tl_clone.clone();
+                                        let desc_buf_s = dv_clone.buffer();
+                                        let notes_buf_s = nv_clone.buffer();
+                                        let checkbox_s = cb_clone.clone();
+                                        let canvas_fixed_s = cf_clone.clone();
+                                        let canvas_items_s = ci_clone.clone();
+
+                                        click_controller.connect_pressed(move |_, _, _, _| {
+                                            let mut model_borrow = model_s.borrow_mut();
+                                            model_borrow.selected_step = Some(idx);
+                                            let sp = model_borrow.selected_phase;
+                                            if let Some(step) = model_borrow.session.phases[sp].steps.get(idx) {
+                                                title_s.set_label(&step.title);
+                                                // Load user notes in description pane
+                                                desc_buf_s.set_text(&step.description_notes);
+                                                checkbox_s.set_active(matches!(step.status, StepStatus::Done));
+                                                notes_buf_s.set_text(&step.notes);
+
+                                                // Load canvas evidence for this step
+                                                load_step_evidence(&canvas_fixed_s, canvas_items_s.clone(), step);
+                                                // Focus the canvas so keyboard events work
+                                                canvas_fixed_s.grab_focus();
+                                            }
+                                        });
+                                        lbl.add_controller(click_controller);
+
+                                        let info_btn = gtk4::Button::from_icon_name("dialog-information-symbolic");
+                                        info_btn.set_valign(gtk4::Align::Center);
+                                        info_btn.set_tooltip_text(Some("Show explanation"));
+
+                                        // Create popover upfront with content
+                                        let popover = gtk4::Popover::new();
+                                        let pop_box = GtkBox::new(Orientation::Vertical, 6);
+
+                                        // Use ScrolledWindow with TextView for long content
+                                        let scrolled = ScrolledWindow::new();
+                                        scrolled.set_min_content_height(300);
+                                        scrolled.set_min_content_width(500);
+                                        scrolled.set_max_content_height(500);
+                                        scrolled.set_max_content_width(700);
+                                        scrolled.set_propagate_natural_height(true);
+                                        scrolled.set_propagate_natural_width(true);
+                                        let text_view = TextView::new();
+                                        text_view.set_editable(false);
+                                        text_view.set_wrap_mode(gtk4::WrapMode::Word);
+                                        text_view.set_size_request(480, 280);
+                                        text_view.buffer().set_text(&step.description);
+                                        scrolled.set_child(Some(&text_view));
+
+                                        pop_box.append(&scrolled);
+                                        popover.set_child(Some(&pop_box));
+                                        popover.set_has_arrow(true);
+                                        popover.set_position(gtk4::PositionType::Bottom);
+
+                                        // Set parent and popup on click
+                                        let pop_clone = popover.clone();
+                                        info_btn.connect_clicked(move |btn| {
+                                            pop_clone.set_parent(btn);
+                                            pop_clone.popup();
+                                        });
+
+                                        row_box.append(&cb_widget);
+                                        row_box.append(&lbl);
+                                        row_box.append(&info_btn);
+                                        row.set_child(Some(&row_box));
+
+                                        // Toggle handler
+                                        let model_t = m_clone.clone();
+                                        let cb_clone = cb_widget.clone();
+                                        cb_clone.connect_toggled(move |c| {
+                                            let mut model_borrow = model_t.borrow_mut();
+                                            let sp = model_borrow.selected_phase;
+                                            if let Some(step) = model_borrow.session.phases.get_mut(sp).and_then(|p| p.steps.get_mut(idx)) {
+                                                step.status = if c.is_active() { StepStatus::Done } else { StepStatus::Todo };
+                                            }
+                                        });
+
+                                        // Prevent checkbox from consuming click events
+                                        cb_clone.set_can_focus(false);
+
+                                        sl_clone.append(&row);
+                                    }
+
+                                    // Auto-select first step and update UI
+                                    if !phase.steps.is_empty() {
+                                        drop(model_borrow); // Release immutable borrow
+                                        m_clone.borrow_mut().selected_step = Some(0);
+                                        let model_borrow_again = m_clone.borrow();
+                                        if let Some(step) = model_borrow_again.session.phases[selected_phase].steps.first() {
+                                            tl_clone.set_label(&step.title);
+                                            dv_clone.buffer().set_text(&step.description_notes);
+                                            cb_clone.set_active(matches!(step.status, StepStatus::Done));
+                                            nv_clone.buffer().set_text(&step.notes);
+                                            load_step_evidence(&cf_clone, ci_clone.clone(), step);
+                                            cf_clone.grab_focus();
+                                        }
+                                    }
+                                }
+                            });
                         }
                         Err(err) => {
                             eprintln!("Failed to open: {err:?}");
@@ -1117,6 +753,7 @@ mod tests {
 
     mod image_utils_tests {
         use super::*;
+        use crate::ui::image_utils;
 
         #[test]
         fn test_is_valid_image_extension() {
@@ -1262,6 +899,7 @@ mod tests {
     // Mock tests for drag and drop behavior
     mod drag_drop_tests {
         use super::*;
+        use crate::ui::image_utils;
 
         #[test]
         fn test_drag_drop_file_validation() {
@@ -1348,6 +986,7 @@ mod tests {
     // Performance tests for image handling
     mod performance_tests {
         use super::*;
+        use crate::ui::image_utils;
 
         #[test]
         fn test_file_extension_check_performance() {
@@ -1385,6 +1024,7 @@ mod tests {
     // Security tests
     mod security_tests {
         use super::*;
+        use crate::ui::image_utils;
 
         #[test]
         fn test_path_traversal_protection() {

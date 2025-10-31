@@ -1,11 +1,8 @@
 use gtk4::prelude::*;
 use gtk4::{Application, Settings};
 
-mod model;
-mod store;
-mod ui;
-
-use crate::model::AppModel;
+use pt_journal::model::AppModel;
+use pt_journal::ui::main;
 
 fn main() {
     let app = Application::builder()
@@ -16,7 +13,7 @@ fn main() {
         if let Some(settings) = Settings::default() {
             settings.set_gtk_application_prefer_dark_theme(true);
         }
-        ui::build_ui(app, AppModel::default());
+        main::build_ui(app, AppModel::default());
     });
 
     app.run();

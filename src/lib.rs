@@ -1,5 +1,6 @@
 pub mod model;
 pub mod store;
+pub mod tutorials;
 pub mod ui;
 
 #[cfg(test)]

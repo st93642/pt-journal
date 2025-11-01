@@ -159,6 +159,7 @@ pub fn load_step_into_panel(panel: &DetailPanel, step: &Step) {
         
         // Load quiz content
         if let Some(quiz_step) = step.get_quiz_step() {
+            panel.quiz_widget.hide_explanation(); // Clear explanation from previous quiz
             panel.quiz_widget.load_quiz_step(quiz_step);
             panel.quiz_widget.update_statistics(quiz_step);
         }

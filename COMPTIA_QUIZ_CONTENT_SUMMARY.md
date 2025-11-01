@@ -6,9 +6,9 @@ This document provides a comprehensive summary of all quiz content created for t
 
 ## Current Status & Target
 
-- **Current Questions**: 449 (updated after Domain 2.1 COMPLETE)
+- **Current Questions**: 488 (updated after Domain 2.2 COMPLETE)
 - **Target Questions**: 1,000-1,500 questions
-- **Current Progress**: 30-45% complete
+- **Current Progress**: 33-49% complete
 - **Total Quiz Steps**: 23 subdomains
 - **Domains Covered**: 5 (All CompTIA Security+ SY0-701 domains)
 - **Question Format**: Multiple choice with detailed explanations and academic descriptions
@@ -19,6 +19,23 @@ This document provides a comprehensive summary of all quiz content created for t
 **Domain 2.0 (Threats, Vulnerabilities, and Mitigations) - IN PROGRESS**
 
 **Recent Expansions**:
+- **Domain 2.2 (Threat Vectors and Attack Surfaces)**: ✅ Expanded from 12 to 51 questions
+  - **Message-based vectors**: Email phishing (untargeted attacks, deceptive emails, bank impersonation), SMS smishing (text message phishing, malicious links, mobile malware), Instant messaging (IM attacks, social media impersonation, end-to-end encryption advantages/vulnerabilities)
+  - **Image-based vectors**: Steganography (hidden malicious code in images), embedded malware in image files, exploiting image processing vulnerabilities
+  - **File-based vectors**: Malicious PDF documents with embedded scripts, macro-enabled Office documents, weaponized archives, trojanized executables, file screening and attachment blocking
+  - **Voice call vectors**: Vishing (voice phishing, fake helpdesk/HR calls), caller ID spoofing, voicemail attacks, IRS impersonation scams
+  - **Removable device vectors**: USB drop attacks (parking lot scenarios, reception area placement), external hard drive malware transmission, sandbox defense strategies for found devices
+  - **Vulnerable software**: Client-based scanning (agent on host, continuous monitoring, central reporting), agentless scanning (Nmap, Wireshark, threat actor preference), unsupported/legacy software exploitation, patch management importance
+  - **Unsecure networks**: Wireless (open authentication, WPA3 encryption, SSID broadcast disabling, MAC filtering), Wired (802.1X authentication, unused port security, patch cable removal), Bluetooth/PAN (easy pairing vulnerabilities, non-discoverable mode)
+  - **Open service ports**: FTP/Telnet/SMB unnecessary services, port scanning and closure, firewall rules, principle of least functionality
+  - **Default credentials**: Manufacturer defaults (admin/admin, root/password), posted on public websites, automated scanning detection
+  - **Supply chain vectors**: MSPs (managed service providers, cascading breaches, privileged access risks), Vendors (risk assessments, MFA requirements, access segmentation), Suppliers (hardware backdoors, firmware compromises, trusted foundries), Software distribution (compromised update mechanisms, SolarWinds/NotPetya examples)
+  - **Social engineering - Phishing variants**: Generic phishing (tax refund scams, wide net attacks), Spear phishing (targeted board of directors, personalized content), Phishing campaign simulations (mock attacks, remedial training), Smishing with malicious downloads
+  - **Social engineering - Deception**: Misinformation vs. Disinformation (false information spread, intentional manipulation), Impersonation (false identity adoption, police/helpdesk), Pretexting (fabricated scenarios, fake tech support), IRS/government impersonation
+  - **Social engineering - Advanced**: Business email compromise (invoice scams, payment redirect), Watering hole attacks (2013 U.S. Dept of Labor example, compromised legitimate websites), Brand impersonation (bank mimicry, trademark monitoring), Typo squatting (arnazon.com, similar domains, URL hijacking)
+  - **Additional vectors**: Shadow IT (unauthorized cloud services, CASB detection), Zero-day vulnerabilities (no available patches, behavioral analysis), OSINT reconnaissance (social media monitoring for targeted attacks), Combined attack techniques (LinkedIn recruiter impersonation)
+  - **Defense strategies**: Email filtering and anti-phishing tools (SPF/DKIM/DMARC), Input validation and secure coding (OWASP guidelines), Network segmentation and access controls, Security awareness training across all platforms, Multi-factor authentication for remote access, Sandbox analysis for suspicious files
+  - **Real-world examples**: 2013 U.S. Department of Labor watering hole attack, IRS gift card scams, USB drop attacks in reception areas, SolarWinds supply chain breach, NotPetya ransomware via compromised updates
 - **Domain 2.1 (Threat Actors and Motivations)**: ✅ Expanded from 9 to 50 questions
   - **Threat Actor Types**: Nation-state actors (government-sponsored, sophisticated attacks, espionage/war motivations), APT (Advanced Persistent Threats - focused, well-funded, long-term operations), unskilled attackers/script kiddies (pre-made tools, limited understanding, off-the-shelf exploits), hacktivists (ideological/political motives, website defacement, DDoS, digital protest), insider threats (intentional vs. unintentional, employees/contractors, revenge/financial gain/espionage), organized crime (hierarchical structure, ransomware-as-a-service, profit-driven), shadow IT (unauthorized apps/devices, productivity-driven, security risks)
   - **Attributes of Actors**: Internal vs. External classification (legitimate access vs. unauthorized entry), Resources/funding (well-resourced nation-states/APTs vs. limited-resource script kiddies), Sophistication/capability (zero-day exploits/custom malware vs. pre-made tools)
@@ -78,11 +95,21 @@ This document provides a comprehensive summary of all quiz content created for t
   - Attributes: Internal/external, resources/funding, sophistication/capability
   - Motivations: Data exfiltration, espionage, service disruption, blackmail, financial gain, philosophical/political, ethics, revenge, disruption/chaos, war
   - Real-world scenarios: UK school employee revenge attack, ransomware-as-a-service, Anonymous hacktivist operations, APT characteristics
-- **2.2 Threat Vectors**: 12/50 questions (next target)
-- **2.3 Vulnerabilities**: 12/50 questions
+- **2.2 Threat Vectors**: ✅ 51 questions (COMPLETED)
+  - Message-based: Email phishing, SMS smishing, IM attacks
+  - Image/File-based: Steganography, malicious PDFs, macro documents
+  - Voice: Vishing, caller ID spoofing, IRS scams
+  - Removable devices: USB drops, sandbox defense
+  - Vulnerable software: Client-based vs. agentless scanning
+  - Unsecure networks: Wireless/wired/Bluetooth vulnerabilities
+  - Open ports & default credentials
+  - Supply chain: MSPs, vendors, suppliers, hardware/software compromises
+  - Social engineering: Phishing variants, BEC, watering hole, brand impersonation, typo squatting
+  - Real-world examples: 2013 Dept of Labor attack, SolarWinds, NotPetya
+- **2.3 Vulnerabilities**: 12/50 questions (next target)
 - **2.4 Indicators**: 12/50 questions
 - **2.5 Mitigations**: 12/50 questions
-- **Domain 2.0 Status**: 98/250-300 questions (39% complete)
+- **Domain 2.0 Status**: 137/250-300 questions (46-55% complete)
 
 ### Domain Breakdown
 
@@ -97,13 +124,26 @@ This document provides a comprehensive summary of all quiz content created for t
 4. **1.4 Cryptographic Solutions** (12 questions)
    - Symmetric/asymmetric encryption, PKI, hashing, digital signatures, key management
 
-#### Domain 2.0: Threats, Vulnerabilities, and Mitigations (5 steps, 98 questions) - IN PROGRESS
+#### Domain 2.0: Threats, Vulnerabilities, and Mitigations (5 steps, 137 questions) - IN PROGRESS
 
 1. **2.1 Threat Actors and Motivations** (50 questions) ✅ COMPLETED
    - Nation-state actors, APTs, organized crime, hacktivists, insiders (intentional/unintentional), shadow IT, unskilled attackers
    - Attributes: Internal/external, resources/funding, sophistication/capability
    - Motivations: Data exfiltration, espionage, service disruption, blackmail, financial gain, philosophical/political, ethics, revenge, disruption/chaos, war
-2. **2.2 Threat Vectors and Attack Surfaces** (12 questions)
+2. **2.2 Threat Vectors and Attack Surfaces** (51 questions) ✅ COMPLETED
+   - Message-based: Email phishing, SMS smishing, IM attacks (social media impersonation)
+   - Image/File-based: Steganography, malicious PDFs with scripts, macro documents, weaponized archives
+   - Voice calls: Vishing, caller ID spoofing, voicemail attacks, IRS/HR impersonation
+   - Removable devices: USB drop attacks, sandbox defense strategies
+   - Vulnerable software: Client-based scanning (agents, continuous monitoring) vs. agentless scanning (Nmap, Wireshark)
+   - Unsupported systems: Legacy software exploitation, Windows Server 2003 example
+   - Unsecure networks: Wireless (open auth, WPA3, SSID, MAC filtering), Wired (802.1X, unused ports), Bluetooth/PAN
+   - Open service ports: FTP/Telnet/SMB, port scanning, principle of least functionality
+   - Default credentials: admin/admin, manufacturer defaults on public websites
+   - Supply chain: MSPs (cascading breaches), vendors (risk assessments), suppliers (hardware backdoors), software distribution compromises
+   - Social engineering: Phishing/spear phishing/smishing, BEC (invoice scams), watering hole (2013 Dept of Labor), brand impersonation, typo squatting (arnazon.com), pretexting, impersonation
+   - Advanced topics: Shadow IT (unauthorized cloud services), zero-day vulnerabilities, OSINT reconnaissance, combined attack techniques
+3. **2.3 Vulnerability Types** (12 questions)
    - Phishing, smishing, vishing, social engineering, removable media, supply chain
 3. **2.3 Vulnerability Types** (12 questions)
    - SQL injection, XSS, buffer overflow, zero-day, privilege escalation

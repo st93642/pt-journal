@@ -6,9 +6,9 @@ This document provides a comprehensive summary of all quiz content created for t
 
 ## Current Status & Target
 
-- **Current Questions**: 526 (updated after Domain 2.3 COMPLETE)
+- **Current Questions**: 564 (updated after Domain 2.4 COMPLETE)
 - **Target Questions**: 1,000-1,500 questions
-- **Current Progress**: 35-53% complete
+- **Current Progress**: 38-56% complete
 - **Total Quiz Steps**: 23 subdomains
 - **Domains Covered**: 5 (All CompTIA Security+ SY0-701 domains)
 - **Question Format**: Multiple choice with detailed explanations and academic descriptions
@@ -20,6 +20,17 @@ This document provides a comprehensive summary of all quiz content created for t
 
 **Recent Expansions**:
 
+- **Domain 2.4 (Indicators of Malicious Activity)**: ✅ Expanded from 12 to 50 questions
+  - **Malware types**: Fileless malware (memory-resident, PowerShell/WMI exploitation, no disk artifacts), bloatware (pre-installed unnecessary software, performance degradation), logic bombs (condition-triggered malicious code, UBS 2006/Fannie Mae 2002 examples, insider threat), ransomware (file encryption, .wncry/.locky/.encrypted extensions, WannaCry/Ryuk/REvil/Maze/Conti variants, double extortion, no-ransom payment principle), adware (unwanted toolbars, pop-ups, Superfish 2015 Lenovo), rootkits (kernel-level hiding, concealing other malware), trojans, worms (self-replicating, WannaCry/Slammer/Code Red/Sasser), keyloggers, spyware, botnets (Mirai/Emotet/ZeroAccess, DDoS infrastructure, $5-50/hour dark web rental)
+  - **Behavioral indicators - Authentication**: Brute force attacks (multiple failed logins, account lockouts, password spraying, credential stuffing, off-hours attempts), impossible travel (geographically impossible logins, NY-Tokyo 10min, Azure AD detection, credential compromise), concurrent sessions (simultaneous logins from distant locations), unauthorized password reset emails (account takeover reconnaissance, phishing vs. legitimate reset distinction)
+  - **Behavioral indicators - Network**: Beaconing (periodic C2 communication, fixed intervals, APT characteristic, jitter/DGA evasion, SIEM/NetFlow detection), blocked website access attempts (malware C2 cycling through backup servers, DGA domains, failed DNS lookups), unusual outbound connections (reverse shells on ports 4444/5555/1337, high ports bypassing ingress rules, Metasploit defaults, egress filtering importance), DNS tunneling (50+ character subdomains, base64/hex encoding, TXT/NULL/CNAME queries, Iodine/DNSCat2, Turla APT 2013), bandwidth spikes during off-hours (data exfiltration, Colonial Pipeline 2021 100GB, DLP evasion via compression/encryption), SMTP traffic from non-mail servers (spam botnet, Emotet millions daily, egress filtering), regular chunked data transfers (controlled exfiltration, bandwidth throttling, Sony 2014 100TB, OPM 2015 21.5M records)
+  - **Behavioral indicators - System**: Missing/deleted logs (attacker anti-forensics, Target 2013 40GB credit cards hidden, centralized SIEM forwarding, append-only storage), antivirus disabled (malware neutralizing controls, Emotet/TrickBot/ransomware tactics, tamper protection/EDR importance), memory leaks (steady RAM increase, Boeing 787 248-day reboot, DoS conditions, RAII defense), unauthorized user accounts (AD persistence, SolarWinds 2020 fake accounts, Domain Admin privileges, Event ID 4720 monitoring), unauthorized scheduled tasks (persistence mechanism, Emotet extensively uses, PowerShell obfuscated commands, Task Scheduler/cron abuse), high CPU usage (cryptojacking, Monero mining, Coinhive JavaScript miner, 70-100% sustained usage, mining pool connections), system clock tampering (anti-forensics, log timeline disruption, certificate invalidation for MitM, NTP synchronization monitoring)
+  - **Behavioral indicators - Processes**: Unusual parent-child relationships (Word→PowerShell, Excel→cmd.exe, NotPetya 2017 Office macros, Sysmon Event ID 1/10, EDR detection), execution from temp directories (%TEMP%/%APPDATA%/Downloads, Emotet random names, AppLocker blocking user-writable dirs), privilege escalation (SYSTEM/Administrator processes that shouldn't, Print Spooler/Dirty COW exploits, token manipulation), encoded PowerShell (-EncodedCommand/-enc, base64 obfuscation, Emotet/TrickBot/ransomware, script block logging Event ID 4104, Constrained Language Mode)
+  - **Behavioral indicators - Registry/Files**: Registry persistence (Run keys, Services, Winlogon, AppInit_DLLs, Sysmon Event ID 13, Sysinternals Autoruns), Unicode/special character registry keys (evasion via invisible keys, homoglyph attacks, BadRabbit 2016, programmatic access needed vs. regedit GUI), double file extensions (document.pdf.exe, Windows hiding .exe/.scr/.vbs/.pif, Locky 2017, magic bytes validation), suspicious icons (executable with PDF/Word icon, file signature mismatch)
+  - **Web-based indicators**: Directory traversal attempts (../../../../etc/passwd in logs, 404 errors reconnaissance, URL encoding %2e%2e%2f, chroot jails/input validation), SQL injection patterns (UNION SELECT, OR 1=1, ' OR '1'='1', Heartland 2008 130M cards, parameterized queries/DAM), XSS payloads (<script> tags, JavaScript in inputs, document.cookie theft, British Airways Magecart 2018 380K cards, CSP/HttpOnly flags)
+  - **Advanced indicators**: Man-in-the-middle certificates (untrusted CA installation, DigiNotar 2011 Iran surveillance, SSL inspection, certificate pinning/HSTS), browser hijackers (search engine/homepage changes, Conduit/MyWebSearch/Ask/Babylon toolbars, bundled software, DNS/proxy modifications), PUPs/bundleware (performance degradation post-installation, SourceForge 2015/CNET wrappers, Custom vs. Express installation, AdwCleaner/Malwarebytes removal), port scanning (reconnaissance, sequential connections, Nmap/Masscan/Zmap, WannaCry SMB 445 scans, Snort/Suricata detection), worm propagation (simultaneous mass infections, WannaCry 200K systems in 4 days, Slammer 75K in 10min, network segmentation containment), webcam/mic activation (RAT spyware, BlackShades/DarkComet/njRAT, Miss Teen USA 2013 case, FlexiSpy/mSpy stalkerware, LED indicators, physical privacy covers)
+  - **Attack patterns**: Account takeover (impossible travel, concurrent sessions, password reset spam, geolocation policies), data exfiltration (off-hours bandwidth, chunked transfers, DNS tunneling, regular intervals, DLP evasion), persistence mechanisms (registry Run keys, scheduled tasks, unauthorized accounts, fileless memory-resident), anti-forensics (log deletion, clock tampering, Unicode registry keys, process injection), cryptojacking (unauthorized mining, high CPU, Monero XMR, Coinhive/Jenkins campaigns, mining pool blocking)
+  - **Real-world examples**: Emotet (botnet, email spam, scheduled tasks, %APPDATA% execution, tamper AV, millions emails daily, 2021 takedown), WannaCry/Slammer/Code Red/Sasser worms, Mirai botnet (2016, 600K IoT, 1Tbps), Target 2013 (log deletion, 40GB cards), Colonial Pipeline 2021 (100GB exfiltration), Sony 2014 (100TB over weeks), OPM 2015 (21.5M records), SolarWinds 2020 (fake accounts), DigiNotar 2011, British Airways Magecart 2018, Boeing 787 (248-day reboot), Miss Teen USA webcam hack 2013
 - **Domain 2.3 (Vulnerability Types)**: ✅ Expanded from 12 to 50 questions
   - **Application vulnerabilities**: Memory injection (Code Red worm), buffer overflow (Slammer worm, arbitrary code execution), race conditions (TOC/TOU, airline seat overbooking), malicious updates (CCleaner 2017 supply chain attack)
   - **Operating system vulnerabilities**: BlueKeep (Windows remote access), end-of-life systems (Windows XP post-2014), legacy system exploitation
@@ -57,9 +68,11 @@ This document provides a comprehensive summary of all quiz content created for t
   - **Real-world Examples**: UK school employee password lockout (2021 revenge attack), Stuxnet (nation-state malware), Anonymous (hacktivist group), ransomware-as-a-service models, impossible travel indicators, business email compromise
 - **Domain 1.0 COMPLETE**: 🎉 All 4 subdomains at 50 questions each (200 total)
 
-**Status**: All 93 tests passing ✅ | Clean build ✅ | Domain 1.0 COMPLETE ✅ | Domain 2.1 COMPLETE ✅
+**Status**: All 93 tests passing ✅ | Clean build ✅ | Domain 1.0 COMPLETE ✅ | Domain 2.1-2.4 COMPLETE ✅
 
 ## Source Material
+
+**Location**: Root directory of project (`/home/altin/Desktop/pt-journal/`)
 
 - **CompTIA Security+.txt**: 743 formatted questions (30,657 lines)
 - **CompTIA Security+ Practice.txt**: 1,000+ questions with explanations (18,429 lines)
@@ -133,9 +146,18 @@ This document provides a comprehensive summary of all quiz content created for t
   - Mobile: Jailbreaking, rooting, sideloading
   - Other: Integer overflow, memory leaks, zero-day
   - Real-world: CCleaner, Slammer, Code Red, WannaCry, POODLE, DigiNotar, Log4Shell
-- **2.4 Indicators**: 12/50 questions (next target)
-- **2.5 Mitigations**: 12/50 questions
-- **Domain 2.0 Status**: 175/250-300 questions (58-70% complete)
+- **2.4 Indicators**: 50/50 questions ✅ COMPLETED
+  - Malware types: Fileless, bloatware, logic bombs, ransomware, adware, rootkits, trojans, worms, keyloggers, spyware, botnets
+  - Authentication indicators: Brute force, impossible travel, concurrent sessions, password reset spam
+  - Network indicators: Beaconing, blocked access attempts, unusual outbound, DNS tunneling, bandwidth spikes, SMTP from non-mail servers
+  - System indicators: Missing logs, disabled AV, memory leaks, unauthorized accounts, scheduled tasks, high CPU, clock tampering
+  - Process indicators: Parent-child anomalies, temp directory execution, privilege escalation, encoded PowerShell
+  - Registry/file indicators: Persistence keys, Unicode keys, double extensions, suspicious icons
+  - Web indicators: Directory traversal, SQL injection, XSS patterns
+  - Advanced: MitM certificates, browser hijackers, PUPs, port scanning, worm propagation, webcam/mic activation
+  - Real-world: Emotet, WannaCry, Mirai, Target 2013, Colonial Pipeline, SolarWinds, DigiNotar, Boeing 787
+- **2.5 Mitigations**: 12/50 questions (next target)
+- **Domain 2.0 Status**: 213/250-300 questions (71-85% complete)
 
 ### Domain Breakdown
 
@@ -181,13 +203,17 @@ This document provides a comprehensive summary of all quiz content created for t
    - Misconfiguration vulnerabilities: Firewall (overly permissive FTP/Telnet/RDP, compliance violations), default credentials (admin/admin, public databases), unpatched software (WannaCry 2017), excessive privileges (Domain Admin for all, privilege creep, least privilege violations)
    - Mobile device vulnerabilities: Jailbreaking (iOS restriction bypass, MDM bypass), rooting (Android superuser, verified boot disabled, banking app detection), sideloading (APK from untrusted sources, Play Protect bypass, warranty voiding)
    - Other vulnerabilities: Integer overflow (Boeing 787 248-day reboot), memory leaks (resource exhaustion, RAII defense, JNI native code), zero-day (Log4Shell CVE-2021-44228, ProxyLogon, EternalBlue/WannaCry, nation-state stockpiling, $1M+ prices)
-4. **2.4 Indicators of Malicious Activity** (12 questions)
-   - Phishing, smishing, vishing, social engineering, removable media, supply chain
-3. **2.3 Vulnerability Types** (12 questions)
-   - SQL injection, XSS, buffer overflow, zero-day, privilege escalation
-4. **2.4 Indicators of Malicious Activity** (12 questions)
-   - Ransomware, trojans, worms, DDoS, MitM, ARP poisoning, keyloggers
-5. **2.5 Mitigation Techniques** (12 questions)
+4. **2.4 Indicators of Malicious Activity** (50 questions) ✅ COMPLETED
+   - Malware types: Fileless malware (memory-resident, PowerShell/WMI), bloatware, logic bombs (UBS 2006, Fannie Mae 2002), ransomware (WannaCry, Ryuk, REvil, Maze, Conti), adware (Superfish 2015), rootkits, trojans, worms (Mirai, Emotet, ZeroAccess), keyloggers, spyware, botnets
+   - Authentication indicators: Brute force attacks, impossible travel (NY-Tokyo 10min), concurrent sessions, password reset spam, account takeover
+   - Network indicators: Beaconing (C2 communication, regular intervals), blocked access attempts (DGA domains), unusual outbound (reverse shells ports 4444/5555), DNS tunneling (50+ char subdomains, base64), bandwidth spikes (off-hours exfiltration), SMTP from non-mail servers (spam botnets), chunked regular transfers
+   - System indicators: Missing/deleted logs (anti-forensics), disabled AV (malware interference), memory leaks (Boeing 787), unauthorized accounts (AD persistence), scheduled tasks (Emotet), high CPU (cryptojacking, Monero mining), clock tampering
+   - Process indicators: Parent-child anomalies (Word→PowerShell), temp directory execution (%TEMP%/%APPDATA%), privilege escalation (SYSTEM processes), encoded PowerShell (-EncodedCommand)
+   - Registry/file indicators: Run key persistence, Unicode/special character keys (BadRabbit 2016), double extensions (document.pdf.exe, Locky 2017), suspicious icons
+   - Web indicators: Directory traversal (../../../../etc/passwd), SQL injection (UNION SELECT, OR 1=1, Heartland 2008), XSS patterns (<script> tags, British Airways Magecart 2018)
+   - Advanced indicators: MitM certificates (DigiNotar 2011), browser hijackers (Conduit, MyWebSearch), PUPs/bundleware (SourceForge 2015), port scanning (reconnaissance, Nmap), worm propagation (mass simultaneous infections), webcam/mic activation (RAT spyware, Miss Teen USA 2013)
+   - Real-world examples: Emotet, WannaCry (200K systems, 4 days), Slammer (75K, 10min), Code Red, Mirai (600K IoT, 1Tbps), Target 2013 (40GB logs deleted), Colonial Pipeline 2021 (100GB exfiltration), Sony 2014 (100TB weeks), SolarWinds 2020
+5. **2.5 Mitigation Techniques** (12/50 questions) - NEXT TARGET
    - Segmentation, least privilege, patching, defense in depth, isolation
 
 #### Domain 3.0: Security Architecture (4 steps, 49 questions)

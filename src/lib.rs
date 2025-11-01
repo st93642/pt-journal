@@ -23,14 +23,14 @@ mod tests {
             assert_eq!(model.selected_phase, 0);
             assert_eq!(model.selected_step, Some(0));
             assert!(model.current_path.is_none());
-            assert_eq!(model.session.phases.len(), 5); // 5 phases
+            assert_eq!(model.session.phases.len(), 6); // 6 phases (added Bug Bounty Hunting)
         }
 
         #[test]
         fn test_session_creation() {
             let session = Session::default();
             assert!(!session.name.is_empty());
-            assert_eq!(session.phases.len(), 5);
+            assert_eq!(session.phases.len(), 6); // 6 phases
             assert!(session.notes_global.is_empty());
         }
 

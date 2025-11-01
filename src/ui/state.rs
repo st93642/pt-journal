@@ -153,6 +153,86 @@ impl StateManager {
     pub fn model(&self) -> SharedModel {
         self.model.clone()
     }
+    
+    // ========== Quiz-specific State Management ==========
+    
+    /// Check an answer for a quiz question
+    pub fn check_answer(&self, phase_idx: usize, step_idx: usize, question_idx: usize, answer_idx: usize) -> Option<bool> {
+        let is_correct = {
+            let mut model = self.model.borrow_mut();
+            let step = model.session.phases.get_mut(phase_idx)
+                .and_then(|p| p.steps.get_mut(step_idx))?;
+            
+            if let Some(quiz_step) = step.quiz_mut_safe() {
+                if let Some(question) = quiz_step.questions.get(question_idx) {
+                    // Check if the selected answer is correct
+                    let correct = question.answers.get(answer_idx)
+                        .map(|a| a.is_correct)
+                        .unwrap_or(false);
+                    
+                    // Update progress
+                    if let Some(progress) = quiz_step.progress.get_mut(question_idx) {
+                        let first_attempt = progress.attempts == 0;
+                        progress.answered = true;
+                        progress.selected_answer_index = Some(answer_idx);
+                        progress.is_correct = Some(correct);
+                        progress.attempts += 1;
+                        progress.last_attempted = Some(chrono::Utc::now());
+                        
+                        if first_attempt && correct && !progress.explanation_viewed_before_answer {
+                            progress.first_attempt_correct = true;
+                        }
+                    }
+                    
+                    Some(correct)
+                } else {
+                    None
+                }
+            } else {
+                None
+            }
+        };
+        
+        if let Some(correct) = is_correct {
+            self.dispatcher.borrow().dispatch(&AppMessage::QuizAnswerChecked(phase_idx, step_idx, question_idx, correct));
+            self.dispatcher.borrow().dispatch(&AppMessage::QuizStatisticsUpdated(phase_idx, step_idx));
+        }
+        
+        is_correct
+    }
+    
+    /// Mark that a user viewed the explanation before answering
+    pub fn view_explanation(&self, phase_idx: usize, step_idx: usize, question_idx: usize) {
+        {
+            let mut model = self.model.borrow_mut();
+            if let Some(step) = model.session.phases.get_mut(phase_idx)
+                .and_then(|p| p.steps.get_mut(step_idx)) {
+                
+                if let Some(quiz_step) = step.quiz_mut_safe() {
+                    if let Some(progress) = quiz_step.progress.get_mut(question_idx) {
+                        if !progress.answered {
+                            progress.explanation_viewed_before_answer = true;
+                        }
+                    }
+                }
+            }
+        }
+        self.dispatcher.borrow().dispatch(&AppMessage::QuizExplanationViewed(phase_idx, step_idx, question_idx));
+    }
+    
+    /// Change current question in quiz
+    pub fn change_quiz_question(&self, phase_idx: usize, step_idx: usize, question_idx: usize) {
+        self.dispatcher.borrow().dispatch(&AppMessage::QuizQuestionChanged(phase_idx, step_idx, question_idx));
+    }
+    
+    /// Get quiz statistics for a step
+    pub fn get_quiz_statistics(&self, phase_idx: usize, step_idx: usize) -> Option<crate::model::QuizStatistics> {
+        let model = self.model.borrow();
+        let step = model.session.phases.get(phase_idx)
+            .and_then(|p| p.steps.get(step_idx))?;
+        
+        step.get_quiz_step().map(|quiz_step| quiz_step.statistics())
+    }
 }
 
 #[cfg(test)]

@@ -289,6 +289,14 @@ impl Step {
         }
     }
 
+    /// Get mutable reference to quiz content safely (returns None if tutorial step)
+    pub fn quiz_mut_safe(&mut self) -> Option<&mut QuizStep> {
+        match &mut self.content {
+            StepContent::Quiz { quiz_data } => Some(quiz_data),
+            StepContent::Tutorial { .. } => None,
+        }
+    }
+
     // Helper methods for backward compatibility with UI code
     
     /// Get description (for tutorial steps)
@@ -341,6 +349,14 @@ impl Step {
     pub fn add_evidence(&mut self, evidence: Evidence) {
         if let StepContent::Tutorial { evidence: ev, .. } = &mut self.content {
             ev.push(evidence);
+        }
+    }
+
+    /// Get quiz step data (for quiz steps)
+    pub fn get_quiz_step(&self) -> Option<&QuizStep> {
+        match &self.content {
+            StepContent::Quiz { quiz_data } => Some(quiz_data),
+            StepContent::Tutorial { .. } => None,
         }
     }
 

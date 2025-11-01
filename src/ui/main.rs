@@ -1,6 +1,6 @@
 use gtk4::prelude::*;
 use gtk4::glib;
-use gtk4::{Application, ApplicationWindow, Box as GtkBox, Orientation, ScrolledWindow, CheckButton, Label, TextView, ListBoxRow, FileDialog, gdk, Paned};
+use gtk4::{Application, ApplicationWindow, Box as GtkBox, Orientation, ScrolledWindow, CheckButton, Label, TextView, ListBoxRow, FileDialog, gdk, Paned, Button};
 use gtk4::gio;
 use std::rc::Rc;
 use std::cell::RefCell;
@@ -43,13 +43,320 @@ pub fn build_ui(app: &Application, model: AppModel) {
 
     // Right panel: detail view with checkbox, title, description, notes, canvas
     let detail_panel = crate::ui::detail_panel::create_detail_panel();
-    let right = detail_panel.container;
-    let checkbox = detail_panel.checkbox;
-    let title_label = detail_panel.title_label;
-    let desc_view = detail_panel.desc_view;
-    let notes_view = detail_panel.notes_view;
-    let canvas_fixed = detail_panel.canvas_fixed;
-    let canvas_items = detail_panel.canvas_items;
+    let right = detail_panel.container.clone();
+    let checkbox = detail_panel.checkbox.clone();
+    let title_label = detail_panel.title_label.clone();
+    let desc_view = detail_panel.desc_view.clone();
+    let notes_view = detail_panel.notes_view.clone();
+    let canvas_fixed = detail_panel.canvas_fixed.clone();
+    let canvas_items = detail_panel.canvas_items.clone();
+    
+    // Keep reference to full detail_panel for load_step_into_panel()
+    let detail_panel_ref = Rc::new(detail_panel);
+
+    // === WIRE UP QUIZ WIDGET BUTTONS ===
+    {
+        let quiz_widget = &detail_panel_ref.quiz_widget;
+        let model_quiz = model.clone();
+        let detail_panel_quiz = detail_panel_ref.clone();
+        
+        // Check Answer button
+        let check_button = quiz_widget.check_button.clone();
+        let model_check = model_quiz.clone();
+        let panel_check = detail_panel_quiz.clone();
+        check_button.connect_clicked(move |_| {
+            let (phase_idx, step_idx, question_idx, selected_answer) = {
+                let model_borrow = model_check.borrow();
+                let phase_idx = model_borrow.selected_phase;
+                let step_idx = model_borrow.selected_step;
+                let question_idx = *panel_check.quiz_widget.current_question_index.borrow();
+                let selected_answer = panel_check.quiz_widget.get_selected_answer();
+                (phase_idx, step_idx, question_idx, selected_answer)
+            };
+            
+            if let (Some(step_idx), Some(answer_idx)) = (step_idx, selected_answer) {
+                // Check the answer and get result
+                let (is_correct_result, step_clone) = {
+                    let mut model_mut = model_check.borrow_mut();
+                    if let Some(step) = model_mut.session.phases.get_mut(phase_idx)
+                        .and_then(|p| p.steps.get_mut(step_idx))
+                    {
+                        if let Some(quiz_step) = step.quiz_mut_safe() {
+                            // Check if answer is correct
+                            let correct = quiz_step.questions.get(question_idx)
+                                .and_then(|q| q.answers.get(answer_idx))
+                                .map(|a| a.is_correct)
+                                .unwrap_or(false);
+                            
+                            // Update progress
+                            if let Some(progress) = quiz_step.progress.get_mut(question_idx) {
+                                let first_attempt = progress.attempts == 0;
+                                progress.answered = true;
+                                progress.selected_answer_index = Some(answer_idx);
+                                progress.is_correct = Some(correct);
+                                progress.attempts += 1;
+                                progress.last_attempted = Some(chrono::Utc::now());
+                                
+                                if first_attempt && correct && !progress.explanation_viewed_before_answer {
+                                    progress.first_attempt_correct = true;
+                                }
+                            }
+                            
+                            // Get explanation
+                            let explanation = quiz_step.questions.get(question_idx)
+                                .map(|q| q.explanation.clone())
+                                .unwrap_or_default();
+                            
+                            (Some((correct, explanation.clone())), step.clone())
+                        } else {
+                            (None, step.clone())
+                        }
+                    } else {
+                        (None, model_mut.session.phases[phase_idx].steps[step_idx].clone())
+                    }
+                };
+                
+                // Show result
+                if let Some((correct, explanation)) = is_correct_result {
+                    panel_check.quiz_widget.show_explanation(&explanation, Some(correct));
+                    if let Some(quiz_step) = step_clone.get_quiz_step() {
+                        panel_check.quiz_widget.update_statistics(quiz_step);
+                    }
+                }
+            }
+        });
+        
+        // View Explanation button (marks question as non-scored)
+        let view_explanation_button = quiz_widget.view_explanation_button.clone();
+        let model_view = model_quiz.clone();
+        let panel_view = detail_panel_quiz.clone();
+        view_explanation_button.connect_clicked(move |_| {
+            let (phase_idx, step_idx, question_idx) = {
+                let model_borrow = model_view.borrow();
+                let phase_idx = model_borrow.selected_phase;
+                let step_idx = model_borrow.selected_step;
+                let question_idx = *panel_view.quiz_widget.current_question_index.borrow();
+                (phase_idx, step_idx, question_idx)
+            };
+            
+            if let Some(step_idx) = step_idx {
+                let (explanation, _step_clone) = {
+                    let mut model_mut = model_view.borrow_mut();
+                    if let Some(step) = model_mut.session.phases.get_mut(phase_idx)
+                        .and_then(|p| p.steps.get_mut(step_idx))
+                    {
+                        if let Some(quiz_step) = step.quiz_mut_safe() {
+                            // Mark that explanation was viewed before answering
+                            if let Some(progress) = quiz_step.progress.get_mut(question_idx) {
+                                if !progress.answered {
+                                    progress.explanation_viewed_before_answer = true;
+                                }
+                            }
+                            
+                            // Get explanation
+                            let explanation = quiz_step.questions.get(question_idx)
+                                .map(|q| q.explanation.clone())
+                                .unwrap_or_default();
+                            
+                            (explanation, step.clone())
+                        } else {
+                            (String::new(), step.clone())
+                        }
+                    } else {
+                        (String::new(), model_mut.session.phases[phase_idx].steps[step_idx].clone())
+                    }
+                };
+                
+                panel_view.quiz_widget.show_explanation(&explanation, None);
+            }
+        });
+        
+        // Next button
+        let next_button = quiz_widget.next_button.clone();
+        let model_next = model_quiz.clone();
+        let panel_next = detail_panel_quiz.clone();
+        next_button.connect_clicked(move |_| {
+            let (phase_idx, step_idx) = {
+                let model_borrow = model_next.borrow();
+                (model_borrow.selected_phase, model_borrow.selected_step)
+            };
+            
+            if let Some(step_idx) = step_idx {
+                let step_clone = {
+                    let model_borrow = model_next.borrow();
+                    model_borrow.session.phases.get(phase_idx)
+                        .and_then(|p| p.steps.get(step_idx))
+                        .cloned()
+                };
+                
+                if let Some(step) = step_clone {
+                    if let Some(quiz_step) = step.get_quiz_step() {
+                        let current = *panel_next.quiz_widget.current_question_index.borrow();
+                        if current + 1 < quiz_step.questions.len() {
+                            *panel_next.quiz_widget.current_question_index.borrow_mut() = current + 1;
+                            panel_next.quiz_widget.hide_explanation();
+                            panel_next.quiz_widget.load_quiz_step(quiz_step);
+                            panel_next.quiz_widget.update_statistics(quiz_step);
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Previous button
+        let prev_button = quiz_widget.prev_button.clone();
+        let model_prev = model_quiz.clone();
+        let panel_prev = detail_panel_quiz.clone();
+        prev_button.connect_clicked(move |_| {
+            let (phase_idx, step_idx) = {
+                let model_borrow = model_prev.borrow();
+                (model_borrow.selected_phase, model_borrow.selected_step)
+            };
+            
+            if let Some(step_idx) = step_idx {
+                let step_clone = {
+                    let model_borrow = model_prev.borrow();
+                    model_borrow.session.phases.get(phase_idx)
+                        .and_then(|p| p.steps.get(step_idx))
+                        .cloned()
+                };
+                
+                if let Some(step) = step_clone {
+                    if let Some(quiz_step) = step.get_quiz_step() {
+                        let current = *panel_prev.quiz_widget.current_question_index.borrow();
+                        if current > 0 {
+                            *panel_prev.quiz_widget.current_question_index.borrow_mut() = current - 1;
+                            panel_prev.quiz_widget.hide_explanation();
+                            panel_prev.quiz_widget.load_quiz_step(quiz_step);
+                            panel_prev.quiz_widget.update_statistics(quiz_step);
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Finish Quiz button
+        let finish_button = quiz_widget.finish_button.clone();
+        let model_finish = model_quiz.clone();
+        let window_finish = window.clone();
+        finish_button.connect_clicked(move |_| {
+            let (phase_idx, step_idx) = {
+                let model_borrow = model_finish.borrow();
+                (model_borrow.selected_phase, model_borrow.selected_step)
+            };
+            
+            if let Some(step_idx) = step_idx {
+                let step_clone = {
+                    let model_borrow = model_finish.borrow();
+                    model_borrow.session.phases.get(phase_idx)
+                        .and_then(|p| p.steps.get(step_idx))
+                        .cloned()
+                };
+                
+                if let Some(step) = step_clone {
+                    if let Some(quiz_step) = step.get_quiz_step() {
+                        let stats = quiz_step.statistics();
+                        
+                        // Calculate scored vs non-scored questions
+                        let scored_questions: Vec<_> = quiz_step.progress.iter()
+                            .filter(|p| p.awards_points())
+                            .collect();
+                        let non_scored_answered: Vec<_> = quiz_step.progress.iter()
+                            .filter(|p| p.answered && !p.awards_points())
+                            .collect();
+                        let unanswered = stats.total_questions - stats.answered;
+                        
+                        // Build results message
+                        let mut message = format!(
+                            "Quiz Complete!\n\n\
+                            Total Questions: {}\n\
+                            Answered: {}\n\
+                            Unanswered: {}\n\n\
+                            === SCORING ===\n\
+                            Questions Counted for Score: {} (answered correctly on first attempt without viewing explanation)\n\
+                            Questions NOT Counted: {} (viewed explanation before answering, or incorrect)\n\n\
+                            Final Score: {:.1}%\n",
+                            stats.total_questions,
+                            stats.answered,
+                            unanswered,
+                            scored_questions.len(),
+                            non_scored_answered.len(),
+                            stats.score_percentage
+                        );
+                        
+                        // Add breakdown
+                        if !scored_questions.is_empty() {
+                            message.push_str("\nScored Questions:\n");
+                            for (i, progress) in scored_questions.iter().enumerate() {
+                                if let Some(q) = quiz_step.questions.iter().find(|q| q.id == progress.question_id) {
+                                    message.push_str(&format!("  {}. {} ✓\n", i + 1, q.question_text.chars().take(50).collect::<String>()));
+                                }
+                            }
+                        }
+                        
+                        if !non_scored_answered.is_empty() {
+                            message.push_str("\nNot Counted (explanation viewed or incorrect):\n");
+                            for (i, progress) in non_scored_answered.iter().enumerate() {
+                                if let Some(q) = quiz_step.questions.iter().find(|q| q.id == progress.question_id) {
+                                    let reason = if progress.explanation_viewed_before_answer {
+                                        "viewed explanation first"
+                                    } else if progress.is_correct == Some(false) {
+                                        "incorrect"
+                                    } else {
+                                        "not first attempt"
+                                    };
+                                    message.push_str(&format!("  {}. {} ({})\n", i + 1, q.question_text.chars().take(50).collect::<String>(), reason));
+                                }
+                            }
+                        }
+                        
+                        // Show results in a scrollable text view dialog
+                        let dialog = gtk4::Window::builder()
+                            .transient_for(&window_finish)
+                            .modal(true)
+                            .title("Quiz Results")
+                            .default_width(600)
+                            .default_height(500)
+                            .build();
+                        
+                        let vbox = GtkBox::new(Orientation::Vertical, 12);
+                        vbox.set_margin_top(12);
+                        vbox.set_margin_bottom(12);
+                        vbox.set_margin_start(12);
+                        vbox.set_margin_end(12);
+                        
+                        // Results text view
+                        let text_view = gtk4::TextView::new();
+                        text_view.set_editable(false);
+                        text_view.set_cursor_visible(false);
+                        text_view.set_wrap_mode(gtk4::WrapMode::Word);
+                        text_view.buffer().set_text(&message);
+                        text_view.set_margin_top(8);
+                        text_view.set_margin_bottom(8);
+                        text_view.set_margin_start(8);
+                        text_view.set_margin_end(8);
+                        
+                        let scrolled = gtk4::ScrolledWindow::new();
+                        scrolled.set_child(Some(&text_view));
+                        scrolled.set_vexpand(true);
+                        vbox.append(&scrolled);
+                        
+                        // Close button
+                        let close_button = Button::with_label("Close");
+                        close_button.add_css_class("suggested-action");
+                        let dialog_clone = dialog.clone();
+                        close_button.connect_clicked(move |_| {
+                            dialog_clone.close();
+                        });
+                        vbox.append(&close_button);
+                        
+                        dialog.set_child(Some(&vbox));
+                        dialog.present();
+                    }
+                }
+            }
+        });
+    }
 
     // Use Paned for resizable sidebar
     let paned = Paned::new(Orientation::Horizontal);
@@ -73,6 +380,7 @@ pub fn build_ui(app: &Application, model: AppModel) {
         let checkbox_ref = checkbox.clone();
         let canvas_fixed_ref = canvas_fixed.clone();
         let canvas_items_ref = canvas_items.clone();
+        let detail_panel_ref = detail_panel_ref.clone();
         move || {
             // clear
             while let Some(child) = steps_list_ref.first_child() { steps_list_ref.remove(&child); }
@@ -103,35 +411,32 @@ pub fn build_ui(app: &Application, model: AppModel) {
                 // Make the label clickable instead of the whole row
                 let click_controller = gtk4::GestureClick::new();
                 let model_s = model_rc.clone();
-                let title_s = title_label_ref.clone();
-                let desc_buf_s = desc_view_ref.buffer();
-                let notes_buf_s = notes_view_ref.buffer();
-                let checkbox_s = checkbox_ref.clone();
                 let canvas_fixed_s = canvas_fixed_ref.clone();
                 let canvas_items_s = canvas_items_ref.clone();
+                let detail_panel_s = detail_panel_ref.clone();
                 
                 click_controller.connect_pressed(move |_, _, _, _| {
                     let mut model_borrow = model_s.borrow_mut();
                     model_borrow.selected_step = Some(idx);
                     let sp = model_borrow.selected_phase;
                     if let Some(step) = model_borrow.session.phases[sp].steps.get(idx) {
-                        let title = step.title.clone();
-                        let description_notes = step.get_description_notes();
-                        let notes = step.get_notes();
-                        let status = step.status.clone();
                         let step_clone = step.clone();
                         drop(model_borrow); // Release borrow before GTK calls
                         
-                        title_s.set_label(&title);
-                        // Load user notes in description pane
-                        desc_buf_s.set_text(&description_notes);
-                        checkbox_s.set_active(matches!(status, StepStatus::Done));
-                        notes_buf_s.set_text(&notes);
-
-                        // Load canvas evidence for this step
-                        load_step_evidence(&canvas_fixed_s, canvas_items_s.clone(), &step_clone);
-                        // Focus the canvas so keyboard events work
-                        canvas_fixed_s.grab_focus();
+                        // Use load_step_into_panel for conditional rendering (tutorial vs quiz)
+                        crate::ui::detail_panel::load_step_into_panel(&detail_panel_s, &step_clone);
+                        
+                        // For tutorial steps, also load canvas evidence
+                        if !step_clone.is_quiz() {
+                            load_step_evidence(&canvas_fixed_s, canvas_items_s.clone(), &step_clone);
+                        }
+                        
+                        // Focus the appropriate widget
+                        if step_clone.is_quiz() {
+                            detail_panel_s.quiz_widget.container.grab_focus();
+                        } else {
+                            canvas_fixed_s.grab_focus();
+                        }
                     }
                 });
                 lbl.add_controller(click_controller);
@@ -382,35 +687,32 @@ pub fn build_ui(app: &Application, model: AppModel) {
                 // Make the label clickable instead of the whole row
                 let click_controller = gtk4::GestureClick::new();
                 let model_s = model_phase.clone();
-                let title_s = title_label_ref.clone();
-                let desc_buf_s = desc_view_ref.buffer();
-                let notes_buf_s = notes_view_ref.buffer();
-                let checkbox_s = checkbox_ref.clone();
                 let canvas_fixed_s = canvas_fixed_ref.clone();
                 let canvas_items_s = canvas_items_ref.clone();
+                let detail_panel_s = detail_panel_ref.clone();
 
                 click_controller.connect_pressed(move |_, _, _, _| {
                     let mut model_borrow = model_s.borrow_mut();
                     model_borrow.selected_step = Some(idx);
                     let sp = model_borrow.selected_phase;
                     if let Some(step) = model_borrow.session.phases[sp].steps.get(idx) {
-                        let title = step.title.clone();
-                        let description_notes = step.get_description_notes();
-                        let notes = step.get_notes();
-                        let status = step.status.clone();
-                        let step_evidence = step.clone(); // Clone for load_step_evidence
+                        let step_clone = step.clone();
                         drop(model_borrow); // Release borrow before GTK calls
                         
-                        title_s.set_label(&title);
-                        // Load user notes in description pane
-                        desc_buf_s.set_text(&description_notes);
-                        checkbox_s.set_active(matches!(status, StepStatus::Done));
-                        notes_buf_s.set_text(&notes);
-
-                        // Load canvas evidence for this step
-                        load_step_evidence(&canvas_fixed_s, canvas_items_s.clone(), &step_evidence);
-                        // Focus the canvas so keyboard events work
-                        canvas_fixed_s.grab_focus();
+                        // Use load_step_into_panel for conditional rendering (tutorial vs quiz)
+                        crate::ui::detail_panel::load_step_into_panel(&detail_panel_s, &step_clone);
+                        
+                        // For tutorial steps, also load canvas evidence
+                        if !step_clone.is_quiz() {
+                            load_step_evidence(&canvas_fixed_s, canvas_items_s.clone(), &step_clone);
+                        }
+                        
+                        // Focus the appropriate widget
+                        if step_clone.is_quiz() {
+                            detail_panel_s.quiz_widget.container.grab_focus();
+                        } else {
+                            canvas_fixed_s.grab_focus();
+                        }
                     }
                 });
                 lbl.add_controller(click_controller);

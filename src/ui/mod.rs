@@ -5,5 +5,6 @@ pub mod file_ops;
 pub mod header_bar;
 pub mod image_utils;
 pub mod main;
+pub mod quiz_widget;
 pub mod sidebar;
 pub mod state;

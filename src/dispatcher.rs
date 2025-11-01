@@ -36,6 +36,12 @@ pub enum AppMessage {
     RefreshDetailView(usize, usize),
     RefreshCanvas(usize, usize),
     
+    // Quiz Operations
+    QuizAnswerChecked(usize, usize, usize, bool), // (phase_idx, step_idx, question_idx, is_correct)
+    QuizExplanationViewed(usize, usize, usize), // (phase_idx, step_idx, question_idx)
+    QuizQuestionChanged(usize, usize, usize), // (phase_idx, step_idx, question_idx)
+    QuizStatisticsUpdated(usize, usize), // (phase_idx, step_idx)
+    
     // Error/Info
     Error(String),
     Info(String),

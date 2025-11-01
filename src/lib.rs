@@ -24,14 +24,14 @@ mod tests {
             assert_eq!(model.selected_phase, 0);
             assert_eq!(model.selected_step, Some(0));
             assert!(model.current_path.is_none());
-            assert_eq!(model.session.phases.len(), 6); // 6 phases (added Bug Bounty Hunting)
+            assert_eq!(model.session.phases.len(), 7); // 7 phases (added Bug Bounty + CompTIA)
         }
 
         #[test]
         fn test_session_creation() {
             let session = Session::default();
             assert!(!session.name.is_empty());
-            assert_eq!(session.phases.len(), 6); // 6 phases
+            assert_eq!(session.phases.len(), 7); // 7 phases
             assert!(session.notes_global.is_empty());
         }
 
@@ -63,6 +63,16 @@ mod tests {
             let report_phase = &session.phases[4];
             assert_eq!(report_phase.name, "Reporting");
             assert_eq!(report_phase.steps.len(), 4); // 4 reporting steps
+            
+            // Test Bug Bounty Hunting phase
+            let bug_bounty_phase = &session.phases[5];
+            assert_eq!(bug_bounty_phase.name, "Bug Bounty Hunting");
+            assert!(bug_bounty_phase.steps.len() > 0); // Has steps
+            
+            // Test CompTIA Security+ phase
+            let comptia_phase = &session.phases[6];
+            assert_eq!(comptia_phase.name, "CompTIA Security+");
+            assert_eq!(comptia_phase.steps.len(), 1); // Currently has 1.1 Security Controls
         }
 
         #[test]
@@ -72,12 +82,12 @@ mod tests {
 
             // Test basic properties
             assert!(!first_step.title.is_empty());
-            assert!(!first_step.description.is_empty());
+            assert!(!first_step.get_description().is_empty()); // Use get_description() for StepContent
             assert!(first_step.id != Uuid::nil());
             assert_eq!(first_step.status, StepStatus::Todo);
             assert!(first_step.completed_at.is_none());
-            assert!(first_step.notes.is_empty());
-            assert!(first_step.evidence.is_empty());
+            assert!(first_step.get_notes().is_empty()); // Use get_notes() for StepContent
+            assert!(first_step.get_evidence().is_empty()); // Use get_evidence() for StepContent
         }
 
         #[test]
@@ -290,6 +300,119 @@ mod tests {
                     assert_eq!(loaded_step.tags, original_step.tags);
                     assert_eq!(loaded_step.evidence, original_step.evidence);
                 }
+            }
+        }
+        
+        #[test]
+        fn test_quiz_progress_persistence() {
+            use crate::model::*;
+            use crate::quiz::parse_question_line;
+            use chrono::Utc;
+            
+            let temp_dir = TempDir::new().unwrap();
+            let session_path = temp_dir.path().join("quiz_progress_test.json");
+
+            // Create a session with a quiz step
+            let mut session = Session::default();
+            
+            // Create a simple quiz step
+            let questions = vec![
+                parse_question_line("What is 2+2?|4|3|5|6|0|Addition is commutative|Math|Arithmetic").unwrap(),
+                parse_question_line("What is 3+3?|6|5|7|8|0|Simple arithmetic|Math|Arithmetic").unwrap(),
+                parse_question_line("What is 4+4?|8|7|9|10|0|More addition|Math|Arithmetic").unwrap(),
+            ];
+            
+            let quiz_step = QuizStep::new(
+                Uuid::new_v4(),
+                "Math Quiz".to_string(),
+                "Basic Arithmetic".to_string(),
+                questions,
+            );
+            
+            let step = Step::new_quiz(
+                Uuid::new_v4(),
+                "Math Quiz Step".to_string(),
+                vec!["quiz".to_string(), "test".to_string()],
+                quiz_step,
+            );
+            
+            // Replace first step with our quiz step
+            session.phases[0].steps[0] = step;
+            
+            // Simulate answering questions
+            if let Some(quiz_step) = session.phases[0].steps[0].quiz_mut_safe() {
+                // Answer question 0 correctly
+                if let Some(progress) = quiz_step.progress.get_mut(0) {
+                    progress.answered = true;
+                    progress.selected_answer_index = Some(0); // Correct answer
+                    progress.is_correct = Some(true);
+                    progress.attempts = 1;
+                    progress.first_attempt_correct = true;
+                    progress.last_attempted = Some(Utc::now());
+                }
+                
+                // Answer question 1 incorrectly
+                if let Some(progress) = quiz_step.progress.get_mut(1) {
+                    progress.answered = true;
+                    progress.selected_answer_index = Some(1); // Wrong answer
+                    progress.is_correct = Some(false);
+                    progress.attempts = 1;
+                    progress.first_attempt_correct = false;
+                    progress.last_attempted = Some(Utc::now());
+                }
+                
+                // View explanation for question 2 without answering
+                if let Some(progress) = quiz_step.progress.get_mut(2) {
+                    progress.explanation_viewed_before_answer = true;
+                }
+            }
+            
+            // Save session
+            store::save_session(&session_path, &session).unwrap();
+            
+            // Load session
+            let loaded_session = store::load_session(&session_path).unwrap();
+            
+            // Verify quiz progress was preserved
+            if let Some(loaded_quiz_step) = loaded_session.phases[0].steps[0].get_quiz_step() {
+                assert_eq!(loaded_quiz_step.questions.len(), 3);
+                assert_eq!(loaded_quiz_step.progress.len(), 3);
+                
+                // Check question 0 progress (correct answer)
+                let progress_0 = &loaded_quiz_step.progress[0];
+                assert_eq!(progress_0.answered, true);
+                assert_eq!(progress_0.selected_answer_index, Some(0));
+                assert_eq!(progress_0.is_correct, Some(true));
+                assert_eq!(progress_0.attempts, 1);
+                assert_eq!(progress_0.first_attempt_correct, true);
+                assert_eq!(progress_0.explanation_viewed_before_answer, false);
+                assert!(progress_0.awards_points());
+                
+                // Check question 1 progress (incorrect answer)
+                let progress_1 = &loaded_quiz_step.progress[1];
+                assert_eq!(progress_1.answered, true);
+                assert_eq!(progress_1.selected_answer_index, Some(1));
+                assert_eq!(progress_1.is_correct, Some(false));
+                assert_eq!(progress_1.attempts, 1);
+                assert_eq!(progress_1.first_attempt_correct, false);
+                assert!(!progress_1.awards_points());
+                
+                // Check question 2 progress (viewed explanation)
+                let progress_2 = &loaded_quiz_step.progress[2];
+                assert_eq!(progress_2.answered, false);
+                assert_eq!(progress_2.explanation_viewed_before_answer, true);
+                assert!(!progress_2.awards_points());
+                
+                // Verify statistics calculation
+                let stats = loaded_quiz_step.statistics();
+                assert_eq!(stats.total_questions, 3);
+                assert_eq!(stats.answered, 2);
+                assert_eq!(stats.correct, 1);
+                assert_eq!(stats.incorrect, 1);
+                assert_eq!(stats.first_attempt_correct, 1);
+                assert!((stats.score_percentage - (100.0 / 3.0)).abs() < 0.01); // Allow floating point tolerance
+            } else {
+                panic!("Expected quiz step, got tutorial step");
             }
         }
     }

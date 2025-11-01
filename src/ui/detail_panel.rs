@@ -1,22 +1,31 @@
 /// Detail panel module for displaying step details (checkbox, title, description, notes, canvas)
 use gtk4::prelude::*;
-use gtk4::{Box as GtkBox, Orientation, CheckButton, Label, TextView, Frame, ScrolledWindow, Paned, Fixed};
+use gtk4::{Box as GtkBox, Orientation, CheckButton, Label, TextView, Frame, ScrolledWindow, Paned, Fixed, Stack};
 use std::rc::Rc;
 use std::cell::RefCell;
 use crate::ui::canvas_utils::CanvasItem;
+use crate::ui::quiz_widget::QuizWidget;
+use crate::model::Step;
 
-/// Struct holding all detail panel widgets
+/// Struct holding all detail panel widgets (supports both tutorial and quiz views)
 pub struct DetailPanel {
     pub container: GtkBox,
     pub checkbox: CheckButton,
     pub title_label: Label,
+    pub content_stack: Stack,  // Switches between tutorial and quiz views
+    
+    // Tutorial view widgets
+    pub tutorial_container: Paned,
     pub desc_view: TextView,
     pub notes_view: TextView,
     pub canvas_fixed: Fixed,
     pub canvas_items: Rc<RefCell<Vec<CanvasItem>>>,
+    
+    // Quiz view widget
+    pub quiz_widget: QuizWidget,
 }
 
-/// Create the detail panel with all widgets
+/// Create the detail panel with all widgets (supports tutorial and quiz views)
 pub fn create_detail_panel() -> DetailPanel {
     let right = GtkBox::new(Orientation::Vertical, 8);
     right.set_margin_top(8);
@@ -34,6 +43,8 @@ pub fn create_detail_panel() -> DetailPanel {
     top_box.append(&checkbox);
     top_box.append(&title_label);
 
+    // === TUTORIAL VIEW ===
+    
     // Description view (for user notes in description area)
     let desc_view = TextView::new();
     desc_view.set_editable(true);
@@ -83,7 +94,7 @@ pub fn create_detail_panel() -> DetailPanel {
         .build();
     canvas_frame.set_size_request(-1, 80);
 
-    // Create resizable panes
+    // Create resizable panes for tutorial view
     let main_paned = Paned::new(Orientation::Vertical);
     main_paned.set_vexpand(true);
     main_paned.set_resize_start_child(true);
@@ -107,18 +118,62 @@ pub fn create_detail_panel() -> DetailPanel {
     main_paned.set_end_child(Some(&bottom_paned));
     main_paned.set_position(200);
 
-    // Add top section and main paned to right panel
+    // === QUIZ VIEW ===
+    let quiz_widget = QuizWidget::new();
+
+    // === STACK TO SWITCH BETWEEN VIEWS ===
+    let content_stack = Stack::new();
+    content_stack.set_vexpand(true);
+    content_stack.add_named(&main_paned, Some("tutorial"));
+    content_stack.add_named(&quiz_widget.container, Some("quiz"));
+    content_stack.set_visible_child_name("tutorial"); // Default to tutorial view
+
+    // Add top section and stack to right panel
     right.append(&top_box);
-    right.append(&main_paned);
+    right.append(&content_stack);
 
     DetailPanel {
         container: right,
         checkbox,
         title_label,
+        content_stack,
+        tutorial_container: main_paned,
         desc_view,
         notes_view,
         canvas_fixed,
         canvas_items,
+        quiz_widget,
+    }
+}
+
+/// Load step content into detail panel (automatically switches between tutorial and quiz views)
+pub fn load_step_into_panel(panel: &DetailPanel, step: &Step) {
+    // Update title and checkbox (common to both views)
+    panel.title_label.set_text(&step.title);
+    panel.checkbox.set_active(step.status == crate::model::StepStatus::Done);
+    
+    // Switch view based on step type
+    if step.is_quiz() {
+        // Show quiz view
+        panel.content_stack.set_visible_child_name("quiz");
+        
+        // Load quiz content
+        if let Some(quiz_step) = step.get_quiz_step() {
+            panel.quiz_widget.load_quiz_step(quiz_step);
+            panel.quiz_widget.update_statistics(quiz_step);
+        }
+    } else {
+        // Show tutorial view
+        panel.content_stack.set_visible_child_name("tutorial");
+        
+        // Load tutorial content
+        let description = step.get_description();
+        let notes = step.get_notes();
+        
+        panel.desc_view.buffer().set_text(&description);
+        panel.notes_view.buffer().set_text(&notes);
+        
+        // Canvas evidence will be loaded separately by caller (canvas.rs)
     }
 }
 

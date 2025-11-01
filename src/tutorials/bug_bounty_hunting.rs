@@ -2643,16 +2643,13 @@ FURTHER READING:
 pub fn load_phase() -> Phase {
     let steps: Vec<Step> = STEPS
         .iter()
-        .map(|(title, description)| Step {
-            id: Uuid::new_v4(),
-            title: title.to_string(),
-            description: description.to_string(),
-            tags: vec!["bugbounty".to_string()],
-            status: crate::model::StepStatus::Todo,
-            completed_at: None,
-            notes: String::new(),
-            description_notes: String::new(),
-            evidence: Vec::new(),
+        .map(|(title, description)| {
+            Step::new_tutorial(
+                Uuid::new_v4(),
+                title.to_string(),
+                description.to_string(),
+                vec!["bugbounty".to_string()],
+            )
         })
         .collect();
 

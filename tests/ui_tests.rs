@@ -403,27 +403,26 @@ mod text_input_tests {
     #[test]
     fn test_empty_text_handling() {
         // Test handling of empty text input
-        let mut step = Step {
-            id: Uuid::new_v4(),
-            title: "Test".to_string(),
-            description: "Test".to_string(),
-            tags: vec![],
-            status: StepStatus::Todo,
-            completed_at: None,
-            notes: String::new(),
-            description_notes: String::new(),
-            evidence: vec![],
-        };
+        let mut step = Step::new_tutorial(
+            Uuid::new_v4(),
+            "Test".to_string(),
+            "Test".to_string(),
+            vec![],
+        );
 
         // Empty strings should be handled
-        assert!(step.notes.is_empty());
-        assert!(step.description_notes.is_empty());
+        if let StepContent::Tutorial { notes, description_notes, .. } = &step.content {
+            assert!(notes.is_empty());
+            assert!(description_notes.is_empty());
+        }
 
         // Setting to empty should work
-        step.notes = "".to_string();
-        step.description_notes = "".to_string();
-        assert!(step.notes.is_empty());
-        assert!(step.description_notes.is_empty());
+        if let StepContent::Tutorial { notes, description_notes, .. } = &mut step.content {
+            *notes = "".to_string();
+            *description_notes = "".to_string();
+            assert!(notes.is_empty());
+            assert!(description_notes.is_empty());
+        }
     }
 
     #[test]

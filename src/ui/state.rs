@@ -1,6 +1,7 @@
 /// UI state management module
 use std::rc::Rc;
 use std::cell::RefCell;
+use uuid::Uuid;
 use crate::model::{AppModel, StepStatus, Evidence};
 use crate::dispatcher::{SharedDispatcher, AppMessage};
 
@@ -64,7 +65,7 @@ impl StateManager {
             let mut model = self.model.borrow_mut();
             if let Some(step) = model.session.phases.get_mut(phase_idx)
                 .and_then(|p| p.steps.get_mut(step_idx)) {
-                step.notes = notes.clone();
+                step.set_notes(notes.clone());
             }
         }
         self.dispatcher.borrow().dispatch(&AppMessage::StepNotesUpdated(phase_idx, step_idx, notes));
@@ -76,7 +77,7 @@ impl StateManager {
             let mut model = self.model.borrow_mut();
             if let Some(step) = model.session.phases.get_mut(phase_idx)
                 .and_then(|p| p.steps.get_mut(step_idx)) {
-                step.description_notes = notes.clone();
+                step.set_description_notes(notes.clone());
             }
         }
         self.dispatcher.borrow().dispatch(&AppMessage::StepDescriptionNotesUpdated(phase_idx, step_idx, notes));
@@ -108,34 +109,31 @@ impl StateManager {
             let mut model = self.model.borrow_mut();
             if let Some(step) = model.session.phases.get_mut(phase_idx)
                 .and_then(|p| p.steps.get_mut(step_idx)) {
-                step.evidence.push(evidence.clone());
+                step.add_evidence(evidence.clone());
             }
         }
         self.dispatcher.borrow().dispatch(&AppMessage::EvidenceAdded(phase_idx, step_idx, evidence));
     }
     
     /// Remove evidence from a step
-    pub fn remove_evidence(&self, phase_idx: usize, step_idx: usize, evidence_id: uuid::Uuid) {
+    pub fn remove_evidence(&self, phase_idx: usize, step_idx: usize, evidence_id: Uuid) {
         {
             let mut model = self.model.borrow_mut();
             if let Some(step) = model.session.phases.get_mut(phase_idx)
                 .and_then(|p| p.steps.get_mut(step_idx)) {
-                step.evidence.retain(|e| e.id != evidence_id);
+                step.remove_evidence(evidence_id);
             }
         }
         self.dispatcher.borrow().dispatch(&AppMessage::EvidenceRemoved(phase_idx, step_idx, evidence_id));
     }
     
-    /// Move evidence to new position
-    pub fn move_evidence(&self, phase_idx: usize, step_idx: usize, evidence_id: uuid::Uuid, x: f64, y: f64) {
+    /// Move evidence on canvas
+    pub fn move_evidence(&self, phase_idx: usize, step_idx: usize, evidence_id: Uuid, x: f64, y: f64) {
         {
             let mut model = self.model.borrow_mut();
             if let Some(step) = model.session.phases.get_mut(phase_idx)
                 .and_then(|p| p.steps.get_mut(step_idx)) {
-                if let Some(evidence) = step.evidence.iter_mut().find(|e| e.id == evidence_id) {
-                    evidence.x = x;
-                    evidence.y = y;
-                }
+                step.update_evidence_position(evidence_id, x, y);
             }
         }
         self.dispatcher.borrow().dispatch(&AppMessage::EvidenceMoved(phase_idx, step_idx, evidence_id, x, y));

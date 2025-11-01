@@ -83,8 +83,8 @@ pub fn build_ui(app: &Application, model: AppModel) {
                 let selected_phase = model_borrow.selected_phase;
                 let phase_steps: Vec<_> = model_borrow.session.phases.get(selected_phase)
                     .map(|phase| phase.steps.iter().map(|step| {
-                        (step.title.clone(), step.description.clone(), step.description_notes.clone(),
-                         step.notes.clone(), step.status.clone())
+                        (step.title.clone(), step.get_description(), step.get_description_notes(),
+                         step.get_notes(), step.status.clone())
                     }).collect())
                     .unwrap_or_default();
                 let selected_step = model_borrow.selected_step;
@@ -116,8 +116,8 @@ pub fn build_ui(app: &Application, model: AppModel) {
                     let sp = model_borrow.selected_phase;
                     if let Some(step) = model_borrow.session.phases[sp].steps.get(idx) {
                         let title = step.title.clone();
-                        let description_notes = step.description_notes.clone();
-                        let notes = step.notes.clone();
+                        let description_notes = step.get_description_notes();
+                        let notes = step.get_notes();
                         let status = step.status.clone();
                         let step_clone = step.clone();
                         drop(model_borrow); // Release borrow before GTK calls
@@ -199,8 +199,8 @@ pub fn build_ui(app: &Application, model: AppModel) {
                     let model_borrow = model_rc.borrow();
                     if let Some(step) = model_borrow.session.phases.get(selected_phase)
                         .and_then(|phase| phase.steps.get(selected_idx)) {
-                        (step.title.clone(), step.description_notes.clone(),
-                         step.notes.clone(), step.status.clone(), step.clone())
+                        (step.title.clone(), step.get_description_notes(),
+                         step.get_notes(), step.status.clone(), step.clone())
                     } else {
                         return; // No step found
                     }
@@ -222,8 +222,8 @@ pub fn build_ui(app: &Application, model: AppModel) {
                 let (title, description_notes, notes, status, step_clone) = {
                     let model_borrow_again = model_rc.borrow();
                     if let Some(step) = model_borrow_again.session.phases[selected_phase].steps.first() {
-                        (step.title.clone(), step.description_notes.clone(),
-                         step.notes.clone(), step.status.clone(), step.clone())
+                        (step.title.clone(), step.get_description_notes(),
+                         step.get_notes(), step.status.clone(), step.clone())
                     } else {
                         return; // No step found
                     }
@@ -300,7 +300,7 @@ pub fn build_ui(app: &Application, model: AppModel) {
             // Then update with mutable borrow
             if let Some(idx) = step_idx {
                 if let Some(step) = model_notes.borrow_mut().session.phases.get_mut(phase_idx).and_then(|p| p.steps.get_mut(idx)) {
-                    step.notes = text.to_string();
+                    step.set_notes(text.to_string());
                 }
             }
             
@@ -325,7 +325,7 @@ pub fn build_ui(app: &Application, model: AppModel) {
             // Then update with mutable borrow
             if let Some(idx) = step_idx {
                 if let Some(step) = model_desc.borrow_mut().session.phases.get_mut(phase_idx).and_then(|p| p.steps.get_mut(idx)) {
-                    step.description_notes = text.to_string();
+                    step.set_description_notes(text.to_string());
                 }
             }
             
@@ -363,8 +363,8 @@ pub fn build_ui(app: &Application, model: AppModel) {
                 let selected_phase = model_borrow.selected_phase;
                 let phase_steps: Vec<_> = model_borrow.session.phases.get(selected_phase)
                     .map(|phase| phase.steps.iter().map(|step| {
-                        (step.title.clone(), step.description.clone(), step.description_notes.clone(),
-                         step.notes.clone(), step.status.clone())
+                        (step.title.clone(), step.get_description(), step.get_description_notes(),
+                         step.get_notes(), step.status.clone())
                     }).collect())
                     .unwrap_or_default();
                 (selected_phase, phase_steps)
@@ -395,8 +395,8 @@ pub fn build_ui(app: &Application, model: AppModel) {
                     let sp = model_borrow.selected_phase;
                     if let Some(step) = model_borrow.session.phases[sp].steps.get(idx) {
                         let title = step.title.clone();
-                        let description_notes = step.description_notes.clone();
-                        let notes = step.notes.clone();
+                        let description_notes = step.get_description_notes();
+                        let notes = step.get_notes();
                         let status = step.status.clone();
                         let step_evidence = step.clone(); // Clone for load_step_evidence
                         drop(model_borrow); // Release borrow before GTK calls
@@ -481,8 +481,8 @@ pub fn build_ui(app: &Application, model: AppModel) {
                 let (title, description_notes, notes, status, step_clone) = {
                     let model_borrow_again = model_phase.borrow();
                     if let Some(step) = model_borrow_again.session.phases[selected_phase].steps.first() {
-                        (step.title.clone(), step.description_notes.clone(), 
-                         step.notes.clone(), step.status.clone(), step.clone())
+                        (step.title.clone(), step.get_description_notes(), 
+                         step.get_notes(), step.status.clone(), step.clone())
                     } else {
                         return; // No step found, exit early
                     }
@@ -591,8 +591,8 @@ pub fn build_ui(app: &Application, model: AppModel) {
                                     let selected_phase = model_borrow.selected_phase;
                                     let steps_data: Vec<_> = model_borrow.session.phases.get(selected_phase)
                                         .map(|phase| phase.steps.iter().map(|step| {
-                                            (step.title.clone(), step.description.clone(), 
-                                             step.description_notes.clone(), step.notes.clone(), 
+                                            (step.title.clone(), step.get_description(), 
+                                             step.get_description_notes(), step.get_notes(), 
                                              step.status.clone())
                                         }).collect())
                                         .unwrap_or_default();
@@ -624,8 +624,8 @@ pub fn build_ui(app: &Application, model: AppModel) {
                                         let sp = model_borrow.selected_phase;
                                         if let Some(step) = model_borrow.session.phases[sp].steps.get(idx) {
                                             let title = step.title.clone();
-                                            let description_notes = step.description_notes.clone();
-                                            let notes = step.notes.clone();
+                                            let description_notes = step.get_description_notes();
+                                            let notes = step.get_notes();
                                             let status = step.status.clone();
                                             let step_clone = step.clone();
                                             drop(model_borrow); // Release borrow before GTK calls
@@ -708,9 +708,9 @@ pub fn build_ui(app: &Application, model: AppModel) {
                                         let model_borrow_again = m_clone.borrow();
                                         model_borrow_again.session.phases[selected_phase].steps.first().map(|step| (
                                                 step.title.clone(),
-                                                step.description_notes.clone(),
+                                                step.get_description_notes(),
                                                 matches!(step.status, StepStatus::Done),
-                                                step.notes.clone(),
+                                                step.get_notes(),
                                                 step.clone(),
                                             ))
                                     };

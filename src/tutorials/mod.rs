@@ -5,7 +5,7 @@ pub mod post_exploitation;
 pub mod reporting;
 pub mod bug_bounty_hunting;
 
-use crate::model::{Phase, Step, StepStatus};
+use crate::model::{Phase, Step};
 use uuid::Uuid;
 
 /// Load all tutorial phases with their default content
@@ -23,16 +23,13 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
 fn create_reconnaissance_phase() -> Phase {
     let steps = reconnaissance::RECONNAISSANCE_STEPS
         .iter()
-        .map(|(title, description)| Step {
-            id: Uuid::new_v4(),
-            title: title.to_string(),
-            description: description.to_string(),
-            tags: vec!["recon".to_string()],
-            status: StepStatus::Todo,
-            completed_at: None,
-            notes: String::new(),
-            description_notes: String::new(),
-            evidence: vec![],
+        .map(|(title, description)| {
+            Step::new_tutorial(
+                Uuid::new_v4(),
+                title.to_string(),
+                description.to_string(),
+                vec!["recon".to_string()],
+            )
         })
         .collect();
 
@@ -47,16 +44,13 @@ fn create_reconnaissance_phase() -> Phase {
 fn create_vulnerability_analysis_phase() -> Phase {
     let steps = vulnerability_analysis::VULNERABILITY_ANALYSIS_STEPS
         .iter()
-        .map(|(title, description)| Step {
-            id: Uuid::new_v4(),
-            title: title.to_string(),
-            description: description.to_string(),
-            tags: vec!["vuln".to_string()],
-            status: StepStatus::Todo,
-            completed_at: None,
-            notes: String::new(),
-            description_notes: String::new(),
-            evidence: vec![],
+        .map(|(title, description)| {
+            Step::new_tutorial(
+                Uuid::new_v4(),
+                title.to_string(),
+                description.to_string(),
+                vec!["vuln".to_string()],
+            )
         })
         .collect();
 
@@ -71,16 +65,13 @@ fn create_vulnerability_analysis_phase() -> Phase {
 fn create_exploitation_phase() -> Phase {
     let steps = exploitation::EXPLOITATION_STEPS
         .iter()
-        .map(|(title, description)| Step {
-            id: Uuid::new_v4(),
-            title: title.to_string(),
-            description: description.to_string(),
-            tags: vec!["exploit".to_string()],
-            status: StepStatus::Todo,
-            completed_at: None,
-            notes: String::new(),
-            description_notes: String::new(),
-            evidence: vec![],
+        .map(|(title, description)| {
+            Step::new_tutorial(
+                Uuid::new_v4(),
+                title.to_string(),
+                description.to_string(),
+                vec!["exploit".to_string()],
+            )
         })
         .collect();
 
@@ -95,16 +86,13 @@ fn create_exploitation_phase() -> Phase {
 fn create_post_exploitation_phase() -> Phase {
     let steps = post_exploitation::POST_EXPLOITATION_STEPS
         .iter()
-        .map(|(title, description)| Step {
-            id: Uuid::new_v4(),
-            title: title.to_string(),
-            description: description.to_string(),
-            tags: vec!["post".to_string()],
-            status: StepStatus::Todo,
-            completed_at: None,
-            notes: String::new(),
-            description_notes: String::new(),
-            evidence: vec![],
+        .map(|(title, description)| {
+            Step::new_tutorial(
+                Uuid::new_v4(),
+                title.to_string(),
+                description.to_string(),
+                vec!["post".to_string()],
+            )
         })
         .collect();
 
@@ -119,16 +107,13 @@ fn create_post_exploitation_phase() -> Phase {
 fn create_reporting_phase() -> Phase {
     let steps = reporting::REPORTING_STEPS
         .iter()
-        .map(|(title, description)| Step {
-            id: Uuid::new_v4(),
-            title: title.to_string(),
-            description: description.to_string(),
-            tags: vec!["report".to_string()],
-            status: StepStatus::Todo,
-            completed_at: None,
-            notes: String::new(),
-            description_notes: String::new(),
-            evidence: vec![],
+        .map(|(title, description)| {
+            Step::new_tutorial(
+                Uuid::new_v4(),
+                title.to_string(),
+                description.to_string(),
+                vec!["report".to_string()],
+            )
         })
         .collect();
 
@@ -143,16 +128,13 @@ fn create_reporting_phase() -> Phase {
 fn create_bug_bounty_hunting_phase() -> Phase {
     let steps = bug_bounty_hunting::STEPS
         .iter()
-        .map(|(title, description)| Step {
-            id: Uuid::new_v4(),
-            title: title.to_string(),
-            description: description.to_string(),
-            tags: vec!["bugbounty".to_string()],
-            status: StepStatus::Todo,
-            completed_at: None,
-            notes: String::new(),
-            description_notes: String::new(),
-            evidence: vec![],
+        .map(|(title, description)| {
+            Step::new_tutorial(
+                Uuid::new_v4(),
+                title.to_string(),
+                description.to_string(),
+                vec!["bugbounty".to_string()],
+            )
         })
         .collect();
 

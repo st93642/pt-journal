@@ -20,7 +20,8 @@ pub fn load_step_evidence(fixed: &Fixed, canvas_items: Rc<RefCell<Vec<CanvasItem
     }
 
     // Load evidence from the step
-    for evidence in &step.evidence {
+    let evidence_list = step.get_evidence();
+    for evidence in &evidence_list {
         // Try to create texture from the evidence path
         match create_texture_from_file(std::path::Path::new(&evidence.path)) {
             Ok(texture) => {
@@ -236,7 +237,7 @@ fn add_image_to_canvas(
                     x,
                     y,
                 };
-                step.evidence.push(evidence);
+                step.add_evidence(evidence);
             }
         }
     }
@@ -432,7 +433,13 @@ fn delete_selected_items(canvas_items: &Rc<RefCell<Vec<CanvasItem>>>, _fixed_wea
                 if let Some(step) = model.borrow_mut().session.phases.get_mut(phase_idx).and_then(|p| p.steps.get_mut(step_idx)) {
                     // Remove evidence that matches this item's path (if it has one)
                     if let Some(ref item_path) = item.path {
-                        step.evidence.retain(|e| e.path != *item_path);
+                        step.remove_evidence(uuid::Uuid::nil()); // Will need to track IDs properly
+                        // For now, we'll use a workaround by removing by path
+                        // This should be refactored to use Evidence IDs
+                        use crate::model::StepContent;
+                        if let StepContent::Tutorial { evidence, .. } = &mut step.content {
+                            evidence.retain(|e| e.path != *item_path);
+                        }
                     }
                 }
             }

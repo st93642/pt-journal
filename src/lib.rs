@@ -1,6 +1,7 @@
 pub mod model;
 pub mod store;
 pub mod tutorials;
+pub mod quiz;
 pub mod ui;
 pub mod dispatcher;
 
@@ -81,17 +82,12 @@ mod tests {
 
         #[test]
         fn test_step_status_transitions() {
-            let mut step = Step {
-                id: Uuid::new_v4(),
-                title: "Test Step".to_string(),
-                description: "Test description".to_string(),
-                tags: vec!["test".to_string()],
-                status: StepStatus::Todo,
-                completed_at: None,
-                notes: String::new(),
-                description_notes: String::new(),
-                evidence: vec![],
-            };
+            let mut step = Step::new_tutorial(
+                Uuid::new_v4(),
+                "Test Step".to_string(),
+                "Test description".to_string(),
+                vec!["test".to_string()],
+            );
 
             // Test Todo -> Done
             step.status = StepStatus::Done;
@@ -175,7 +171,7 @@ mod tests {
             // Modify a step
             if let Some(step) = session.phases[0].steps.get_mut(0) {
                 step.status = StepStatus::Done;
-                step.notes = "Test step notes".to_string();
+                step.set_notes("Test step notes".to_string());
             }
 
             // Save session
@@ -193,9 +189,9 @@ mod tests {
             if let Some(loaded_step) = loaded_session.phases[0].steps.get(0) {
                 if let Some(original_step) = session.phases[0].steps.get(0) {
                     assert_eq!(loaded_step.status, original_step.status);
-                    assert_eq!(loaded_step.notes, original_step.notes);
+                    assert_eq!(loaded_step.get_notes(), original_step.get_notes());
                     assert_eq!(loaded_step.title, original_step.title);
-                    assert_eq!(loaded_step.description, original_step.description);
+                    assert_eq!(loaded_step.get_description(), original_step.get_description());
                 }
             }
         }
@@ -267,7 +263,7 @@ mod tests {
             // Modify multiple steps
             for phase in &mut session.phases {
                 for step in &mut phase.steps {
-                    step.notes = format!("Notes for {}", step.title);
+                    step.set_notes(format!("Notes for {}", step.title));
                     if step.title.contains("enumeration") {
                         step.status = StepStatus::Done;
                     }
@@ -290,7 +286,7 @@ mod tests {
                     assert_eq!(loaded_step.title, original_step.title);
                     assert_eq!(loaded_step.description, original_step.description);
                     assert_eq!(loaded_step.status, original_step.status);
-                    assert_eq!(loaded_step.notes, original_step.notes);
+                    assert_eq!(loaded_step.get_notes(), original_step.get_notes());
                     assert_eq!(loaded_step.tags, original_step.tags);
                     assert_eq!(loaded_step.evidence, original_step.evidence);
                 }
@@ -317,7 +313,7 @@ mod tests {
             // Simulate user workflow: complete some reconnaissance steps
             for step in &mut session.phases[0].steps[0..3] { // First 3 recon steps
                 step.status = StepStatus::Done;
-                step.notes = format!("Completed: {}", step.title);
+                step.set_notes(format!("Completed: {}", step.title));
             }
 
             // Add phase notes
@@ -336,7 +332,7 @@ mod tests {
             // Verify completed steps
             for i in 0..3 {
                 assert_matches!(loaded_session.phases[0].steps[i].status, StepStatus::Done);
-                assert!(loaded_session.phases[0].steps[i].notes.starts_with("Completed:"));
+                assert!(loaded_session.phases[0].steps[i].get_notes().starts_with("Completed:"));
             }
 
             // Verify other steps remain todo
@@ -427,7 +423,7 @@ mod tests {
                 for (step_idx, step) in phase.steps.iter_mut().enumerate() {
                     if step_idx % 3 == 0 { // Every third step
                         step.status = StepStatus::Done;
-                        step.notes = format!("Completed step {} in phase {}", step_idx, phase_idx);
+                        step.set_notes(format!("Completed step {} in phase {}", step_idx, phase_idx));
                         step.completed_at = Some(Utc::now());
 
                         // Add some evidence
@@ -441,7 +437,7 @@ mod tests {
                         });
                     } else if step_idx % 3 == 1 { // Every other third step
                         step.status = StepStatus::InProgress;
-                        step.notes = format!("In progress: step {} in phase {}", step_idx, phase_idx);
+                        step.set_notes(format!("In progress: step {} in phase {}", step_idx, phase_idx));
                     }
                     // Leave some as Todo
                 }
@@ -468,7 +464,7 @@ mod tests {
                     assert_eq!(loaded_step.title, original_step.title);
                     assert_eq!(loaded_step.description, original_step.description);
                     assert_eq!(loaded_step.status, original_step.status);
-                    assert_eq!(loaded_step.notes, original_step.notes);
+                    assert_eq!(loaded_step.get_notes(), original_step.get_notes());
                     assert_eq!(loaded_step.tags, original_step.tags);
                     assert_eq!(loaded_step.evidence.len(), original_step.evidence.len());
 
@@ -523,10 +519,10 @@ mod tests {
             for phase in &mut session.phases {
                 phase.notes = "C".repeat(10000);
                 for step in &mut phase.steps {
-                    step.notes = "D".repeat(5000);
+                    step.set_notes("D".repeat(5000));
                     // Add many evidence items
                     for i in 0..10 {
-                        step.evidence.push(Evidence {
+                        step.add_evidence(Evidence {
                             id: Uuid::new_v4(),
                             path: format!("evidence_{}.png", i),
                             created_at: Utc::now(),
@@ -595,28 +591,25 @@ mod tests {
 
         #[test]
         fn test_step_note_updates() {
-            let mut step = Step {
-                id: Uuid::new_v4(),
-                title: "Test Step".to_string(),
-                description: "Test description".to_string(),
-                tags: vec![],
-                status: StepStatus::Todo,
-                completed_at: None,
-                notes: String::new(),
-                description_notes: String::new(),
-                evidence: vec![],
-            };
+            let mut step = Step::new_tutorial(
+                Uuid::new_v4(),
+                "Test Step".to_string(),
+                "Test description".to_string(),
+                vec![],
+            );
 
             // Test note updates
-            step.notes = "Initial notes".to_string();
-            assert_eq!(step.notes, "Initial notes");
+            if let StepContent::Tutorial { notes, .. } = &mut step.content {
+                *notes = "Initial notes".to_string();
+                assert_eq!(*notes, "Initial notes");
 
-            step.notes = "Updated notes with more content".to_string();
-            assert_eq!(step.notes, "Updated notes with more content");
+                *notes = "Updated notes with more content".to_string();
+                assert_eq!(*notes, "Updated notes with more content");
 
-            // Test clearing notes
-            step.notes.clear();
-            assert!(step.notes.is_empty());
+                // Test clearing notes
+                notes.clear();
+                assert!(notes.is_empty());
+            }
         }
 
         #[test]
@@ -748,13 +741,13 @@ mod tests {
 
                 let mut session = Session::default();
                 if let Some(step) = session.phases[0].steps.get_mut(0) {
-                    step.notes = notes.clone();
+                    step.set_notes(notes.clone());
                 }
 
                 store::save_session(&session_path, &session).unwrap();
                 let loaded = store::load_session(&session_path).unwrap();
 
-                prop_assert_eq!(&loaded.phases[0].steps[0].notes, &notes);
+                prop_assert_eq!(&loaded.phases[0].steps[0].get_notes(), &notes);
             }
         }
     }

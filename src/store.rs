@@ -36,7 +36,15 @@ pub fn save_session(path: &Path, session: &Session) -> Result<()> {
 #[allow(dead_code)]
 pub fn load_session(path: &Path) -> Result<Session> {
     let content = fs::read_to_string(path)?;
-    let session: Session = serde_json::from_str(&content)?;
+    let mut session: Session = serde_json::from_str(&content)?;
+    
+    // Migrate legacy step data to new StepContent format
+    for phase in &mut session.phases {
+        for step in &mut phase.steps {
+            step.migrate_from_legacy();
+        }
+    }
+    
     Ok(session)
 }
 
@@ -92,8 +100,8 @@ mod tests {
         // Modify some data
         if let Some(step) = session.phases[0].steps.get_mut(0) {
             step.status = StepStatus::Done;
-            step.notes = "Step completed".to_string();
-            step.evidence.push(Evidence {
+            step.set_notes("Step completed".to_string());
+            step.add_evidence(Evidence {
                 id: Uuid::new_v4(),
                 path: "/test/path.png".to_string(),
                 created_at: Utc::now(),
@@ -118,9 +126,9 @@ mod tests {
         let loaded_step = &loaded.phases[0].steps[0];
 
         assert_matches!(loaded_step.status, StepStatus::Done);
-        assert_eq!(loaded_step.notes, original_step.notes);
-        assert_eq!(loaded_step.evidence.len(), 1);
-        assert_eq!(loaded_step.evidence[0].path, "/test/path.png");
+        assert_eq!(loaded_step.get_notes(), original_step.get_notes());
+        assert_eq!(loaded_step.get_evidence().len(), 1);
+        assert_eq!(loaded_step.get_evidence()[0].path, "/test/path.png");
     }
 
     #[test]
@@ -133,7 +141,7 @@ mod tests {
         session.notes_global = "Заметки с эмодзи 🎯 и unicode: ñáéíóú".to_string();
 
         if let Some(step) = session.phases[0].steps.get_mut(0) {
-            step.notes = "Шаги с кириллицей: Привет мир!".to_string();
+            step.set_notes("Шаги с кириллицей: Привет мир!".to_string());
         }
 
         save_session(&session_path, &session).unwrap();
@@ -141,7 +149,7 @@ mod tests {
 
         assert_eq!(loaded.name, session.name);
         assert_eq!(loaded.notes_global, session.notes_global);
-        assert_eq!(loaded.phases[0].steps[0].notes, session.phases[0].steps[0].notes);
+        assert_eq!(loaded.phases[0].steps[0].get_notes(), session.phases[0].steps[0].get_notes());
     }
 
     #[test]

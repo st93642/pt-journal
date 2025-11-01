@@ -10,219 +10,283 @@
         {
           "id": "9fb941dd-d4f8-46f2-9ebd-1337230a0108",
           "title": "Subdomain enumeration",
-          "description": "OBJECTIVE: Discover all subdomains associated with the target domain to expand the attack surface.\n\nSTEP-BY-STEP PROCESS:\n1. Start with passive reconnaissance (no direct interaction with target):\n   - Query Certificate Transparency logs using crt.sh or similar services\n   - Check DNS databases like DNSDB, VirusTotal, and SecurityTrails\n   - Use search engines and archive.org for historical subdomains\n\n2. Perform active enumeration using tools:\n   - Run subfinder: subfinder -d target.com -o subfinder.txt\n   - Run amass: amass enum -d target.com -o amass.txt\n   - Use assetfinder: assetfinder target.com > assetfinder.txt\n\n3. Validate and deduplicate results:\n   - Combine all results: cat *.txt | sort | uniq > all_subdomains.txt\n   - Test for live subdomains: httpx -l all_subdomains.txt -o live_subdomains.txt\n   - Resolve DNS: dnsx -l all_subdomains.txt -o resolved.txt\n\n4. Document findings:\n   - Note which subdomains respond to HTTP/HTTPS\n   - Identify any that redirect or have different SSL certificates\n   - Flag subdomains that might indicate internal systems (dev, staging, api, etc.)\n\nWHAT TO LOOK FOR:\n- Development/staging environments\n- API endpoints\n- Third-party integrations\n- Cloud storage buckets\n- Email servers\n\nCOMMON PITFALLS:\n- Don't forget to check for wildcard DNS records\n- Some subdomains may only be accessible from specific networks\n- Certificate transparency may miss recently issued certificates",
           "tags": [
             "recon"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "Test",
-          "description_notes": "Test",
-          "evidence": [
-            {
-              "id": "81e96958-7401-4b19-966d-9f3a6df31b50",
-              "path": "/home/altin/.local/share/pt-journal/images/pasted_1761986748426.png",
-              "created_at": "2025-11-01T08:45:48.438261515Z",
-              "kind": "image",
-              "x": 10.0,
-              "y": 10.0
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Discover all subdomains associated with the target domain to expand the attack surface.\n\nSTEP-BY-STEP PROCESS:\n1. Start with passive reconnaissance (no direct interaction with target):\n   - Query Certificate Transparency logs using crt.sh or similar services\n   - Check DNS databases like DNSDB, VirusTotal, and SecurityTrails\n   - Use search engines and archive.org for historical subdomains\n\n2. Perform active enumeration using tools:\n   - Run subfinder: subfinder -d target.com -o subfinder.txt\n   - Run amass: amass enum -d target.com -o amass.txt\n   - Use assetfinder: assetfinder target.com > assetfinder.txt\n\n3. Validate and deduplicate results:\n   - Combine all results: cat *.txt | sort | uniq > all_subdomains.txt\n   - Test for live subdomains: httpx -l all_subdomains.txt -o live_subdomains.txt\n   - Resolve DNS: dnsx -l all_subdomains.txt -o resolved.txt\n\n4. Document findings:\n   - Note which subdomains respond to HTTP/HTTPS\n   - Identify any that redirect or have different SSL certificates\n   - Flag subdomains that might indicate internal systems (dev, staging, api, etc.)\n\nWHAT TO LOOK FOR:\n- Development/staging environments\n- API endpoints\n- Third-party integrations\n- Cloud storage buckets\n- Email servers\n\nCOMMON PITFALLS:\n- Don't forget to check for wildcard DNS records\n- Some subdomains may only be accessible from specific networks\n- Certificate transparency may miss recently issued certificates",
+              "description_notes": "Test",
+              "notes": "Test",
+              "evidence": [
+                {
+                  "id": "81e96958-7401-4b19-966d-9f3a6df31b50",
+                  "path": "/home/altin/.local/share/pt-journal/images/pasted_1761986748426.png",
+                  "created_at": "2025-11-01T08:45:48.438261515Z",
+                  "kind": "image",
+                  "x": 10.0,
+                  "y": 10.0
+                }
+              ]
             }
-          ]
+          }
         },
         {
           "id": "e7225d6b-9243-435e-9944-014602d0b374",
           "title": "DNS records enumeration",
-          "description": "OBJECTIVE: Map the complete DNS infrastructure to understand domain structure and find misconfigurations.\n\nSTEP-BY-STEP PROCESS:\n1. Enumerate basic DNS records:\n   - A/AAAA records: dig target.com A +short\n   - CNAME records: dig target.com CNAME +short\n   - NS records: dig target.com NS +short\n   - MX records: dig target.com MX +short\n\n2. Check for advanced records:\n   - TXT records (SPF, DKIM, DMARC): dig target.com TXT +short\n   - SRV records: dig target.com SRV +short\n   - SOA records: dig target.com SOA +short\n\n3. Test for zone transfer vulnerability:\n   - Attempt zone transfer: dig @ns1.target.com target.com AXFR\n   - Try with all name servers found in step 1\n\n4. Analyze SPF/DMARC configurations:\n   - Check SPF syntax and coverage\n   - Verify DKIM selectors are properly configured\n   - Review DMARC policy settings\n\n5. Document infrastructure relationships:\n   - Map which services use which providers\n   - Identify any cloud services or CDNs in use\n   - Note any unusual record configurations\n\nWHAT TO LOOK FOR:\n- SPF records that allow all IPs (SPF: \"v=spf1 -all\" is good)\n- Missing or misconfigured DMARC records\n- Zone transfer vulnerabilities\n- Internal IP addresses leaked in records\n- Unusual CNAME chains\n\nCOMMON PITFALLS:\n- Some DNS records are only visible from specific geographic locations\n- DNS caching can hide recent changes\n- Some providers use proprietary record types",
           "tags": [
             "recon"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Map the complete DNS infrastructure to understand domain structure and find misconfigurations.\n\nSTEP-BY-STEP PROCESS:\n1. Enumerate basic DNS records:\n   - A/AAAA records: dig target.com A +short\n   - CNAME records: dig target.com CNAME +short\n   - NS records: dig target.com NS +short\n   - MX records: dig target.com MX +short\n\n2. Check for advanced records:\n   - TXT records (SPF, DKIM, DMARC): dig target.com TXT +short\n   - SRV records: dig target.com SRV +short\n   - SOA records: dig target.com SOA +short\n\n3. Test for zone transfer vulnerability:\n   - Attempt zone transfer: dig @ns1.target.com target.com AXFR\n   - Try with all name servers found in step 1\n\n4. Analyze SPF/DMARC configurations:\n   - Check SPF syntax and coverage\n   - Verify DKIM selectors are properly configured\n   - Review DMARC policy settings\n\n5. Document infrastructure relationships:\n   - Map which services use which providers\n   - Identify any cloud services or CDNs in use\n   - Note any unusual record configurations\n\nWHAT TO LOOK FOR:\n- SPF records that allow all IPs (SPF: \"v=spf1 -all\" is good)\n- Missing or misconfigured DMARC records\n- Zone transfer vulnerabilities\n- Internal IP addresses leaked in records\n- Unusual CNAME chains\n\nCOMMON PITFALLS:\n- Some DNS records are only visible from specific geographic locations\n- DNS caching can hide recent changes\n- Some providers use proprietary record types",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "d98c95f7-c24d-4740-aaba-8913b4f38c4e",
           "title": "Port scanning",
-          "description": "OBJECTIVE: Identify all open ports and services running on discovered hosts.\n\nSTEP-BY-STEP PROCESS:\n1. Start with a fast, broad scan to identify live hosts:\n   - Use rustscan for speed: rustscan -a target.com -- -sV -O\n   - Or masscan for very large ranges: masscan -p1-65535 target.com --rate=1000\n\n2. Perform comprehensive TCP scanning:\n   - Full TCP SYN scan: nmap -sS -p- -T4 target.com -oA full_tcp\n   - Service version detection: nmap -sV -p 1-1000 target.com\n   - OS fingerprinting: nmap -O target.com\n\n3. Scan UDP ports (slower, often overlooked):\n   - UDP scan: nmap -sU -p 53,67,68,69,123,161 target.com\n   - Common UDP services: DNS, DHCP, TFTP, NTP, SNMP\n\n4. Analyze scan results:\n   - Identify unexpected open ports\n   - Note service versions and potential vulnerabilities\n   - Flag ports that should be closed (e.g., 23/telnet, 21/ftp)\n\n5. Document findings with evidence:\n   - Screenshot nmap output\n   - Note any unusual port combinations\n   - Identify potential attack vectors\n\nWHAT TO LOOK FOR:\n- Default ports for common services (80/443 web, 22 SSH, 3389 RDP)\n- Non-standard ports for standard services (SSH on 2222, web on 8080)\n- Legacy services that should be disabled (telnet, ftp)\n- Unusual port combinations that might indicate backdoors\n\nCOMMON PITFALLS:\n- Firewalls may block scanning, giving false negatives\n- Some services only respond to specific source IPs\n- UDP scanning is unreliable and slow\n- Rate limiting can cause missed ports",
           "tags": [
             "recon"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Identify all open ports and services running on discovered hosts.\n\nSTEP-BY-STEP PROCESS:\n1. Start with a fast, broad scan to identify live hosts:\n   - Use rustscan for speed: rustscan -a target.com -- -sV -O\n   - Or masscan for very large ranges: masscan -p1-65535 target.com --rate=1000\n\n2. Perform comprehensive TCP scanning:\n   - Full TCP SYN scan: nmap -sS -p- -T4 target.com -oA full_tcp\n   - Service version detection: nmap -sV -p 1-1000 target.com\n   - OS fingerprinting: nmap -O target.com\n\n3. Scan UDP ports (slower, often overlooked):\n   - UDP scan: nmap -sU -p 53,67,68,69,123,161 target.com\n   - Common UDP services: DNS, DHCP, TFTP, NTP, SNMP\n\n4. Analyze scan results:\n   - Identify unexpected open ports\n   - Note service versions and potential vulnerabilities\n   - Flag ports that should be closed (e.g., 23/telnet, 21/ftp)\n\n5. Document findings with evidence:\n   - Screenshot nmap output\n   - Note any unusual port combinations\n   - Identify potential attack vectors\n\nWHAT TO LOOK FOR:\n- Default ports for common services (80/443 web, 22 SSH, 3389 RDP)\n- Non-standard ports for standard services (SSH on 2222, web on 8080)\n- Legacy services that should be disabled (telnet, ftp)\n- Unusual port combinations that might indicate backdoors\n\nCOMMON PITFALLS:\n- Firewalls may block scanning, giving false negatives\n- Some services only respond to specific source IPs\n- UDP scanning is unreliable and slow\n- Rate limiting can cause missed ports",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "2b5cdf95-099a-4173-a8e6-3278556c67e8",
           "title": "Service enumeration",
-          "description": "OBJECTIVE: Gather detailed information about services running on open ports.\n\nSTEP-BY-STEP PROCESS:\n1. Banner grabbing for basic service identification:\n   - Use nc/netcat: echo \"\" | nc target.com 80\n   - Or nmap scripts: nmap --script banner target.com\n\n2. Enumerate web services (ports 80, 443, 8080, etc.):\n   - Basic HTTP headers: curl -I https://target.com\n   - Certificate information: openssl s_client -connect target.com:443\n   - Web server identification: whatweb target.com\n\n3. Enumerate common protocols:\n   - SSH: ssh -v user@target.com (check version, key types)\n   - SMTP: nc target.com 25, then HELO test.com\n   - FTP: ftp target.com (check anonymous access)\n   - SMB: smbclient -L //target.com\n\n4. Use specialized enumeration tools:\n   - For SMB: enum4linux-ng -a target.com\n   - For SNMP: snmpwalk -v2c -c public target.com\n   - For databases: Check common ports (1433 MSSQL, 3306 MySQL)\n\n5. Document service details:\n   - Exact version numbers\n   - Configuration details\n   - Any default credentials that work\n   - Unusual service configurations\n\nWHAT TO LOOK FOR:\n- Outdated service versions with known vulnerabilities\n- Services running as root/Administrator\n- Default configurations or credentials\n- Services that shouldn't be internet-facing\n- Unusual service combinations\n\nCOMMON PITFALLS:\n- Some services hide their real versions\n- Firewalls may interfere with enumeration\n- Some protocols require specific handshake sequences\n- Virtual hosting can complicate web enumeration",
           "tags": [
             "recon"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Gather detailed information about services running on open ports.\n\nSTEP-BY-STEP PROCESS:\n1. Banner grabbing for basic service identification:\n   - Use nc/netcat: echo \"\" | nc target.com 80\n   - Or nmap scripts: nmap --script banner target.com\n\n2. Enumerate web services (ports 80, 443, 8080, etc.):\n   - Basic HTTP headers: curl -I https://target.com\n   - Certificate information: openssl s_client -connect target.com:443\n   - Web server identification: whatweb target.com\n\n3. Enumerate common protocols:\n   - SSH: ssh -v user@target.com (check version, key types)\n   - SMTP: nc target.com 25, then HELO test.com\n   - FTP: ftp target.com (check anonymous access)\n   - SMB: smbclient -L //target.com\n\n4. Use specialized enumeration tools:\n   - For SMB: enum4linux-ng -a target.com\n   - For SNMP: snmpwalk -v2c -c public target.com\n   - For databases: Check common ports (1433 MSSQL, 3306 MySQL)\n\n5. Document service details:\n   - Exact version numbers\n   - Configuration details\n   - Any default credentials that work\n   - Unusual service configurations\n\nWHAT TO LOOK FOR:\n- Outdated service versions with known vulnerabilities\n- Services running as root/Administrator\n- Default configurations or credentials\n- Services that shouldn't be internet-facing\n- Unusual service combinations\n\nCOMMON PITFALLS:\n- Some services hide their real versions\n- Firewalls may interfere with enumeration\n- Some protocols require specific handshake sequences\n- Virtual hosting can complicate web enumeration",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "209f079d-ba3b-4a5a-8364-e3b8e33e441d",
           "title": "Web technology fingerprinting",
-          "description": "OBJECTIVE: Identify web technologies, frameworks, and CMS to understand the tech stack.\n\nSTEP-BY-STEP PROCESS:\n1. Use automated fingerprinting tools:\n   - Wappalyzer browser extension or CLI\n   - whatweb: whatweb target.com\n   - httpx with tech detection: httpx -u target.com -tech-detect\n\n2. Manual inspection of HTTP responses:\n   - Check server headers: curl -I target.com\n   - Look for framework-specific files/paths\n   - Examine cookies for framework signatures\n   - Check error pages for technology clues\n\n3. JavaScript library analysis:\n   - View page source for included libraries\n   - Check /js/, /scripts/, /assets/ directories\n   - Look for framework-specific JavaScript objects\n\n4. CMS and framework-specific checks:\n   - WordPress: Check for wp-admin, wp-content, wp-json\n   - Joomla: Look for administrator/, components/\n   - Django: Check for /admin/, /static/\n   - Laravel: Look for /vendor/, artisan commands\n\n5. Document technology stack:\n   - Web server (Apache, Nginx, IIS)\n   - Programming language (PHP, Python, Java, .NET)\n   - Framework and version\n\nWHAT TO LOOK FOR:\n- Outdated framework versions with known vulnerabilities\n- Unusual technology combinations\n- Development frameworks in production\n- Custom or proprietary software\n- Technology stack consistency across subdomains\n\nCOMMON PITFALLS:\n- Some applications use multiple frameworks\n- Version detection may be unreliable\n- Some technologies are intentionally obscured\n- Framework plugins may introduce vulnerabilities",
           "tags": [
             "recon"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Identify web technologies, frameworks, and CMS to understand the tech stack.\n\nSTEP-BY-STEP PROCESS:\n1. Use automated fingerprinting tools:\n   - Wappalyzer browser extension or CLI\n   - whatweb: whatweb target.com\n   - httpx with tech detection: httpx -u target.com -tech-detect\n\n2. Manual inspection of HTTP responses:\n   - Check server headers: curl -I target.com\n   - Look for framework-specific files/paths\n   - Examine cookies for framework signatures\n   - Check error pages for technology clues\n\n3. JavaScript library analysis:\n   - View page source for included libraries\n   - Check /js/, /scripts/, /assets/ directories\n   - Look for framework-specific JavaScript objects\n\n4. CMS and framework-specific checks:\n   - WordPress: Check for wp-admin, wp-content, wp-json\n   - Joomla: Look for administrator/, components/\n   - Django: Check for /admin/, /static/\n   - Laravel: Look for /vendor/, artisan commands\n\n5. Document technology stack:\n   - Web server (Apache, Nginx, IIS)\n   - Programming language (PHP, Python, Java, .NET)\n   - Framework and version\n\nWHAT TO LOOK FOR:\n- Outdated framework versions with known vulnerabilities\n- Unusual technology combinations\n- Development frameworks in production\n- Custom or proprietary software\n- Technology stack consistency across subdomains\n\nCOMMON PITFALLS:\n- Some applications use multiple frameworks\n- Version detection may be unreliable\n- Some technologies are intentionally obscured\n- Framework plugins may introduce vulnerabilities",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "9cb494ad-5952-47b8-be6b-ccfc3ad8f31d",
           "title": "Web crawling and spidering",
-          "description": "OBJECTIVE: Map the web application structure and discover all accessible pages and functionality.\n\nSTEP-BY-STEP PROCESS:\n1. Use automated crawling tools:\n   - Burp Suite Spider or ZAP spider\n   - gobuster for directory enumeration: gobuster dir -u https://target.com -w /usr/share/wordlists/dirb/common.txt\n   - ffuf for fuzzing: ffuf -u https://target.com/FUZZ -w wordlist.txt\n\n2. Manual exploration:\n   - Navigate through the application naturally\n   - Test all navigation links and forms\n   - Check robots.txt and sitemap.xml\n   - Look for admin panels, login pages, API endpoints\n\n3. Parameter discovery:\n   - Use paramspider: python3 paramspider.py -d target.com\n   - Parse URLs from crawling results\n   - Extract query parameters and fragments\n\n4. Content discovery:\n   - Check for backup files: .bak, .old, .backup\n   - Look for configuration files: .env, config.php, web.config\n   - Find exposed directories: /admin/, /backup/, /test/\n   - Discover hidden pages through comments and source code\n\n5. Document application structure:\n   - Create site map with all discovered pages\n   - Note authentication requirements for different areas\n   - Identify different user roles and permissions\n   - Flag any unusual or hidden functionality\n\nWHAT TO LOOK FOR:\n- Admin interfaces and management consoles\n- API endpoints and documentation\n- File upload/download functionality\n- User registration and password reset flows\n- Error pages that leak information\n\nCOMMON PITFALLS:\n- Some pages require specific user sessions or roles\n- JavaScript-heavy applications may hide functionality\n- Rate limiting can prevent thorough crawling\n- Some content is only accessible after authentication",
           "tags": [
             "recon"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Map the web application structure and discover all accessible pages and functionality.\n\nSTEP-BY-STEP PROCESS:\n1. Use automated crawling tools:\n   - Burp Suite Spider or ZAP spider\n   - gobuster for directory enumeration: gobuster dir -u https://target.com -w /usr/share/wordlists/dirb/common.txt\n   - ffuf for fuzzing: ffuf -u https://target.com/FUZZ -w wordlist.txt\n\n2. Manual exploration:\n   - Navigate through the application naturally\n   - Test all navigation links and forms\n   - Check robots.txt and sitemap.xml\n   - Look for admin panels, login pages, API endpoints\n\n3. Parameter discovery:\n   - Use paramspider: python3 paramspider.py -d target.com\n   - Parse URLs from crawling results\n   - Extract query parameters and fragments\n\n4. Content discovery:\n   - Check for backup files: .bak, .old, .backup\n   - Look for configuration files: .env, config.php, web.config\n   - Find exposed directories: /admin/, /backup/, /test/\n   - Discover hidden pages through comments and source code\n\n5. Document application structure:\n   - Create site map with all discovered pages\n   - Note authentication requirements for different areas\n   - Identify different user roles and permissions\n   - Flag any unusual or hidden functionality\n\nWHAT TO LOOK FOR:\n- Admin interfaces and management consoles\n- API endpoints and documentation\n- File upload/download functionality\n- User registration and password reset flows\n- Error pages that leak information\n\nCOMMON PITFALLS:\n- Some pages require specific user sessions or roles\n- JavaScript-heavy applications may hide functionality\n- Rate limiting can prevent thorough crawling\n- Some content is only accessible after authentication",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "0d6b21aa-1e63-404c-a340-dc29d7cc6670",
           "title": "TLS/SSL assessment",
-          "description": "OBJECTIVE: Evaluate the security of SSL/TLS configurations and certificates.\n\nSTEP-BY-STEP PROCESS:\n1. Certificate inspection:\n   - Check certificate validity: openssl x509 -in cert.pem -text\n   - Verify certificate chain: openssl verify -CAfile ca.pem cert.pem\n   - Check expiration dates and renewal status\n\n2. SSL/TLS configuration testing:\n   - Use sslscan: sslscan target.com\n   - Test with testssl.sh: ./testssl.sh target.com\n   - Check supported protocols and cipher suites\n\n3. Protocol analysis:\n   - Test for deprecated protocols (SSLv2, SSLv3, TLS 1.0, 1.1)\n   - Verify TLS 1.2+ support with strong ciphers\n   - Check for Perfect Forward Secrecy (PFS)\n\n4. Common vulnerabilities:\n   - Heartbleed: Test with ssltest or online tools\n   - POODLE: Check for SSLv3 support\n   - BEAST: Verify TLS 1.1+ usage\n   - CRIME: Check for TLS compression\n\n5. Certificate Transparency monitoring:\n   - Check crt.sh for certificate history\n   - Monitor for unexpected certificate issuances\n   - Verify certificate pinning if implemented\n\nWHAT TO LOOK FOR:\n- Self-signed certificates in production\n- Certificates issued by unknown CAs\n- Weak cipher suites or protocol versions\n- Certificate mismatches (domain vs certificate)\n- Expired or soon-to-expire certificates\n\nCOMMON PITFALLS:\n- Some internal services use self-signed certificates legitimately\n- Certificate pinning can break with legitimate renewals\n- Some legacy systems cannot support modern TLS versions\n- Load balancers may terminate TLS before the application",
           "tags": [
             "recon"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Evaluate the security of SSL/TLS configurations and certificates.\n\nSTEP-BY-STEP PROCESS:\n1. Certificate inspection:\n   - Check certificate validity: openssl x509 -in cert.pem -text\n   - Verify certificate chain: openssl verify -CAfile ca.pem cert.pem\n   - Check expiration dates and renewal status\n\n2. SSL/TLS configuration testing:\n   - Use sslscan: sslscan target.com\n   - Test with testssl.sh: ./testssl.sh target.com\n   - Check supported protocols and cipher suites\n\n3. Protocol analysis:\n   - Test for deprecated protocols (SSLv2, SSLv3, TLS 1.0, 1.1)\n   - Verify TLS 1.2+ support with strong ciphers\n   - Check for Perfect Forward Secrecy (PFS)\n\n4. Common vulnerabilities:\n   - Heartbleed: Test with ssltest or online tools\n   - POODLE: Check for SSLv3 support\n   - BEAST: Verify TLS 1.1+ usage\n   - CRIME: Check for TLS compression\n\n5. Certificate Transparency monitoring:\n   - Check crt.sh for certificate history\n   - Monitor for unexpected certificate issuances\n   - Verify certificate pinning if implemented\n\nWHAT TO LOOK FOR:\n- Self-signed certificates in production\n- Certificates issued by unknown CAs\n- Weak cipher suites or protocol versions\n- Certificate mismatches (domain vs certificate)\n- Expired or soon-to-expire certificates\n\nCOMMON PITFALLS:\n- Some internal services use self-signed certificates legitimately\n- Certificate pinning can break with legitimate renewals\n- Some legacy systems cannot support modern TLS versions\n- Load balancers may terminate TLS before the application",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "894232d9-4490-43bf-889c-a436770b0315",
           "title": "Infrastructure mapping",
-          "description": "OBJECTIVE: Create a comprehensive map of the target's infrastructure and network topology.\n\nSTEP-BY-STEP PROCESS:\n1. Network mapping:\n   - Use traceroute: traceroute target.com\n   - Perform BGP analysis: whois -h whois.radb.net -- '-i origin AS12345'\n   - Map network ranges and ASNs\n\n2. Cloud infrastructure identification:\n   - Check for cloud-specific headers and behaviors\n   - Identify S3 buckets, Azure storage, GCP buckets\n   - Look for cloud metadata endpoints (169.254.169.254 for AWS)\n\n3. CDN and WAF detection:\n   - Identify Cloudflare, Akamai, Imperva, etc.\n   - Test WAF bypass techniques\n   - Map CDN edge locations\n\n4. Third-party service enumeration:\n   - Identify analytics, tracking, and marketing scripts\n   - Check for external APIs and integrations\n   - Map data flows to third-party services\n\n5. Geographic distribution:\n   - Test from multiple geographic locations\n   - Identify any region-specific content or restrictions\n   - Map content delivery networks\n\nWHAT TO LOOK FOR:\n- Unusual network configurations\n- Shadow IT or unauthorized cloud services\n- Data exfiltration risks through third parties\n- Single points of failure in infrastructure\n\nCOMMON PITFALLS:\n- Some infrastructure is only visible from specific networks\n- Cloud services may use multiple providers\n- Infrastructure can change dynamically\n- Some services use private networks not visible externally",
           "tags": [
             "recon"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Create a comprehensive map of the target's infrastructure and network topology.\n\nSTEP-BY-STEP PROCESS:\n1. Network mapping:\n   - Use traceroute: traceroute target.com\n   - Perform BGP analysis: whois -h whois.radb.net -- '-i origin AS12345'\n   - Map network ranges and ASNs\n\n2. Cloud infrastructure identification:\n   - Check for cloud-specific headers and behaviors\n   - Identify S3 buckets, Azure storage, GCP buckets\n   - Look for cloud metadata endpoints (169.254.169.254 for AWS)\n\n3. CDN and WAF detection:\n   - Identify Cloudflare, Akamai, Imperva, etc.\n   - Test WAF bypass techniques\n   - Map CDN edge locations\n\n4. Third-party service enumeration:\n   - Identify analytics, tracking, and marketing scripts\n   - Check for external APIs and integrations\n   - Map data flows to third-party services\n\n5. Geographic distribution:\n   - Test from multiple geographic locations\n   - Identify any region-specific content or restrictions\n   - Map content delivery networks\n\nWHAT TO LOOK FOR:\n- Unusual network configurations\n- Shadow IT or unauthorized cloud services\n- Data exfiltration risks through third parties\n- Single points of failure in infrastructure\n\nCOMMON PITFALLS:\n- Some infrastructure is only visible from specific networks\n- Cloud services may use multiple providers\n- Infrastructure can change dynamically\n- Some services use private networks not visible externally",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "e1901a56-b790-40e8-bdda-24734888350c",
           "title": "Cloud asset discovery",
-          "description": "OBJECTIVE: Identify all cloud-hosted assets and services associated with the target.\n\nSTEP-BY-STEP PROCESS:\n1. Cloud provider enumeration:\n   - AWS: Use cloud_enum, s3scanner, bucket_finder\n   - Azure: Check for storage accounts, app services\n   - GCP: Look for storage buckets and cloud functions\n   - DigitalOcean: Check for spaces and droplets\n\n2. S3 bucket discovery:\n   - Use lazys3: python lazys3.py target.com\n   - Check common naming patterns: target-backup, target-dev, target-logs\n   - Test for public access and misconfigurations\n\n3. Cloud service identification:\n   - Check for API gateways and serverless functions\n   - Identify cloud databases and storage services\n   - Look for cloud logging and monitoring services\n\n4. Misconfiguration testing:\n   - Test for open S3 buckets: aws s3 ls s3://bucket-name --no-sign-request\n   - Check cloud storage permissions\n   - Verify authentication requirements\n\n5. Documentation and evidence collection:\n   - Screenshot accessible cloud resources\n   - Document permission levels and access controls\n   - Note any data exposure or misconfigurations\n\nWHAT TO LOOK FOR:\n- Publicly accessible storage buckets\n- Exposed API keys or credentials\n- Misconfigured cloud databases\n- Unsecured cloud functions\n- Data leakage through cloud logging\n\nCOMMON PITFALLS:\n- Some cloud assets are intentionally public\n- Temporary credentials may expire during testing\n- Cloud services may have complex permission models\n- Some assets require specific access patterns",
           "tags": [
             "recon"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Identify all cloud-hosted assets and services associated with the target.\n\nSTEP-BY-STEP PROCESS:\n1. Cloud provider enumeration:\n   - AWS: Use cloud_enum, s3scanner, bucket_finder\n   - Azure: Check for storage accounts, app services\n   - GCP: Look for storage buckets and cloud functions\n   - DigitalOcean: Check for spaces and droplets\n\n2. S3 bucket discovery:\n   - Use lazys3: python lazys3.py target.com\n   - Check common naming patterns: target-backup, target-dev, target-logs\n   - Test for public access and misconfigurations\n\n3. Cloud service identification:\n   - Check for API gateways and serverless functions\n   - Identify cloud databases and storage services\n   - Look for cloud logging and monitoring services\n\n4. Misconfiguration testing:\n   - Test for open S3 buckets: aws s3 ls s3://bucket-name --no-sign-request\n   - Check cloud storage permissions\n   - Verify authentication requirements\n\n5. Documentation and evidence collection:\n   - Screenshot accessible cloud resources\n   - Document permission levels and access controls\n   - Note any data exposure or misconfigurations\n\nWHAT TO LOOK FOR:\n- Publicly accessible storage buckets\n- Exposed API keys or credentials\n- Misconfigured cloud databases\n- Unsecured cloud functions\n- Data leakage through cloud logging\n\nCOMMON PITFALLS:\n- Some cloud assets are intentionally public\n- Temporary credentials may expire during testing\n- Cloud services may have complex permission models\n- Some assets require specific access patterns",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "9af55ea2-5620-481c-be19-0ed930258243",
           "title": "Email reconnaissance",
-          "description": "OBJECTIVE: Gather intelligence about email infrastructure and personnel.\n\nSTEP-BY-STEP PROCESS:\n1. Email domain analysis:\n   - Check MX records: dig target.com MX\n   - Identify email providers (Google, Microsoft, etc.)\n   - Test for email spoofing protections\n\n2. Email address harvesting:\n   - Use theHarvester: theharvester -d target.com -l 500 -b all\n   - Check LinkedIn, company websites, and social media\n   - Look for email patterns (firstname.lastname@target.com)\n\n3. Email server enumeration:\n   - Test SMTP: nc target.com 25, then VRFY/EXPN commands\n   - Check for open relays\n   - Identify anti-spam measures\n\n4. Personnel intelligence:\n   - LinkedIn scraping for employee information\n   - Social media profiling\n   - Company directory analysis\n\n5. Phishing preparation:\n   - Identify high-value targets\n   - Map email communication patterns\n   - Document organizational structure\n\nWHAT TO LOOK FOR:\n- Email addresses for key personnel\n- Email server vulnerabilities\n- Weak authentication mechanisms\n- Information leakage through email headers\n\nCOMMON PITFALLS:\n- Some email addresses are role-based, not personal\n- Privacy laws limit what information is public\n- Email harvesting tools may be rate-limited\n- Some organizations use email aliases",
           "tags": [
             "recon"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Gather intelligence about email infrastructure and personnel.\n\nSTEP-BY-STEP PROCESS:\n1. Email domain analysis:\n   - Check MX records: dig target.com MX\n   - Identify email providers (Google, Microsoft, etc.)\n   - Test for email spoofing protections\n\n2. Email address harvesting:\n   - Use theHarvester: theharvester -d target.com -l 500 -b all\n   - Check LinkedIn, company websites, and social media\n   - Look for email patterns (firstname.lastname@target.com)\n\n3. Email server enumeration:\n   - Test SMTP: nc target.com 25, then VRFY/EXPN commands\n   - Check for open relays\n   - Identify anti-spam measures\n\n4. Personnel intelligence:\n   - LinkedIn scraping for employee information\n   - Social media profiling\n   - Company directory analysis\n\n5. Phishing preparation:\n   - Identify high-value targets\n   - Map email communication patterns\n   - Document organizational structure\n\nWHAT TO LOOK FOR:\n- Email addresses for key personnel\n- Email server vulnerabilities\n- Weak authentication mechanisms\n- Information leakage through email headers\n\nCOMMON PITFALLS:\n- Some email addresses are role-based, not personal\n- Privacy laws limit what information is public\n- Email harvesting tools may be rate-limited\n- Some organizations use email aliases",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "284c0d60-c167-473e-a5df-b95213c300ff",
           "title": "Screenshot capture",
-          "description": "OBJECTIVE: Create visual documentation of discovered assets and applications.\n\nSTEP-BY-STEP PROCESS:\n1. Automated screenshot tools:\n   - Use eyewitness: python EyeWitness.py -f urls.txt --web\n   - Gowitness: gowitness scan file -f urls.txt\n   - Aquatone: cat urls.txt | aquatone\n\n2. Manual screenshot capture:\n   - Visit each discovered subdomain and path\n   - Capture different states (login, error pages, admin panels)\n   - Document before/after states for changes\n\n3. Responsive design testing:\n   - Capture screenshots at different viewport sizes\n   - Test mobile and tablet interfaces\n   - Identify responsive design issues\n\n4. Authentication state documentation:\n   - Screenshots of login pages and forms\n   - Capture authenticated vs unauthenticated views\n   - Document different user role interfaces\n\n5. Evidence organization:\n   - Organize screenshots by phase and asset type\n   - Create timestamped evidence folders\n   - Include metadata (URL, timestamp, tool used)\n\nWHAT TO LOOK FOR:\n- Default or error pages indicating technology\n- Login interfaces and authentication flows\n- Unusual or unexpected functionality\n- Branding and customization levels\n\nCOMMON PITFALLS:\n- Screenshots may not capture dynamic content\n- Some pages require specific browser configurations\n- Authentication states can change during testing\n- Screenshot tools may miss AJAX-loaded content",
           "tags": [
             "recon"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Create visual documentation of discovered assets and applications.\n\nSTEP-BY-STEP PROCESS:\n1. Automated screenshot tools:\n   - Use eyewitness: python EyeWitness.py -f urls.txt --web\n   - Gowitness: gowitness scan file -f urls.txt\n   - Aquatone: cat urls.txt | aquatone\n\n2. Manual screenshot capture:\n   - Visit each discovered subdomain and path\n   - Capture different states (login, error pages, admin panels)\n   - Document before/after states for changes\n\n3. Responsive design testing:\n   - Capture screenshots at different viewport sizes\n   - Test mobile and tablet interfaces\n   - Identify responsive design issues\n\n4. Authentication state documentation:\n   - Screenshots of login pages and forms\n   - Capture authenticated vs unauthenticated views\n   - Document different user role interfaces\n\n5. Evidence organization:\n   - Organize screenshots by phase and asset type\n   - Create timestamped evidence folders\n   - Include metadata (URL, timestamp, tool used)\n\nWHAT TO LOOK FOR:\n- Default or error pages indicating technology\n- Login interfaces and authentication flows\n- Unusual or unexpected functionality\n- Branding and customization levels\n\nCOMMON PITFALLS:\n- Screenshots may not capture dynamic content\n- Some pages require specific browser configurations\n- Authentication states can change during testing\n- Screenshot tools may miss AJAX-loaded content",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "47148bea-a0a4-43b3-87a9-4be55cd296ad",
           "title": "JavaScript analysis",
-          "description": "OBJECTIVE: Analyze client-side code for security issues and hidden functionality.\n\nSTEP-BY-STEP PROCESS:\n1. JavaScript file collection:\n   - Use getJS: getJS -url https://target.com -output jsfiles.txt\n   - Manually identify and download JS files\n   - Extract inline JavaScript from HTML\n\n2. Static analysis:\n   - Use semgrep or custom regex for secrets\n   - Look for hardcoded API keys, passwords, endpoints\n   - Identify client-side validation logic\n\n3. Dynamic analysis:\n   - Use browser dev tools to analyze runtime behavior\n   - Monitor network requests and responses\n   - Check for exposed internal APIs\n\n4. Framework and library analysis:\n   - Identify JavaScript frameworks (React, Vue, Angular)\n   - Check for vulnerable library versions\n   - Look for framework-specific security issues\n\n5. Source map analysis:\n   - Check for .map files that expose source code\n   - Analyze minified code for secrets\n   - Identify development vs production code\n\nWHAT TO LOOK FOR:\n- Exposed API keys and secrets\n- Client-side authentication tokens\n- Hidden API endpoints\n- Vulnerable JavaScript libraries\n- Development debugging code left in production\n\nCOMMON PITFALLS:\n- Minified code is hard to analyze manually\n- Some secrets are intentionally public (public API keys)\n- JavaScript may be loaded dynamically\n- Source maps may not be available for all files",
           "tags": [
             "recon"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Analyze client-side code for security issues and hidden functionality.\n\nSTEP-BY-STEP PROCESS:\n1. JavaScript file collection:\n   - Use getJS: getJS -url https://target.com -output jsfiles.txt\n   - Manually identify and download JS files\n   - Extract inline JavaScript from HTML\n\n2. Static analysis:\n   - Use semgrep or custom regex for secrets\n   - Look for hardcoded API keys, passwords, endpoints\n   - Identify client-side validation logic\n\n3. Dynamic analysis:\n   - Use browser dev tools to analyze runtime behavior\n   - Monitor network requests and responses\n   - Check for exposed internal APIs\n\n4. Framework and library analysis:\n   - Identify JavaScript frameworks (React, Vue, Angular)\n   - Check for vulnerable library versions\n   - Look for framework-specific security issues\n\n5. Source map analysis:\n   - Check for .map files that expose source code\n   - Analyze minified code for secrets\n   - Identify development vs production code\n\nWHAT TO LOOK FOR:\n- Exposed API keys and secrets\n- Client-side authentication tokens\n- Hidden API endpoints\n- Vulnerable JavaScript libraries\n- Development debugging code left in production\n\nCOMMON PITFALLS:\n- Minified code is hard to analyze manually\n- Some secrets are intentionally public (public API keys)\n- JavaScript may be loaded dynamically\n- Source maps may not be available for all files",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "54d9dcd0-58a2-49e3-b940-7f2aebb33139",
           "title": "Parameter discovery",
-          "description": "OBJECTIVE: Identify all input parameters in web applications for testing.\n\nSTEP-BY-STEP PROCESS:\n1. URL parameter extraction:\n   - Use paramspider: python3 paramspider.py -d target.com\n   - Parse URLs from crawling results\n   - Extract query parameters and fragments\n\n2. Form parameter identification:\n   - Analyze HTML forms for input fields\n   - Identify hidden parameters\n   - Check for file upload forms\n\n3. API parameter discovery:\n   - Use postman or burp to explore APIs\n   - Check for GraphQL or REST endpoints\n   - Identify parameter types and formats\n\n4. Advanced parameter techniques:\n   - Use arjun for parameter fuzzing: arjun -u https://target.com/endpoint\n   - Test for non-standard parameters\n   - Check for parameter pollution vulnerabilities\n\n5. Parameter documentation:\n   - Create comprehensive parameter lists\n   - Note parameter types and expected values\n   - Identify which parameters are user-controllable\n\nWHAT TO LOOK FOR:\n- Unvalidated input parameters\n- Parameters that control application behavior\n- File upload parameters\n- Parameters that might be vulnerable to injection\n\nCOMMON PITFALLS:\n- Some parameters are only available after authentication\n- AJAX requests may use different parameter formats\n- Parameters may be encoded or encrypted\n- Some applications use non-standard parameter naming",
           "tags": [
             "recon"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Identify all input parameters in web applications for testing.\n\nSTEP-BY-STEP PROCESS:\n1. URL parameter extraction:\n   - Use paramspider: python3 paramspider.py -d target.com\n   - Parse URLs from crawling results\n   - Extract query parameters and fragments\n\n2. Form parameter identification:\n   - Analyze HTML forms for input fields\n   - Identify hidden parameters\n   - Check for file upload forms\n\n3. API parameter discovery:\n   - Use postman or burp to explore APIs\n   - Check for GraphQL or REST endpoints\n   - Identify parameter types and formats\n\n4. Advanced parameter techniques:\n   - Use arjun for parameter fuzzing: arjun -u https://target.com/endpoint\n   - Test for non-standard parameters\n   - Check for parameter pollution vulnerabilities\n\n5. Parameter documentation:\n   - Create comprehensive parameter lists\n   - Note parameter types and expected values\n   - Identify which parameters are user-controllable\n\nWHAT TO LOOK FOR:\n- Unvalidated input parameters\n- Parameters that control application behavior\n- File upload parameters\n- Parameters that might be vulnerable to injection\n\nCOMMON PITFALLS:\n- Some parameters are only available after authentication\n- AJAX requests may use different parameter formats\n- Parameters may be encoded or encrypted\n- Some applications use non-standard parameter naming",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "441d26ed-2061-4960-9365-8c0705e496d5",
           "title": "Public exposure scanning",
-          "description": "OBJECTIVE: Identify publicly exposed assets and services that shouldn't be internet-facing.\n\nSTEP-BY-STEP PROCESS:\n1. Internet-wide scanning:\n   - Use Shodan: shodan search target.com\n   - Censys or ZoomEye for asset discovery\n   - BinaryEdge for service enumeration\n\n2. Exposed service identification:\n   - Look for development servers, staging environments\n   - Identify misconfigured cloud services\n   - Check for exposed databases and admin interfaces\n\n3. Vulnerability scanning:\n   - Use Nessus or OpenVAS for comprehensive scanning\n   - Nuclei for template-based vulnerability detection\n   - Check for default credentials on exposed services\n\n4. Data exposure verification:\n   - Test for information disclosure\n   - Check for exposed sensitive files\n   - Verify data classification and handling\n\n5. Risk assessment:\n   - Document all exposed assets\n   - Assess the risk level of each exposure\n   - Prioritize remediation based on impact\n\nWHAT TO LOOK FOR:\n- Exposed development environments\n- Publicly accessible databases\n- Admin interfaces without authentication\n- Sensitive files and documents\n- Services running with default credentials\n\nCOMMON PITFALLS:\n- Some exposures are intentional (public APIs)\n- Internal services may be exposed through misconfigurations\n- Cloud services may have complex permission models\n- Some assets require specific access patterns",
           "tags": [
             "recon"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Identify publicly exposed assets and services that shouldn't be internet-facing.\n\nSTEP-BY-STEP PROCESS:\n1. Internet-wide scanning:\n   - Use Shodan: shodan search target.com\n   - Censys or ZoomEye for asset discovery\n   - BinaryEdge for service enumeration\n\n2. Exposed service identification:\n   - Look for development servers, staging environments\n   - Identify misconfigured cloud services\n   - Check for exposed databases and admin interfaces\n\n3. Vulnerability scanning:\n   - Use Nessus or OpenVAS for comprehensive scanning\n   - Nuclei for template-based vulnerability detection\n   - Check for default credentials on exposed services\n\n4. Data exposure verification:\n   - Test for information disclosure\n   - Check for exposed sensitive files\n   - Verify data classification and handling\n\n5. Risk assessment:\n   - Document all exposed assets\n   - Assess the risk level of each exposure\n   - Prioritize remediation based on impact\n\nWHAT TO LOOK FOR:\n- Exposed development environments\n- Publicly accessible databases\n- Admin interfaces without authentication\n- Sensitive files and documents\n- Services running with default credentials\n\nCOMMON PITFALLS:\n- Some exposures are intentional (public APIs)\n- Internal services may be exposed through misconfigurations\n- Cloud services may have complex permission models\n- Some assets require specific access patterns",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "64bfb72d-6092-4047-af61-a1592d58e729",
           "title": "WHOIS domain analysis",
-          "description": "OBJECTIVE: Gather domain registration and ownership information for intelligence gathering.\n\nSTEP-BY-STEP PROCESS:\n1. WHOIS query execution:\n   - Use whois command: whois target.com\n   - Check multiple WHOIS servers if needed\n   - Use web interfaces like whois.icann.org\n\n2. Domain information extraction:\n   - Record registrar and registration dates\n   - Note name servers and DNS configuration\n   - Identify domain contacts and owners\n\n3. Historical analysis:\n   - Check domain history for ownership changes\n   - Look for related domains owned by same entity\n   - Identify domain age and renewal patterns\n\n4. Privacy service detection:\n   - Check for WHOIS privacy/guard services\n   - Attempt to bypass privacy protections\n   - Look for alternative contact information\n\n5. Intelligence correlation:\n   - Cross-reference with other reconnaissance data\n   - Identify related infrastructure and services\n   - Build profile of domain ownership\n\nWHAT TO LOOK FOR:\n- Domain registration privacy services\n- Related domains with same ownership\n- Recent domain transfers or changes\n- Contact information for key personnel\n- Domain expiration dates\n\nCOMMON PITFALLS:\n- WHOIS privacy services hide real owner information\n- Some TLDs have different WHOIS requirements\n- Historical data may not be available\n- Contact information may be outdated",
           "tags": [
             "recon"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Gather domain registration and ownership information for intelligence gathering.\n\nSTEP-BY-STEP PROCESS:\n1. WHOIS query execution:\n   - Use whois command: whois target.com\n   - Check multiple WHOIS servers if needed\n   - Use web interfaces like whois.icann.org\n\n2. Domain information extraction:\n   - Record registrar and registration dates\n   - Note name servers and DNS configuration\n   - Identify domain contacts and owners\n\n3. Historical analysis:\n   - Check domain history for ownership changes\n   - Look for related domains owned by same entity\n   - Identify domain age and renewal patterns\n\n4. Privacy service detection:\n   - Check for WHOIS privacy/guard services\n   - Attempt to bypass privacy protections\n   - Look for alternative contact information\n\n5. Intelligence correlation:\n   - Cross-reference with other reconnaissance data\n   - Identify related infrastructure and services\n   - Build profile of domain ownership\n\nWHAT TO LOOK FOR:\n- Domain registration privacy services\n- Related domains with same ownership\n- Recent domain transfers or changes\n- Contact information for key personnel\n- Domain expiration dates\n\nCOMMON PITFALLS:\n- WHOIS privacy services hide real owner information\n- Some TLDs have different WHOIS requirements\n- Historical data may not be available\n- Contact information may be outdated",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "4879373b-12f0-4a50-b265-e4bf11f9bfc9",
           "title": "Social media reconnaissance",
-          "description": "OBJECTIVE: Gather intelligence from social media platforms about the target organization and personnel.\n\nSTEP-BY-STEP PROCESS:\n1. Platform identification:\n   - Identify official company social media accounts\n   - Find employee personal and professional profiles\n   - Check for abandoned or forgotten accounts\n\n2. Content analysis:\n   - Review posts for technical information\n   - Identify technologies and tools mentioned\n   - Look for organizational structure clues\n\n3. Personnel mapping:\n   - Create employee directory from social profiles\n   - Identify job roles and responsibilities\n   - Map organizational hierarchy\n\n4. Security awareness assessment:\n   - Check for information disclosure in posts\n   - Identify potential social engineering targets\n   - Look for security-related discussions\n\n5. Intelligence documentation:\n   - Compile personnel database\n   - Document organizational insights\n   - Note potential security awareness issues\n\nWHAT TO LOOK FOR:\n- Employee names and contact information\n- Technology stack mentions\n- Organizational structure insights\n- Security awareness indicators\n- Potential social engineering vectors\n\nCOMMON PITFALLS:\n- Social media data may be outdated\n- Some employees maintain strict privacy settings\n- Information may not be accurate or current\n- Privacy laws limit data collection",
           "tags": [
             "recon"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Gather intelligence from social media platforms about the target organization and personnel.\n\nSTEP-BY-STEP PROCESS:\n1. Platform identification:\n   - Identify official company social media accounts\n   - Find employee personal and professional profiles\n   - Check for abandoned or forgotten accounts\n\n2. Content analysis:\n   - Review posts for technical information\n   - Identify technologies and tools mentioned\n   - Look for organizational structure clues\n\n3. Personnel mapping:\n   - Create employee directory from social profiles\n   - Identify job roles and responsibilities\n   - Map organizational hierarchy\n\n4. Security awareness assessment:\n   - Check for information disclosure in posts\n   - Identify potential social engineering targets\n   - Look for security-related discussions\n\n5. Intelligence documentation:\n   - Compile personnel database\n   - Document organizational insights\n   - Note potential security awareness issues\n\nWHAT TO LOOK FOR:\n- Employee names and contact information\n- Technology stack mentions\n- Organizational structure insights\n- Security awareness indicators\n- Potential social engineering vectors\n\nCOMMON PITFALLS:\n- Social media data may be outdated\n- Some employees maintain strict privacy settings\n- Information may not be accurate or current\n- Privacy laws limit data collection",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         }
       ],
       "notes": ""
@@ -234,67 +298,87 @@
         {
           "id": "0bc11dcc-4b38-4633-a121-0f7b203c1b38",
           "title": "Framework mapping to CVEs",
-          "description": "OBJECTIVE: Map identified technologies and versions to known vulnerabilities.\n\nSTEP-BY-STEP PROCESS:\n1. Technology inventory review:\n   - Compile list of all identified technologies\n   - Include versions where available\n   - Note operating systems, frameworks, libraries\n\n2. Vulnerability database research:\n   - Search NVD (NIST): https://nvd.nist.gov/\n   - Check Exploit-DB: https://www.exploit-db.com/\n   - Review vendor security advisories\n\n3. CVE analysis:\n   - Identify CVEs affecting discovered versions\n   - Assess exploitability in target environment\n   - Check for proof-of-concept exploits\n\n4. Risk prioritization:\n   - Score vulnerabilities using CVSS\n   - Consider exploitability factors\n   - Assess business impact\n\n5. Documentation:\n   - Create vulnerability matrix\n   - Include CVE details and references\n   - Document affected systems and components\n\nWHAT TO LOOK FOR:\n- Critical and high-severity vulnerabilities\n- Recently disclosed vulnerabilities (zero-days)\n- Vulnerabilities with public exploits\n- End-of-life software versions\n\nCOMMON PITFALLS:\n- Not all vulnerabilities are exploitable in every environment\n- Some vendors dispute or downplay reported vulnerabilities\n- Patch levels may not match public version numbers\n- Some systems use backported security fixes",
           "tags": [
             "vuln"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Map identified technologies and versions to known vulnerabilities.\n\nSTEP-BY-STEP PROCESS:\n1. Technology inventory review:\n   - Compile list of all identified technologies\n   - Include versions where available\n   - Note operating systems, frameworks, libraries\n\n2. Vulnerability database research:\n   - Search NVD (NIST): https://nvd.nist.gov/\n   - Check Exploit-DB: https://www.exploit-db.com/\n   - Review vendor security advisories\n\n3. CVE analysis:\n   - Identify CVEs affecting discovered versions\n   - Assess exploitability in target environment\n   - Check for proof-of-concept exploits\n\n4. Risk prioritization:\n   - Score vulnerabilities using CVSS\n   - Consider exploitability factors\n   - Assess business impact\n\n5. Documentation:\n   - Create vulnerability matrix\n   - Include CVE details and references\n   - Document affected systems and components\n\nWHAT TO LOOK FOR:\n- Critical and high-severity vulnerabilities\n- Recently disclosed vulnerabilities (zero-days)\n- Vulnerabilities with public exploits\n- End-of-life software versions\n\nCOMMON PITFALLS:\n- Not all vulnerabilities are exploitable in every environment\n- Some vendors dispute or downplay reported vulnerabilities\n- Patch levels may not match public version numbers\n- Some systems use backported security fixes",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "ddf29f55-70d2-4ed7-9070-851d511b5b0e",
           "title": "Parameter testing",
-          "description": "OBJECTIVE: Test input parameters for common web vulnerabilities.\n\nSTEP-BY-STEP PROCESS:\n1. SQL injection testing:\n   - Test all input parameters with SQL payloads\n   - Use sqlmap: sqlmap -u \"https://target.com/page?id=1\" --batch\n   - Check for error-based, blind, and time-based injection\n\n2. XSS testing:\n   - Test reflected XSS: <script>alert(1)</script>\n   - Test stored XSS in forms and comments\n   - Check DOM-based XSS in client-side code\n\n3. Command injection:\n   - Test system command execution in input fields\n   - Check for shell metacharacter injection\n   - Test file inclusion vulnerabilities\n\n4. Other injection types:\n   - LDAP injection in login forms\n   - XPath injection in XML processing\n   - NoSQL injection in MongoDB applications\n\n5. Input validation bypass:\n   - Test encoding bypasses (URL encoding, HTML encoding)\n   - Check for parameter pollution\n   - Test multipart form boundaries\n\nWHAT TO LOOK FOR:\n- Unescaped user input in database queries\n- Reflected user input in HTML output\n- Command execution through user-controlled input\n- File inclusion vulnerabilities\n\nCOMMON PITFALLS:\n- Some applications use prepared statements or ORM\n- WAFs may block obvious payloads\n- Some injection requires specific syntax\n- Context matters (HTML vs JavaScript vs SQL)",
           "tags": [
             "vuln"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Test input parameters for common web vulnerabilities.\n\nSTEP-BY-STEP PROCESS:\n1. SQL injection testing:\n   - Test all input parameters with SQL payloads\n   - Use sqlmap: sqlmap -u \"https://target.com/page?id=1\" --batch\n   - Check for error-based, blind, and time-based injection\n\n2. XSS testing:\n   - Test reflected XSS: <script>alert(1)</script>\n   - Test stored XSS in forms and comments\n   - Check DOM-based XSS in client-side code\n\n3. Command injection:\n   - Test system command execution in input fields\n   - Check for shell metacharacter injection\n   - Test file inclusion vulnerabilities\n\n4. Other injection types:\n   - LDAP injection in login forms\n   - XPath injection in XML processing\n   - NoSQL injection in MongoDB applications\n\n5. Input validation bypass:\n   - Test encoding bypasses (URL encoding, HTML encoding)\n   - Check for parameter pollution\n   - Test multipart form boundaries\n\nWHAT TO LOOK FOR:\n- Unescaped user input in database queries\n- Reflected user input in HTML output\n- Command execution through user-controlled input\n- File inclusion vulnerabilities\n\nCOMMON PITFALLS:\n- Some applications use prepared statements or ORM\n- WAFs may block obvious payloads\n- Some injection requires specific syntax\n- Context matters (HTML vs JavaScript vs SQL)",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "85703f66-99fc-4bc4-9dc8-92517825f0a0",
           "title": "Authentication analysis",
-          "description": "OBJECTIVE: Evaluate the security of authentication and session management mechanisms.\n\nSTEP-BY-STEP PROCESS:\n1. Authentication mechanism review:\n   - Identify authentication methods (forms, SSO, MFA)\n   - Check password policies and complexity requirements\n   - Test account lockout mechanisms\n\n2. Session management testing:\n   - Check for secure cookie flags (HttpOnly, Secure, SameSite)\n   - Test session fixation vulnerabilities\n   - Verify session timeout and invalidation\n\n3. Password security assessment:\n   - Test for weak password acceptance\n   - Check password reset functionality\n   - Verify password storage security (if accessible)\n\n4. Multi-factor authentication:\n   - Test MFA implementation and bypass attempts\n   - Check for MFA fatigue attacks\n   - Verify backup authentication methods\n\n5. Authorization testing:\n   - Test horizontal privilege escalation\n   - Check vertical privilege escalation\n   - Verify role-based access controls\n\nWHAT TO LOOK FOR:\n- Weak password requirements\n- Session cookies without security flags\n- Password reset vulnerabilities\n- Missing or weak MFA implementation\n- Insecure direct object references (IDOR)\n\nCOMMON PITFALLS:\n- Some authentication is handled by third parties\n- Internal applications may have weaker controls\n- Session management may be handled by frameworks\n- Some systems use non-standard authentication flows",
           "tags": [
             "vuln"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Evaluate the security of authentication and session management mechanisms.\n\nSTEP-BY-STEP PROCESS:\n1. Authentication mechanism review:\n   - Identify authentication methods (forms, SSO, MFA)\n   - Check password policies and complexity requirements\n   - Test account lockout mechanisms\n\n2. Session management testing:\n   - Check for secure cookie flags (HttpOnly, Secure, SameSite)\n   - Test session fixation vulnerabilities\n   - Verify session timeout and invalidation\n\n3. Password security assessment:\n   - Test for weak password acceptance\n   - Check password reset functionality\n   - Verify password storage security (if accessible)\n\n4. Multi-factor authentication:\n   - Test MFA implementation and bypass attempts\n   - Check for MFA fatigue attacks\n   - Verify backup authentication methods\n\n5. Authorization testing:\n   - Test horizontal privilege escalation\n   - Check vertical privilege escalation\n   - Verify role-based access controls\n\nWHAT TO LOOK FOR:\n- Weak password requirements\n- Session cookies without security flags\n- Password reset vulnerabilities\n- Missing or weak MFA implementation\n- Insecure direct object references (IDOR)\n\nCOMMON PITFALLS:\n- Some authentication is handled by third parties\n- Internal applications may have weaker controls\n- Session management may be handled by frameworks\n- Some systems use non-standard authentication flows",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "41242708-f9ba-4ff1-983f-3c2aa8153fdb",
           "title": "Access control testing",
-          "description": "OBJECTIVE: Verify that users can only access resources they are authorized for.\n\nSTEP-BY-STEP PROCESS:\n1. Role definition and testing:\n   - Identify different user roles and permissions\n   - Test each role's access to different resources\n   - Check for role-based access control (RBAC)\n\n2. Horizontal privilege escalation:\n   - Attempt to access other users' data\n   - Test IDOR vulnerabilities\n   - Check for insecure direct object references\n\n3. Vertical privilege escalation:\n   - Attempt to gain higher privileges\n   - Test admin function access from user accounts\n   - Check for privilege escalation through misconfigurations\n\n4. Business logic testing:\n   - Test workflow bypasses\n   - Check for logic flaws in access controls\n   - Verify state transitions and permissions\n\n5. API authorization:\n   - Test API endpoints for proper authorization\n   - Check for JWT token vulnerabilities\n   - Verify API key and token security\n\nWHAT TO LOOK FOR:\n- Users accessing data they shouldn't see\n- Admin functions accessible to regular users\n- API endpoints without proper authentication\n- Business logic flaws allowing unauthorized access\n\nCOMMON PITFALLS:\n- Some access controls are enforced at the UI level only\n- APIs may have different authorization than web interface\n- Some applications use complex permission matrices\n- Access controls may be bypassed through race conditions",
           "tags": [
             "vuln"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Verify that users can only access resources they are authorized for.\n\nSTEP-BY-STEP PROCESS:\n1. Role definition and testing:\n   - Identify different user roles and permissions\n   - Test each role's access to different resources\n   - Check for role-based access control (RBAC)\n\n2. Horizontal privilege escalation:\n   - Attempt to access other users' data\n   - Test IDOR vulnerabilities\n   - Check for insecure direct object references\n\n3. Vertical privilege escalation:\n   - Attempt to gain higher privileges\n   - Test admin function access from user accounts\n   - Check for privilege escalation through misconfigurations\n\n4. Business logic testing:\n   - Test workflow bypasses\n   - Check for logic flaws in access controls\n   - Verify state transitions and permissions\n\n5. API authorization:\n   - Test API endpoints for proper authorization\n   - Check for JWT token vulnerabilities\n   - Verify API key and token security\n\nWHAT TO LOOK FOR:\n- Users accessing data they shouldn't see\n- Admin functions accessible to regular users\n- API endpoints without proper authentication\n- Business logic flaws allowing unauthorized access\n\nCOMMON PITFALLS:\n- Some access controls are enforced at the UI level only\n- APIs may have different authorization than web interface\n- Some applications use complex permission matrices\n- Access controls may be bypassed through race conditions",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "70d37629-3d98-4322-9fc2-5a4e9e232fb7",
           "title": "Common vulnerability sweeps",
-          "description": "OBJECTIVE: Perform broad scanning for common vulnerabilities across all discovered assets.\n\nSTEP-BY-STEP PROCESS:\n1. Automated vulnerability scanning:\n   - Use OpenVAS or Nessus for comprehensive scanning\n   - Nuclei for template-based vulnerability detection\n   - Nikto for web server vulnerability scanning\n\n2. Web application scanning:\n   - OWASP ZAP or Burp Suite active scanning\n   - SQLMap for automated SQL injection testing\n   - Dirbuster for directory and file enumeration\n\n3. Network vulnerability assessment:\n   - Nmap vulnerability scripts\n   - Test for common misconfigurations\n   - Check for default credentials\n\n4. Configuration review:\n   - Check for security headers (CSP, HSTS, X-Frame-Options)\n   - Verify SSL/TLS configurations\n   - Test for information disclosure\n\n5. Manual verification:\n   - Verify automated findings\n   - Test for bypass techniques\n   - Document false positives and confirmed vulnerabilities\n\nWHAT TO LOOK FOR:\n- Outdated software with known vulnerabilities\n- Misconfigurations and default settings\n- Missing security controls\n- Information disclosure issues\n\nCOMMON PITFALLS:\n- Automated scanners produce false positives\n- Some vulnerabilities require specific conditions\n- Scanners may miss custom application logic issues\n- Rate limiting can prevent thorough scanning",
           "tags": [
             "vuln"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Perform broad scanning for common vulnerabilities across all discovered assets.\n\nSTEP-BY-STEP PROCESS:\n1. Automated vulnerability scanning:\n   - Use OpenVAS or Nessus for comprehensive scanning\n   - Nuclei for template-based vulnerability detection\n   - Nikto for web server vulnerability scanning\n\n2. Web application scanning:\n   - OWASP ZAP or Burp Suite active scanning\n   - SQLMap for automated SQL injection testing\n   - Dirbuster for directory and file enumeration\n\n3. Network vulnerability assessment:\n   - Nmap vulnerability scripts\n   - Test for common misconfigurations\n   - Check for default credentials\n\n4. Configuration review:\n   - Check for security headers (CSP, HSTS, X-Frame-Options)\n   - Verify SSL/TLS configurations\n   - Test for information disclosure\n\n5. Manual verification:\n   - Verify automated findings\n   - Test for bypass techniques\n   - Document false positives and confirmed vulnerabilities\n\nWHAT TO LOOK FOR:\n- Outdated software with known vulnerabilities\n- Misconfigurations and default settings\n- Missing security controls\n- Information disclosure issues\n\nCOMMON PITFALLS:\n- Automated scanners produce false positives\n- Some vulnerabilities require specific conditions\n- Scanners may miss custom application logic issues\n- Rate limiting can prevent thorough scanning",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         }
       ],
       "notes": ""
@@ -306,54 +390,70 @@
         {
           "id": "43e9dc17-6345-44ce-a82a-1f61f127b30d",
           "title": "Safe exploit validation",
-          "description": "OBJECTIVE: Verify that identified vulnerabilities can be safely exploited without causing damage.\n\nSTEP-BY-STEP PROCESS:\n1. Vulnerability verification:\n   - Confirm vulnerability exists and is exploitable\n   - Test in isolated environment first\n   - Verify exploit conditions and prerequisites\n\n2. Impact assessment:\n   - Determine potential damage from exploitation\n   - Identify data at risk\n   - Assess system availability impact\n\n3. Safe exploitation planning:\n   - Develop proof-of-concept exploits\n   - Create exploitation scripts with safety checks\n   - Plan for exploitation rollback if needed\n\n4. Controlled testing:\n   - Test exploits in development/staging environments\n   - Use virtual machines or containers for isolation\n   - Monitor system behavior during exploitation\n\n5. Documentation and evidence:\n   - Record exploitation process and results\n   - Capture screenshots and network traffic\n   - Document impact and recovery procedures\n\nWHAT TO LOOK FOR:\n- Reliable exploit methods\n- Minimal collateral damage\n- Clear exploitation prerequisites\n- Safe rollback procedures\n\nCOMMON PITFALLS:\n- Some exploits are unreliable or environment-specific\n- Testing environments may differ from production\n- Some exploits require specific timing or conditions\n- Rollback may not always be possible",
           "tags": [
             "exploit"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Verify that identified vulnerabilities can be safely exploited without causing damage.\n\nSTEP-BY-STEP PROCESS:\n1. Vulnerability verification:\n   - Confirm vulnerability exists and is exploitable\n   - Test in isolated environment first\n   - Verify exploit conditions and prerequisites\n\n2. Impact assessment:\n   - Determine potential damage from exploitation\n   - Identify data at risk\n   - Assess system availability impact\n\n3. Safe exploitation planning:\n   - Develop proof-of-concept exploits\n   - Create exploitation scripts with safety checks\n   - Plan for exploitation rollback if needed\n\n4. Controlled testing:\n   - Test exploits in development/staging environments\n   - Use virtual machines or containers for isolation\n   - Monitor system behavior during exploitation\n\n5. Documentation and evidence:\n   - Record exploitation process and results\n   - Capture screenshots and network traffic\n   - Document impact and recovery procedures\n\nWHAT TO LOOK FOR:\n- Reliable exploit methods\n- Minimal collateral damage\n- Clear exploitation prerequisites\n- Safe rollback procedures\n\nCOMMON PITFALLS:\n- Some exploits are unreliable or environment-specific\n- Testing environments may differ from production\n- Some exploits require specific timing or conditions\n- Rollback may not always be possible",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "fdc6b4d8-843a-4393-8166-5f89bc8a8bc3",
           "title": "Credential testing",
-          "description": "OBJECTIVE: Test discovered or default credentials against identified services.\n\nSTEP-BY-STEP PROCESS:\n1. Default credential testing:\n   - Test common default credentials for each service\n   - Use credential lists from SecLists or similar\n   - Check vendor documentation for default passwords\n\n2. Discovered credential validation:\n   - Test credentials found during reconnaissance\n   - Check password reuse across services\n   - Verify credential validity and permissions\n\n3. Brute force testing:\n   - Use Hydra or Medusa for credential spraying\n   - Test against common password lists\n   - Implement rate limiting to avoid lockouts\n\n4. Password policy assessment:\n   - Test password complexity requirements\n   - Check account lockout mechanisms\n   - Verify password history enforcement\n\n5. Credential documentation:\n   - Record successful authentications\n   - Note credential sources and context\n   - Document access levels and permissions\n\nWHAT TO LOOK FOR:\n- Default credentials that haven't been changed\n- Weak passwords that can be brute-forced\n- Password reuse across different systems\n- Accounts with excessive privileges\n\nCOMMON PITFALLS:\n- Some systems have complex lockout policies\n- Brute force may trigger security alerts\n- Some credentials are intentionally weak for testing\n- Multi-factor authentication can block credential testing",
           "tags": [
             "exploit"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Test discovered or default credentials against identified services.\n\nSTEP-BY-STEP PROCESS:\n1. Default credential testing:\n   - Test common default credentials for each service\n   - Use credential lists from SecLists or similar\n   - Check vendor documentation for default passwords\n\n2. Discovered credential validation:\n   - Test credentials found during reconnaissance\n   - Check password reuse across services\n   - Verify credential validity and permissions\n\n3. Brute force testing:\n   - Use Hydra or Medusa for credential spraying\n   - Test against common password lists\n   - Implement rate limiting to avoid lockouts\n\n4. Password policy assessment:\n   - Test password complexity requirements\n   - Check account lockout mechanisms\n   - Verify password history enforcement\n\n5. Credential documentation:\n   - Record successful authentications\n   - Note credential sources and context\n   - Document access levels and permissions\n\nWHAT TO LOOK FOR:\n- Default credentials that haven't been changed\n- Weak passwords that can be brute-forced\n- Password reuse across different systems\n- Accounts with excessive privileges\n\nCOMMON PITFALLS:\n- Some systems have complex lockout policies\n- Brute force may trigger security alerts\n- Some credentials are intentionally weak for testing\n- Multi-factor authentication can block credential testing",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "f3e23f24-365c-4734-87e0-ce86ec72f77e",
           "title": "CVE exploitation",
-          "description": "OBJECTIVE: Attempt exploitation of identified CVEs with available exploits.\n\nSTEP-BY-STEP PROCESS:\n1. Exploit research and preparation:\n   - Research available exploits for identified CVEs\n   - Download proof-of-concept code from Exploit-DB\n   - Review exploit requirements and limitations\n\n2. Exploit adaptation:\n   - Modify exploits for target environment\n   - Test exploits in isolated lab environment\n   - Verify exploit reliability and stability\n\n3. Controlled exploitation:\n   - Execute exploits with monitoring in place\n   - Capture evidence of successful exploitation\n   - Document system state before and after\n\n4. Post-exploitation assessment:\n   - Verify level of access gained\n   - Assess exploit reliability for repeated use\n   - Document any system changes or artifacts\n\n5. Evidence collection:\n   - Screenshot exploitation process\n   - Capture network traffic and logs\n   - Document exploit code and modifications\n\nWHAT TO LOOK FOR:\n- Reliable public exploits\n- Exploits that provide useful access\n- Minimal system disruption\n- Clear exploitation evidence\n\nCOMMON PITFALLS:\n- Many public exploits are unreliable or outdated\n- Target environment may differ from exploit assumptions\n- Some exploits require specific conditions or versions\n- Antivirus or EDR may detect exploit attempts",
           "tags": [
             "exploit"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Attempt exploitation of identified CVEs with available exploits.\n\nSTEP-BY-STEP PROCESS:\n1. Exploit research and preparation:\n   - Research available exploits for identified CVEs\n   - Download proof-of-concept code from Exploit-DB\n   - Review exploit requirements and limitations\n\n2. Exploit adaptation:\n   - Modify exploits for target environment\n   - Test exploits in isolated lab environment\n   - Verify exploit reliability and stability\n\n3. Controlled exploitation:\n   - Execute exploits with monitoring in place\n   - Capture evidence of successful exploitation\n   - Document system state before and after\n\n4. Post-exploitation assessment:\n   - Verify level of access gained\n   - Assess exploit reliability for repeated use\n   - Document any system changes or artifacts\n\n5. Evidence collection:\n   - Screenshot exploitation process\n   - Capture network traffic and logs\n   - Document exploit code and modifications\n\nWHAT TO LOOK FOR:\n- Reliable public exploits\n- Exploits that provide useful access\n- Minimal system disruption\n- Clear exploitation evidence\n\nCOMMON PITFALLS:\n- Many public exploits are unreliable or outdated\n- Target environment may differ from exploit assumptions\n- Some exploits require specific conditions or versions\n- Antivirus or EDR may detect exploit attempts",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "84c991c9-2839-40c9-825d-edcc9ec33864",
           "title": "Web application exploitation",
-          "description": "OBJECTIVE: Exploit identified web application vulnerabilities.\n\nSTEP-BY-STEP PROCESS:\n1. Vulnerability prioritization:\n   - Rank web vulnerabilities by severity and exploitability\n   - Focus on high-impact vulnerabilities first\n   - Consider business context and risk tolerance\n\n2. Exploit development:\n   - Create custom exploits for unique vulnerabilities\n   - Adapt public exploits to target environment\n   - Test exploits in safe environment first\n\n3. Exploitation execution:\n   - Execute exploits with proper monitoring\n   - Capture evidence of successful exploitation\n   - Document impact and data accessed\n\n4. Payload delivery:\n   - Use appropriate payload types (reverse shell, webshell)\n   - Ensure payload reliability and persistence\n   - Test payload execution and cleanup\n\n5. Impact documentation:\n   - Record data accessed or modified\n   - Document privilege escalation achieved\n   - Note any persistent access established\n\nWHAT TO LOOK FOR:\n- SQL injection leading to data extraction\n- XSS for session hijacking or defacement\n- File inclusion for code execution\n- Authentication bypass vulnerabilities\n\nCOMMON PITFALLS:\n- Web application firewalls may block exploits\n- Some vulnerabilities require specific user context\n- JavaScript-heavy applications complicate exploitation\n- Session management may limit exploit windows",
           "tags": [
             "exploit"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Exploit identified web application vulnerabilities.\n\nSTEP-BY-STEP PROCESS:\n1. Vulnerability prioritization:\n   - Rank web vulnerabilities by severity and exploitability\n   - Focus on high-impact vulnerabilities first\n   - Consider business context and risk tolerance\n\n2. Exploit development:\n   - Create custom exploits for unique vulnerabilities\n   - Adapt public exploits to target environment\n   - Test exploits in safe environment first\n\n3. Exploitation execution:\n   - Execute exploits with proper monitoring\n   - Capture evidence of successful exploitation\n   - Document impact and data accessed\n\n4. Payload delivery:\n   - Use appropriate payload types (reverse shell, webshell)\n   - Ensure payload reliability and persistence\n   - Test payload execution and cleanup\n\n5. Impact documentation:\n   - Record data accessed or modified\n   - Document privilege escalation achieved\n   - Note any persistent access established\n\nWHAT TO LOOK FOR:\n- SQL injection leading to data extraction\n- XSS for session hijacking or defacement\n- File inclusion for code execution\n- Authentication bypass vulnerabilities\n\nCOMMON PITFALLS:\n- Web application firewalls may block exploits\n- Some vulnerabilities require specific user context\n- JavaScript-heavy applications complicate exploitation\n- Session management may limit exploit windows",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         }
       ],
       "notes": ""
@@ -365,54 +465,70 @@
         {
           "id": "fda33629-4abd-4c03-98a4-520f18b02923",
           "title": "Privilege escalation",
-          "description": "OBJECTIVE: Attempt to gain higher privileges on compromised systems.\n\nSTEP-BY-STEP PROCESS:\n1. Current privilege assessment:\n   - Determine current user privileges and permissions\n   - Identify available escalation vectors\n   - Check for sudo, suid binaries, or other privilege mechanisms\n\n2. Local privilege escalation:\n   - Test kernel exploits for outdated systems\n   - Check for misconfigured sudo permissions\n   - Look for vulnerable suid/sgid binaries\n\n3. Windows privilege escalation:\n   - Check for service misconfigurations\n   - Test for token impersonation\n   - Look for scheduled task vulnerabilities\n\n4. Linux privilege escalation:\n   - Check for writable files in PATH\n   - Test for cron job vulnerabilities\n   - Look for capability misconfigurations\n\n5. Documentation:\n   - Record privilege escalation methods used\n   - Document new access levels achieved\n   - Note any persistent privilege changes\n\nWHAT TO LOOK FOR:\n- Kernel vulnerabilities allowing root access\n- Misconfigured service accounts with high privileges\n- Weak sudo configurations\n- Vulnerable scheduled tasks or cron jobs\n\nCOMMON PITFALLS:\n- Some privilege escalation requires specific conditions\n- Modern systems have better exploit mitigations\n- Some escalation methods are noisy and detectable\n- Privilege changes may not persist across reboots",
           "tags": [
             "post"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Attempt to gain higher privileges on compromised systems.\n\nSTEP-BY-STEP PROCESS:\n1. Current privilege assessment:\n   - Determine current user privileges and permissions\n   - Identify available escalation vectors\n   - Check for sudo, suid binaries, or other privilege mechanisms\n\n2. Local privilege escalation:\n   - Test kernel exploits for outdated systems\n   - Check for misconfigured sudo permissions\n   - Look for vulnerable suid/sgid binaries\n\n3. Windows privilege escalation:\n   - Check for service misconfigurations\n   - Test for token impersonation\n   - Look for scheduled task vulnerabilities\n\n4. Linux privilege escalation:\n   - Check for writable files in PATH\n   - Test for cron job vulnerabilities\n   - Look for capability misconfigurations\n\n5. Documentation:\n   - Record privilege escalation methods used\n   - Document new access levels achieved\n   - Note any persistent privilege changes\n\nWHAT TO LOOK FOR:\n- Kernel vulnerabilities allowing root access\n- Misconfigured service accounts with high privileges\n- Weak sudo configurations\n- Vulnerable scheduled tasks or cron jobs\n\nCOMMON PITFALLS:\n- Some privilege escalation requires specific conditions\n- Modern systems have better exploit mitigations\n- Some escalation methods are noisy and detectable\n- Privilege changes may not persist across reboots",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "0d70f1c8-aecb-4b12-863a-3b3eb1afdcac",
           "title": "Lateral movement",
-          "description": "OBJECTIVE: Move through the network to access additional systems and data.\n\nSTEP-BY-STEP PROCESS:\n1. Network reconnaissance:\n   - Map internal network from compromised host\n   - Identify other systems and services\n   - Check for domain trusts and authentication relationships\n\n2. Credential harvesting:\n   - Extract credentials from compromised systems\n   - Check for stored passwords and hashes\n   - Look for SSH keys and configuration files\n\n3. Authentication reuse:\n   - Test harvested credentials on other systems\n   - Check for password reuse across the environment\n   - Attempt pass-the-hash or pass-the-ticket attacks\n\n4. Service exploitation:\n   - Exploit vulnerable services on other systems\n   - Use compromised credentials for access\n   - Chain vulnerabilities for broader access\n\n5. Persistence establishment:\n   - Create backdoors on additional systems\n   - Establish command and control channels\n   - Document access paths and methods\n\nWHAT TO LOOK FOR:\n- Domain admin credentials\n- Service accounts with broad access\n- Vulnerable internal services\n- Trust relationships between systems\n\nCOMMON PITFALLS:\n- Network segmentation may limit lateral movement\n- Some credentials have limited scope or expiration\n- Security monitoring may detect lateral movement\n- Some systems require multi-factor authentication",
           "tags": [
             "post"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Move through the network to access additional systems and data.\n\nSTEP-BY-STEP PROCESS:\n1. Network reconnaissance:\n   - Map internal network from compromised host\n   - Identify other systems and services\n   - Check for domain trusts and authentication relationships\n\n2. Credential harvesting:\n   - Extract credentials from compromised systems\n   - Check for stored passwords and hashes\n   - Look for SSH keys and configuration files\n\n3. Authentication reuse:\n   - Test harvested credentials on other systems\n   - Check for password reuse across the environment\n   - Attempt pass-the-hash or pass-the-ticket attacks\n\n4. Service exploitation:\n   - Exploit vulnerable services on other systems\n   - Use compromised credentials for access\n   - Chain vulnerabilities for broader access\n\n5. Persistence establishment:\n   - Create backdoors on additional systems\n   - Establish command and control channels\n   - Document access paths and methods\n\nWHAT TO LOOK FOR:\n- Domain admin credentials\n- Service accounts with broad access\n- Vulnerable internal services\n- Trust relationships between systems\n\nCOMMON PITFALLS:\n- Network segmentation may limit lateral movement\n- Some credentials have limited scope or expiration\n- Security monitoring may detect lateral movement\n- Some systems require multi-factor authentication",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "547d4231-bf45-43be-8da3-9e2c4f9ef1c2",
           "title": "Data access validation",
-          "description": "OBJECTIVE: Locate and access sensitive data within the compromised environment.\n\nSTEP-BY-STEP PROCESS:\n1. Data discovery:\n   - Identify databases, file shares, and storage systems\n   - Check for sensitive file types and documents\n   - Look for backup files and archives\n\n2. Database access:\n   - Connect to identified databases\n   - Extract table schemas and data samples\n   - Check for sensitive data patterns\n\n3. File system exploration:\n   - Search for sensitive files and documents\n   - Check user directories and shared folders\n   - Look for configuration files with secrets\n\n4. Data classification:\n   - Identify PII, financial data, intellectual property\n   - Assess data sensitivity and regulatory requirements\n   - Document data locations and access controls\n\n5. Data extraction:\n   - Safely extract samples of sensitive data\n   - Document data volume and types found\n   - Note any encryption or protection mechanisms\n\nWHAT TO LOOK FOR:\n- Customer PII and personal data\n- Financial records and payment information\n- Intellectual property and trade secrets\n- System credentials and configuration data\n\nCOMMON PITFALLS:\n- Some data may be encrypted or access-controlled\n- Large data volumes may be impractical to extract\n- Some data access triggers security alerts\n- Data may be distributed across multiple systems",
           "tags": [
             "post"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Locate and access sensitive data within the compromised environment.\n\nSTEP-BY-STEP PROCESS:\n1. Data discovery:\n   - Identify databases, file shares, and storage systems\n   - Check for sensitive file types and documents\n   - Look for backup files and archives\n\n2. Database access:\n   - Connect to identified databases\n   - Extract table schemas and data samples\n   - Check for sensitive data patterns\n\n3. File system exploration:\n   - Search for sensitive files and documents\n   - Check user directories and shared folders\n   - Look for configuration files with secrets\n\n4. Data classification:\n   - Identify PII, financial data, intellectual property\n   - Assess data sensitivity and regulatory requirements\n   - Document data locations and access controls\n\n5. Data extraction:\n   - Safely extract samples of sensitive data\n   - Document data volume and types found\n   - Note any encryption or protection mechanisms\n\nWHAT TO LOOK FOR:\n- Customer PII and personal data\n- Financial records and payment information\n- Intellectual property and trade secrets\n- System credentials and configuration data\n\nCOMMON PITFALLS:\n- Some data may be encrypted or access-controlled\n- Large data volumes may be impractical to extract\n- Some data access triggers security alerts\n- Data may be distributed across multiple systems",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "d8e510d3-78ef-491c-819d-2c8bfa3d92c1",
           "title": "Cleanup procedures",
-          "description": "OBJECTIVE: Remove evidence of compromise and restore systems to operational state.\n\nSTEP-BY-STEP PROCESS:\n1. Artifact identification:\n   - Identify all files, processes, and logs created\n   - Check for persistence mechanisms established\n   - Document all changes made during testing\n\n2. Log cleanup:\n   - Clear authentication logs\n   - Remove evidence from security event logs\n   - Check for centralized logging systems\n\n3. File and process cleanup:\n   - Remove uploaded files and tools\n   - Terminate any background processes\n   - Delete temporary files and directories\n\n4. Configuration restoration:\n   - Restore modified configuration files\n   - Reset any changed passwords or permissions\n   - Verify system functionality after cleanup\n\n5. Verification:\n   - Confirm all artifacts have been removed\n   - Test system functionality and security\n   - Document cleanup process and verification\n\nWHAT TO LOOK FOR:\n- Log entries showing compromise activities\n- Unusual files or processes remaining\n- Modified system configurations\n- Persistence mechanisms still active\n\nCOMMON PITFALLS:\n- Some logs may be immutable or replicated\n- System backups may contain evidence\n- Some changes may be difficult to reverse\n- Cleanup itself may leave evidence",
           "tags": [
             "post"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Remove evidence of compromise and restore systems to operational state.\n\nSTEP-BY-STEP PROCESS:\n1. Artifact identification:\n   - Identify all files, processes, and logs created\n   - Check for persistence mechanisms established\n   - Document all changes made during testing\n\n2. Log cleanup:\n   - Clear authentication logs\n   - Remove evidence from security event logs\n   - Check for centralized logging systems\n\n3. File and process cleanup:\n   - Remove uploaded files and tools\n   - Terminate any background processes\n   - Delete temporary files and directories\n\n4. Configuration restoration:\n   - Restore modified configuration files\n   - Reset any changed passwords or permissions\n   - Verify system functionality after cleanup\n\n5. Verification:\n   - Confirm all artifacts have been removed\n   - Test system functionality and security\n   - Document cleanup process and verification\n\nWHAT TO LOOK FOR:\n- Log entries showing compromise activities\n- Unusual files or processes remaining\n- Modified system configurations\n- Persistence mechanisms still active\n\nCOMMON PITFALLS:\n- Some logs may be immutable or replicated\n- System backups may contain evidence\n- Some changes may be difficult to reverse\n- Cleanup itself may leave evidence",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         }
       ],
       "notes": ""
@@ -424,54 +540,70 @@
         {
           "id": "47037d34-13b0-4a09-9938-69c6ea928a9e",
           "title": "Evidence consolidation",
-          "description": "OBJECTIVE: Gather and organize all evidence collected during the penetration test.\n\nSTEP-BY-STEP PROCESS:\n1. Evidence inventory:\n   - Catalog all screenshots, logs, and captured data\n   - Organize evidence by phase and finding\n   - Verify evidence authenticity and timestamps\n\n2. Finding correlation:\n   - Link related findings across phases\n   - Identify root causes and attack chains\n   - Remove duplicate or redundant evidence\n\n3. Evidence validation:\n   - Verify all findings have supporting evidence\n   - Check evidence quality and clarity\n   - Ensure evidence tells a complete story\n\n4. Documentation structure:\n   - Create evidence folders by finding type\n   - Implement consistent naming conventions\n   - Prepare evidence for report inclusion\n\n5. Chain of custody:\n   - Document evidence collection methods\n   - Maintain evidence integrity\n   - Prepare evidence for potential legal review\n\nWHAT TO LOOK FOR:\n- Clear, unambiguous evidence of vulnerabilities\n- Complete attack chains from discovery to exploitation\n- High-quality screenshots and logs\n- Evidence that supports risk assessments\n\nCOMMON PITFALLS:\n- Some evidence may be time-sensitive\n- Evidence quality varies by collection method\n- Some findings may not have visual evidence\n- Evidence may need to be sanitized for sharing",
           "tags": [
             "report"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Gather and organize all evidence collected during the penetration test.\n\nSTEP-BY-STEP PROCESS:\n1. Evidence inventory:\n   - Catalog all screenshots, logs, and captured data\n   - Organize evidence by phase and finding\n   - Verify evidence authenticity and timestamps\n\n2. Finding correlation:\n   - Link related findings across phases\n   - Identify root causes and attack chains\n   - Remove duplicate or redundant evidence\n\n3. Evidence validation:\n   - Verify all findings have supporting evidence\n   - Check evidence quality and clarity\n   - Ensure evidence tells a complete story\n\n4. Documentation structure:\n   - Create evidence folders by finding type\n   - Implement consistent naming conventions\n   - Prepare evidence for report inclusion\n\n5. Chain of custody:\n   - Document evidence collection methods\n   - Maintain evidence integrity\n   - Prepare evidence for potential legal review\n\nWHAT TO LOOK FOR:\n- Clear, unambiguous evidence of vulnerabilities\n- Complete attack chains from discovery to exploitation\n- High-quality screenshots and logs\n- Evidence that supports risk assessments\n\nCOMMON PITFALLS:\n- Some evidence may be time-sensitive\n- Evidence quality varies by collection method\n- Some findings may not have visual evidence\n- Evidence may need to be sanitized for sharing",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "6105549c-9db3-464b-ad4d-7d0dcb3c858e",
           "title": "Risk rating",
-          "description": "OBJECTIVE: Assign risk scores to identified vulnerabilities and findings.\n\nSTEP-BY-STEP PROCESS:\n1. Risk methodology selection:\n   - Choose appropriate risk scoring system (CVSS, DREAD, etc.)\n   - Define risk criteria and thresholds\n   - Establish risk rating scale\n\n2. Vulnerability assessment:\n   - Score each finding individually\n   - Consider exploitability, impact, and detection\n   - Factor in business context and environment\n\n3. Risk calculation:\n   - Combine likelihood and impact scores\n   - Apply environmental modifiers\n   - Consider compensating controls\n\n4. Risk prioritization:\n   - Rank findings by overall risk level\n   - Group similar vulnerabilities\n   - Identify critical findings requiring immediate attention\n\n5. Risk communication:\n   - Explain risk scores and methodology\n   - Provide context for risk ratings\n   - Document assumptions and limitations\n\nWHAT TO LOOK FOR:\n- Critical vulnerabilities requiring immediate remediation\n- High-risk findings with broad impact\n- Vulnerabilities with reliable exploits available\n- Findings affecting sensitive data or systems\n\nCOMMON PITFALLS:\n- Risk scores are subjective and context-dependent\n- Some vulnerabilities may be mitigated in production\n- Risk perception varies by stakeholder\n- Quantitative risk models may not capture all factors",
           "tags": [
             "report"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Assign risk scores to identified vulnerabilities and findings.\n\nSTEP-BY-STEP PROCESS:\n1. Risk methodology selection:\n   - Choose appropriate risk scoring system (CVSS, DREAD, etc.)\n   - Define risk criteria and thresholds\n   - Establish risk rating scale\n\n2. Vulnerability assessment:\n   - Score each finding individually\n   - Consider exploitability, impact, and detection\n   - Factor in business context and environment\n\n3. Risk calculation:\n   - Combine likelihood and impact scores\n   - Apply environmental modifiers\n   - Consider compensating controls\n\n4. Risk prioritization:\n   - Rank findings by overall risk level\n   - Group similar vulnerabilities\n   - Identify critical findings requiring immediate attention\n\n5. Risk communication:\n   - Explain risk scores and methodology\n   - Provide context for risk ratings\n   - Document assumptions and limitations\n\nWHAT TO LOOK FOR:\n- Critical vulnerabilities requiring immediate remediation\n- High-risk findings with broad impact\n- Vulnerabilities with reliable exploits available\n- Findings affecting sensitive data or systems\n\nCOMMON PITFALLS:\n- Risk scores are subjective and context-dependent\n- Some vulnerabilities may be mitigated in production\n- Risk perception varies by stakeholder\n- Quantitative risk models may not capture all factors",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "243a63b8-fbb4-4121-9fac-99f2c07d9d0d",
           "title": "Remediation guidance",
-          "description": "OBJECTIVE: Provide actionable recommendations for addressing identified vulnerabilities.\n\nSTEP-BY-STEP PROCESS:\n1. Vulnerability analysis:\n   - Understand root causes of each finding\n   - Research appropriate remediation steps\n   - Identify vendor patches and updates\n\n2. Remediation prioritization:\n   - Order fixes by risk level and ease of implementation\n   - Consider dependencies between fixes\n   - Balance security with operational impact\n\n3. Detailed remediation steps:\n   - Provide specific, actionable instructions\n   - Include commands, configuration changes, and code fixes\n   - Specify testing procedures for verification\n\n4. Compensating controls:\n   - Suggest temporary mitigations for complex fixes\n   - Identify monitoring and detection improvements\n   - Recommend process improvements\n\n5. Timeline and resource requirements:\n   - Estimate time and effort for each remediation\n   - Identify required skills and resources\n   - Suggest implementation phases\n\nWHAT TO LOOK FOR:\n- Specific, actionable remediation steps\n- Vendor patches and security updates\n- Configuration changes and hardening measures\n- Process improvements and training needs\n\nCOMMON PITFALLS:\n- Some remediations require application changes\n- Patches may break functionality\n- Some fixes require vendor coordination\n- Remediation may require downtime or testing",
           "tags": [
             "report"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Provide actionable recommendations for addressing identified vulnerabilities.\n\nSTEP-BY-STEP PROCESS:\n1. Vulnerability analysis:\n   - Understand root causes of each finding\n   - Research appropriate remediation steps\n   - Identify vendor patches and updates\n\n2. Remediation prioritization:\n   - Order fixes by risk level and ease of implementation\n   - Consider dependencies between fixes\n   - Balance security with operational impact\n\n3. Detailed remediation steps:\n   - Provide specific, actionable instructions\n   - Include commands, configuration changes, and code fixes\n   - Specify testing procedures for verification\n\n4. Compensating controls:\n   - Suggest temporary mitigations for complex fixes\n   - Identify monitoring and detection improvements\n   - Recommend process improvements\n\n5. Timeline and resource requirements:\n   - Estimate time and effort for each remediation\n   - Identify required skills and resources\n   - Suggest implementation phases\n\nWHAT TO LOOK FOR:\n- Specific, actionable remediation steps\n- Vendor patches and security updates\n- Configuration changes and hardening measures\n- Process improvements and training needs\n\nCOMMON PITFALLS:\n- Some remediations require application changes\n- Patches may break functionality\n- Some fixes require vendor coordination\n- Remediation may require downtime or testing",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         },
         {
           "id": "58c8391e-3c93-4042-8543-cae2789dca32",
           "title": "Executive summaries",
-          "description": "OBJECTIVE: Create high-level summaries for executive and management audiences.\n\nSTEP-BY-STEP PROCESS:\n1. Audience analysis:\n   - Understand executive information needs\n   - Focus on business impact over technical details\n   - Identify key decision points and concerns\n\n2. Executive summary structure:\n   - Overview of assessment scope and objectives\n   - High-level findings and risk assessment\n   - Critical vulnerabilities requiring attention\n   - Strategic recommendations and roadmap\n\n3. Risk communication:\n   - Use business terminology over technical jargon\n   - Focus on impact rather than technical details\n   - Include concrete examples and analogies\n\n4. Strategic recommendations:\n   - Provide high-level remediation strategies\n   - Include cost-benefit analysis where possible\n   - Recommend resource allocation priorities\n\n5. Call to action:\n   - Clear next steps with timelines\n   - Identify responsible parties\n   - Suggest metrics for measuring progress\n\nWHAT TO LOOK FOR:\n- Clear risk levels and business impact\n- Actionable recommendations with priorities\n- Realistic timelines and resource requirements\n- Measurable success criteria\n\nCOMMON PITFALLS:\n- Executives may want more technical detail\n- Business context varies by organization\n- Risk tolerance differs between stakeholders\n- Some recommendations may be politically sensitive",
           "tags": [
             "report"
           ],
           "status": "Todo",
           "completed_at": null,
-          "notes": "",
-          "description_notes": "",
-          "evidence": []
+          "content": {
+            "Tutorial": {
+              "description": "OBJECTIVE: Create high-level summaries for executive and management audiences.\n\nSTEP-BY-STEP PROCESS:\n1. Audience analysis:\n   - Understand executive information needs\n   - Focus on business impact over technical details\n   - Identify key decision points and concerns\n\n2. Executive summary structure:\n   - Overview of assessment scope and objectives\n   - High-level findings and risk assessment\n   - Critical vulnerabilities requiring attention\n   - Strategic recommendations and roadmap\n\n3. Risk communication:\n   - Use business terminology over technical jargon\n   - Focus on impact rather than technical details\n   - Include concrete examples and analogies\n\n4. Strategic recommendations:\n   - Provide high-level remediation strategies\n   - Include cost-benefit analysis where possible\n   - Recommend resource allocation priorities\n\n5. Call to action:\n   - Clear next steps with timelines\n   - Identify responsible parties\n   - Suggest metrics for measuring progress\n\nWHAT TO LOOK FOR:\n- Clear risk levels and business impact\n- Actionable recommendations with priorities\n- Realistic timelines and resource requirements\n- Measurable success criteria\n\nCOMMON PITFALLS:\n- Executives may want more technical detail\n- Business context varies by organization\n- Risk tolerance differs between stakeholders\n- Some recommendations may be politically sensitive",
+              "description_notes": "",
+              "notes": "",
+              "evidence": []
+            }
+          }
         }
       ],
       "notes": ""

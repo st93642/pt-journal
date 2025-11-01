@@ -35,7 +35,7 @@ pub fn build_ui(app: &Application, model: AppModel) {
     }
 
     // Header bar with Open/Save and Sidebar toggle
-    let (header, btn_open, btn_save, btn_sidebar) = crate::ui::header_bar::create_header_bar();
+    let (header, btn_open, btn_save, btn_save_as, btn_sidebar) = crate::ui::header_bar::create_header_bar();
     window.set_titlebar(Some(&header));
 
     // Left panel: phase selector + steps list
@@ -76,16 +76,28 @@ pub fn build_ui(app: &Application, model: AppModel) {
         move || {
             // clear
             while let Some(child) = steps_list_ref.first_child() { steps_list_ref.remove(&child); }
-            let model_borrow = model_rc.borrow();
-            let selected_phase = model_borrow.selected_phase;
-            if let Some(phase) = model_borrow.session.phases.get(selected_phase) {
-            for (idx, step) in phase.steps.iter().enumerate() {
+            
+            // Clone all data needed for UI update to avoid holding borrows during GTK calls
+            let (selected_phase, phase_steps, selected_step) = {
+                let model_borrow = model_rc.borrow();
+                let selected_phase = model_borrow.selected_phase;
+                let phase_steps: Vec<_> = model_borrow.session.phases.get(selected_phase)
+                    .map(|phase| phase.steps.iter().map(|step| {
+                        (step.title.clone(), step.description.clone(), step.description_notes.clone(),
+                         step.notes.clone(), step.status.clone())
+                    }).collect())
+                    .unwrap_or_default();
+                let selected_step = model_borrow.selected_step;
+                (selected_phase, phase_steps, selected_step)
+            };
+
+            for (idx, (title, description, _description_notes, _notes, status)) in phase_steps.iter().enumerate() {
                 let row = ListBoxRow::new();
                 let row_box = GtkBox::new(Orientation::Horizontal, 8);
                 
                 let cb = CheckButton::new();
-                cb.set_active(matches!(step.status, StepStatus::Done));
-                let lbl = Label::new(Some(&step.title));
+                cb.set_active(matches!(status, StepStatus::Done));
+                let lbl = Label::new(Some(title));
                 lbl.set_xalign(0.0);
                 
                 // Make the label clickable instead of the whole row
@@ -103,14 +115,21 @@ pub fn build_ui(app: &Application, model: AppModel) {
                     model_borrow.selected_step = Some(idx);
                     let sp = model_borrow.selected_phase;
                     if let Some(step) = model_borrow.session.phases[sp].steps.get(idx) {
-                        title_s.set_label(&step.title);
+                        let title = step.title.clone();
+                        let description_notes = step.description_notes.clone();
+                        let notes = step.notes.clone();
+                        let status = step.status.clone();
+                        let step_clone = step.clone();
+                        drop(model_borrow); // Release borrow before GTK calls
+                        
+                        title_s.set_label(&title);
                         // Load user notes in description pane
-                        desc_buf_s.set_text(&step.description_notes);
-                        checkbox_s.set_active(matches!(step.status, StepStatus::Done));
-                        notes_buf_s.set_text(&step.notes);
+                        desc_buf_s.set_text(&description_notes);
+                        checkbox_s.set_active(matches!(status, StepStatus::Done));
+                        notes_buf_s.set_text(&notes);
 
                         // Load canvas evidence for this step
-                        load_step_evidence(&canvas_fixed_s, canvas_items_s.clone(), step);
+                        load_step_evidence(&canvas_fixed_s, canvas_items_s.clone(), &step_clone);
                         // Focus the canvas so keyboard events work
                         canvas_fixed_s.grab_focus();
                     }
@@ -137,7 +156,7 @@ pub fn build_ui(app: &Application, model: AppModel) {
                 text_view.set_editable(false);
                 text_view.set_wrap_mode(gtk4::WrapMode::Word);
                 text_view.set_size_request(480, 280);
-                text_view.buffer().set_text(&step.description);
+                text_view.buffer().set_text(description);
                 scrolled.set_child(Some(&text_view));
                 
                 pop_box.append(&scrolled);
@@ -175,49 +194,100 @@ pub fn build_ui(app: &Application, model: AppModel) {
             }
             
             // Auto-select first step if none selected, or update UI for current selection
-            let selected_step = model_borrow.selected_step;
             if let Some(selected_idx) = selected_step {
-                if let Some(step) = phase.steps.get(selected_idx) {
-                    title_label_ref.set_label(&step.title);
-                    // Load user notes in description pane
-                    let desc_buffer = desc_view_ref.buffer();
-                    desc_buffer.set_text(&step.description_notes);
-                    checkbox_ref.set_active(matches!(step.status, StepStatus::Done));
-                    notes_view_ref.buffer().set_text(&step.notes);
+                let (title, description_notes, notes, status, step_clone) = {
+                    let model_borrow = model_rc.borrow();
+                    if let Some(step) = model_borrow.session.phases.get(selected_phase)
+                        .and_then(|phase| phase.steps.get(selected_idx)) {
+                        (step.title.clone(), step.description_notes.clone(),
+                         step.notes.clone(), step.status.clone(), step.clone())
+                    } else {
+                        return; // No step found
+                    }
+                };
+                
+                title_label_ref.set_label(&title);
+                // Load user notes in description pane
+                let desc_buffer = desc_view_ref.buffer();
+                desc_buffer.set_text(&description_notes);
+                checkbox_ref.set_active(matches!(status, StepStatus::Done));
+                notes_view_ref.buffer().set_text(&notes);
 
-                    // Load canvas evidence for this step
-                    load_step_evidence(&canvas_fixed_ref, canvas_items_ref.clone(), step);
-                    // Focus the canvas so keyboard events work
-                    canvas_fixed_ref.grab_focus();
-                }
-            } else if !phase.steps.is_empty() {
-                drop(model_borrow); // Release the immutable borrow before getting mutable
+                // Load canvas evidence for this step
+                load_step_evidence(&canvas_fixed_ref, canvas_items_ref.clone(), &step_clone);
+                // Focus the canvas so keyboard events work
+                canvas_fixed_ref.grab_focus();
+            } else if !phase_steps.is_empty() {
                 model_rc.borrow_mut().selected_step = Some(0);
-                let model_borrow_again = model_rc.borrow();
-                if let Some(step) = model_borrow_again.session.phases[model_borrow_again.selected_phase].steps.first() {
-                    title_label_ref.set_label(&step.title);
-                    // Load user notes in description pane
-                    let desc_buffer = desc_view_ref.buffer();
-                    desc_buffer.set_text(&step.description_notes);
-                    checkbox_ref.set_active(matches!(step.status, StepStatus::Done));
-                    notes_view_ref.buffer().set_text(&step.notes);
+                let (title, description_notes, notes, status, step_clone) = {
+                    let model_borrow_again = model_rc.borrow();
+                    if let Some(step) = model_borrow_again.session.phases[selected_phase].steps.first() {
+                        (step.title.clone(), step.description_notes.clone(),
+                         step.notes.clone(), step.status.clone(), step.clone())
+                    } else {
+                        return; // No step found
+                    }
+                };
+                
+                title_label_ref.set_label(&title);
+                // Load user notes in description pane
+                let desc_buffer = desc_view_ref.buffer();
+                desc_buffer.set_text(&description_notes);
+                checkbox_ref.set_active(matches!(status, StepStatus::Done));
+                notes_view_ref.buffer().set_text(&notes);
 
-                    // Load canvas evidence for this step
-                    load_step_evidence(&canvas_fixed_ref, canvas_items_ref.clone(), step);
-                    // Focus the canvas so keyboard events work
-                    canvas_fixed_ref.grab_focus();
-                }
+                // Load canvas evidence for this step
+                load_step_evidence(&canvas_fixed_ref, canvas_items_ref.clone(), &step_clone);
+                // Focus the canvas so keyboard events work
+                canvas_fixed_ref.grab_focus();
             }
-        }
         }
     };
 
     // Initial populate
     rebuild_steps();
 
-    // Notes update
+    // Autosave functionality - saves 2 seconds after last change
+    // We don't need to cancel old timeouts - they'll just be orphaned and fire harmlessly
+    let autosave_counter: Rc<RefCell<u32>> = Rc::new(RefCell::new(0));
+    
+    let trigger_autosave = {
+        let model_autosave = model.clone();
+        let counter_ref = autosave_counter.clone();
+        move || {
+            // Increment counter to invalidate any pending autosaves
+            let current_count = {
+                let mut counter = counter_ref.borrow_mut();
+                *counter += 1;
+                *counter
+            };
+            
+            // Schedule new autosave in 2 seconds
+            let m = model_autosave.clone();
+            let counter_check = counter_ref.clone();
+            glib::timeout_add_seconds_local_once(2, move || {
+                // Only save if this is still the latest autosave request
+                if *counter_check.borrow() == current_count {
+                    let (path_opt, session) = {
+                        let borrow = m.borrow();
+                        (borrow.current_path.clone(), borrow.session.clone())
+                    };
+                    
+                    if let Some(path) = path_opt {
+                        match crate::store::save_session(&path, &session) {
+                            Ok(_) => println!("Autosaved to: {:?}", path),
+                            Err(err) => eprintln!("Autosave failed: {err:?}"),
+                        }
+                    }
+                }
+            });
+        }
+    };
+
+    // Notes update (with autosave)
     {
         let model_notes = model.clone();
+        let autosave_trigger = trigger_autosave.clone();
         let buf = notes_view.buffer();
         buf.connect_changed(move |b| {
             let text = b.text(&b.start_iter(), &b.end_iter(), true);
@@ -233,12 +303,16 @@ pub fn build_ui(app: &Application, model: AppModel) {
                     step.notes = text.to_string();
                 }
             }
+            
+            // Trigger autosave
+            autosave_trigger();
         });
     }
 
-    // Description update (for user notes in description area)
+    // Description update (for user notes in description area, with autosave)
     {
         let model_desc = model.clone();
+        let autosave_trigger = trigger_autosave.clone();
         let buf = desc_view.buffer();
         buf.connect_changed(move |b| {
             let text = b.text(&b.start_iter(), &b.end_iter(), true);
@@ -254,6 +328,9 @@ pub fn build_ui(app: &Application, model: AppModel) {
                     step.description_notes = text.to_string();
                 }
             }
+            
+            // Trigger autosave
+            autosave_trigger();
         });
     }
 
@@ -280,69 +357,86 @@ pub fn build_ui(app: &Application, model: AppModel) {
                 steps_list_ref.remove(&child);
             }
 
-            let model_borrow = model_phase.borrow();
-            let selected_phase = model_borrow.selected_phase;
-            if let Some(phase) = model_borrow.session.phases.get(selected_phase) {
-                for (idx, step) in phase.steps.iter().enumerate() {
-                    let row = ListBoxRow::new();
-                    let row_box = GtkBox::new(Orientation::Horizontal, 8);
+            // Clone all data needed for UI update to avoid holding borrows during GTK calls
+            let (selected_phase, phase_steps) = {
+                let model_borrow = model_phase.borrow();
+                let selected_phase = model_borrow.selected_phase;
+                let phase_steps: Vec<_> = model_borrow.session.phases.get(selected_phase)
+                    .map(|phase| phase.steps.iter().map(|step| {
+                        (step.title.clone(), step.description.clone(), step.description_notes.clone(),
+                         step.notes.clone(), step.status.clone())
+                    }).collect())
+                    .unwrap_or_default();
+                (selected_phase, phase_steps)
+            };
 
-                    let cb = CheckButton::new();
-                    cb.set_active(matches!(step.status, StepStatus::Done));
-                    let lbl = Label::new(Some(&step.title));
-                    lbl.set_xalign(0.0);
+            for (idx, (title, description, _description_notes, _notes, status)) in phase_steps.iter().enumerate() {
+                let row = ListBoxRow::new();
+                let row_box = GtkBox::new(Orientation::Horizontal, 8);
 
-                    // Make the label clickable instead of the whole row
-                    let click_controller = gtk4::GestureClick::new();
-                    let model_s = model_phase.clone();
-                    let title_s = title_label_ref.clone();
-                    let desc_buf_s = desc_view_ref.buffer();
-                    let notes_buf_s = notes_view_ref.buffer();
-                    let checkbox_s = checkbox_ref.clone();
-                    let canvas_fixed_s = canvas_fixed_ref.clone();
-                    let canvas_items_s = canvas_items_ref.clone();
+                let cb = CheckButton::new();
+                cb.set_active(matches!(status, StepStatus::Done));
+                let lbl = Label::new(Some(title));
+                lbl.set_xalign(0.0);
 
-                    click_controller.connect_pressed(move |_, _, _, _| {
-                        let mut model_borrow = model_s.borrow_mut();
-                        model_borrow.selected_step = Some(idx);
-                        let sp = model_borrow.selected_phase;
-                        if let Some(step) = model_borrow.session.phases[sp].steps.get(idx) {
-                            title_s.set_label(&step.title);
-                            // Load user notes in description pane
-                            desc_buf_s.set_text(&step.description_notes);
-                            checkbox_s.set_active(matches!(step.status, StepStatus::Done));
-                            notes_buf_s.set_text(&step.notes);
+                // Make the label clickable instead of the whole row
+                let click_controller = gtk4::GestureClick::new();
+                let model_s = model_phase.clone();
+                let title_s = title_label_ref.clone();
+                let desc_buf_s = desc_view_ref.buffer();
+                let notes_buf_s = notes_view_ref.buffer();
+                let checkbox_s = checkbox_ref.clone();
+                let canvas_fixed_s = canvas_fixed_ref.clone();
+                let canvas_items_s = canvas_items_ref.clone();
 
-                            // Load canvas evidence for this step
-                            load_step_evidence(&canvas_fixed_s, canvas_items_s.clone(), step);
-                            // Focus the canvas so keyboard events work
-                            canvas_fixed_s.grab_focus();
-                        }
-                    });
-                    lbl.add_controller(click_controller);
+                click_controller.connect_pressed(move |_, _, _, _| {
+                    let mut model_borrow = model_s.borrow_mut();
+                    model_borrow.selected_step = Some(idx);
+                    let sp = model_borrow.selected_phase;
+                    if let Some(step) = model_borrow.session.phases[sp].steps.get(idx) {
+                        let title = step.title.clone();
+                        let description_notes = step.description_notes.clone();
+                        let notes = step.notes.clone();
+                        let status = step.status.clone();
+                        let step_evidence = step.clone(); // Clone for load_step_evidence
+                        drop(model_borrow); // Release borrow before GTK calls
+                        
+                        title_s.set_label(&title);
+                        // Load user notes in description pane
+                        desc_buf_s.set_text(&description_notes);
+                        checkbox_s.set_active(matches!(status, StepStatus::Done));
+                        notes_buf_s.set_text(&notes);
 
-                    let info_btn = gtk4::Button::from_icon_name("dialog-information-symbolic");
-                    info_btn.set_valign(gtk4::Align::Center);
-                    info_btn.set_tooltip_text(Some("Show explanation"));
+                        // Load canvas evidence for this step
+                        load_step_evidence(&canvas_fixed_s, canvas_items_s.clone(), &step_evidence);
+                        // Focus the canvas so keyboard events work
+                        canvas_fixed_s.grab_focus();
+                    }
+                });
+                lbl.add_controller(click_controller);
 
-                    // Create popover upfront with content
-                    let popover = gtk4::Popover::new();
-                    let pop_box = GtkBox::new(Orientation::Vertical, 6);
+                let info_btn = gtk4::Button::from_icon_name("dialog-information-symbolic");
+                info_btn.set_valign(gtk4::Align::Center);
+                info_btn.set_tooltip_text(Some("Show explanation"));
 
-                    // Use ScrolledWindow with TextView for long content
-                    let scrolled = ScrolledWindow::new();
-                    scrolled.set_min_content_height(300);
-                    scrolled.set_min_content_width(500);
-                    scrolled.set_max_content_height(500);
-                    scrolled.set_max_content_width(700);
-                    scrolled.set_propagate_natural_height(true);
-                    scrolled.set_propagate_natural_width(true);
-                    let text_view = TextView::new();
-                    text_view.set_editable(false);
-                    text_view.set_wrap_mode(gtk4::WrapMode::Word);
-                    text_view.set_size_request(480, 280);
-                    text_view.buffer().set_text(&step.description);
-                    scrolled.set_child(Some(&text_view));
+                // Create popover upfront with content
+                let popover = gtk4::Popover::new();
+                let pop_box = GtkBox::new(Orientation::Vertical, 6);
+
+                // Use ScrolledWindow with TextView for long content
+                let scrolled = ScrolledWindow::new();
+                scrolled.set_min_content_height(300);
+                scrolled.set_min_content_width(500);
+                scrolled.set_max_content_height(500);
+                scrolled.set_max_content_width(700);
+                scrolled.set_propagate_natural_height(true);
+                scrolled.set_propagate_natural_width(true);
+                let text_view = TextView::new();
+                text_view.set_editable(false);
+                text_view.set_wrap_mode(gtk4::WrapMode::Word);
+                text_view.set_size_request(480, 280);
+                text_view.buffer().set_text(description);
+                scrolled.set_child(Some(&text_view));
 
                     pop_box.append(&scrolled);
                     popover.set_child(Some(&pop_box));
@@ -378,28 +472,33 @@ pub fn build_ui(app: &Application, model: AppModel) {
                     steps_list_ref.append(&row);
                 }
 
-                // Auto-select first step of new phase
-                if !phase.steps.is_empty() {
-                    drop(model_borrow); // Release immutable borrow
-                    {
-                        let mut model_borrow_mut = model_phase.borrow_mut();
-                        model_borrow_mut.selected_step = Some(0);
-                    }
+            // Auto-select first step of new phase
+            if !phase_steps.is_empty() {
+                {
+                    let mut model_borrow_mut = model_phase.borrow_mut();
+                    model_borrow_mut.selected_step = Some(0);
+                }
+                let (title, description_notes, notes, status, step_clone) = {
                     let model_borrow_again = model_phase.borrow();
                     if let Some(step) = model_borrow_again.session.phases[selected_phase].steps.first() {
-                        title_label_ref.set_label(&step.title);
-                        // Load user notes in description pane
-                        let desc_buffer = desc_view_ref.buffer();
-                        desc_buffer.set_text(&step.description_notes);
-                        checkbox_ref.set_active(matches!(step.status, StepStatus::Done));
-                        notes_view_ref.buffer().set_text(&step.notes);
-
-                        // Load canvas evidence for this step
-                        load_step_evidence(&canvas_fixed_ref, canvas_items_ref.clone(), step);
-                        // Focus the canvas so keyboard events work
-                        canvas_fixed_ref.grab_focus();
+                        (step.title.clone(), step.description_notes.clone(), 
+                         step.notes.clone(), step.status.clone(), step.clone())
+                    } else {
+                        return; // No step found, exit early
                     }
-                }
+                };
+                
+                title_label_ref.set_label(&title);
+                // Load user notes in description pane
+                let desc_buffer = desc_view_ref.buffer();
+                desc_buffer.set_text(&description_notes);
+                checkbox_ref.set_active(matches!(status, StepStatus::Done));
+                notes_view_ref.buffer().set_text(&notes);
+
+                // Load canvas evidence for this step
+                load_step_evidence(&canvas_fixed_ref, canvas_items_ref.clone(), &step_clone);
+                // Focus the canvas so keyboard events work
+                canvas_fixed_ref.grab_focus();
             }
         })
     };
@@ -421,6 +520,19 @@ pub fn build_ui(app: &Application, model: AppModel) {
         btn_open.connect_clicked(move |_| {
             let dialog = FileDialog::new();
             dialog.set_title("Open Session");
+            
+            // Set initial folder to Downloads/pt-journal-sessions
+            let default_dir = crate::store::default_sessions_dir();
+            if let Ok(file) = gio::File::for_path(&default_dir).query_info(
+                "*",
+                gio::FileQueryInfoFlags::NONE,
+                gio::Cancellable::NONE,
+            ) {
+                if file.file_type() == gio::FileType::Directory {
+                    dialog.set_initial_folder(Some(&gio::File::for_path(&default_dir)));
+                }
+            }
+            
             let m = model_ref.clone();
             let pm = phase_model_ref.clone();
             let pc = phase_combo_ref.clone();
@@ -458,80 +570,102 @@ pub fn build_ui(app: &Application, model: AppModel) {
                                 glib::signal::signal_handler_block(&pc_clone, &handler_id);
                                 
                                 // Create new phase model items
-                                let model_borrow = m_clone.borrow();
-                                let phase_names: Vec<&str> = model_borrow.session.phases.iter().map(|p| p.name.as_str()).collect();
+                                let phase_names: Vec<String> = {
+                                    let model_borrow = m_clone.borrow();
+                                    model_borrow.session.phases.iter().map(|p| p.name.clone()).collect()
+                                };
                                 
                                 // Replace all items in the phase model at once to avoid triggering handlers multiple times
-                                pm_clone.splice(0, pm_clone.n_items(), &phase_names);
+                                let phase_names_refs: Vec<&str> = phase_names.iter().map(|s| s.as_str()).collect();
+                                pm_clone.splice(0, pm_clone.n_items(), &phase_names_refs);
                                 
                                 // Unblock the signal handler
                                 glib::signal::signal_handler_unblock(&pc_clone, &handler_id);
                                 
                                 // Rebuild steps list for the new phase
                                 while let Some(child) = sl_clone.first_child() { sl_clone.remove(&child); }
-                                let model_borrow = m_clone.borrow();
-                                let selected_phase = model_borrow.selected_phase;
-                                if let Some(phase) = model_borrow.session.phases.get(selected_phase) {
-                                    for (idx, step) in phase.steps.iter().enumerate() {
-                                        let row = ListBoxRow::new();
-                                        let row_box = GtkBox::new(Orientation::Horizontal, 8);
+                                
+                                // Clone all step data to avoid holding borrows during GTK operations
+                                let (selected_phase, steps_data) = {
+                                    let model_borrow = m_clone.borrow();
+                                    let selected_phase = model_borrow.selected_phase;
+                                    let steps_data: Vec<_> = model_borrow.session.phases.get(selected_phase)
+                                        .map(|phase| phase.steps.iter().map(|step| {
+                                            (step.title.clone(), step.description.clone(), 
+                                             step.description_notes.clone(), step.notes.clone(), 
+                                             step.status.clone())
+                                        }).collect())
+                                        .unwrap_or_default();
+                                    (selected_phase, steps_data)
+                                };
 
-                                        let cb_widget = CheckButton::new();
-                                        cb_widget.set_active(matches!(step.status, StepStatus::Done));
-                                        let lbl = Label::new(Some(&step.title));
-                                        lbl.set_xalign(0.0);
+                                for (idx, (title, description, _desc_notes, _notes, status)) in steps_data.iter().enumerate() {
+                                    let row = ListBoxRow::new();
+                                    let row_box = GtkBox::new(Orientation::Horizontal, 8);
 
-                                        // Make the label clickable instead of the whole row
-                                        let click_controller = gtk4::GestureClick::new();
-                                        let model_s = m_clone.clone();
-                                        let title_s = tl_clone.clone();
-                                        let desc_buf_s = dv_clone.buffer();
-                                        let notes_buf_s = nv_clone.buffer();
-                                        let checkbox_s = cb_clone.clone();
-                                        let canvas_fixed_s = cf_clone.clone();
-                                        let canvas_items_s = ci_clone.clone();
+                                    let cb_widget = CheckButton::new();
+                                    cb_widget.set_active(matches!(status, StepStatus::Done));
+                                    let lbl = Label::new(Some(title));
+                                    lbl.set_xalign(0.0);
 
-                                        click_controller.connect_pressed(move |_, _, _, _| {
-                                            let mut model_borrow = model_s.borrow_mut();
-                                            model_borrow.selected_step = Some(idx);
-                                            let sp = model_borrow.selected_phase;
-                                            if let Some(step) = model_borrow.session.phases[sp].steps.get(idx) {
-                                                title_s.set_label(&step.title);
-                                                // Load user notes in description pane
-                                                desc_buf_s.set_text(&step.description_notes);
-                                                checkbox_s.set_active(matches!(step.status, StepStatus::Done));
-                                                notes_buf_s.set_text(&step.notes);
+                                    // Make the label clickable instead of the whole row
+                                    let click_controller = gtk4::GestureClick::new();
+                                    let model_s = m_clone.clone();
+                                    let title_s = tl_clone.clone();
+                                    let desc_buf_s = dv_clone.buffer();
+                                    let notes_buf_s = nv_clone.buffer();
+                                    let checkbox_s = cb_clone.clone();
+                                    let canvas_fixed_s = cf_clone.clone();
+                                    let canvas_items_s = ci_clone.clone();
 
-                                                // Load canvas evidence for this step
-                                                load_step_evidence(&canvas_fixed_s, canvas_items_s.clone(), step);
-                                                // Focus the canvas so keyboard events work
-                                                canvas_fixed_s.grab_focus();
-                                            }
-                                        });
-                                        lbl.add_controller(click_controller);
+                                    click_controller.connect_pressed(move |_, _, _, _| {
+                                        let mut model_borrow = model_s.borrow_mut();
+                                        model_borrow.selected_step = Some(idx);
+                                        let sp = model_borrow.selected_phase;
+                                        if let Some(step) = model_borrow.session.phases[sp].steps.get(idx) {
+                                            let title = step.title.clone();
+                                            let description_notes = step.description_notes.clone();
+                                            let notes = step.notes.clone();
+                                            let status = step.status.clone();
+                                            let step_clone = step.clone();
+                                            drop(model_borrow); // Release borrow before GTK calls
+                                            
+                                            title_s.set_label(&title);
+                                            // Load user notes in description pane
+                                            desc_buf_s.set_text(&description_notes);
+                                            checkbox_s.set_active(matches!(status, StepStatus::Done));
+                                            notes_buf_s.set_text(&notes);
 
-                                        let info_btn = gtk4::Button::from_icon_name("dialog-information-symbolic");
-                                        info_btn.set_valign(gtk4::Align::Center);
-                                        info_btn.set_tooltip_text(Some("Show explanation"));
+                                            // Load canvas evidence for this step
+                                            load_step_evidence(&canvas_fixed_s, canvas_items_s.clone(), &step_clone);
+                                            // Focus the canvas so keyboard events work
+                                            canvas_fixed_s.grab_focus();
+                                        }
+                                    });
+                                    lbl.add_controller(click_controller);
 
-                                        // Create popover upfront with content
-                                        let popover = gtk4::Popover::new();
-                                        let pop_box = GtkBox::new(Orientation::Vertical, 6);
+                                    let info_btn = gtk4::Button::from_icon_name("dialog-information-symbolic");
+                                    info_btn.set_valign(gtk4::Align::Center);
+                                    info_btn.set_tooltip_text(Some("Show explanation"));
 
-                                        // Use ScrolledWindow with TextView for long content
-                                        let scrolled = ScrolledWindow::new();
-                                        scrolled.set_min_content_height(300);
-                                        scrolled.set_min_content_width(500);
-                                        scrolled.set_max_content_height(500);
-                                        scrolled.set_max_content_width(700);
-                                        scrolled.set_propagate_natural_height(true);
-                                        scrolled.set_propagate_natural_width(true);
-                                        let text_view = TextView::new();
-                                        text_view.set_editable(false);
-                                        text_view.set_wrap_mode(gtk4::WrapMode::Word);
-                                        text_view.set_size_request(480, 280);
-                                        text_view.buffer().set_text(&step.description);
-                                        scrolled.set_child(Some(&text_view));
+                                    // Create popover upfront with content
+                                    let popover = gtk4::Popover::new();
+                                    let pop_box = GtkBox::new(Orientation::Vertical, 6);
+
+                                    // Use ScrolledWindow with TextView for long content
+                                    let scrolled = ScrolledWindow::new();
+                                    scrolled.set_min_content_height(300);
+                                    scrolled.set_min_content_width(500);
+                                    scrolled.set_max_content_height(500);
+                                    scrolled.set_max_content_width(700);
+                                    scrolled.set_propagate_natural_height(true);
+                                    scrolled.set_propagate_natural_width(true);
+                                    let text_view = TextView::new();
+                                    text_view.set_editable(false);
+                                    text_view.set_wrap_mode(gtk4::WrapMode::Word);
+                                    text_view.set_size_request(480, 280);
+                                    text_view.buffer().set_text(description);
+                                    scrolled.set_child(Some(&text_view));
 
                                         pop_box.append(&scrolled);
                                         popover.set_child(Some(&pop_box));
@@ -567,29 +701,27 @@ pub fn build_ui(app: &Application, model: AppModel) {
                                         sl_clone.append(&row);
                                     }
 
-                                    // Auto-select first step and update UI
-                                    if !phase.steps.is_empty() {
-                                        drop(model_borrow); // Release immutable borrow
-                                        m_clone.borrow_mut().selected_step = Some(0);
-                                        let step_data = {
-                                            let model_borrow_again = m_clone.borrow();
-                                            model_borrow_again.session.phases[selected_phase].steps.first().map(|step| (
-                                                    step.title.clone(),
-                                                    step.description_notes.clone(),
-                                                    matches!(step.status, StepStatus::Done),
-                                                    step.notes.clone(),
-                                                    step.clone(),
-                                                ))
-                                        };
-                                        
-                                        if let Some((title, desc_notes, is_done, notes, step)) = step_data {
-                                            tl_clone.set_label(&title);
-                                            dv_clone.buffer().set_text(&desc_notes);
-                                            cb_clone.set_active(is_done);
-                                            nv_clone.buffer().set_text(&notes);
-                                            load_step_evidence(&cf_clone, ci_clone.clone(), &step);
-                                            cf_clone.grab_focus();
-                                        }
+                                // Auto-select first step and update UI
+                                if !steps_data.is_empty() {
+                                    m_clone.borrow_mut().selected_step = Some(0);
+                                    let step_data = {
+                                        let model_borrow_again = m_clone.borrow();
+                                        model_borrow_again.session.phases[selected_phase].steps.first().map(|step| (
+                                                step.title.clone(),
+                                                step.description_notes.clone(),
+                                                matches!(step.status, StepStatus::Done),
+                                                step.notes.clone(),
+                                                step.clone(),
+                                            ))
+                                    };
+                                    
+                                    if let Some((title, desc_notes, is_done, notes, step)) = step_data {
+                                        tl_clone.set_label(&title);
+                                        dv_clone.buffer().set_text(&desc_notes);
+                                        cb_clone.set_active(is_done);
+                                        nv_clone.buffer().set_text(&notes);
+                                        load_step_evidence(&cf_clone, ci_clone.clone(), &step);
+                                        cf_clone.grab_focus();
                                     }
                                 }
                             });
@@ -604,27 +736,89 @@ pub fn build_ui(app: &Application, model: AppModel) {
         });
     }
 
-    // Save dialog
+    // Save button - saves to current path or shows Save As dialog if no path
     {
         let window_ref = window.clone();
         let model_ref = model.clone();
         btn_save.connect_clicked(move |_| {
-            if let Some(path) = model_ref.borrow().current_path.clone() {
-                if let Err(err) = crate::store::save_session(&path, &model_ref.borrow().session) {
+            // Clone path and session before save to avoid borrow conflicts
+            let (path_opt, session) = {
+                let borrow = model_ref.borrow();
+                (borrow.current_path.clone(), borrow.session.clone())
+            };
+            
+            if let Some(path) = path_opt {
+                // Save to existing path
+                if let Err(err) = crate::store::save_session(&path, &session) {
                     eprintln!("Failed to save: {err:?}");
+                } else {
+                    println!("Saved to: {:?}", path);
                 }
-                return;
+            } else {
+                // No path - show Save As dialog
+                let dialog = FileDialog::new();
+                dialog.set_title("Save Session As");
+                
+                // Set initial folder to Downloads/pt-journal-sessions
+                let default_dir = crate::store::default_sessions_dir();
+                if let Ok(file_info) = gio::File::for_path(&default_dir).query_info(
+                    "*",
+                    gio::FileQueryInfoFlags::NONE,
+                    gio::Cancellable::NONE,
+                ) {
+                    if file_info.file_type() == gio::FileType::Directory {
+                        dialog.set_initial_folder(Some(&gio::File::for_path(&default_dir)));
+                    }
+                }
+                
+                let m = model_ref.clone();
+                dialog.save(Some(&window_ref), None::<&gio::Cancellable>, move |res| {
+                    if let Ok(file) = res {
+                        if let Some(path) = file.path() {
+                            let session = m.borrow().session.clone();
+                            if let Err(err) = crate::store::save_session(&path, &session) {
+                                eprintln!("Failed to save: {err:?}");
+                            } else {
+                                m.borrow_mut().current_path = Some(path.clone());
+                                println!("Saved to: {:?}", path);
+                            }
+                        }
+                    }
+                });
             }
+        });
+    }
+
+    // Save As button - always shows dialog to pick new location
+    {
+        let window_ref = window.clone();
+        let model_ref = model.clone();
+        btn_save_as.connect_clicked(move |_| {
             let dialog = FileDialog::new();
             dialog.set_title("Save Session As");
+            
+            // Set initial folder to Downloads/pt-journal-sessions
+            let default_dir = crate::store::default_sessions_dir();
+            if let Ok(file_info) = gio::File::for_path(&default_dir).query_info(
+                "*",
+                gio::FileQueryInfoFlags::NONE,
+                gio::Cancellable::NONE,
+            ) {
+                if file_info.file_type() == gio::FileType::Directory {
+                    dialog.set_initial_folder(Some(&gio::File::for_path(&default_dir)));
+                }
+            }
+            
             let m = model_ref.clone();
             dialog.save(Some(&window_ref), None::<&gio::Cancellable>, move |res| {
                 if let Ok(file) = res {
                     if let Some(path) = file.path() {
-                        if let Err(err) = crate::store::save_session(&path, &m.borrow().session) {
-                            eprintln!("Failed to save: {err:?}");
+                        let session = m.borrow().session.clone();
+                        if let Err(err) = crate::store::save_session(&path, &session) {
+                            eprintln!("Failed to save as: {err:?}");
                         } else {
-                            m.borrow_mut().current_path = Some(path);
+                            m.borrow_mut().current_path = Some(path.clone());
+                            println!("Saved as: {:?}", path);
                         }
                     }
                 }

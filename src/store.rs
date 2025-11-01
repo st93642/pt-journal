@@ -1,18 +1,28 @@
 use crate::model::Session;
 use anyhow::Result;
-use directories::ProjectDirs;
+use directories::UserDirs;
 use std::fs;
 use std::path::{Path, PathBuf};
 
 #[allow(dead_code)]
 pub fn default_sessions_dir() -> PathBuf {
-    if let Some(dirs) = ProjectDirs::from("com", "example", "pt-journal") {
-        let path = dirs.data_dir().join("sessions");
-        let _ = fs::create_dir_all(&path);
-        path
-    } else {
-        PathBuf::from("./sessions")
+    // Try to use the user's Downloads folder
+    if let Some(user_dirs) = UserDirs::new() {
+        if let Some(download_dir) = user_dirs.download_dir() {
+            let path = download_dir.join("pt-journal-sessions");
+            if let Err(e) = fs::create_dir_all(&path) {
+                eprintln!("Failed to create sessions directory in Downloads: {}", e);
+                // Fall back to current directory
+                return PathBuf::from("./pt-journal-sessions");
+            }
+            return path;
+        }
     }
+    
+    // Fallback: create in current directory
+    let path = PathBuf::from("./pt-journal-sessions");
+    let _ = fs::create_dir_all(&path);
+    path
 }
 
 #[allow(dead_code)]
@@ -44,8 +54,11 @@ mod tests {
     fn test_default_sessions_directory() {
         // Test that default directory logic works
         let path = default_sessions_dir();
-        assert!(path.to_string_lossy().contains("pt-journal"));
-        assert!(path.to_string_lossy().contains("sessions"));
+        // Should contain pt-journal-sessions in the path
+        assert!(path.to_string_lossy().contains("pt-journal-sessions"));
+        // The directory should be created and exist
+        assert!(path.exists());
+        assert!(path.is_dir());
     }
 
     #[test]

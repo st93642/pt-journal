@@ -182,6 +182,51 @@ pub fn build_ui(app: &Application, model: AppModel) {
             };
             
             if let Some(step_idx) = step_idx {
+                // Auto-submit answer if selected but not yet checked
+                let question_idx = *panel_next.quiz_widget.current_question_index.borrow();
+                let selected_answer = panel_next.quiz_widget.get_selected_answer();
+                
+                if let Some(answer_idx) = selected_answer {
+                    // Check if this question has already been answered
+                    let already_answered = {
+                        let model_borrow = model_next.borrow();
+                        model_borrow.session.phases.get(phase_idx)
+                            .and_then(|p| p.steps.get(step_idx))
+                            .and_then(|s| s.get_quiz_step())
+                            .and_then(|qs| qs.progress.get(question_idx))
+                            .map(|p| p.answered)
+                            .unwrap_or(false)
+                    };
+                    
+                    // If not answered yet, auto-submit the answer
+                    if !already_answered {
+                        let mut model_mut = model_next.borrow_mut();
+                        if let Some(step) = model_mut.session.phases.get_mut(phase_idx)
+                            .and_then(|p| p.steps.get_mut(step_idx))
+                        {
+                            if let Some(quiz_step) = step.quiz_mut_safe() {
+                                let correct = quiz_step.questions.get(question_idx)
+                                    .and_then(|q| q.answers.get(answer_idx))
+                                    .map(|a| a.is_correct)
+                                    .unwrap_or(false);
+                                
+                                if let Some(progress) = quiz_step.progress.get_mut(question_idx) {
+                                    let first_attempt = progress.attempts == 0;
+                                    progress.answered = true;
+                                    progress.selected_answer_index = Some(answer_idx);
+                                    progress.is_correct = Some(correct);
+                                    progress.attempts += 1;
+                                    progress.last_attempted = Some(chrono::Utc::now());
+                                    
+                                    if first_attempt && correct && !progress.explanation_viewed_before_answer {
+                                        progress.first_attempt_correct = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
                 let step_clone = {
                     let model_borrow = model_next.borrow();
                     model_borrow.session.phases.get(phase_idx)
@@ -196,6 +241,8 @@ pub fn build_ui(app: &Application, model: AppModel) {
                             *panel_next.quiz_widget.current_question_index.borrow_mut() = current + 1;
                             panel_next.quiz_widget.hide_explanation();
                             panel_next.quiz_widget.refresh_current_question(quiz_step);
+                            // Update statistics to reflect the auto-submitted answer
+                            panel_next.quiz_widget.update_statistics(quiz_step);
                         }
                     }
                 }
@@ -213,6 +260,51 @@ pub fn build_ui(app: &Application, model: AppModel) {
             };
             
             if let Some(step_idx) = step_idx {
+                // Auto-submit answer if selected but not yet checked
+                let question_idx = *panel_prev.quiz_widget.current_question_index.borrow();
+                let selected_answer = panel_prev.quiz_widget.get_selected_answer();
+                
+                if let Some(answer_idx) = selected_answer {
+                    // Check if this question has already been answered
+                    let already_answered = {
+                        let model_borrow = model_prev.borrow();
+                        model_borrow.session.phases.get(phase_idx)
+                            .and_then(|p| p.steps.get(step_idx))
+                            .and_then(|s| s.get_quiz_step())
+                            .and_then(|qs| qs.progress.get(question_idx))
+                            .map(|p| p.answered)
+                            .unwrap_or(false)
+                    };
+                    
+                    // If not answered yet, auto-submit the answer
+                    if !already_answered {
+                        let mut model_mut = model_prev.borrow_mut();
+                        if let Some(step) = model_mut.session.phases.get_mut(phase_idx)
+                            .and_then(|p| p.steps.get_mut(step_idx))
+                        {
+                            if let Some(quiz_step) = step.quiz_mut_safe() {
+                                let correct = quiz_step.questions.get(question_idx)
+                                    .and_then(|q| q.answers.get(answer_idx))
+                                    .map(|a| a.is_correct)
+                                    .unwrap_or(false);
+                                
+                                if let Some(progress) = quiz_step.progress.get_mut(question_idx) {
+                                    let first_attempt = progress.attempts == 0;
+                                    progress.answered = true;
+                                    progress.selected_answer_index = Some(answer_idx);
+                                    progress.is_correct = Some(correct);
+                                    progress.attempts += 1;
+                                    progress.last_attempted = Some(chrono::Utc::now());
+                                    
+                                    if first_attempt && correct && !progress.explanation_viewed_before_answer {
+                                        progress.first_attempt_correct = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
                 let step_clone = {
                     let model_borrow = model_prev.borrow();
                     model_borrow.session.phases.get(phase_idx)
@@ -227,6 +319,8 @@ pub fn build_ui(app: &Application, model: AppModel) {
                             *panel_prev.quiz_widget.current_question_index.borrow_mut() = current - 1;
                             panel_prev.quiz_widget.hide_explanation();
                             panel_prev.quiz_widget.refresh_current_question(quiz_step);
+                            // Update statistics to reflect the auto-submitted answer
+                            panel_prev.quiz_widget.update_statistics(quiz_step);
                         }
                     }
                 }
@@ -236,6 +330,7 @@ pub fn build_ui(app: &Application, model: AppModel) {
         // Finish Quiz button
         let finish_button = quiz_widget.finish_button.clone();
         let model_finish = model_quiz.clone();
+        let panel_finish = detail_panel_quiz.clone();
         let window_finish = window.clone();
         finish_button.connect_clicked(move |_| {
             let (phase_idx, step_idx) = {
@@ -244,6 +339,49 @@ pub fn build_ui(app: &Application, model: AppModel) {
             };
             
             if let Some(step_idx) = step_idx {
+                // Auto-submit current question if answered but not checked
+                let question_idx = *panel_finish.quiz_widget.current_question_index.borrow();
+                let selected_answer = panel_finish.quiz_widget.get_selected_answer();
+                
+                if let Some(answer_idx) = selected_answer {
+                    let already_answered = {
+                        let model_borrow = model_finish.borrow();
+                        model_borrow.session.phases.get(phase_idx)
+                            .and_then(|p| p.steps.get(step_idx))
+                            .and_then(|s| s.get_quiz_step())
+                            .and_then(|qs| qs.progress.get(question_idx))
+                            .map(|p| p.answered)
+                            .unwrap_or(false)
+                    };
+                    
+                    if !already_answered {
+                        let mut model_mut = model_finish.borrow_mut();
+                        if let Some(step) = model_mut.session.phases.get_mut(phase_idx)
+                            .and_then(|p| p.steps.get_mut(step_idx))
+                        {
+                            if let Some(quiz_step) = step.quiz_mut_safe() {
+                                let correct = quiz_step.questions.get(question_idx)
+                                    .and_then(|q| q.answers.get(answer_idx))
+                                    .map(|a| a.is_correct)
+                                    .unwrap_or(false);
+                                
+                                if let Some(progress) = quiz_step.progress.get_mut(question_idx) {
+                                    let first_attempt = progress.attempts == 0;
+                                    progress.answered = true;
+                                    progress.selected_answer_index = Some(answer_idx);
+                                    progress.is_correct = Some(correct);
+                                    progress.attempts += 1;
+                                    progress.last_attempted = Some(chrono::Utc::now());
+                                    
+                                    if first_attempt && correct && !progress.explanation_viewed_before_answer {
+                                        progress.first_attempt_correct = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
                 let step_clone = {
                     let model_borrow = model_finish.borrow();
                     model_borrow.session.phases.get(phase_idx)

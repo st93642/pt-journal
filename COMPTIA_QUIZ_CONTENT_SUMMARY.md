@@ -6,9 +6,9 @@ This document provides a comprehensive summary of all quiz content created for t
 
 ## Current Status & Target
 
-- **Current Questions**: 409 (updated after Domain 1.0 COMPLETE)
+- **Current Questions**: 449 (updated after Domain 2.1 COMPLETE)
 - **Target Questions**: 1,000-1,500 questions
-- **Current Progress**: 27-41% complete
+- **Current Progress**: 30-45% complete
 - **Total Quiz Steps**: 23 subdomains
 - **Domains Covered**: 5 (All CompTIA Security+ SY0-701 domains)
 - **Question Format**: Multiple choice with detailed explanations and academic descriptions
@@ -16,19 +16,17 @@ This document provides a comprehensive summary of all quiz content created for t
 ## Latest Update
 
 **Date**: November 1, 2025  
-**🎉 MILESTONE**: Domain 1.0 (General Security Concepts) COMPLETED - 200/200 questions ✅
+**Domain 2.0 (Threats, Vulnerabilities, and Mitigations) - IN PROGRESS**
 
 **Recent Expansions**:
-- **Domain 1.4 (Cryptographic Solutions)**: Expanded from 12 to 50 questions
-  - Topics: PKI (public/private keys, key escrow), encryption levels (full-disk/file/volume/database/record/transport), symmetric algorithms (AES/DES/3DES), asymmetric algorithms (RSA/Diffie-Hellman/ECC), key management tools (TPM/HSM/KMS), certificates (CA/CRL/OCSP/CSR/wildcard/root of trust), digital signatures, TLS, key length/longevity/exchange, homomorphic encryption, Opal drives, VeraCrypt, BitLocker, EFS
-- **Domain 1.3 (Change Management)**: Expanded from 10 to 50 questions  
-  - Topics: CAB, approval processes, backout plans, maintenance windows, impact analysis, stakeholders, ownership, dependencies, technical implications, documentation, version control, SOPs, downtime, legacy applications
-- **Domain 1.2 (Security Concepts)**: Expanded from 10 to 50 questions
-  - Topics: CIA triad, AAA framework, zero trust architecture, physical security, deception technologies
-- **Domain 1.1 (Security Controls)**: Expanded from 10 to 50 questions
-  - Topics: All control types and categories with real-world scenarios
+- **Domain 2.1 (Threat Actors and Motivations)**: ✅ Expanded from 9 to 50 questions
+  - **Threat Actor Types**: Nation-state actors (government-sponsored, sophisticated attacks, espionage/war motivations), APT (Advanced Persistent Threats - focused, well-funded, long-term operations), unskilled attackers/script kiddies (pre-made tools, limited understanding, off-the-shelf exploits), hacktivists (ideological/political motives, website defacement, DDoS, digital protest), insider threats (intentional vs. unintentional, employees/contractors, revenge/financial gain/espionage), organized crime (hierarchical structure, ransomware-as-a-service, profit-driven), shadow IT (unauthorized apps/devices, productivity-driven, security risks)
+  - **Attributes of Actors**: Internal vs. External classification (legitimate access vs. unauthorized entry), Resources/funding (well-resourced nation-states/APTs vs. limited-resource script kiddies), Sophistication/capability (zero-day exploits/custom malware vs. pre-made tools)
+  - **10 Motivation Categories**: Data exfiltration (stealing IP, trade secrets for dark web sale/competitive advantage), espionage (nation-state intelligence gathering, military/political secrets), service disruption (targeting critical infrastructure, chaos, reputation harm), blackmail (ransomware, double extortion, threatening data leaks), financial gain (credit card fraud, cryptocurrency theft, banking trojans), philosophical/political beliefs (hacktivism, environmental activism, human rights advocacy), ethics (white hat hackers, responsible disclosure, penetration testing), revenge (disgruntled employees, personal vendettas, sabotage), disruption/chaos (nihilistic attacks, cyber vandalism, creating instability), war (state-sponsored cyber warfare, critical infrastructure attacks during conflicts)
+  - **Real-world Examples**: UK school employee password lockout (2021 revenge attack), Stuxnet (nation-state malware), Anonymous (hacktivist group), ransomware-as-a-service models, impossible travel indicators, business email compromise
+- **Domain 1.0 COMPLETE**: 🎉 All 4 subdomains at 50 questions each (200 total)
 
-**Status**: All 93 tests passing ✅ | Clean build ✅ | 200 questions in Domain 1.0 ✅
+**Status**: All 93 tests passing ✅ | Clean build ✅ | Domain 1.0 COMPLETE ✅ | Domain 2.1 COMPLETE ✅
 
 ## Source Material
 
@@ -73,6 +71,19 @@ This document provides a comprehensive summary of all quiz content created for t
   - Tools: Opal drives, VeraCrypt
 - **Domain 1.0 Status**: 200/200 questions ✅ **100% COMPLETE**
 
+### Domain 2.0: Threats, Vulnerabilities, and Mitigations (TARGET: 250-300 questions) - IN PROGRESS
+
+- **2.1 Threat Actors**: ✅ 50 questions (COMPLETED)
+  - Threat actor types: Nation-state, APT, unskilled attackers, hacktivists, insiders, organized crime, shadow IT
+  - Attributes: Internal/external, resources/funding, sophistication/capability
+  - Motivations: Data exfiltration, espionage, service disruption, blackmail, financial gain, philosophical/political, ethics, revenge, disruption/chaos, war
+  - Real-world scenarios: UK school employee revenge attack, ransomware-as-a-service, Anonymous hacktivist operations, APT characteristics
+- **2.2 Threat Vectors**: 12/50 questions (next target)
+- **2.3 Vulnerabilities**: 12/50 questions
+- **2.4 Indicators**: 12/50 questions
+- **2.5 Mitigations**: 12/50 questions
+- **Domain 2.0 Status**: 98/250-300 questions (39% complete)
+
 ### Domain Breakdown
 
 #### Domain 1.0: General Security Concepts (4 steps, 42 questions)
@@ -86,10 +97,12 @@ This document provides a comprehensive summary of all quiz content created for t
 4. **1.4 Cryptographic Solutions** (12 questions)
    - Symmetric/asymmetric encryption, PKI, hashing, digital signatures, key management
 
-#### Domain 2.0: Threats, Vulnerabilities, and Mitigations (5 steps, 58 questions)
+#### Domain 2.0: Threats, Vulnerabilities, and Mitigations (5 steps, 98 questions) - IN PROGRESS
 
-1. **2.1 Threat Actors and Motivations** (10 questions)
-   - Nation-state actors, organized crime, hacktivists, insiders, APTs
+1. **2.1 Threat Actors and Motivations** (50 questions) ✅ COMPLETED
+   - Nation-state actors, APTs, organized crime, hacktivists, insiders (intentional/unintentional), shadow IT, unskilled attackers
+   - Attributes: Internal/external, resources/funding, sophistication/capability
+   - Motivations: Data exfiltration, espionage, service disruption, blackmail, financial gain, philosophical/political, ethics, revenge, disruption/chaos, war
 2. **2.2 Threat Vectors and Attack Surfaces** (12 questions)
    - Phishing, smishing, vishing, social engineering, removable media, supply chain
 3. **2.3 Vulnerability Types** (12 questions)

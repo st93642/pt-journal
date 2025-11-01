@@ -438,7 +438,7 @@ mod tests {
         assert!(result.is_ok(), "Should successfully load 1.1 questions");
         
         let questions = result.unwrap();
-        assert_eq!(questions.len(), 10, "Should have 10 questions");
+        assert_eq!(questions.len(), 50, "Should have 50 questions (expanded)");
     }
     
     #[test]
@@ -464,7 +464,7 @@ mod tests {
         
         // Verify quiz content
         if let Some(quiz_step) = step.get_quiz_step() {
-            assert_eq!(quiz_step.questions.len(), 10);
+            assert_eq!(quiz_step.questions.len(), 50); // Expanded to 50 questions
             assert_eq!(quiz_step.domain, DOMAIN_1_GENERAL_SECURITY);
         } else {
             panic!("Step should contain quiz data");

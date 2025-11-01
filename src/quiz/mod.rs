@@ -289,13 +289,13 @@ Invalid line 2|C|D
         let questions = parse_question_file(&content)
             .expect("Failed to parse sample questions");
         
-        // We created 10 sample questions
-        assert_eq!(questions.len(), 10);
+        // We expanded to 50 questions
+        assert_eq!(questions.len(), 50);
         
         // Verify first question
-        assert_eq!(questions[0].question_text, "What does the CIA triad stand for in information security?");
+        assert_eq!(questions[0].question_text, "Which type of security control is a firewall?");
         assert_eq!(questions[0].answers.len(), 4);
-        assert!(questions[0].answers[0].is_correct);
+        assert!(questions[0].answers[1].is_correct); // Answer B (index 1) is correct
         assert_eq!(questions[0].domain, "1.0 General Security Concepts");
         assert_eq!(questions[0].subdomain, "1.1 Security Controls");
     }

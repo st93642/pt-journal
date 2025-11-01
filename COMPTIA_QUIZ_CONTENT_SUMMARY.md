@@ -1,18 +1,52 @@
-# CompTIA Security+ Quiz Content - Summary
+# CompTIA Security+ Quiz Content Summary
 
 ## Overview
-Successfully populated the CompTIA Security+ quiz phase with comprehensive content covering all 5 domains of the SY0-701 exam.
 
-## Content Statistics
+This document provides a comprehensive summary of all quiz content created for the PT Journal application's CompTIA Security+ SY0-701 certification preparation phase.
 
-### Total Content
-- **23 Quiz Steps** (subdomains) across 5 major domains
-- **251 Total Questions** with detailed explanations
-- All questions follow format: question|answer_a|answer_b|answer_c|answer_d|correct_idx|explanation|domain|subdomain
+## Current Status & Target
+
+- **Current Questions**: 291 (updated after Domain 1.1 expansion)
+- **Target Questions**: 1,000-1,500 questions
+- **Current Progress**: 19-29% complete
+- **Total Quiz Steps**: 23 subdomains
+- **Domains Covered**: 5 (All CompTIA Security+ SY0-701 domains)
+- **Question Format**: Multiple choice with detailed explanations and academic descriptions
+
+## Latest Update
+
+**Date**: November 1, 2025
+**Action**: Expanded Domain 1.1 (Security Controls) from 20 to 50 questions
+**Details**: Added 30 questions covering all control types and categories with real-world scenarios
+**Status**: All 93 tests passing ✅
+
+## Source Material
+
+- **CompTIA Security+.txt**: 743 formatted questions (30,657 lines)
+- **CompTIA Security+ Practice.txt**: 1,000+ questions with explanations (18,429 lines)
+- **CompTIA Security.txt**: 840 questions in 84 chapters (28,699 lines)
+- **CompTIA Security+Exam.txt**: Study strategies and simulation guides (1,728 lines)
+- **Total Source Content**: ~2,500+ questions across 79,513 lines
+
+## Expansion Progress
+
+### Domain 1.0: General Security Concepts (TARGET: 160-200 questions)
+
+- **1.1 Security Controls**: ✅ 50 questions (COMPLETED - expanded from 10)
+  - Control types: Preventive, Deterrent, Detective, Corrective, Compensating, Directive
+  - Control categories: Technical, Managerial, Operational, Physical
+  - Real-world scenarios with academic explanations
+- **1.2 Security Concepts**: 10 questions → TARGET: 50 questions (IN PROGRESS)
+- **1.3 Change Management**: 10 questions → TARGET: 50 questions  
+- **1.4 Cryptographic Solutions**: 12 questions → TARGET: 50 questions
+- **Domain 1.0 Current**: 82 questions (50+10+10+12)
+- **Domain 1.0 Target**: 200 questions
+- **Domain 1.0 Progress**: 41% complete
 
 ### Domain Breakdown
 
 #### Domain 1.0: General Security Concepts (4 steps, 42 questions)
+
 1. **1.1 Security Controls** (10 questions)
    - CIA triad, control types, authentication factors
 2. **1.2 Fundamental Security Concepts** (10 questions)
@@ -23,6 +57,7 @@ Successfully populated the CompTIA Security+ quiz phase with comprehensive conte
    - Symmetric/asymmetric encryption, PKI, hashing, digital signatures, key management
 
 #### Domain 2.0: Threats, Vulnerabilities, and Mitigations (5 steps, 58 questions)
+
 1. **2.1 Threat Actors and Motivations** (10 questions)
    - Nation-state actors, organized crime, hacktivists, insiders, APTs
 2. **2.2 Threat Vectors and Attack Surfaces** (12 questions)
@@ -35,6 +70,7 @@ Successfully populated the CompTIA Security+ quiz phase with comprehensive conte
    - Segmentation, least privilege, patching, defense in depth, isolation
 
 #### Domain 3.0: Security Architecture (4 steps, 49 questions)
+
 1. **3.1 Architecture Models** (12 questions)
    - Cloud models (IaaS/PaaS/SaaS), zero trust, virtualization, containerization
 2. **3.2 Security Infrastructure** (12 questions)
@@ -45,6 +81,7 @@ Successfully populated the CompTIA Security+ quiz phase with comprehensive conte
    - RTO/RPO, backup types, high availability, disaster recovery, RAID
 
 #### Domain 4.0: Security Operations (5 steps, 50 questions)
+
 1. **4.1 Security Techniques** (10 questions)
    - Baselines, hardening, MDM, wireless security, sandboxing
 2. **4.2 Asset Management** (10 questions)
@@ -57,6 +94,7 @@ Successfully populated the CompTIA Security+ quiz phase with comprehensive conte
    - Firewall rules, ACLs, DNS filtering, NAC, DLP, threat hunting
 
 #### Domain 5.0: Security Program Management and Oversight (5 steps, 52 questions)
+
 1. **5.1 Governance and Compliance Elements** (10 questions)
    - Security governance, policies, standards, procedures, regulations
 2. **5.2 Risk Management Processes** (11 questions)
@@ -69,6 +107,7 @@ Successfully populated the CompTIA Security+ quiz phase with comprehensive conte
    - Security training, incident response lifecycle, CSIRT, forensics
 
 ## File Structure
+
 ```
 data/comptia_secplus/
 ├── 1.0-general-security/
@@ -104,6 +143,7 @@ data/comptia_secplus/
 ## Implementation Details
 
 ### Code Changes
+
 1. **src/tutorials/comptia_secplus.rs**
    - Updated all 5 `get_domain_X_steps()` functions to load question files
    - Each function creates quiz steps using `create_quiz_step_from_file()`
@@ -114,13 +154,16 @@ data/comptia_secplus/
    - Adjusted serialization performance test timeout (50ms → 200ms) to accommodate larger content
 
 ### Testing
+
 - **All 93 tests passing**
 - Quiz loading validated
 - Question parsing verified
 - Serialization/deserialization working correctly
 
 ## Quality Standards
+
 All questions follow these standards:
+
 - **4 answer choices** with exactly 1 correct answer
 - **Detailed explanations** explaining why answer is correct and why others are wrong
 - **Context-appropriate difficulty** aligned with CompTIA Security+ exam
@@ -128,7 +171,9 @@ All questions follow these standards:
 - **Domain and subdomain tagging** for proper organization
 
 ## Usage
+
 Users can now:
+
 1. Navigate to CompTIA Security+ phase in PT Journal
 2. Select any of 23 quiz steps organized by domain
 3. Answer multiple-choice questions with immediate feedback
@@ -137,13 +182,16 @@ Users can now:
 6. View statistics showing performance across all domains
 
 ## Sources
+
 Questions created based on:
+
 - CompTIA Security+ SY0-701 exam objectives
 - Security certification study materials
 - Industry best practices and standards
 - Real-world security scenarios
 
 ## Next Steps (Optional Enhancements)
+
 1. Add more questions to increase variety (target: 15-20 questions per subdomain)
 2. Create performance-based simulation questions
 3. Add adaptive difficulty based on user performance

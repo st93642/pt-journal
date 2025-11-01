@@ -39,7 +39,7 @@ pub fn load_step_evidence(fixed: &Fixed, canvas_items: Rc<RefCell<Vec<CanvasItem
 
                 // Create Picture widget and add to fixed container
                 let picture = Picture::for_paintable(&texture);
-                picture.set_size_request(texture.width() as i32, texture.height() as i32);
+                picture.set_size_request(texture.width(), texture.height());
                 fixed.put(&picture, item_x, item_y);
 
                 // Store the picture widget reference
@@ -190,7 +190,7 @@ fn add_image_to_canvas(
 
     // Create Picture widget
     let picture = Picture::for_paintable(&texture);
-    picture.set_size_request(texture.width() as i32, texture.height() as i32);
+    picture.set_size_request(texture.width(), texture.height());
 
     // Add to fixed container
     if let Some(fixed_ref) = fixed_weak.upgrade() {
@@ -252,13 +252,15 @@ fn handle_image_drop(
     y: f64,
 ) -> bool {
     // Try to get file paths first
-    if let Ok(file) = value.get::<gtk4::gio::File>() && let Some(path) = file.path() {
-        // Validate file extension
-        if is_valid_image_extension(&path) {
-            // Try creating texture from file
-            if let Ok(texture) = create_texture_from_file(&path) {
-                add_image_to_canvas(canvas_items, model, fixed_weak, texture, x, y, Some(path.to_string_lossy().to_string()));
-                return true;
+    if let Ok(file) = value.get::<gtk4::gio::File>() {
+        if let Some(path) = file.path() {
+            // Validate file extension
+            if is_valid_image_extension(&path) {
+                // Try creating texture from file
+                if let Ok(texture) = create_texture_from_file(&path) {
+                    add_image_to_canvas(canvas_items, model, fixed_weak, texture, x, y, Some(path.to_string_lossy().to_string()));
+                    return true;
+                }
             }
         }
     }

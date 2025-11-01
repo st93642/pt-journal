@@ -2,6 +2,7 @@ pub mod model;
 pub mod store;
 pub mod tutorials;
 pub mod ui;
+pub mod dispatcher;
 
 #[cfg(test)]
 mod tests {

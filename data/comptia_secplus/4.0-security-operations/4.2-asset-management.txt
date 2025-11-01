@@ -1,0 +1,23 @@
+# Domain 4.0 - Security Operations
+# Subdomain 4.2 - Asset Management
+# Format: question|answer_a|answer_b|answer_c|answer_d|correct_idx|explanation|domain|subdomain
+
+What is the first step in proper asset management?|Disposal|Acquisition and inventory|Monitoring|Decommissioning|1|Acquisition and inventory is the first step—identifying, documenting, and tracking all organizational assets including hardware, software, and data. Monitoring comes later, and disposal/decommissioning are final steps in the asset lifecycle.|4.0 Security Operations|4.2 Asset Management
+
+Which asset management practice tracks asset location, ownership, and status?|Asset tagging and tracking|Asset encryption|Asset destruction|Asset purchasing|0|Asset tagging and tracking uses identifiers (RFID, barcodes, serial numbers) to track asset location, ownership, custodian, and status throughout lifecycle. Encryption protects data, destruction is disposal, and purchasing is acquisition.|4.0 Security Operations|4.2 Asset Management
+
+What should be done before disposing of storage media containing sensitive data?|Sell it immediately|Securely wipe or physically destroy it|Donate it|Store it indefinitely|1|Storage media must be securely wiped (data sanitization) or physically destroyed before disposal to prevent data recovery. Immediate sale or donation risks data exposure, and indefinite storage isn't disposal.|4.0 Security Operations|4.2 Asset Management
+
+Which asset lifecycle phase involves removing assets from service?|Procurement|Deployment|Maintenance|Decommissioning|3|Decommissioning involves securely removing assets from service, sanitizing data, documenting disposal, and updating inventory. Procurement acquires assets, deployment puts them in service, and maintenance keeps them operational.|4.0 Security Operations|4.2 Asset Management
+
+What information should an asset inventory typically include?|Only purchase price|Hostname, location, owner, configuration, and security status|Just the asset name|Only the manufacturer|1|Comprehensive asset inventories include hostname, IP address, location, owner/custodian, configuration, software versions, security status, and more. Price alone, just name, or only manufacturer provide insufficient information for proper management.|4.0 Security Operations|4.2 Asset Management
+
+Which practice ensures assigned assets are accounted for?|Random selection|Assignment and accountability tracking|Ignoring asset locations|No documentation|1|Assignment and accountability tracking ensures assets are assigned to specific individuals or departments who are responsible for them. This creates accountability and helps prevent loss. Random selection, ignoring locations, and no documentation fail to establish accountability.|4.0 Security Operations|4.2 Asset Management
+
+What is enumeration in asset management?|Deleting assets|Discovering and cataloging all assets on the network|Encrypting assets|Purchasing new assets|1|Enumeration is the process of discovering and cataloging all assets connected to the network, including unauthorized or shadow IT devices. This provides complete visibility. Deletion, encryption, and purchasing are different asset management activities.|4.0 Security Operations|4.2 Asset Management
+
+Which process verifies that assets are properly configured according to standards?|Random checks|Configuration audits|Asset purchasing|Physical destruction|1|Configuration audits verify that assets are properly configured according to security baselines and organizational standards. Random checks are less systematic, purchasing acquires assets, and destruction disposes of them.|4.0 Security Operations|4.2 Asset Management
+
+What should organizations maintain for software assets?|Only free software|Software licenses and compliance tracking|Pirated software|No records|1|Organizations must maintain software licenses and track compliance to avoid legal issues, security risks from unlicensed software, and audit violations. Only free software limits functionality, pirated software is illegal, and no records creates compliance risks.|4.0 Security Operations|4.2 Asset Management
+
+Which data destruction method uses magnetic fields to erase data from magnetic media?|Degaussing|Shredding|Incineration|Recycling|0|Degaussing uses powerful magnetic fields to erase data from magnetic storage media like hard drives and tapes by disrupting magnetic patterns. Shredding physically destroys media, incineration burns it, and recycling may not destroy data.|4.0 Security Operations|4.2 Asset Management

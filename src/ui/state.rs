@@ -312,7 +312,7 @@ mod tests {
         
         let notes = {
             let model = state.model.borrow();
-            model.session.phases[0].steps[0].notes.clone()
+            model.session.phases[0].steps[0].get_notes()
         };
         assert_eq!(notes, "Test notes");
     }
@@ -324,7 +324,7 @@ mod tests {
         
         let notes = {
             let model = state.model.borrow();
-            model.session.phases[0].steps[0].description_notes.clone()
+            model.session.phases[0].steps[0].get_description_notes()
         };
         assert_eq!(notes, "Description notes");
     }
@@ -346,7 +346,7 @@ mod tests {
         
         let count = {
             let model = state.model.borrow();
-            model.session.phases[0].steps[0].evidence.len()
+            model.session.phases[0].steps[0].get_evidence().len()
         };
         assert_eq!(count, 1);
         
@@ -354,7 +354,7 @@ mod tests {
         
         let (x, y) = {
             let model = state.model.borrow();
-            let ev = &model.session.phases[0].steps[0].evidence[0];
+            let ev = &model.session.phases[0].steps[0].get_evidence()[0];
             (ev.x, ev.y)
         };
         assert_eq!(x, 150.0);
@@ -364,7 +364,7 @@ mod tests {
         
         let count = {
             let model = state.model.borrow();
-            model.session.phases[0].steps[0].evidence.len()
+            model.session.phases[0].steps[0].get_evidence().len()
         };
         assert_eq!(count, 0);
     }

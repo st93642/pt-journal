@@ -72,7 +72,7 @@ mod tests {
             // Test CompTIA Security+ phase
             let comptia_phase = &session.phases[6];
             assert_eq!(comptia_phase.name, "CompTIA Security+");
-            assert_eq!(comptia_phase.steps.len(), 1); // Currently has 1.1 Security Controls
+            assert_eq!(comptia_phase.steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
         }
 
         #[test]
@@ -112,19 +112,28 @@ mod tests {
         fn test_step_with_content() {
             let session = Session::default();
 
-            // Test that all steps have comprehensive content
+            // Test that all tutorial steps have comprehensive content
             for phase in &session.phases {
                 for step in &phase.steps {
                     // Each step should have a meaningful title
                     assert!(step.title.len() > 5, "Step title too short: {}", step.title);
 
-                    // Each step should have detailed description
-                    assert!(step.description.len() > 100, "Step description too short for: {}", step.title);
+                    // Only check tutorial steps for description format
+                    if step.is_tutorial() {
+                        let description = step.get_description();
+                        // Each tutorial step should have detailed description
+                        assert!(description.len() > 100, "Step description too short for: {}", step.title);
 
-                    // Description should contain key sections
-                    assert!(step.description.contains("OBJECTIVE"), "Missing OBJECTIVE in: {}", step.title);
-                    assert!(step.description.contains("STEP-BY-STEP PROCESS"), "Missing STEP-BY-STEP in: {}", step.title);
-                    assert!(step.description.contains("WHAT TO LOOK FOR"), "Missing WHAT TO LOOK FOR in: {}", step.title);
+                        // Description should contain key sections
+                        assert!(description.contains("OBJECTIVE"), "Missing OBJECTIVE in: {}", step.title);
+                        assert!(description.contains("STEP-BY-STEP PROCESS"), "Missing STEP-BY-STEP in: {}", step.title);
+                        assert!(description.contains("WHAT TO LOOK FOR"), "Missing WHAT TO LOOK FOR in: {}", step.title);
+                    } else if step.is_quiz() {
+                        // Quiz steps should have questions
+                        if let Some(quiz_step) = step.get_quiz_step() {
+                            assert!(quiz_step.questions.len() > 0, "Quiz step has no questions: {}", step.title);
+                        }
+                    }
                 }
             }
         }
@@ -468,24 +477,30 @@ mod tests {
         fn test_phase_progression_workflow() {
             let session = Session::default();
 
-            // Verify logical phase progression
-            let phase_names = ["Reconnaissance", "Vulnerability Analysis", "Exploitation", "Post-Exploitation", "Reporting"];
+            // Verify logical phase progression (first 5 phases are pentesting methodology)
+            let phase_names = ["Reconnaissance", "Vulnerability Analysis", "Exploitation", "Post-Exploitation", "Reporting", "Bug Bounty Hunting", "CompTIA Security+"];
             for (idx, expected_name) in phase_names.iter().enumerate() {
                 assert_eq!(session.phases[idx].name, *expected_name);
             }
 
-            // Verify step counts are reasonable
+            // Verify step counts are reasonable for first 5 phases
             let expected_step_counts = [16, 5, 4, 4, 4]; // Recon, Vuln, Exploit, Post, Report
             for (idx, &expected_count) in expected_step_counts.iter().enumerate() {
                 assert_eq!(session.phases[idx].steps.len(), expected_count);
             }
+            
+            // Bug Bounty Hunting phase should have steps
+            assert!(session.phases[5].steps.len() > 0);
+            
+            // CompTIA Security+ phase should have quiz steps
+            assert_eq!(session.phases[6].steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
         }
 
         #[test]
         fn test_step_content_completeness() {
             let session = Session::default();
 
-            // Verify all steps have required content sections
+            // Verify all tutorial steps have required content sections
             let required_sections = [
                 "OBJECTIVE",
                 "STEP-BY-STEP PROCESS",
@@ -495,14 +510,18 @@ mod tests {
 
             for phase in &session.phases {
                 for step in &phase.steps {
-                    for &section in &required_sections {
-                        assert!(step.description.contains(section),
-                               "Step '{}' missing section '{}'", step.title, section);
-                    }
+                    // Only check tutorial steps
+                    if step.is_tutorial() {
+                        let description = step.get_description();
+                        for &section in &required_sections {
+                            assert!(description.contains(section),
+                                   "Step '{}' missing section '{}'", step.title, section);
+                        }
 
-                    // Verify step has reasonable content length
-                    assert!(step.description.len() > 200,
-                           "Step '{}' description too short", step.title);
+                        // Verify step has reasonable content length
+                        assert!(description.len() > 200,
+                               "Step '{}' description too short", step.title);
+                    }
                 }
             }
         }
@@ -517,9 +536,9 @@ mod tests {
                 "tls", "whois", "cloud", "email", "screenshot", "javascript"
             ];
 
-            let recon_descriptions: Vec<&str> = session.phases[0].steps
+            let recon_descriptions: Vec<String> = session.phases[0].steps
                 .iter()
-                .map(|s| s.description.as_str())
+                .map(|s| s.get_description())
                 .collect();
 
             for technique in &expected_recon_techniques {
@@ -549,15 +568,17 @@ mod tests {
                         step.set_notes(format!("Completed step {} in phase {}", step_idx, phase_idx));
                         step.completed_at = Some(Utc::now());
 
-                        // Add some evidence
-                        step.evidence.push(Evidence {
-                            id: Uuid::new_v4(),
-                            path: format!("/evidence/phase{}_step{}.png", phase_idx, step_idx),
-                            created_at: Utc::now(),
-                            kind: "screenshot".to_string(),
-                            x: 0.0,
-                            y: 0.0,
-                        });
+                        // Add some evidence (only for tutorial steps)
+                        if step.is_tutorial() {
+                            step.add_evidence(Evidence {
+                                id: Uuid::new_v4(),
+                                path: format!("/evidence/phase{}_step{}.png", phase_idx, step_idx),
+                                created_at: Utc::now(),
+                                kind: "screenshot".to_string(),
+                                x: 0.0,
+                                y: 0.0,
+                            });
+                        }
                     } else if step_idx % 3 == 1 { // Every other third step
                         step.status = StepStatus::InProgress;
                         step.set_notes(format!("In progress: step {} in phase {}", step_idx, phase_idx));
@@ -585,17 +606,19 @@ mod tests {
                 // Verify each step
                 for (_step_idx, (original_step, loaded_step)) in original_phase.steps.iter().zip(&loaded_phase.steps).enumerate() {
                     assert_eq!(loaded_step.title, original_step.title);
-                    assert_eq!(loaded_step.description, original_step.description);
+                    assert_eq!(loaded_step.get_description(), original_step.get_description());
                     assert_eq!(loaded_step.status, original_step.status);
                     assert_eq!(loaded_step.get_notes(), original_step.get_notes());
                     assert_eq!(loaded_step.tags, original_step.tags);
-                    assert_eq!(loaded_step.evidence.len(), original_step.evidence.len());
+                    assert_eq!(loaded_step.get_evidence().len(), original_step.get_evidence().len());
 
-                    // Verify evidence
-                    for (_evidence_idx, (orig_ev, loaded_ev)) in original_step.evidence.iter().zip(&loaded_step.evidence).enumerate() {
-                        assert_eq!(loaded_ev.path, orig_ev.path);
-                        assert_eq!(loaded_ev.kind, orig_ev.kind);
-                        assert_eq!(loaded_ev.created_at, orig_ev.created_at);
+                    // Verify evidence (only for tutorial steps)
+                    if loaded_step.is_tutorial() {
+                        for (_evidence_idx, (orig_ev, loaded_ev)) in original_step.get_evidence().iter().zip(loaded_step.get_evidence()).enumerate() {
+                            assert_eq!(loaded_ev.path, orig_ev.path);
+                            assert_eq!(loaded_ev.kind, orig_ev.kind);
+                            assert_eq!(loaded_ev.created_at, orig_ev.created_at);
+                        }
                     }
                 }
             }
@@ -620,14 +643,22 @@ mod tests {
                 // Test step structure
                 for step in &phase.steps {
                     assert!(!step.title.is_empty());
-                    assert!(!step.description.is_empty());
+                    // Tutorial steps have descriptions, quiz steps have questions
+                    if step.is_tutorial() {
+                        assert!(!step.get_description().is_empty());
+                    } else if step.is_quiz() {
+                        assert!(step.get_quiz_step().unwrap().questions.len() > 0);
+                    }
                     assert!(step.id != Uuid::nil());
                     assert!(!step.tags.is_empty()); // All steps should have at least one tag
 
-                    // Test that descriptions contain required sections
-                    assert!(step.description.contains("OBJECTIVE"));
-                    assert!(step.description.contains("STEP-BY-STEP PROCESS"));
-                    assert!(step.description.contains("WHAT TO LOOK FOR"));
+                    // Test that tutorial steps contain required sections
+                    if step.is_tutorial() {
+                        let description = step.get_description();
+                        assert!(description.contains("OBJECTIVE"));
+                        assert!(description.contains("STEP-BY-STEP PROCESS"));
+                        assert!(description.contains("WHAT TO LOOK FOR"));
+                    }
                 }
             }
         }
@@ -785,17 +816,17 @@ mod tests {
             let session_path = temp_dir.path().join("perf_test.json");
             let session = Session::default();
 
-            // Test save performance
+            // Test save performance (increased timeout for larger quiz content)
             let save_start = Instant::now();
             store::save_session(&session_path, &session).unwrap();
             let save_duration = save_start.elapsed();
-            assert!(save_duration.as_millis() < 50, "Save took too long: {:?}", save_duration);
+            assert!(save_duration.as_millis() < 200, "Save took too long: {:?}", save_duration);
 
-            // Test load performance
+            // Test load performance (increased timeout for larger quiz content)
             let load_start = Instant::now();
             let _loaded = store::load_session(&session_path).unwrap();
             let load_duration = load_start.elapsed();
-            assert!(load_duration.as_millis() < 50, "Load took too long: {:?}", load_duration);
+            assert!(load_duration.as_millis() < 200, "Load took too long: {:?}", load_duration);
         }
 
         #[test]

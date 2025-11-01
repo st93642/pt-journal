@@ -1,0 +1,25 @@
+# Domain 5.0 - Security Program Management and Oversight
+# Subdomain 5.2 - Risk Management Processes
+# Format: question|answer_a|answer_b|answer_c|answer_d|correct_idx|explanation|domain|subdomain
+
+What is the first step in the risk management process?|Risk mitigation|Risk identification|Risk monitoring|Risk acceptance|1|Risk identification is the first step—discovering and documenting potential threats and vulnerabilities before they can be analyzed or mitigated. Mitigation comes after analysis, monitoring is ongoing, and acceptance is one response option.|5.0 Security Program Management|5.2 Risk Management
+
+Which risk response strategy involves taking action to reduce risk likelihood or impact?|Risk avoidance|Risk mitigation|Risk acceptance|Risk transfer|1|Risk mitigation (risk reduction) involves implementing controls to reduce risk likelihood or impact to acceptable levels. Avoidance eliminates risk entirely, acceptance acknowledges risk without action, and transfer shifts risk to others (insurance).|5.0 Security Program Management|5.2 Risk Management
+
+What risk response transfers financial risk to another party?|Risk avoidance|Risk mitigation|Risk transference|Risk acceptance|2|Risk transference shifts financial consequences to another party, typically through insurance or contracts. Avoidance eliminates risk, mitigation reduces risk, and acceptance acknowledges risk without action.|5.0 Security Program Management|5.2 Risk Management
+
+Which risk assessment approach uses numerical values for probability and impact?|Qualitative|Quantitative|Subjective|Random|1|Quantitative risk assessment uses numerical values, calculations, and metrics (ALE, SLE, ARO) to objectively measure risk. Qualitative uses descriptive categories (high/medium/low), subjective relies on opinions, and random isn't a valid approach.|5.0 Security Program Management|5.2 Risk Management
+
+What does ALE stand for in risk management?|Annual Loss Expectancy|Average Loss Estimate|Annual Liability Exposure|Asset Loss Evaluation|0|ALE (Annual Loss Expectancy) estimates the expected monetary loss for an asset per year, calculated as SLE (Single Loss Expectancy) × ARO (Annualized Rate of Occurrence). The other options are not standard risk management terms.|5.0 Security Program Management|5.2 Risk Management
+
+Which risk assessment approach uses categories like "high," "medium," and "low"?|Quantitative|Qualitative|Numerical|Mathematical|1|Qualitative risk assessment uses descriptive categories and subjective ratings (high/medium/low) rather than precise numerical values. Quantitative uses numbers and calculations, while numerical and mathematical describe quantitative approaches.|5.0 Security Program Management|5.2 Risk Management
+
+What is risk appetite?|Amount of risk organization is willing to accept|Complete risk elimination|Maximum possible risk|Random risk tolerance|0|Risk appetite defines the amount and type of risk an organization is willing to accept in pursuit of business objectives. Complete elimination is usually impossible/impractical, maximum risk is reckless, and random tolerance isn't strategic.|5.0 Security Program Management|5.2 Risk Management
+
+Which risk response completely eliminates a risk?|Risk mitigation|Risk acceptance|Risk avoidance|Risk transfer|2|Risk avoidance completely eliminates risk by not engaging in the risky activity. Mitigation reduces risk, acceptance acknowledges it, and transfer shifts it to others.|5.0 Security Program Management|5.2 Risk Management
+
+What is residual risk?|Initial risk before controls|Risk remaining after implementing controls|Eliminated risk|Transferred risk|1|Residual risk is the risk remaining after implementing controls and mitigation measures. Initial risk is before controls (inherent risk), eliminated risk is avoided, and transferred risk is shifted to others.|5.0 Security Program Management|5.2 Risk Management
+
+Which risk management activity involves ongoing monitoring of the risk environment?|One-time assessment|Continuous risk monitoring|Ignoring changes|Initial identification only|1|Continuous risk monitoring involves ongoing surveillance of the risk environment to detect new threats, vulnerabilities, and changes in existing risks. One-time assessments become outdated, ignoring changes is dangerous, and initial identification is just the beginning.|5.0 Security Program Management|5.2 Risk Management
+
+What calculation multiplies Single Loss Expectancy by Annualized Rate of Occurrence?|RTO|RPO|ALE (Annual Loss Expectancy)|MTBF|2|ALE (Annual Loss Expectancy) = SLE × ARO, calculating expected annual loss. RTO is recovery time objective, RPO is recovery point objective, and MTBF is mean time between failures.|5.0 Security Program Management|5.2 Risk Management

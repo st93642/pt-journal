@@ -102,64 +102,297 @@ pub fn get_domain_1_steps() -> Vec<Step> {
         Err(e) => eprintln!("Warning: Failed to load 1.1 Security Controls: {}", e),
     }
     
-    // Add more subdomains as question files are created:
-    // - 1.2 Security Concepts
-    // - 1.3 Change Management
-    // - 1.4 Cryptographic Solutions
+    // 1.2 Security Concepts
+    match create_quiz_step_from_file(
+        "1.2 Fundamental Security Concepts".to_string(),
+        DOMAIN_1_GENERAL_SECURITY.to_string(),
+        "1.0-general-security/1.2-security-concepts.txt",
+    ) {
+        Ok(step) => {
+            steps.push(step);
+        },
+        Err(e) => eprintln!("Warning: Failed to load 1.2 Security Concepts: {}", e),
+    }
+    
+    // 1.3 Change Management
+    match create_quiz_step_from_file(
+        "1.3 Change Management".to_string(),
+        DOMAIN_1_GENERAL_SECURITY.to_string(),
+        "1.0-general-security/1.3-change-management.txt",
+    ) {
+        Ok(step) => {
+            steps.push(step);
+        },
+        Err(e) => eprintln!("Warning: Failed to load 1.3 Change Management: {}", e),
+    }
+    
+    // 1.4 Cryptographic Solutions
+    match create_quiz_step_from_file(
+        "1.4 Cryptographic Solutions".to_string(),
+        DOMAIN_1_GENERAL_SECURITY.to_string(),
+        "1.0-general-security/1.4-cryptographic-solutions.txt",
+    ) {
+        Ok(step) => {
+            steps.push(step);
+        },
+        Err(e) => eprintln!("Warning: Failed to load 1.4 Cryptographic Solutions: {}", e),
+    }
     
     steps
 }
 
 /// Get all quiz steps for Domain 2.0 (Threats, Vulnerabilities, and Mitigations)
 pub fn get_domain_2_steps() -> Vec<Step> {
-    let steps = Vec::new();
+    let mut steps = Vec::new();
     
-    // Add subdomains as question files are created:
-    // - 2.1 Threat Actors
-    // - 2.2 Threat Vectors
-    // - 2.3 Attack Types
-    // - 2.4 Indicators of Compromise
-    // - 2.5 Mitigation Techniques
+    // 2.1 Threat Actors and Motivations
+    match create_quiz_step_from_file(
+        "2.1 Threat Actors and Motivations".to_string(),
+        DOMAIN_2_THREATS.to_string(),
+        "2.0-threats-vulnerabilities/2.1-threat-actors.txt",
+    ) {
+        Ok(step) => {
+            steps.push(step);
+        },
+        Err(e) => eprintln!("Warning: Failed to load 2.1 Threat Actors: {}", e),
+    }
+    
+    // 2.2 Threat Vectors
+    match create_quiz_step_from_file(
+        "2.2 Threat Vectors and Attack Surfaces".to_string(),
+        DOMAIN_2_THREATS.to_string(),
+        "2.0-threats-vulnerabilities/2.2-threat-vectors.txt",
+    ) {
+        Ok(step) => {
+            steps.push(step);
+        },
+        Err(e) => eprintln!("Warning: Failed to load 2.2 Threat Vectors: {}", e),
+    }
+    
+    // 2.3 Vulnerabilities
+    match create_quiz_step_from_file(
+        "2.3 Vulnerability Types".to_string(),
+        DOMAIN_2_THREATS.to_string(),
+        "2.0-threats-vulnerabilities/2.3-vulnerabilities.txt",
+    ) {
+        Ok(step) => {
+            steps.push(step);
+        },
+        Err(e) => eprintln!("Warning: Failed to load 2.3 Vulnerabilities: {}", e),
+    }
+    
+    // 2.4 Indicators of Malicious Activity
+    match create_quiz_step_from_file(
+        "2.4 Indicators of Malicious Activity".to_string(),
+        DOMAIN_2_THREATS.to_string(),
+        "2.0-threats-vulnerabilities/2.4-indicators-malicious-activity.txt",
+    ) {
+        Ok(step) => {
+            steps.push(step);
+        },
+        Err(e) => eprintln!("Warning: Failed to load 2.4 Indicators: {}", e),
+    }
+    
+    // 2.5 Mitigation Techniques
+    match create_quiz_step_from_file(
+        "2.5 Mitigation Techniques".to_string(),
+        DOMAIN_2_THREATS.to_string(),
+        "2.0-threats-vulnerabilities/2.5-mitigation-techniques.txt",
+    ) {
+        Ok(step) => {
+            steps.push(step);
+        },
+        Err(e) => eprintln!("Warning: Failed to load 2.5 Mitigation Techniques: {}", e),
+    }
     
     steps
 }
 
 /// Get all quiz steps for Domain 3.0 (Security Architecture)
 pub fn get_domain_3_steps() -> Vec<Step> {
-    let steps = Vec::new();
+    let mut steps = Vec::new();
     
-    // Add subdomains as question files are created:
-    // - 3.1 Security Design
-    // - 3.2 Security Infrastructure
-    // - 3.3 Secure Protocols
-    // - 3.4 Network Appliances
+    // 3.1 Architecture Models
+    match create_quiz_step_from_file(
+        "3.1 Architecture Models".to_string(),
+        DOMAIN_3_ARCHITECTURE.to_string(),
+        "3.0-security-architecture/3.1-architecture-models.txt",
+    ) {
+        Ok(step) => {
+            steps.push(step);
+        },
+        Err(e) => eprintln!("Warning: Failed to load 3.1 Architecture Models: {}", e),
+    }
+    
+    // 3.2 Security Infrastructure
+    match create_quiz_step_from_file(
+        "3.2 Security Infrastructure".to_string(),
+        DOMAIN_3_ARCHITECTURE.to_string(),
+        "3.0-security-architecture/3.2-security-infrastructure.txt",
+    ) {
+        Ok(step) => {
+            steps.push(step);
+        },
+        Err(e) => eprintln!("Warning: Failed to load 3.2 Security Infrastructure: {}", e),
+    }
+    
+    // 3.3 Data Protection
+    match create_quiz_step_from_file(
+        "3.3 Data Protection".to_string(),
+        DOMAIN_3_ARCHITECTURE.to_string(),
+        "3.0-security-architecture/3.3-data-protection.txt",
+    ) {
+        Ok(step) => {
+            steps.push(step);
+        },
+        Err(e) => eprintln!("Warning: Failed to load 3.3 Data Protection: {}", e),
+    }
+    
+    // 3.4 Resilience and Recovery
+    match create_quiz_step_from_file(
+        "3.4 Resilience and Recovery".to_string(),
+        DOMAIN_3_ARCHITECTURE.to_string(),
+        "3.0-security-architecture/3.4-resilience-recovery.txt",
+    ) {
+        Ok(step) => {
+            steps.push(step);
+        },
+        Err(e) => eprintln!("Warning: Failed to load 3.4 Resilience and Recovery: {}", e),
+    }
     
     steps
 }
 
 /// Get all quiz steps for Domain 4.0 (Security Operations)
 pub fn get_domain_4_steps() -> Vec<Step> {
-    let steps = Vec::new();
+    let mut steps = Vec::new();
     
-    // Add subdomains as question files are created:
-    // - 4.1 Security Techniques
-    // - 4.2 Incident Response
-    // - 4.3 Digital Forensics
-    // - 4.4 Automation and Orchestration
+    // 4.1 Security Techniques
+    match create_quiz_step_from_file(
+        "4.1 Security Techniques".to_string(),
+        DOMAIN_4_OPERATIONS.to_string(),
+        "4.0-security-operations/4.1-security-techniques.txt",
+    ) {
+        Ok(step) => {
+            steps.push(step);
+        },
+        Err(e) => eprintln!("Warning: Failed to load 4.1 Security Techniques: {}", e),
+    }
+    
+    // 4.2 Asset Management
+    match create_quiz_step_from_file(
+        "4.2 Asset Management".to_string(),
+        DOMAIN_4_OPERATIONS.to_string(),
+        "4.0-security-operations/4.2-asset-management.txt",
+    ) {
+        Ok(step) => {
+            steps.push(step);
+        },
+        Err(e) => eprintln!("Warning: Failed to load 4.2 Asset Management: {}", e),
+    }
+    
+    // 4.3 Vulnerability Management
+    match create_quiz_step_from_file(
+        "4.3 Vulnerability Management".to_string(),
+        DOMAIN_4_OPERATIONS.to_string(),
+        "4.0-security-operations/4.3-vulnerability-management.txt",
+    ) {
+        Ok(step) => {
+            steps.push(step);
+        },
+        Err(e) => eprintln!("Warning: Failed to load 4.3 Vulnerability Management: {}", e),
+    }
+    
+    // 4.4 Monitoring Concepts
+    match create_quiz_step_from_file(
+        "4.4 Monitoring Concepts and Tools".to_string(),
+        DOMAIN_4_OPERATIONS.to_string(),
+        "4.0-security-operations/4.4-monitoring-concepts.txt",
+    ) {
+        Ok(step) => {
+            steps.push(step);
+        },
+        Err(e) => eprintln!("Warning: Failed to load 4.4 Monitoring Concepts: {}", e),
+    }
+    
+    // 4.5 Enterprise Capabilities
+    match create_quiz_step_from_file(
+        "4.5 Enhancing Enterprise Capabilities".to_string(),
+        DOMAIN_4_OPERATIONS.to_string(),
+        "4.0-security-operations/4.5-enterprise-capabilities.txt",
+    ) {
+        Ok(step) => {
+            steps.push(step);
+        },
+        Err(e) => eprintln!("Warning: Failed to load 4.5 Enterprise Capabilities: {}", e),
+    }
     
     steps
 }
 
 /// Get all quiz steps for Domain 5.0 (Governance, Risk, Compliance)
 pub fn get_domain_5_steps() -> Vec<Step> {
-    let steps = Vec::new();
+    let mut steps = Vec::new();
     
-    // Add subdomains as question files are created:
-    // - 5.1 Governance
-    // - 5.2 Risk Management
-    // - 5.3 Third-Party Risk
-    // - 5.4 Compliance and Audits
-    // - 5.5 Security Awareness
+    // 5.1 Governance Elements
+    match create_quiz_step_from_file(
+        "5.1 Governance and Compliance Elements".to_string(),
+        DOMAIN_5_GOVERNANCE.to_string(),
+        "5.0-governance-risk-compliance/5.1-governance-elements.txt",
+    ) {
+        Ok(step) => {
+            steps.push(step);
+        },
+        Err(e) => eprintln!("Warning: Failed to load 5.1 Governance Elements: {}", e),
+    }
+    
+    // 5.2 Risk Management
+    match create_quiz_step_from_file(
+        "5.2 Risk Management Processes".to_string(),
+        DOMAIN_5_GOVERNANCE.to_string(),
+        "5.0-governance-risk-compliance/5.2-risk-management.txt",
+    ) {
+        Ok(step) => {
+            steps.push(step);
+        },
+        Err(e) => eprintln!("Warning: Failed to load 5.2 Risk Management: {}", e),
+    }
+    
+    // 5.3 Third-Party Risk
+    match create_quiz_step_from_file(
+        "5.3 Third-Party Risk and Compliance".to_string(),
+        DOMAIN_5_GOVERNANCE.to_string(),
+        "5.0-governance-risk-compliance/5.3-third-party-risk.txt",
+    ) {
+        Ok(step) => {
+            steps.push(step);
+        },
+        Err(e) => eprintln!("Warning: Failed to load 5.3 Third-Party Risk: {}", e),
+    }
+    
+    // 5.4 Compliance and Auditing
+    match create_quiz_step_from_file(
+        "5.4 Compliance and Auditing".to_string(),
+        DOMAIN_5_GOVERNANCE.to_string(),
+        "5.0-governance-risk-compliance/5.4-compliance-auditing.txt",
+    ) {
+        Ok(step) => {
+            steps.push(step);
+        },
+        Err(e) => eprintln!("Warning: Failed to load 5.4 Compliance: {}", e),
+    }
+    
+    // 5.5 Security Awareness and Incident Response
+    match create_quiz_step_from_file(
+        "5.5 Security Awareness and Incident Response".to_string(),
+        DOMAIN_5_GOVERNANCE.to_string(),
+        "5.0-governance-risk-compliance/5.5-security-awareness-ir.txt",
+    ) {
+        Ok(step) => {
+            steps.push(step);
+        },
+        Err(e) => eprintln!("Warning: Failed to load 5.5 Security Awareness: {}", e),
+    }
     
     steps
 }
@@ -184,14 +417,19 @@ mod tests {
     #[test]
     fn test_load_domain_1_steps() {
         let steps = get_domain_1_steps();
-        // Should have at least 1.1 Security Controls
-        assert!(!steps.is_empty(), "Domain 1 should have at least one step");
+        // Should have 4 subdomains: 1.1, 1.2, 1.3, 1.4
+        assert_eq!(steps.len(), 4, "Domain 1 should have 4 subdomains");
         
-        // Verify it's a quiz step
-        assert!(steps[0].is_quiz(), "Step should be a quiz step");
+        // Verify they're all quiz steps
+        for step in &steps {
+            assert!(step.is_quiz(), "All Domain 1 steps should be quiz steps");
+        }
         
-        // Verify title
+        // Verify titles
         assert_eq!(steps[0].title, "1.1 Security Controls");
+        assert_eq!(steps[1].title, "1.2 Fundamental Security Concepts");
+        assert_eq!(steps[2].title, "1.3 Change Management");
+        assert_eq!(steps[3].title, "1.4 Cryptographic Solutions");
     }
     
     #[test]

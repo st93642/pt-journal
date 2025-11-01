@@ -1,0 +1,23 @@
+# Domain 4.0 - Security Operations
+# Subdomain 4.1 - Security Techniques for Computing Resources
+# Format: question|answer_a|answer_b|answer_c|answer_d|correct_idx|explanation|domain|subdomain
+
+What is a security baseline?|Maximum security configuration|Minimum security configuration standard|Average security level|No security requirements|1|A security baseline establishes the minimum security configuration standard that all systems must meet. It defines required security controls, settings, and patches. It's not maximum (which may be impractical), average (which varies), or no requirements.|4.0 Security Operations|4.1 Security Techniques
+
+Which hardening technique removes unnecessary software and services?|Adding features|Attack surface reduction|Installing all available packages|Enabling all services|1|Attack surface reduction removes unnecessary software, services, ports, and features to minimize potential entry points for attackers. Installing everything or enabling all services increases attack surface, which is opposite of hardening.|4.0 Security Operations|4.1 Security Techniques
+
+What mobile device management (MDM) feature can remotely erase a lost device?|Geofencing|Remote wipe|App whitelisting|Containerization|1|Remote wipe allows administrators to remotely erase all data from a lost or stolen device to prevent data compromise. Geofencing creates location boundaries, whitelisting controls apps, and containerization separates work/personal data.|4.0 Security Operations|4.1 Security Techniques
+
+Which wireless security protocol is currently considered most secure for Wi-Fi networks?|WEP|WPA|WPA2|WPA3|3|WPA3 is the most current and secure Wi-Fi security protocol, improving on WPA2 with stronger encryption and protection against offline dictionary attacks. WEP and WPA are deprecated due to vulnerabilities, and WPA2, while still widely used, is less secure than WPA3.|4.0 Security Operations|4.1 Security Techniques
+
+What is the purpose of application sandboxing?|Speed up applications|Isolate applications to limit damage from vulnerabilities|Share resources between apps|Encrypt application data|1|Sandboxing isolates applications in restricted environments to limit damage if vulnerabilities are exploited. Compromised sandboxed apps can't easily access system resources or other applications. It doesn't primarily speed apps, share resources, or handle encryption.|4.0 Security Operations|4.1 Security Techniques
+
+Which authentication protocol is commonly used with RADIUS for wireless networks?|Kerberos|802.1X|NTLM|SAML|1|802.1X is a port-based network access control protocol commonly used with RADIUS for wireless network authentication. It provides secure authentication before granting network access. Kerberos is for domain authentication, NTLM is legacy Windows authentication, and SAML is for federation.|4.0 Security Operations|4.1 Security Techniques
+
+What security technique runs applications in controlled test environments?|Production deployment|Sandboxing|Live testing|Direct installation|1|Sandboxing runs applications in isolated, controlled environments to observe behavior without risking production systems. Production deployment is live, live testing risks production, and direct installation doesn't provide isolation.|4.0 Security Operations|4.1 Security Techniques
+
+Which mobile deployment model gives employees device choice but requires security controls?|BYOD (Bring Your Own Device)|COPE (Corporate-Owned, Personally Enabled)|CYOD (Choose Your Own Device)|Company-owned only|0|BYOD allows employees to use personal devices for work, requiring MDM and security controls to protect company data. COPE provides corporate devices for personal use, CYOD offers corporate device choices, and company-owned prohibits personal devices.|4.0 Security Operations|4.1 Security Techniques
+
+What does full device encryption (FDE) protect against?|Network attacks|Data access if device is physically stolen|Malware infections|Phishing attacks|1|Full Device Encryption (FDE) encrypts all data on a device, protecting against data access if the device is physically stolen or lost. It doesn't directly protect against network attacks, malware, or phishing—those require other controls.|4.0 Security Operations|4.1 Security Techniques
+
+Which technique separates work and personal data on mobile devices?|Encryption|Containerization|Antivirus|VPN|1|Containerization creates separate, isolated spaces for work and personal data on mobile devices. Work containers are managed and secured by organization, while personal data remains private. Encryption protects data but doesn't separate, antivirus fights malware, and VPN secures connections.|4.0 Security Operations|4.1 Security Techniques

@@ -1,0 +1,27 @@
+# Domain 3.0 - Security Architecture
+# Subdomain 3.3 - Data Protection Concepts
+# Format: question|answer_a|answer_b|answer_c|answer_d|correct_idx|explanation|domain|subdomain
+
+What data classification typically requires the highest level of protection?|Public|Internal|Confidential|Top Secret/Classified|3|Top Secret or Classified data requires the highest protection level as unauthorized disclosure could cause exceptionally grave damage. Public data requires no protection, internal requires moderate protection, and confidential requires high protection.|3.0 Security Architecture|3.3 Data Protection
+
+Which data state refers to information actively being processed?|Data at rest|Data in transit|Data in use|Data in motion|2|Data in use refers to information being actively processed by applications, in memory, or on CPUs. Data at rest is stored on disk, data in transit is moving across networks, and data in motion is another term for data in transit.|3.0 Security Architecture|3.3 Data Protection
+
+What technique replaces sensitive data with non-sensitive substitutes?|Encryption|Masking|Tokenization|Hashing|2|Tokenization replaces sensitive data (like credit card numbers) with random tokens that can be mapped back to original data through a secure token vault. Encryption transforms data reversibly, masking hides portions, and hashing creates one-way fingerprints.|3.0 Security Architecture|3.3 Data Protection
+
+Which data protection method hides parts of sensitive information like credit card digits?|Encryption|Tokenization|Data masking|Data destruction|2|Data masking obscures specific portions of sensitive data (showing only last 4 digits of credit card, for example) while keeping format recognizable. Encryption makes data unreadable, tokenization replaces with tokens, and destruction permanently removes data.|3.0 Security Architecture|3.3 Data Protection
+
+What is the primary purpose of Data Loss Prevention (DLP) solutions?|Speed up data transfer|Prevent unauthorized data exfiltration|Encrypt all data|Delete old data|1|DLP solutions prevent unauthorized data exfiltration by monitoring, detecting, and blocking sensitive data from leaving the organization through email, USB, cloud uploads, etc. They don't primarily speed transfer, encrypt all data, or delete old data.|3.0 Security Architecture|3.3 Data Protection
+
+Which concept refers to the legal requirements for data storage location?|Data classification|Data sovereignty|Data retention|Data destruction|1|Data sovereignty refers to legal requirements that data be stored in specific geographic locations and subject to laws of that jurisdiction. Classification categorizes data, retention defines how long to keep data, and destruction permanently removes data.|3.0 Security Architecture|3.3 Data Protection
+
+What is the purpose of data retention policies?|Delete data immediately|Define how long data must be kept|Encrypt all data|Share data publicly|1|Data retention policies define how long different types of data must be kept to meet legal, regulatory, and business requirements before secure destruction. They don't require immediate deletion, encryption, or public sharing.|3.0 Security Architecture|3.3 Data Protection
+
+Which technique makes data unrecoverable after deletion?|Encryption|Data wiping/sanitization|Data masking|Compression|1|Data wiping (sanitization) uses methods like overwriting, degaussing, or physical destruction to make data unrecoverable. Encryption makes data unreadable but reversible, masking hides portions, and compression reduces size.|3.0 Security Architecture|3.3 Data Protection
+
+What describes data stored on hard drives, databases, or backups?|Data in use|Data in transit|Data at rest|Data in motion|2|Data at rest refers to inactive data stored on physical media like hard drives, SSDs, databases, or backup tapes. Data in use is being processed, data in transit is moving across networks, and data in motion is in transit.|3.0 Security Architecture|3.3 Data Protection
+
+Which regulation protects personal data of EU citizens?|HIPAA|GDPR|SOX|PCI DSS|1|GDPR (General Data Protection Regulation) protects personal data and privacy of EU citizens. HIPAA protects health information in the US, SOX addresses financial reporting, and PCI DSS protects payment card data.|3.0 Security Architecture|3.3 Data Protection
+
+What is the primary goal of encrypting data at rest?|Improve performance|Protect confidentiality if physical media is stolen|Speed up backups|Reduce storage costs|1|Encrypting data at rest protects confidentiality if physical media (laptops, drives, backups) are stolen or accessed by unauthorized parties. It doesn't improve performance, speed backups, or reduce storage costs—it may decrease performance slightly.|3.0 Security Architecture|3.3 Data Protection
+
+Which standard governs protection of payment card information?|HIPAA|GDPR|PCI DSS|SOX|2|PCI DSS (Payment Card Industry Data Security Standard) governs protection of credit/debit card information. HIPAA protects health data, GDPR protects EU personal data, and SOX addresses financial reporting.|3.0 Security Architecture|3.3 Data Protection

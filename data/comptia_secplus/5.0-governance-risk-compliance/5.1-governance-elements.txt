@@ -1,0 +1,23 @@
+# Domain 5.0 - Security Program Management and Oversight
+# Subdomain 5.1 - Governance and Compliance Elements
+# Format: question|answer_a|answer_b|answer_c|answer_d|correct_idx|explanation|domain|subdomain
+
+What is the primary purpose of security governance?|Write code|Establish framework for security decision-making and accountability|Install firewalls|Train end users only|1|Security governance establishes the framework, policies, and accountability structures for security decision-making aligned with business objectives. It's not about tactical activities like coding, firewall installation, or just training.|5.0 Security Program Management|5.1 Governance Elements
+
+Which document defines an organization's overall security approach and principles?|Procedure|Standard|Security policy|Guideline|2|Security policies define high-level security approach, principles, and rules. Procedures provide step-by-step instructions, standards specify technical requirements, and guidelines provide recommendations.|5.0 Security Program Management|5.1 Governance Elements
+
+What is the role of a security steering committee?|Install antivirus|Provide strategic security oversight and decision-making|Write firewall rules|Conduct penetration tests|1|Security steering committees provide strategic oversight, approve security initiatives, allocate resources, and make high-level security decisions aligning security with business goals. They don't handle tactical activities like antivirus installation, firewall rules, or pen tests.|5.0 Security Program Management|5.1 Governance Elements
+
+Which regulatory framework focuses on protecting credit card data?|HIPAA|GDPR|PCI DSS|SOX|2|PCI DSS (Payment Card Industry Data Security Standard) specifically protects credit card data. HIPAA protects health information, GDPR protects EU personal data, and SOX addresses financial reporting.|5.0 Security Program Management|5.1 Governance Elements
+
+What is the purpose of security awareness training?|Replace technical controls|Educate users about security risks and best practices|Eliminate all security risks|Install software|1|Security awareness training educates users about security risks, policies, and best practices to reduce human-related security incidents. It doesn't replace technical controls, eliminate all risks, or install software.|5.0 Security Program Management|5.1 Governance Elements
+
+Which role is ultimately responsible for an organization's security?|IT manager|Chief Information Security Officer (CISO)|Security analyst|Executive leadership/Board|3|Executive leadership and the Board are ultimately responsible for organizational security as part of fiduciary duty. CISO manages security program, IT manager handles IT operations, and analysts perform tactical work, but ultimate accountability rests at top.|5.0 Security Program Management|5.1 Governance Elements
+
+What is a standard operating procedure (SOP)?|High-level policy|Step-by-step instructions for specific tasks|General guideline|Security control|1|SOPs provide detailed, step-by-step instructions for performing specific tasks consistently and correctly. Policies are high-level, guidelines are recommendations, and controls are protective measures.|5.0 Security Program Management|5.1 Governance Elements
+
+Which compliance framework is required for publicly traded companies in the US?|HIPAA|PCI DSS|SOX (Sarbanes-Oxley)|GDPR|2|SOX (Sarbanes-Oxley Act) requires publicly traded US companies to implement controls for financial reporting integrity. HIPAA is for healthcare, PCI DSS for payment cards, and GDPR for EU data protection.|5.0 Security Program Management|5.1 Governance Elements
+
+What is the purpose of an Acceptable Use Policy (AUP)?|Define acceptable use of organizational IT resources|Install software|Configure firewalls|Conduct audits|0|AUPs define acceptable and prohibited uses of organizational IT resources, networks, and data, setting expectations for employee behavior. Installation, configuration, and audits are operational activities.|5.0 Security Program Management|5.1 Governance Elements
+
+Which document provides recommended practices but isn't mandatory?|Policy|Standard|Procedure|Guideline|3|Guidelines provide recommended best practices and advice but aren't mandatory. Policies are mandatory rules, standards specify required technical settings, and procedures are required step-by-step instructions.|5.0 Security Program Management|5.1 Governance Elements

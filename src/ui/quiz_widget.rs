@@ -160,24 +160,37 @@ impl QuizWidget {
         }
     }
 
-    /// Load a quiz step and display the first question
+    /// Load a quiz step and display the first question (resets to question 1)
     pub fn load_quiz_step(&self, quiz_step: &QuizStep) {
-        let current_idx = *self.current_question_index.borrow();
-        
         if quiz_step.questions.is_empty() {
             self.question_label.set_text("No questions available");
             self.set_buttons_sensitive(false);
             return;
         }
 
+        // Always start at the first question when loading a new quiz
+        *self.current_question_index.borrow_mut() = 0;
+        
+        // Refresh the display
+        self.refresh_current_question(quiz_step);
+    }
+
+    /// Refresh display for the current question (without resetting index)
+    pub fn refresh_current_question(&self, quiz_step: &QuizStep) {
+        if quiz_step.questions.is_empty() {
+            self.question_label.set_text("No questions available");
+            self.set_buttons_sensitive(false);
+            return;
+        }
+
+        let idx = *self.current_question_index.borrow();
+
         // Ensure index is valid
-        let idx = if current_idx >= quiz_step.questions.len() {
+        let idx = if idx >= quiz_step.questions.len() {
             0
         } else {
-            current_idx
+            idx
         };
-        
-        *self.current_question_index.borrow_mut() = idx;
 
         // Update progress label
         self.progress_label.set_text(&format!(

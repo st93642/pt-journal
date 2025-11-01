@@ -195,8 +195,7 @@ pub fn build_ui(app: &Application, model: AppModel) {
                         if current + 1 < quiz_step.questions.len() {
                             *panel_next.quiz_widget.current_question_index.borrow_mut() = current + 1;
                             panel_next.quiz_widget.hide_explanation();
-                            panel_next.quiz_widget.load_quiz_step(quiz_step);
-                            panel_next.quiz_widget.update_statistics(quiz_step);
+                            panel_next.quiz_widget.refresh_current_question(quiz_step);
                         }
                     }
                 }
@@ -227,8 +226,7 @@ pub fn build_ui(app: &Application, model: AppModel) {
                         if current > 0 {
                             *panel_prev.quiz_widget.current_question_index.borrow_mut() = current - 1;
                             panel_prev.quiz_widget.hide_explanation();
-                            panel_prev.quiz_widget.load_quiz_step(quiz_step);
-                            panel_prev.quiz_widget.update_statistics(quiz_step);
+                            panel_prev.quiz_widget.refresh_current_question(quiz_step);
                         }
                     }
                 }

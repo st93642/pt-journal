@@ -1,0 +1,27 @@
+# Domain 3.0 - Security Architecture
+# Subdomain 3.2 - Security Infrastructure and Principles
+# Format: question|answer_a|answer_b|answer_c|answer_d|correct_idx|explanation|domain|subdomain
+
+Which device filters traffic between networks based on rules and policies?|Router|Firewall|Switch|Hub|1|Firewalls filter network traffic based on configured rules and policies, controlling what traffic is allowed or blocked between networks. Routers direct traffic, switches forward traffic within networks, and hubs broadcast to all ports.|3.0 Security Architecture|3.2 Security Infrastructure
+
+What type of firewall operates at the application layer and can inspect content?|Packet filter firewall|Stateful firewall|Next-generation firewall (NGFW)|Network firewall|2|Next-generation firewalls (NGFWs) operate at the application layer, can perform deep packet inspection, identify applications, and inspect content including for threats. Packet filter firewalls operate at network layer, stateful firewalls track connections, and network firewall is generic.|3.0 Security Architecture|3.2 Security Infrastructure
+
+Which security device can detect intrusions but doesn't block them?|Intrusion Prevention System (IPS)|Firewall|Intrusion Detection System (IDS)|Web Application Firewall (WAF)|2|IDS (Intrusion Detection System) monitors traffic and detects suspicious activity but only alerts—it doesn't block. IPS both detects and prevents/blocks, firewalls filter based on rules, and WAF protects web applications.|3.0 Security Architecture|3.2 Security Infrastructure
+
+What security principle states systems should fail in a secure manner?|Fail open|Fail securely|Fail fast|Fail over|1|Fail securely (fail closed/fail safe) means that when a system fails, it defaults to a secure state, typically denying access. Fail open allows access during failures (less secure), fail fast detects failures quickly, and fail over switches to backup systems.|3.0 Security Architecture|3.2 Security Infrastructure
+
+Which load balancing approach distributes traffic across servers in order?|Round robin|Least connections|IP hash|Weighted|0|Round robin distributes requests sequentially to each server in order. Least connections sends to the server with fewest active connections, IP hash uses source IP to determine server, and weighted assigns different capacities to servers.|3.0 Security Architecture|3.2 Security Infrastructure
+
+What security control provides centralized authentication for network devices?|LDAP|RADIUS|Firewall|VPN|1|RADIUS (Remote Authentication Dial-In User Service) provides centralized authentication, authorization, and accounting (AAA) for network devices like switches, routers, and wireless access points. LDAP is for directory services, firewalls filter traffic, and VPNs create secure tunnels.|3.0 Security Architecture|3.2 Security Infrastructure
+
+Which network device can block malicious traffic in real-time?|IDS|IPS|Router|Switch|1|IPS (Intrusion Prevention System) can detect AND actively block malicious traffic in real-time. IDS only detects and alerts, routers forward traffic, and switches operate at layer 2.|3.0 Security Architecture|3.2 Security Infrastructure
+
+What is the purpose of a VPN concentrator?|Web filtering|Managing multiple VPN connections|Email filtering|Load balancing web servers|1|VPN concentrators manage multiple VPN connections, handling encryption/decryption and tunnel management at scale. Web filtering, email filtering, and load balancing are separate functions.|3.0 Security Architecture|3.2 Security Infrastructure
+
+Which security device specifically protects web applications from attacks like SQL injection?|Firewall|IDS|WAF (Web Application Firewall)|Router|2|WAF (Web Application Firewall) specifically protects web applications from attacks like SQL injection, XSS, and CSRF by analyzing HTTP/HTTPS traffic. Traditional firewalls operate at lower layers, IDS detects but doesn't block, and routers forward traffic.|3.0 Security Architecture|3.2 Security Infrastructure
+
+What does a proxy server do in a security architecture?|Forwards DNS queries|Acts as intermediary between clients and servers|Encrypts all traffic|Blocks all inbound traffic|1|Proxy servers act as intermediaries between clients and destination servers, making requests on behalf of clients. This provides anonymity, content filtering, caching, and access control. They don't necessarily forward DNS, encrypt all traffic, or block all inbound traffic.|3.0 Security Architecture|3.2 Security Infrastructure
+
+Which principle states that unnecessary services should be disabled?|Least privilege|Defense in depth|Reducing attack surface|Separation of duties|2|Reducing attack surface involves disabling unnecessary services, closing unused ports, and removing unneeded software to minimize potential attack vectors. Least privilege limits access, defense in depth uses layers, and separation of duties divides responsibilities.|3.0 Security Architecture|3.2 Security Infrastructure
+
+What type of VPN is commonly used for remote site-to-site connections?|SSL VPN|IPSec VPN|PPTP|L2TP|1|IPSec VPN is commonly used for site-to-site connections between offices or networks, providing secure tunnels at the network layer. SSL VPNs are typically for remote user access, and PPTP/L2TP are older remote access protocols.|3.0 Security Architecture|3.2 Security Infrastructure

@@ -1,0 +1,23 @@
+# Domain 5.0 - Security Program Management and Oversight
+# Subdomain 5.4 - Compliance and Auditing
+# Format: question|answer_a|answer_b|answer_c|answer_d|correct_idx|explanation|domain|subdomain
+
+What is the primary purpose of security audits?|Delete security controls|Assess compliance with policies, standards, and regulations|Install new software|Train employees|1|Security audits systematically assess whether security controls are implemented correctly and comply with policies, standards, and regulations. They don't delete controls, install software, or train—those are separate activities.|5.0 Security Program Management|5.4 Compliance and Auditing
+
+Which type of audit is conducted by the organization's own internal staff?|External audit|Third-party audit|Internal audit|Regulatory audit|2|Internal audits are conducted by an organization's own audit staff to assess controls, compliance, and effectiveness. External/third-party audits use outside auditors, and regulatory audits are by government bodies.|5.0 Security Program Management|5.4 Compliance and Auditing
+
+What regulation requires healthcare organizations to protect patient data in the US?|PCI DSS|GDPR|HIPAA|SOX|2|HIPAA (Health Insurance Portability and Accountability Act) requires US healthcare organizations to protect patient health information. PCI DSS protects payment cards, GDPR protects EU data, and SOX addresses financial reporting.|5.0 Security Program Management|5.4 Compliance and Auditing
+
+Which audit report provides unqualified opinion that controls are effective?|Qualified opinion|Adverse opinion|Clean/Unqualified opinion|Disclaimer|2|Clean (unqualified) audit opinions indicate controls are effective and compliant with no significant issues. Qualified opinions note specific issues, adverse opinions indicate major problems, and disclaimers indicate insufficient information.|5.0 Security Program Management|5.4 Compliance and Auditing
+
+What is attestation in compliance?|Ignoring compliance|Formal statement/certification of compliance with requirements|Deleting records|Avoiding audits|1|Attestation is a formal statement or certification that an organization or individual complies with specific requirements, standards, or controls. It's not ignoring, deleting, or avoiding—it's declaring compliance.|5.0 Security Program Management|5.4 Compliance and Auditing
+
+Which regulation protects personal data of European Union citizens?|HIPAA|PCI DSS|GDPR (General Data Protection Regulation)|SOX|2|GDPR (General Data Protection Regulation) protects personal data and privacy of EU citizens with strict requirements for collection, processing, and storage. HIPAA is US healthcare, PCI DSS is payment cards, and SOX is US financial reporting.|5.0 Security Program Management|5.4 Compliance and Auditing
+
+What is the purpose of compliance reporting?|Hide violations|Document compliance status with regulations and standards|Delete evidence|Avoid regulations|1|Compliance reporting documents an organization's compliance status with applicable regulations, standards, and policies for stakeholders, regulators, and management. Hiding violations, deleting evidence, or avoiding regulations are violations themselves.|5.0 Security Program Management|5.4 Compliance and Auditing
+
+Which framework provides voluntary cybersecurity standards for critical infrastructure?|HIPAA|NIST Cybersecurity Framework (CSF)|PCI DSS|GDPR|1|NIST Cybersecurity Framework (CSF) provides voluntary standards, guidelines, and best practices for managing cybersecurity risk, particularly for critical infrastructure. HIPAA, PCI DSS, and GDPR are regulatory/mandatory frameworks for specific sectors.|5.0 Security Program Management|5.4 Compliance and Auditing
+
+What should organizations maintain to demonstrate compliance?|No records|Audit trails, logs, and documentation|Only verbal assurances|Random notes|1|Organizations must maintain audit trails, logs, documentation, and evidence demonstrating compliance with regulations and standards. No records, verbal assurances, or random notes are insufficient for compliance demonstration.|5.0 Security Program Management|5.4 Compliance and Auditing
+
+Which control framework is commonly used as a compliance baseline?|Random controls|ISO 27001, NIST 800-53, or CIS Controls|No framework|Custom only frameworks|1|ISO 27001, NIST 800-53, and CIS Controls are widely-used frameworks providing comprehensive security control baselines for compliance. Random or no framework approaches don't provide systematic compliance. Custom frameworks alone may not meet regulatory requirements.|5.0 Security Program Management|5.4 Compliance and Auditing

@@ -121,7 +121,7 @@ fn create_reporting_phase() -> Phase {
 
     Phase {
         id: Uuid::new_v4(),
-        name: "Bug Bounty Hunting".to_string(),
+        name: "Reporting".to_string(),
         steps,
         notes: String::new(),
     }

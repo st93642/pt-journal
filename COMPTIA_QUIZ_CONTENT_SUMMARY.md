@@ -6,9 +6,9 @@ This document provides a comprehensive summary of all quiz content created for t
 
 ## Current Status & Target
 
-- **Current Questions**: 488 (updated after Domain 2.2 COMPLETE)
+- **Current Questions**: 526 (updated after Domain 2.3 COMPLETE)
 - **Target Questions**: 1,000-1,500 questions
-- **Current Progress**: 33-49% complete
+- **Current Progress**: 35-53% complete
 - **Total Quiz Steps**: 23 subdomains
 - **Domains Covered**: 5 (All CompTIA Security+ SY0-701 domains)
 - **Question Format**: Multiple choice with detailed explanations and academic descriptions
@@ -19,6 +19,20 @@ This document provides a comprehensive summary of all quiz content created for t
 **Domain 2.0 (Threats, Vulnerabilities, and Mitigations) - IN PROGRESS**
 
 **Recent Expansions**:
+
+- **Domain 2.3 (Vulnerability Types)**: ✅ Expanded from 12 to 50 questions
+  - **Application vulnerabilities**: Memory injection (Code Red worm), buffer overflow (Slammer worm, arbitrary code execution), race conditions (TOC/TOU, airline seat overbooking), malicious updates (CCleaner 2017 supply chain attack)
+  - **Operating system vulnerabilities**: BlueKeep (Windows remote access), end-of-life systems (Windows XP post-2014), legacy system exploitation
+  - **Web-based vulnerabilities**: SQL injection (SQLI with ' OR '1'='1' --, stored procedures defense), Cross-site scripting (XSS with <script> tags, cookie stealing, input validation), file upload (PHP/JSP execution, magic bytes validation), command injection (system() exploitation, shell metacharacters), directory traversal (../ sequences, /etc/passwd access), XXE injection (XML external entities, SSRF), LDAP injection (Active Directory bypass)
+  - **Hardware vulnerabilities**: Firmware vulnerabilities, end-of-life hardware, legacy system risks
+  - **Virtualization vulnerabilities**: VM escape (hypervisor exploitation, lateral movement east-west), VM sprawl (uncontrolled VM creation, unpatched systems), resource reuse (data remnants on shared disks)
+  - **Cloud-specific vulnerabilities**: Shared tenancy risks (side-channel attacks, multi-tenant isolation), inadequate configuration management (publicly accessible S3 buckets, exposed databases), IAM flaws (excessive permissions, weak authentication, orphaned accounts), CASB (Cloud Access Security Broker for shadow IT discovery and policy enforcement)
+  - **Supply chain vulnerabilities**: Service provider breaches, hardware supply chain (counterfeit components, firmware backdoors, nation-state manufacturing compromises), software supply chain (third-party library malware, bill of materials, SCA tools)
+  - **Cryptographic vulnerabilities**: CA compromise (DigiNotar 2011, Comodo breaches, fraudulent certificates), key compromise (theft, weak generation, HSMs), flawed implementation (hardcoded keys, custom crypto, ECB mode), outdated algorithms (DES 56-bit, MD5, SHA-1, RC4, DES Challenge 1997), side-channel attacks (power analysis, timing, EM, acoustic, cache-timing), flawed RNG (Debian OpenSSL 2008, predictable keys), SSL/TLS downgrade (POODLE attack, backward compatibility exploitation), SSL stripping (HTTPS→HTTP, HSTS defense)
+  - **Misconfiguration vulnerabilities**: Firewall misconfigurations (overly permissive rules, FTP/Telnet/RDP exposure, compliance violations), default credentials (admin/admin, public credential databases), unpatched software (WannaCry 2017 via unpatched Windows), excessive privileges (Domain Admin for all users, privilege creep, least privilege violations)
+  - **Mobile device vulnerabilities**: Jailbreaking (iOS restriction bypass, App Store evasion, MDM bypass), rooting (Android superuser access, verified boot disabled, banking app detection), sideloading (APK installation from untrusted sources, Play Protect bypass, warranty voiding)
+  - **Additional injection vulnerabilities**: Integer overflow (Boeing 787 248-day reboot), memory leaks (resource exhaustion, DoS, RAII defense), zero-day vulnerabilities (Log4Shell CVE-2021-44228, ProxyLogon, EternalBlue/WannaCry, nation-state stockpiling, $1M+ prices)
+  - **Real-world examples**: CCleaner supply chain (2017), Slammer worm (2003), Code Red worm (2001), BlueKeep, WannaCry (2017), POODLE attack, DigiNotar breach (2011), Debian OpenSSL (2008), Boeing 787 integer overflow, Log4Shell, SolarWinds
 - **Domain 2.2 (Threat Vectors and Attack Surfaces)**: ✅ Expanded from 12 to 51 questions
   - **Message-based vectors**: Email phishing (untargeted attacks, deceptive emails, bank impersonation), SMS smishing (text message phishing, malicious links, mobile malware), Instant messaging (IM attacks, social media impersonation, end-to-end encryption advantages/vulnerabilities)
   - **Image-based vectors**: Steganography (hidden malicious code in images), embedded malware in image files, exploiting image processing vulnerabilities
@@ -106,10 +120,22 @@ This document provides a comprehensive summary of all quiz content created for t
   - Supply chain: MSPs, vendors, suppliers, hardware/software compromises
   - Social engineering: Phishing variants, BEC, watering hole, brand impersonation, typo squatting
   - Real-world examples: 2013 Dept of Labor attack, SolarWinds, NotPetya
-- **2.3 Vulnerabilities**: 12/50 questions (next target)
-- **2.4 Indicators**: 12/50 questions
+- **2.3 Vulnerabilities**: ✅ 50 questions (COMPLETED)
+  - Application: Memory injection, buffer overflow, race conditions, malicious updates
+  - OS-based: BlueKeep, EOL systems, legacy vulnerabilities
+  - Web-based: SQL injection, XSS, command injection, directory traversal, XXE, LDAP injection, file upload
+  - Hardware: Firmware, EOL, legacy systems
+  - Virtualization: VM escape, VM sprawl, resource reuse
+  - Cloud: Shared tenancy, misconfigurations, IAM flaws, CASB
+  - Supply chain: Service/hardware/software providers
+  - Cryptographic: CA compromise, key compromise, flawed implementation, outdated algorithms, side-channel, flawed RNG, SSL/TLS attacks
+  - Misconfiguration: Firewall, default credentials, unpatched software, excessive privileges
+  - Mobile: Jailbreaking, rooting, sideloading
+  - Other: Integer overflow, memory leaks, zero-day
+  - Real-world: CCleaner, Slammer, Code Red, WannaCry, POODLE, DigiNotar, Log4Shell
+- **2.4 Indicators**: 12/50 questions (next target)
 - **2.5 Mitigations**: 12/50 questions
-- **Domain 2.0 Status**: 137/250-300 questions (46-55% complete)
+- **Domain 2.0 Status**: 175/250-300 questions (58-70% complete)
 
 ### Domain Breakdown
 
@@ -124,7 +150,7 @@ This document provides a comprehensive summary of all quiz content created for t
 4. **1.4 Cryptographic Solutions** (12 questions)
    - Symmetric/asymmetric encryption, PKI, hashing, digital signatures, key management
 
-#### Domain 2.0: Threats, Vulnerabilities, and Mitigations (5 steps, 137 questions) - IN PROGRESS
+#### Domain 2.0: Threats, Vulnerabilities, and Mitigations (5 steps, 175 questions) - IN PROGRESS
 
 1. **2.1 Threat Actors and Motivations** (50 questions) ✅ COMPLETED
    - Nation-state actors, APTs, organized crime, hacktivists, insiders (intentional/unintentional), shadow IT, unskilled attackers
@@ -143,7 +169,19 @@ This document provides a comprehensive summary of all quiz content created for t
    - Supply chain: MSPs (cascading breaches), vendors (risk assessments), suppliers (hardware backdoors), software distribution compromises
    - Social engineering: Phishing/spear phishing/smishing, BEC (invoice scams), watering hole (2013 Dept of Labor), brand impersonation, typo squatting (arnazon.com), pretexting, impersonation
    - Advanced topics: Shadow IT (unauthorized cloud services), zero-day vulnerabilities, OSINT reconnaissance, combined attack techniques
-3. **2.3 Vulnerability Types** (12 questions)
+3. **2.3 Vulnerability Types** (50 questions) ✅ COMPLETED
+   - Application vulnerabilities: Memory injection (Code Red worm), buffer overflow (Slammer worm), race conditions (TOC/TOU), malicious updates (CCleaner 2017)
+   - Operating system vulnerabilities: BlueKeep, Windows XP EOL (April 2014), legacy system exploitation
+   - Web-based vulnerabilities: SQL injection (' OR '1'='1' --, stored procedures), XSS (<script> tags, cookie theft), file upload (PHP execution, magic bytes), command injection (system(), shell metacharacters), directory traversal (../ sequences, /etc/passwd), XXE injection (XML external entities, SSRF), LDAP injection (Active Directory bypass)
+   - Hardware vulnerabilities: Firmware vulnerabilities, end-of-life hardware, legacy systems
+   - Virtualization vulnerabilities: VM escape (hypervisor exploitation, east-west movement), VM sprawl (uncontrolled VM creation), resource reuse (data remnants)
+   - Cloud-specific vulnerabilities: Shared tenancy (side-channel attacks), cloud misconfigurations (S3 buckets, security groups), IAM flaws (excessive permissions, weak auth, orphaned accounts), CASB (shadow IT discovery, DLP enforcement)
+   - Supply chain vulnerabilities: Service providers, hardware supply chain (counterfeit components, firmware backdoors, nation-state manufacturing), software supply chain (third-party library malware, bill of materials, SCA tools)
+   - Cryptographic vulnerabilities: CA compromise (DigiNotar 2011, Comodo), key compromise (theft, weak generation, HSMs), flawed implementation (hardcoded keys, custom crypto, "don't roll your own crypto"), outdated algorithms (DES, MD5, SHA-1, RC4, DES Challenge 1997), side-channel attacks (power analysis, timing, EM, acoustic, cache-timing), flawed RNG (Debian OpenSSL 2008, 32,768 keys), SSL/TLS downgrade (POODLE, backward compatibility), SSL stripping (HTTPS→HTTP, HSTS)
+   - Misconfiguration vulnerabilities: Firewall (overly permissive FTP/Telnet/RDP, compliance violations), default credentials (admin/admin, public databases), unpatched software (WannaCry 2017), excessive privileges (Domain Admin for all, privilege creep, least privilege violations)
+   - Mobile device vulnerabilities: Jailbreaking (iOS restriction bypass, MDM bypass), rooting (Android superuser, verified boot disabled, banking app detection), sideloading (APK from untrusted sources, Play Protect bypass, warranty voiding)
+   - Other vulnerabilities: Integer overflow (Boeing 787 248-day reboot), memory leaks (resource exhaustion, RAII defense, JNI native code), zero-day (Log4Shell CVE-2021-44228, ProxyLogon, EternalBlue/WannaCry, nation-state stockpiling, $1M+ prices)
+4. **2.4 Indicators of Malicious Activity** (12 questions)
    - Phishing, smishing, vishing, social engineering, removable media, supply chain
 3. **2.3 Vulnerability Types** (12 questions)
    - SQL injection, XSS, buffer overflow, zero-day, privilege escalation

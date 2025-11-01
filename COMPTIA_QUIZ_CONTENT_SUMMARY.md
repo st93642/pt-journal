@@ -6,9 +6,9 @@ This document provides a comprehensive summary of all quiz content created for t
 
 ## Current Status & Target
 
-- **Current Questions**: 564 (updated after Domain 2.4 COMPLETE)
+- **Current Questions**: 605 (updated after Domain 2.5 COMPLETE - **DOMAIN 2.0 COMPLETE** ✅)
 - **Target Questions**: 1,000-1,500 questions
-- **Current Progress**: 38-56% complete
+- **Current Progress**: 40-60% complete
 - **Total Quiz Steps**: 23 subdomains
 - **Domains Covered**: 5 (All CompTIA Security+ SY0-701 domains)
 - **Question Format**: Multiple choice with detailed explanations and academic descriptions
@@ -16,9 +16,11 @@ This document provides a comprehensive summary of all quiz content created for t
 ## Latest Update
 
 **Date**: November 1, 2025  
-**Domain 2.0 (Threats, Vulnerabilities, and Mitigations) - IN PROGRESS**
+**Domain 2.0 (Threats, Vulnerabilities, and Mitigations) - ✅ COMPLETE** (All subdomains: 2.1, 2.2, 2.3, 2.4, 2.5)
 
-**Recent Expansions**:
+**Most Recent Expansion**:
+
+- **Domain 2.5 (Mitigation Techniques)**: ✅ Expanded from 12 to 52 questions (+40)
 
 - **Domain 2.4 (Indicators of Malicious Activity)**: ✅ Expanded from 12 to 50 questions
   - **Malware types**: Fileless malware (memory-resident, PowerShell/WMI exploitation, no disk artifacts), bloatware (pre-installed unnecessary software, performance degradation), logic bombs (condition-triggered malicious code, UBS 2006/Fannie Mae 2002 examples, insider threat), ransomware (file encryption, .wncry/.locky/.encrypted extensions, WannaCry/Ryuk/REvil/Maze/Conti variants, double extortion, no-ransom payment principle), adware (unwanted toolbars, pop-ups, Superfish 2015 Lenovo), rootkits (kernel-level hiding, concealing other malware), trojans, worms (self-replicating, WannaCry/Slammer/Code Red/Sasser), keyloggers, spyware, botnets (Mirai/Emotet/ZeroAccess, DDoS infrastructure, $5-50/hour dark web rental)
@@ -68,7 +70,7 @@ This document provides a comprehensive summary of all quiz content created for t
   - **Real-world Examples**: UK school employee password lockout (2021 revenge attack), Stuxnet (nation-state malware), Anonymous (hacktivist group), ransomware-as-a-service models, impossible travel indicators, business email compromise
 - **Domain 1.0 COMPLETE**: 🎉 All 4 subdomains at 50 questions each (200 total)
 
-**Status**: All 93 tests passing ✅ | Clean build ✅ | Domain 1.0 COMPLETE ✅ | Domain 2.1-2.4 COMPLETE ✅
+**Status**: All 93 tests passing ✅ | Clean build ✅ | Domain 1.0 COMPLETE ✅ | **Domain 2.0 COMPLETE ✅** (All subdomains 2.1-2.5)
 
 ## Source Material
 
@@ -115,7 +117,7 @@ This document provides a comprehensive summary of all quiz content created for t
   - Tools: Opal drives, VeraCrypt
 - **Domain 1.0 Status**: 200/200 questions ✅ **100% COMPLETE**
 
-### Domain 2.0: Threats, Vulnerabilities, and Mitigations (TARGET: 250-300 questions) - IN PROGRESS
+### Domain 2.0: Threats, Vulnerabilities, and Mitigations (TARGET: 250-300 questions) - ✅ **COMPLETE** 254 questions
 
 - **2.1 Threat Actors**: ✅ 50 questions (COMPLETED)
   - Threat actor types: Nation-state, APT, unskilled attackers, hacktivists, insiders, organized crime, shadow IT
@@ -141,23 +143,39 @@ This document provides a comprehensive summary of all quiz content created for t
   - Virtualization: VM escape, VM sprawl, resource reuse
   - Cloud: Shared tenancy, misconfigurations, IAM flaws, CASB
   - Supply chain: Service/hardware/software providers
-  - Cryptographic: CA compromise, key compromise, flawed implementation, outdated algorithms, side-channel, flawed RNG, SSL/TLS attacks
-  - Misconfiguration: Firewall, default credentials, unpatched software, excessive privileges
+  - Cryptographic: Downgrade attacks, weak implementations, deprecated algorithms
   - Mobile: Jailbreaking, rooting, sideloading
-  - Other: Integer overflow, memory leaks, zero-day
-  - Real-world: CCleaner, Slammer, Code Red, WannaCry, POODLE, DigiNotar, Log4Shell
-- **2.4 Indicators**: 50/50 questions ✅ COMPLETED
-  - Malware types: Fileless, bloatware, logic bombs, ransomware, adware, rootkits, trojans, worms, keyloggers, spyware, botnets
-  - Authentication indicators: Brute force, impossible travel, concurrent sessions, password reset spam
-  - Network indicators: Beaconing, blocked access attempts, unusual outbound, DNS tunneling, bandwidth spikes, SMTP from non-mail servers
-  - System indicators: Missing logs, disabled AV, memory leaks, unauthorized accounts, scheduled tasks, high CPU, clock tampering
-  - Process indicators: Parent-child anomalies, temp directory execution, privilege escalation, encoded PowerShell
-  - Registry/file indicators: Persistence keys, Unicode keys, double extensions, suspicious icons
+  - Zero-day: Log4Shell, ProxyLogon, EternalBlue/WannaCry
+- **2.4 Indicators of Malicious Activity**: ✅ 50 questions (COMPLETED)
+  - Malware types: Fileless, bloatware, logic bombs, ransomware, adware, browser hijackers
+  - Authentication indicators: Brute force, impossible travel, password resets, unauthorized accounts
+  - Network indicators: Beaconing, DNS tunneling, bandwidth spikes, SMTP anomalies, botnets
+  - System indicators: Missing logs, disabled AV, memory leaks, high CPU, clock tampering
+  - Process indicators: Parent-child anomalies, temp execution, privilege escalation, encoded PowerShell
+  - Registry/file indicators: Persistence keys, Unicode keys, double extensions
   - Web indicators: Directory traversal, SQL injection, XSS patterns
-  - Advanced: MitM certificates, browser hijackers, PUPs, port scanning, worm propagation, webcam/mic activation
-  - Real-world: Emotet, WannaCry, Mirai, Target 2013, Colonial Pipeline, SolarWinds, DigiNotar, Boeing 787
-- **2.5 Mitigations**: 12/50 questions (next target)
-- **Domain 2.0 Status**: 213/250-300 questions (71-85% complete)
+  - Advanced indicators: MitM certificates, port scanning, worm propagation, webcam/mic activation
+  - Real-world examples: Emotet, WannaCry, Slammer, Mirai, Target 2013, Colonial Pipeline 2021, SolarWinds 2020
+- **2.5 Mitigation Techniques**: ✅ 52 questions (COMPLETED)
+  - Network controls: Segmentation, microsegmentation, VLANs, jump servers, DMZ, egress filtering, NAC, DNS sinkholing
+  - Zero trust: Never trust always verify, continuous validation, policy enforcement, microsegmentation
+  - Application controls: Signature-based allowlisting, application control (default-deny), input validation (allowlist), sandboxing
+  - Configuration hardening: Default credentials, port security, disabling unnecessary services/protocols, Group Policy Objects, change management
+  - Authentication controls: Separation of duties, mandatory vacation, rate limiting, exponential backoff, MFA
+  - Patch management: Vulnerability scanning, immutable infrastructure (ephemeral systems)
+  - Access controls: Least privilege for service accounts, PAM with just-in-time access, geofencing
+  - Detection & response: SOAR platforms, SIEM aggregation/correlation, threat hunting, file integrity monitoring, database activity monitoring
+  - Deception: Honeypots and honeynets
+  - Web security: WAF with ModSecurity, Content Security Policy, HSTS, certificate pinning, DNSSEC
+  - Data protection: DLP monitoring egress points
+  - Development: SSDLC with security testing
+  - Resilience: Robust backup/recovery (3-2-1 rule, offline/immutable backups, RTO/RPO)
+  - Standards: Security baselines (CIS Benchmarks, DISA STIGs)
+  - User awareness: Security awareness training for phishing recognition
+  - Real-world examples: Mirai botnet 600K devices, DigiNotar 2011, Conficker/Emotet/TrickBot takedowns
+- **Domain 2.0 Status**: 254/250-300 questions ✅ **101% COMPLETE** (exceeded minimum target)
+
+### Domain 3.0: Security Architecture (TARGET: 200-240 questions) - NEXT TARGET
 
 ### Domain Breakdown
 

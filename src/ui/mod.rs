@@ -8,3 +8,4 @@ pub mod main;
 pub mod quiz_widget;
 pub mod sidebar;
 pub mod state;
+pub mod tool_execution;

@@ -1,10 +1,11 @@
-/// Detail panel module for displaying step details (checkbox, title, description, notes, canvas)
+/// Detail panel module for displaying step details (checkbox, title, description, notes, canvas, tools)
 use gtk4::prelude::*;
 use gtk4::{Box as GtkBox, Orientation, CheckButton, Label, TextView, Frame, ScrolledWindow, Paned, Fixed, Stack};
 use std::rc::Rc;
 use std::cell::RefCell;
 use crate::ui::canvas_utils::CanvasItem;
 use crate::ui::quiz_widget::QuizWidget;
+use crate::ui::tool_execution::ToolExecutionPanel;
 use crate::model::Step;
 
 /// Struct holding all detail panel widgets (supports both tutorial and quiz views)
@@ -20,6 +21,7 @@ pub struct DetailPanel {
     pub notes_view: TextView,
     pub canvas_fixed: Fixed,
     pub canvas_items: Rc<RefCell<Vec<CanvasItem>>>,
+    pub tool_panel: ToolExecutionPanel,
     
     // Quiz view widget
     pub quiz_widget: QuizWidget,
@@ -102,6 +104,13 @@ pub fn create_detail_panel() -> DetailPanel {
     main_paned.set_shrink_start_child(false);
     main_paned.set_shrink_end_child(false);
 
+    let middle_paned = Paned::new(Orientation::Vertical);
+    middle_paned.set_vexpand(true);
+    middle_paned.set_resize_start_child(true);
+    middle_paned.set_resize_end_child(true);
+    middle_paned.set_shrink_start_child(false);
+    middle_paned.set_shrink_end_child(false);
+
     let bottom_paned = Paned::new(Orientation::Vertical);
     bottom_paned.set_vexpand(true);
     bottom_paned.set_resize_start_child(true);
@@ -109,13 +118,24 @@ pub fn create_detail_panel() -> DetailPanel {
     bottom_paned.set_shrink_start_child(false);
     bottom_paned.set_shrink_end_child(false);
 
-    // Set up the pane hierarchy
+    // Tool execution panel
+    let tool_panel = ToolExecutionPanel::new();
+    let tool_frame = Frame::builder()
+        .label("Security Tools")
+        .child(&tool_panel.container)
+        .build();
+
+    // Set up the pane hierarchy: desc -> tools -> notes -> canvas
     bottom_paned.set_start_child(Some(&notes_frame));
     bottom_paned.set_end_child(Some(&canvas_frame));
-    bottom_paned.set_position(300);
+    bottom_paned.set_position(250);
+
+    middle_paned.set_start_child(Some(&tool_frame));
+    middle_paned.set_end_child(Some(&bottom_paned));
+    middle_paned.set_position(300);
 
     main_paned.set_start_child(Some(&desc_frame));
-    main_paned.set_end_child(Some(&bottom_paned));
+    main_paned.set_end_child(Some(&middle_paned));
     main_paned.set_position(200);
 
     // === QUIZ VIEW ===
@@ -142,6 +162,7 @@ pub fn create_detail_panel() -> DetailPanel {
         notes_view,
         canvas_fixed,
         canvas_items,
+        tool_panel,
         quiz_widget,
     }
 }

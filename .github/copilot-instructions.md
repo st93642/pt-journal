@@ -1,121 +1,96 @@
 # PT Journal - AI Coding Assistant Instructions
 
 ## Project Overview
-PT Journal is a GTK4 desktop application for structured penetration testing documentation. It provides a phased approach to pentesting with predefined methodologies, progress tracking, and evidence collection through a canvas-based evidence system.
+PT Journal is a GTK4 desktop application for structured penetration testing documentation with two primary content systems:
+- **Tutorial System**: 9 phases (45+ steps) covering Recon, Vulnerability Analysis, Exploitation, Post-Exploitation, Reporting, Bug Bounty Hunting, CompTIA Security+, PenTest+, and CEH methodologies
+- **Quiz System**: Multiple-choice assessments (CompTIA Security+, CEH) with progress tracking and scoring
 
-## Architecture
-- **GUI Framework**: GTK4 with minimal Relm4 usage (mostly raw GTK4)
-- **Data Model**: `Session → Phases → Steps → Evidence` (hierarchical structure in `model.rs`)
-- **Persistence**: JSON serialization via `store.rs` using cross-platform directories
-- **State Management**: Event-driven architecture using `dispatcher.rs` with `Rc<RefCell<AppModel>>` for GTK state
-- **Event System**: Message-based dispatcher for decoupled module communication
-- **UI Structure**: Main UI (`src/ui/main.rs`) with modular state management (`ui/state.rs`)
+## Architecture at a Glance
+- **GUI Framework**: GTK4 (raw, not Relm4-driven) with modular UI components in `src/ui/`
+- **Data Model**: Hierarchical `Session → Phases → Steps → Evidence/Quiz` in `model.rs`
+- **Dual Step Types**: `Step::Tutorial` (description-based) and `Step::Quiz` (MCQ-based) — determined by `StepContent` enum
+- **Persistence**: JSON via `store.rs` + cross-platform directories
+- **Event System**: `dispatcher.rs` for decoupled module communication (already integrated, rarely used in current code)
 
 ## Key Files & Components
 ```
 src/
-├── main.rs           # GTK4 app bootstrap + dark theme setup
-├── model.rs          # Core data structures (Session, Phase, Step, Evidence, StepStatus)
-├── store.rs          # JSON persistence (save_session/load_session)
-├── dispatcher.rs     # Event-driven message dispatcher for module communication
-├── lib.rs            # Module exports
-├── tutorials/        # Pentesting methodology content (16+5+4+4+4=33 steps)
-│   ├── mod.rs        # Loads all phase templates with UUIDs
-│   ├── reconnaissance.rs
-│   ├── vulnerability_analysis.rs
-│   ├── exploitation.rs
-│   ├── post_exploitation.rs
-│   └── reporting.rs
+├── main.rs              # GTK4 app bootstrap + Settings::set_gtk_application_prefer_dark_theme()
+├── model.rs             # Core: Session, Phase, Step (Tutorial/Quiz), Evidence, StepStatus, Quiz*
+├── store.rs             # JSON persistence
+├── dispatcher.rs        # Event dispatcher (available but not heavily used currently)
+├── quiz/
+│   └── mod.rs           # Quiz parsing: parse_question_line() — reads question|a|b|c|d|correct_idx|explanation|domain|subdomain format
+├── tutorials/
+│   ├── mod.rs           # load_tutorial_phases() creates 9 Phase objects from tutorial modules
+│   ├── reconnaissance.rs    # 16 steps
+│   ├── vulnerability_analysis.rs  # 5 steps
+│   ├── exploitation.rs     # 4 steps
+│   ├── post_exploitation.rs # 4 steps
+│   ├── reporting.rs        # 4 steps
+│   ├── bug_bounty_hunting.rs, comptia_secplus.rs, ceh.rs, pentest_exam.rs
 └── ui/
-    ├── main.rs       # Main UI assembly (1233 lines)
-    ├── state.rs      # State manager coordinating model updates and events
-    ├── file_ops.rs   # File operations (open/save dialogs) with async callbacks
-    ├── header_bar.rs # Header bar creation with Open/Save/Sidebar buttons
-    ├── mod.rs        # Module exports
-    ├── canvas.rs     # Canvas setup, drag-drop, image paste, evidence loading
-    ├── canvas_utils.rs  # CanvasItem struct, texture creation, validation
-    └── image_utils.rs   # Clipboard image handling, pixbuf operations
+    ├── main.rs          # Main app (1293 lines): window setup, signal wiring, quiz button handlers
+    ├── sidebar.rs       # Phase DropDown + steps ListBox (modularized)
+    ├── detail_panel.rs  # DetailPanel struct: tutorial/quiz Stack, description, notes, canvas, QuizWidget
+    ├── quiz_widget.rs   # QuizWidget: question display, MCQ rendering, check/explanation buttons, statistics
+    ├── header_bar.rs    # Open/Save/Save As/Sidebar buttons
+    ├── canvas.rs        # load_step_evidence(), setup_canvas() — drag-drop, image paste
+    ├── canvas_utils.rs  # CanvasItem struct, texture validation (PNG|JPG|etc)
+    ├── file_ops.rs      # Async file dialogs with callbacks
+    ├── image_utils.rs   # Clipboard image handling
+    └── mod.rs           # Exports
 
 tests/
-├── integration_tests.rs  # Main integration tests with custom harness
-└── test_runner.rs        # Custom test runner with progress bar
+├── integration_tests.rs  # Custom test harness (no .harness = false needed)
+└── ui_tests.rs           # UI-specific tests
 ```
 
 ## Development Workflow
 ```bash
 # Build and run
-cargo build          # Debug build
-cargo run            # Run debug build
-cargo build --release  # Optimized build (faster)
+cargo build          # Debug build (requires: libgtk-4-dev on Linux/Ubuntu)
+cargo run            # Run with debug symbols
+cargo build --release  # Optimized build (faster startup)
 cargo run --release
 
 # Code quality
-cargo fmt            # Format code (always run before commits)
-cargo clippy         # Lint and catch common mistakes
-cargo clippy --fix   # Auto-fix clippy warnings
+cargo fmt            # Format with rustfmt
+cargo clippy         # Lint (check before commits)
+cargo clippy --fix   # Auto-fix warnings
 
 # Testing
-cargo test --lib     # Run 91 unit tests (compact output)
-cargo test --test integration_tests  # Run integration tests with progress bar
-cargo test           # Run all tests (91 unit + 9 integration + 3 test runner = 104 total)
+cargo test --lib     # All unit tests (fast, compact output)
+cargo test --test integration_tests  # Integration tests with progress bar
 ```
 
 ## Critical Code Patterns
 
-### 1. Event-Driven Architecture (NEW)
-**Pattern**: Use the dispatcher for decoupled communication between modules.
+### 1. Step Type Handling - Tutorial vs Quiz
+**Pattern**: Steps are either Tutorial (description-based) or Quiz (MCQ-based), determined at creation time:
 ```rust
-use crate::dispatcher::{create_dispatcher, AppMessage};
+// Tutorial step (in src/tutorials/mod.rs)
+Step::new_tutorial(Uuid::new_v4(), "Title".to_string(), "Description...".to_string(), vec!["tag".to_string()])
 
-// Create shared dispatcher
-let dispatcher = create_dispatcher();
+// Quiz step (for CompTIA Security+, CEH)
+Step::new_quiz(Uuid::new_v4(), "Quiz Title".to_string(), vec![quiz_questions], "1.0 General Security")
 
-// Register handlers
-dispatcher.borrow_mut().register("ui:phase_list", Box::new(move |msg| {
-    match msg {
-        AppMessage::PhaseSelected(idx) => {
-            // Update UI for selected phase
-        }
-        AppMessage::RefreshStepList(phase_idx) => {
-            // Rebuild step list
-        }
-        _ => {}
-    }
-}));
-
-// Dispatch messages
-dispatcher.borrow().dispatch(&AppMessage::PhaseSelected(0));
+// Use pattern matching to handle both types (src/ui/main.rs)
+if let Some(quiz_step) = step.get_quiz_step() {
+    // Handle quiz display + button wiring
+    panel.quiz_widget.display_question(&quiz_step, 0);
+} else {
+    // Handle tutorial display
+    detail_panel.desc_view.buffer().set_text(&step.get_description());
+}
 ```
 
-**Available Messages**:
-- Selection: `PhaseSelected`, `StepSelected`
-- Session Ops: `SessionLoaded`, `SessionSaved`, `SessionCreated`
-- Status Changes: `StepCompleted`, `StepStatusChanged`
-- Text Updates: `StepNotesUpdated`, `StepDescriptionNotesUpdated`, `PhaseNotesUpdated`
-- Evidence: `EvidenceAdded`, `EvidenceRemoved`, `EvidenceMoved`
-- UI Refresh: `RefreshPhaseList`, `RefreshStepList`, `RefreshDetailView`, `RefreshCanvas`
+**Key Methods**:
+- `step.get_description()` / `step.get_notes()` / `step.get_evidence()` — works for Tutorial steps
+- `step.get_quiz_step()` / `step.quiz_mut_safe()` — works for Quiz steps
+- `step.get_content()` — returns `&StepContent` enum for pattern matching
 
-### 2. State Manager Pattern (NEW)
-**Pattern**: Use `StateManager` for coordinated state updates.
-```rust
-use crate::ui::state::{StateManager, SharedModel};
-
-let model = Rc::new(RefCell::new(AppModel::default()));
-let state = StateManager::new(model.clone(), dispatcher.clone());
-
-// State updates automatically dispatch events
-state.select_phase(1);  // Dispatches PhaseSelected + RefreshStepList
-state.update_step_notes(0, 0, "Notes".to_string());  // Dispatches StepNotesUpdated
-state.add_evidence(0, 0, evidence);  // Dispatches EvidenceAdded
-```
-
-**Benefits**:
-- Automatic event dispatching
-- Consistent state updates
-- Single source of truth
-- Decoupled UI modules
-
-### 3. GTK State Management (The "Clone Dance")
+### 2. GTK State Management (The "Clone Dance")
 **Pattern**: Clone `Rc<RefCell<>>` before moving into closures to avoid borrow checker issues.
 ```rust
 let model = Rc::new(RefCell::new(AppModel::default()));
@@ -131,7 +106,7 @@ button.connect_clicked(move |_| {
 
 **Critical Rule**: Never hold a `borrow()` or `borrow_mut()` across GTK widget method calls that might trigger other signals, or you'll get `RefCell` panics.
 
-### 4. Signal Handler Blocking (Prevent Recursive Loops)
+### 3. Signal Handler Blocking (Prevent Recursive Loops)
 When programmatically changing widget state that triggers signals, block handlers:
 ```rust
 // Get handler ID when connecting (wrap in Rc for sharing across closures)
@@ -143,9 +118,9 @@ glib::signal::signal_handler_block(&widget, &handler_id);
 widget.set_value(new_value); // Won't trigger handler
 glib::signal::signal_handler_unblock(&widget, &handler_id);
 ```
-**Example**: `src/ui/main.rs:556-566` blocks `phase_combo` handler during session load to avoid recursive phase rebuilding.
+**Example**: `src/ui/main.rs` blocks `phase_combo` handler during session load to avoid recursive phase rebuilding.
 
-### 3. Deferred UI Updates with `glib::idle_add_local_once`
+### 4. Deferred UI Updates with `glib::idle_add_local_once`
 When loading data that requires extensive UI rebuilding, defer to idle callback:
 ```rust
 glib::idle_add_local_once(move || {
@@ -155,7 +130,7 @@ glib::idle_add_local_once(move || {
 ```
 **Why**: GTK file dialogs and other async operations can have active borrows. Deferring to idle ensures clean state.
 
-### 4. Canvas Evidence System
+### 5. Canvas Evidence System
 **Architecture**: Evidence items are `Fixed` container children positioned at `(x, y)` coordinates.
 ```rust
 // Load evidence from model
@@ -411,18 +386,24 @@ proptest = "1.0"          # Property-based testing
 ### Adding New UI Components
 1. Define widget in `src/ui/main.rs` (or create new module in `ui/`)
 2. Clone all needed `Rc<RefCell<>>` refs BEFORE closure
-3. Use StateManager for state updates to automatically dispatch events
-4. Register dispatcher handlers for responding to relevant messages
-5. Test for borrow conflicts by rapidly clicking/interacting
-6. Use `signal_handler_block` if programmatic updates trigger handlers
+3. Register dispatcher handlers for responding to relevant messages (optional, not widely used yet)
+4. Test for borrow conflicts by rapidly clicking/interacting
+5. Use `signal_handler_block` if programmatic updates trigger handlers
+6. For modular components, follow pattern in `sidebar.rs`, `detail_panel.rs`, `header_bar.rs`
 
 ### Modifying Data Model
 1. Update structs in `src/model.rs`
-2. Add `#[serde(default)]` for new optional fields to maintain backward compatibility
-3. Update StateManager methods if new operations are needed
-4. Add corresponding AppMessage variants for new events
-5. Update tests in `tests/` to cover new fields
-6. Test save/load with old session files to ensure migration works
+2. For backwards compatibility with saved sessions, add  `# ``[serde(default)]` for new optional fields
+3. Add corresponding test cases in `lib.rs`
+4. Update tests in `tests/` to cover new fields
+5. Test save/load with old session files to ensure migration works
+
+### Adding Quiz Content
+1. Create question data in `data/` folder (e.g., `data/comptia_secplus/` for Security+)
+2. Use format: `question|a|b|c|d|correct_idx|explanation|domain|subdomain` (pipe-separated)
+3. Parse via `crate::quiz::parse_question_line()` in tutorial module
+4. Create `Step::new_quiz()` in appropriate phase creation function (`src/tutorials/*/rs`)
+5. Verify questions load by running app and selecting quiz step
 
 ## New Modular Architecture (Latest Changes)
 
@@ -433,40 +414,34 @@ proptest = "1.0"          # Property-based testing
 - Thread-safe design using `Rc<RefCell<>>`
 - **Tests**: 7 unit tests covering registration, dispatch, and lifecycle
 
-### State Manager
-**Location**: `src/ui/state.rs`
-- Centralized state mutations with automatic event dispatching
-- Methods for phase/step selection, notes updates, evidence operations
-- Coordinates model changes with UI event notifications
-- **Tests**: 6 unit tests covering all state operations
+### Modularized UI Components
+**Location**: `src/ui/`
+- `main.rs` (1293 lines): Window setup, signal wiring for both tutorial and quiz modes
+- `sidebar.rs`: Phase selector (DropDown) + steps list (ListBox) widget
+- `detail_panel.rs`: DetailPanel struct with both tutorial view (description/notes/canvas) and quiz view (QuizWidget)
+- `quiz_widget.rs`: Full quiz UI including question display, MCQ rendering, check/view buttons, score display
+- `header_bar.rs`: App toolbar (Open/Save/Sidebar buttons)
+- `canvas.rs`: Drag-drop, image paste, evidence loading for tutorial steps
+- `file_ops.rs`: Async file dialogs with callbacks (no blocking)
 
 ### Custom Test Harness
 **Location**: `tests/test_runner.rs`
 - Progress bar visualization: `[========>    ] 5/10`
 - Compact output - only shows failures in detail
 - Timing information for performance tracking
-- Integration with custom test binary (bypasses default harness)
+- Integration with custom test binary
 
 **Usage**:
 ```bash
 cargo test --test integration_tests  # Run with progress bar
-cargo test --lib                      # Run 88 unit tests (standard output)
+cargo test --lib                      # Run 91 unit tests (standard output)
 ```
 
 ### Testing Philosophy
-- **Unit tests**: In-module (`#[cfg(test)]`) for isolated components
+- **Unit tests**: In-module tests for isolated components
 - **Integration tests**: In `tests/` directory for cross-module workflows
-- **Test count**: 88 unit tests + 9 custom integration tests
 - **Custom harness**: Only failures show details, successes show progress bar
 
-## Modularization Roadmap
-Future refactoring plans to further reduce main.rs size:
-1. Extract header bar creation → `ui/header_bar.rs`
-2. Extract sidebar (phase/step lists) → `ui/sidebar.rs`
-3. Extract detail panel (description/notes/canvas) → `ui/detail_panel.rs`
-4. Extract file operations (open/save dialogs) → `ui/file_ops.rs`
-
-Target: Keep modules under 250 lines each for maintainability.
 
 ## Questions for Clarification?
 - Should evidence paths be fully absolute or relative to session directory?

@@ -50,7 +50,7 @@
 
 ## File Structure
 
-```
+```text
 pt-journal/
 ├── data/
 │   └── ceh/

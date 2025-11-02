@@ -235,11 +235,25 @@ pt-journal/
 2. **Save As**: File → Save As (to create new session file)
 3. **Open**: File → Open (to load existing session)
 
-Sessions are stored in your system's application data directory:
+Sessions are stored in your system's Downloads folder by default:
 
-- **Linux**: `~/.local/share/pt-journal/sessions/`
-- **macOS**: `~/Library/Application Support/com.example.pt-journal/sessions/`
-- **Windows**: `%APPDATA%\example\pt-journal\sessions\`
+- **Linux**: `~/Downloads/pt-journal-sessions/`
+- **macOS**: `~/Downloads/pt-journal-sessions/`
+- **Windows**: `%USERPROFILE%\Downloads\pt-journal-sessions\`
+
+**Evidence images** are stored in an `evidence/` subfolder next to each session file:
+
+```text
+~/Downloads/pt-journal-sessions/
+├── my-engagement.json
+├── evidence/
+│   ├── evidence_1730544000000.png
+│   ├── evidence_1730544012345.png
+│   └── ...
+└── another-session.json
+```
+
+This ensures all evidence files travel together with the session when you move or backup the session file. If the Downloads folder is not accessible, sessions are stored in the current working directory as `./pt-journal-sessions/`
 
 ## Architecture & Key Patterns
 
@@ -405,7 +419,7 @@ Contributions are welcome! Please ensure:
 1. Code passes `cargo fmt` and `cargo clippy`
 2. Tests pass: `cargo test --lib`
 3. New features include corresponding tests
-4. Documentation is updated in comments and `.github/copilot-instructions.md`
+4. Documentation is updated
 
 ## License
 
@@ -416,17 +430,5 @@ This project is provided as-is for educational and professional use in penetrati
 - **Architecture Guide**: See `.github/copilot-instructions.md` for detailed architecture documentation and critical patterns used in the codebase
 - **Test Suite**: Run `cargo test --lib` to see all available tests
 - **Data Models**: Review `src/model.rs` for complete data structure documentation
-
-## Roadmap
-
-- [ ] Multi-window support
-- [ ] Auto-save functionality
-- [ ] Report generation (PDF/HTML export)
-- [ ] Collaboration features (session sharing)
-- [ ] Advanced filtering and search
-- [ ] Custom phase templates
-- [ ] Integration with common security tools
-
----
 
 **PT Journal v0.1.0** - Structured Penetration Testing Documentation

@@ -98,25 +98,44 @@ pub fn save_pixbuf_to_png(pixbuf: &gdk::gdk_pixbuf::Pixbuf, path: &std::path::Pa
 }
 
 /// Get the images directory for the current session
+/// Images are stored in an 'evidence' folder next to the session file
 #[allow(dead_code)]
-pub fn get_session_images_dir() -> std::path::PathBuf {
-    if let Some(dirs) = directories::ProjectDirs::from("com", "example", "pt-journal") {
-        let images_dir = dirs.data_dir().join("images");
-        let _ = std::fs::create_dir_all(&images_dir);
-        images_dir
-    } else {
-        std::path::PathBuf::from("./images")
+pub fn get_session_images_dir(session_path: Option<&Path>) -> std::path::PathBuf {
+    match session_path {
+        Some(path) => {
+            // Store images in 'evidence' subfolder next to the session.json file
+            if let Some(parent) = path.parent() {
+                let images_dir = parent.join("evidence");
+                let _ = std::fs::create_dir_all(&images_dir);
+                images_dir
+            } else {
+                // Fallback if no parent directory
+                let images_dir = std::path::PathBuf::from("./evidence");
+                let _ = std::fs::create_dir_all(&images_dir);
+                images_dir
+            }
+        }
+        None => {
+            // If no session path, use global evidence directory
+            let images_dir = std::path::PathBuf::from("./evidence");
+            let _ = std::fs::create_dir_all(&images_dir);
+            images_dir
+        }
     }
 }
 
-/// Save a pasted image (texture or pixbuf) to a PNG file and return the path
+/// Save a pasted image (texture or pixbuf) to a PNG file and return the relative path
 #[allow(dead_code)]
-pub fn save_pasted_image(texture: Option<&gdk::Texture>, pixbuf: Option<&gdk::gdk_pixbuf::Pixbuf>) -> Option<String> {
-    let images_dir = get_session_images_dir();
+pub fn save_pasted_image(
+    texture: Option<&gdk::Texture>,
+    pixbuf: Option<&gdk::gdk_pixbuf::Pixbuf>,
+    session_path: Option<&Path>,
+) -> Option<String> {
+    let images_dir = get_session_images_dir(session_path);
 
     // Generate a unique filename
     let timestamp = chrono::Utc::now().timestamp_millis();
-    let filename = format!("pasted_{}.png", timestamp);
+    let filename = format!("evidence_{}.png", timestamp);
     let file_path = images_dir.join(&filename);
 
     let result = if let Some(tex) = texture {
@@ -128,7 +147,10 @@ pub fn save_pasted_image(texture: Option<&gdk::Texture>, pixbuf: Option<&gdk::gd
     };
 
     match result {
-        Ok(_) => Some(file_path.to_string_lossy().to_string()),
+        Ok(_) => {
+            // Return relative path from session directory
+            Some(format!("evidence/{}", filename))
+        }
         Err(e) => {
             eprintln!("Failed to save pasted image: {}", e);
             None

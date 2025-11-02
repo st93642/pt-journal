@@ -23,6 +23,7 @@
 /// - Module 18: IoT and OT Hacking
 /// - Module 19: Cloud Computing
 /// - Module 20: Cryptography
+/// - Module 21: AI and Machine Learning Security
 ///
 /// Questions are loaded from data/ceh/ directory structure.
 
@@ -91,6 +92,9 @@ pub const MODULE_19: &str = "19. Cloud Computing";
 
 /// Module 20: Cryptography
 pub const MODULE_20: &str = "20. Cryptography";
+
+/// Module 21: AI and Machine Learning Security
+pub const MODULE_21: &str = "21. AI and Machine Learning Security";
 
 /// Load questions from a file in the data directory
 fn load_questions_from_file(relative_path: &str) -> Result<Vec<crate::model::QuizQuestion>, String> {
@@ -458,7 +462,23 @@ pub fn get_module_20_steps() -> Vec<Step> {
     steps
 }
 
-/// Get all CEH v12 quiz steps across all 20 modules
+/// Get all quiz steps for Module 21 (AI and Machine Learning Security)
+pub fn get_module_21_steps() -> Vec<Step> {
+    let mut steps = Vec::new();
+    
+    match create_quiz_step_from_file(
+        "21.1 AI/ML Security".to_string(),
+        MODULE_21.to_string(),
+        "21-ai-ml-security/21.1-ai-ml-security.txt",
+    ) {
+        Ok(step) => steps.push(step),
+        Err(e) => eprintln!("Warning: Failed to load Module 21: {}", e),
+    }
+    
+    steps
+}
+
+/// Get all CEH v12 quiz steps across all 21 modules
 pub fn get_all_ceh_steps() -> Vec<Step> {
     let mut all_steps = Vec::new();
     
@@ -482,6 +502,7 @@ pub fn get_all_ceh_steps() -> Vec<Step> {
     all_steps.extend(get_module_18_steps());
     all_steps.extend(get_module_19_steps());
     all_steps.extend(get_module_20_steps());
+    all_steps.extend(get_module_21_steps());
     
     all_steps
 }

@@ -1,7 +1,7 @@
 /// Certified Ethical Hacker (CEH) v12 quiz-based learning phase
 /// 
-/// This module provides 20 modules of CEH v12 certification content covering the full
-/// EC-Council ethical hacking curriculum:
+/// This module provides 24 modules of CEH v12 certification content covering the full
+/// EC-Council ethical hacking curriculum plus advanced topics:
 /// 
 /// - Module 01: Introduction to Ethical Hacking
 /// - Module 02: Footprinting and Reconnaissance  
@@ -24,6 +24,9 @@
 /// - Module 19: Cloud Computing
 /// - Module 20: Cryptography
 /// - Module 21: AI and Machine Learning Security
+/// - Module 22: Kubernetes and Container Security
+/// - Module 23: DevSecOps and CI/CD Pipeline Security
+/// - Module 24: Blockchain and Web3 Security
 ///
 /// Questions are loaded from data/ceh/ directory structure.
 
@@ -95,6 +98,15 @@ pub const MODULE_20: &str = "20. Cryptography";
 
 /// Module 21: AI and Machine Learning Security
 pub const MODULE_21: &str = "21. AI and Machine Learning Security";
+
+/// Module 22: Kubernetes and Container Security
+pub const MODULE_22: &str = "22. Kubernetes and Container Security";
+
+/// Module 23: DevSecOps and CI/CD Pipeline Security
+pub const MODULE_23: &str = "23. DevSecOps and CI/CD Pipeline Security";
+
+/// Module 24: Blockchain and Web3 Security
+pub const MODULE_24: &str = "24. Blockchain and Web3 Security";
 
 /// Load questions from a file in the data directory
 fn load_questions_from_file(relative_path: &str) -> Result<Vec<crate::model::QuizQuestion>, String> {
@@ -478,7 +490,55 @@ pub fn get_module_21_steps() -> Vec<Step> {
     steps
 }
 
-/// Get all CEH v12 quiz steps across all 21 modules
+/// Get all quiz steps for Module 22 (Kubernetes and Container Security)
+pub fn get_module_22_steps() -> Vec<Step> {
+    let mut steps = Vec::new();
+    
+    match create_quiz_step_from_file(
+        "22.1 Kubernetes & Containers".to_string(),
+        MODULE_22.to_string(),
+        "22-kubernetes-container-security/22.1-kubernetes-containers.txt",
+    ) {
+        Ok(step) => steps.push(step),
+        Err(e) => eprintln!("Warning: Failed to load Module 22: {}", e),
+    }
+    
+    steps
+}
+
+/// Get all quiz steps for Module 23 (DevSecOps and CI/CD Pipeline Security)
+pub fn get_module_23_steps() -> Vec<Step> {
+    let mut steps = Vec::new();
+    
+    match create_quiz_step_from_file(
+        "23.1 DevSecOps & CI/CD".to_string(),
+        MODULE_23.to_string(),
+        "23-devsecops-cicd-security/23.1-devsecops-cicd.txt",
+    ) {
+        Ok(step) => steps.push(step),
+        Err(e) => eprintln!("Warning: Failed to load Module 23: {}", e),
+    }
+    
+    steps
+}
+
+/// Get all quiz steps for Module 24 (Blockchain and Web3 Security)
+pub fn get_module_24_steps() -> Vec<Step> {
+    let mut steps = Vec::new();
+    
+    match create_quiz_step_from_file(
+        "24.1 Blockchain & Web3".to_string(),
+        MODULE_24.to_string(),
+        "24-blockchain-web3-security/24.1-blockchain-web3.txt",
+    ) {
+        Ok(step) => steps.push(step),
+        Err(e) => eprintln!("Warning: Failed to load Module 24: {}", e),
+    }
+    
+    steps
+}
+
+/// Get all CEH v12 quiz steps across all 24 modules
 pub fn get_all_ceh_steps() -> Vec<Step> {
     let mut all_steps = Vec::new();
     
@@ -503,6 +563,9 @@ pub fn get_all_ceh_steps() -> Vec<Step> {
     all_steps.extend(get_module_19_steps());
     all_steps.extend(get_module_20_steps());
     all_steps.extend(get_module_21_steps());
+    all_steps.extend(get_module_22_steps());
+    all_steps.extend(get_module_23_steps());
+    all_steps.extend(get_module_24_steps());
     
     all_steps
 }

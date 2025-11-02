@@ -15,19 +15,19 @@
 - Includes comprehensive unit tests (5 tests, all passing)
 - Follows the exact pattern used by `comptia_secplus.rs` and `pentest_exam.rs`
 
-### 3. Integration ✅
+### 3. Integration ✅Module 20: Cryptography
 
 - Updated `src/tutorials/mod.rs` to include and export the CEH module
 - Added `create_ceh_phase()` function to phase loader
 - CEH phase now appears as "Certified Ethical Hacker (CEH)" in the application
 
-### 4. Content Creation ✅
+### 4. Content Creation ✅Module 20: Cryptography
 
 - **Module 01: Introduction to Ethical Hacking** - COMPLETE
   - File: `data/ceh/01-ethical-hacking/1.1-fundamentals.txt`
   - 50 high-quality questions in proper pipe-delimited format
   - Covers: Ethical hacking fundamentals, methodologies, CEH phases, laws (CFAA, HIPAA), hacker types, frameworks (MITRE ATT&CK, NIST), testing types (black/white/gray box), security principles (CIA triad, defense in depth), risk management, threat intelligence
-
+Module 20: Cryptography
 ### 5. Documentation ✅
 
 - Created `CEH_EXPANSION_GUIDE.md` - Comprehensive guide for expanding the remaining 19 modules
@@ -35,7 +35,7 @@
   - Detailed content topics for each module (2-20)
   - Tools to cover for each module
   - File format specifications and examples
-  - Question writing guidelines
+  - Question writing guidelinesModule 20: Cryptography
   - Content extraction process from source books
   - Python script template for question generation
   - Testing procedures
@@ -60,7 +60,7 @@ pt-journal/
 │       ├── 02-footprinting-reconnaissance/  (ready for content)
 │       ├── 03-scanning-networks/            (ready for content)
 │       ├── 04-enumeration/                  (ready for content)
-│       ├── 05-vulnerability-analysis/        (ready for content)
+│       ├── 05-vulnerability-analysis/        (ready for content)Module 20: Cryptography
 │       ├── 06-system-hacking/               (ready for content)
 │       ├── 07-malware-threats/              (ready for content)
 │       ├── 08-sniffing/                     (ready for content)
@@ -79,7 +79,7 @@ pt-journal/
 ├── src/
 │   └── tutorials/
 │       ├── ceh.rs (NEW - complete implementation)
-│       ├── mod.rs (UPDATED - includes CEH module)
+│       ├── mod.rs (UPDATED - includes CEH module)Module 20: Cryptography
 │       ├── comptia_secplus.rs
 │       ├── pentest_exam.rs
 │       └── ...
@@ -89,7 +89,7 @@ pt-journal/
 ```
 
 ## How to Use
-
+Module 20: Cryptography
 ### Running the Application
 
 ```bash
@@ -113,7 +113,7 @@ cargo test --lib ceh -- --nocapture
 
 ### Immediate Priorities (Core Methodology)
 
-1. **Module 02: Footprinting and Reconnaissance** (~3 hours)
+1. **Module 02: Footprinting and Reconnaissance** (~3 hours)Module 20: Cryptography
    - OSINT techniques, search engines, DNS, WHOIS
    - Tools: Google dorks, Maltego, theHarvester, Shodan
 
@@ -121,7 +121,7 @@ cargo test --lib ceh -- --nocapture
    - Nmap scan types, OS fingerprinting, service detection
    - Tools: Nmap, Masscan, hping3
 
-3. **Module 04: Enumeration** (~3 hours)
+3. **Module 04: Enumeration** (~3 hours)Module 20: Cryptography
    - NetBIOS, SNMP, LDAP, SMB enumeration
    - Tools: enum4linux, smbclient, snmpwalk
 
@@ -132,32 +132,26 @@ cargo test --lib ceh -- --nocapture
 5. **Module 06: System Hacking** (~4 hours)
    - Password cracking, privilege escalation, maintaining access
    - Tools: John the Ripper, Hashcat, Mimikatz
-
-### Secondary Priority (Attack Techniques)
-
-6. Module 07: Malware Threats
-7. Module 08: Sniffing
-8. Module 09: Social Engineering
-9. Module 10: Denial of Service
-10. Module 11: Session Hijacking
-11. Module 12: Evading IDSs/Firewalls
+Module 20: Cryptography
+ Module 12: Evading IDSs/Firewalls
 
 ### Application Security
 
-12. Module 13: Hacking Web Servers
-13. Module 14: Hacking Web Applications
-14. Module 15: SQL Injection
+ Module 13: Hacking Web Servers
+ Module 14: Hacking Web Applications
+ Module 15: SQL Injection
 
 ### Specialized Topics
 
-15. Module 16: Hacking Wireless Networks
-16. Module 17: Hacking Mobile Platforms
-17. Module 18: IoT and OT Hacking
-18. Module 19: Cloud Computing
-19. Module 20: Cryptography
+ Module 16: Hacking Wireless NetworksModule 20: Cryptography
+ Module 17: Hacking Mobile Platforms
+ Module 18: IoT and OT Hacking
+ Module 19: Cloud Computing
+ Module 20: Cryptography
+ Module 21: AI/ML Security
 
 ## Content Extraction Workflow
-
+Module 20: Cryptography
 For each module:
 
 1. **Research** (30-45 min)
@@ -181,7 +175,7 @@ For each module:
    cargo test --lib ceh
    cargo run --release
    # Test in UI
-   ```
+   ```Module 20: Cryptography
 
 5. **Review & Refine** (20-30 min)
    - Check for typos and technical accuracy
@@ -192,14 +186,14 @@ For each module:
 
 ## Question Format Quick Reference
 
-```
+```text
 Question text?|Answer A|Answer B|Answer C|Answer D|correct_idx|Detailed explanation.|Module Name|Subdomain Name
 ```
 
 - **Field 1**: Question (no pipes!)
 - **Field 2-5**: Four answer options
 - **Field 6**: Correct answer index (0=A, 1=B, 2=C, 3=D)
-- **Field 7**: Explanation with context
+- **Field 7**: Explanation with contextModule 20: Cryptography
 - **Field 8**: Module (e.g., "02. Footprinting and Reconnaissance")
 - **Field 9**: Subdomain (e.g., "2.1 Footprinting Techniques")
 
@@ -207,7 +201,7 @@ Question text?|Answer A|Answer B|Answer C|Answer D|correct_idx|Detailed explanat
 
 ### Phase 1 (Completed) ✅
 
-- [x] CEH infrastructure created
+- [x] CEH infrastructure createdModule 20: Cryptography
 - [x] Module 01 complete with 50 questions
 - [x] All tests passing
 - [x] Application runs with CEH phase visible
@@ -218,7 +212,7 @@ Question text?|Answer A|Answer B|Answer C|Answer D|correct_idx|Detailed explanat
 - [ ] Modules 2-6 complete (core methodology) - ~15-20 hours
 - [ ] Modules 7-11 complete (attack techniques) - ~15-20 hours
 - [ ] Modules 12-15 complete (web security) - ~12-16 hours
-- [ ] Modules 16-20 complete (specialized) - ~15-20 hours
+- [ ] Modules 16-21 complete (specialized) - ~15-20 hours
 
 **Total estimated completion time**: 57-76 hours (1-2 weeks at 6-8 hours/day)
 

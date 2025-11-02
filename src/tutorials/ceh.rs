@@ -321,7 +321,7 @@ pub fn get_module_12_steps() -> Vec<Step> {
     match create_quiz_step_from_file(
         "12.1 IDS/IPS Evasion".to_string(),
         MODULE_12.to_string(),
-        "12-evading-ids-firewalls/12.1-evasion.txt",
+        "12-evading-ids-firewalls-honeypots/12.1-evasion.txt",
     ) {
         Ok(step) => steps.push(step),
         Err(e) => eprintln!("Warning: Failed to load Module 12: {}", e),
@@ -337,7 +337,7 @@ pub fn get_module_13_steps() -> Vec<Step> {
     match create_quiz_step_from_file(
         "13.1 Web Server Attacks".to_string(),
         MODULE_13.to_string(),
-        "13-web-servers/13.1-web-servers.txt",
+        "13-hacking-web-servers/13.1-web-servers.txt",
     ) {
         Ok(step) => steps.push(step),
         Err(e) => eprintln!("Warning: Failed to load Module 13: {}", e),

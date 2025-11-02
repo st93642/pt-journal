@@ -36,6 +36,7 @@
 pub mod traits;
 pub mod executor;
 pub mod registry;
+pub mod integrations;
 
 // Re-export main types for convenience
 pub use traits::{

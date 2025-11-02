@@ -1,0 +1,98 @@
+# Module 04: Enumeration
+# Format: question|answer_a|answer_b|answer_c|answer_d|correct_idx|explanation|domain|subdomain
+
+What is the primary purpose of enumeration in penetration testing?|To exploit vulnerabilities immediately|To extract detailed information from identified services (users, shares, configurations)|To perform denial of service attacks|To crack passwords|1|Enumeration extracts detailed information from discovered services, including usernames, group names, network shares, system configurations, and security policies. It builds upon scanning to gather actionable intelligence for later attack stages.|04. Enumeration|4.1 Fundamentals
+
+Which nmap switch performs service version detection and enumeration?|nmap -sV|nmap -O|nmap -sS|nmap -A|0|The -sV switch enables version detection by connecting to services and analyzing banners and responses to identify specific application names and versions (e.g., "OpenSSH 7.7p1" instead of just "ssh").|04. Enumeration|4.1 Service Detection
+
+What protocol is used by Windows systems for file and resource sharing?|NFS (Network File System)|SMB (Server Message Block)|FTP (File Transfer Protocol)|TFTP (Trivial File Transfer Protocol)|1|SMB (Server Message Block) is the Windows protocol for file sharing, printer sharing, and remote administration. It operates over ports 445 (direct) and 139 (NetBIOS). Modern versions use SMB2/SMB3.|04. Enumeration|4.1 SMB
+
+Which TCP port is used for SMB direct hosting (without NetBIOS)?|Port 139|Port 445|Port 135|Port 137|1|Port 445 is used for SMB direct hosting over TCP/IP (SMB over TCP). Port 139 is used for SMB over NetBIOS. Modern Windows systems prefer port 445 for direct SMB communication.|04. Enumeration|4.1 SMB
+
+What is NetBIOS primarily used for in Windows networks?|Web browsing|Name resolution and network resource discovery|Email transmission|Database queries|1|NetBIOS (Network Basic Input/Output System) provides name resolution services, session services, and datagram distribution in Windows networks. It allows systems to discover and communicate with each other using friendly names instead of IP addresses.|04. Enumeration|4.1 NetBIOS
+
+Which three ports are associated with NetBIOS services?|135, 139, 445|137, 138, 139|80, 443, 8080|20, 21, 22|1|NetBIOS uses: UDP 137 (Name Service - NBNS), UDP 138 (Datagram Service), and TCP 139 (Session Service). These ports enable name resolution, broadcast messages, and session-based communication respectively.|04. Enumeration|4.1 NetBIOS
+
+Which tool is specifically designed for enumerating Windows systems including SMB shares and users?|nmap|enum4linux|Metasploit|Wireshark|1|enum4linux is a Linux-based enumeration tool that wraps around smbclient, rpcclient, net, and nmblookup to extract information from Windows systems including users, shares, groups, password policies, and domain information.|04. Enumeration|4.1 Tools
+
+What command-line tool is used to interact with SMB shares from Linux?|smbclient|ftp|telnet|ssh|0|smbclient is the Linux/Unix command-line SMB client that allows connecting to Windows shares, browsing directories, uploading/downloading files, and executing commands on SMB servers. Syntax: smbclient //server/share -U username|04. Enumeration|4.1 Tools
+
+Which Windows command is used for SMB enumeration and network resource management?|ipconfig|netstat|net|nbtstat|2|The 'net' command provides extensive Windows network functionality including: net view (list shares), net user (enumerate users), net group (list groups), net share (show shares), net use (connect to shares).|04. Enumeration|4.1 Windows Commands
+
+What is the purpose of the null session attack on Windows systems?|To delete all files|To establish an anonymous connection to enumerate information|To crash the system|To encrypt data|1|A null session (anonymous logon) exploits IPC$ (Inter-Process Communication) share on older Windows systems to establish an unauthenticated connection. It allows enumeration of users, shares, and policies without credentials - largely patched in modern Windows.|04. Enumeration|4.1 SMB
+
+Which SMB version is vulnerable to the EternalBlue exploit (MS17-010)?|SMB v1|SMB v2|SMB v3|All SMB versions|0|SMBv1 is vulnerable to EternalBlue (CVE-2017-0144), the exploit used in WannaCry ransomware. MS17-010 patched this critical remote code execution vulnerability. Modern systems should disable SMBv1 entirely.|04. Enumeration|4.1 SMB Vulnerabilities
+
+What protocol is SNMP (Simple Network Management Protocol) primarily used for?|File sharing|Network device monitoring and management|Email routing|Web hosting|1|SNMP is used for monitoring and managing network devices (routers, switches, servers, printers) by collecting information about device status, performance metrics, configuration, and allowing remote configuration changes.|04. Enumeration|4.1 SNMP
+
+Which UDP port does SNMP typically operate on?|Port 161|Port 53|Port 69|Port 123|0|SNMP uses UDP port 161 for general requests and responses. SNMP traps (notifications from agents to manager) use UDP port 162. SNMP operates over UDP because it's designed for lightweight monitoring.|04. Enumeration|4.1 SNMP
+
+What is an SNMP community string?|An encryption key|A shared secret/password for SNMP authentication|A network subnet identifier|A device serial number|1|An SNMP community string acts as a password for SNMP authentication. SNMPv1/v2c use community strings (commonly "public" for read-only, "private" for read-write). They are sent in cleartext, making them vulnerable to sniffing.|04. Enumeration|4.1 SNMP
+
+Which SNMP version introduced proper authentication and encryption?|SNMPv1|SNMPv2c|SNMPv3|SNMP does not support encryption|2|SNMPv3 introduced security features including authentication (username/password), encryption (DES, AES), and integrity checking. SNMPv1 and SNMPv2c only use cleartext community strings, making SNMPv3 the secure choice.|04. Enumeration|4.1 SNMP
+
+What is an SNMP MIB (Management Information Base)?|A type of firewall|A hierarchical database of manageable objects on a device|A vulnerability scanner|A packet analyzer|1|The MIB is a hierarchical tree structure database containing Object Identifiers (OIDs) that represent manageable device properties (CPU usage, interface status, system info). SNMP walks traverse the MIB to extract information.|04. Enumeration|4.1 SNMP
+
+Which tool is used to enumerate SNMP information by walking the MIB tree?|snmpwalk|nmap|ping|traceroute|0|snmpwalk queries all SNMP objects in a MIB tree hierarchy, retrieving comprehensive device information. Syntax: snmpwalk -v2c -c public <target>. It's essential for SNMP enumeration and information gathering.|04. Enumeration|4.1 Tools
+
+What command would you use to retrieve a specific SNMP OID value?|snmpget|snmpwalk|snmpset|snmptrap|0|snmpget retrieves the value of a specific OID (Object Identifier) from an SNMP-enabled device. Example: snmpget -v2c -c public 192.168.1.1 1.3.6.1.2.1.1.1.0 (gets system description).|04. Enumeration|4.1 SNMP
+
+Which protocol and port is used for LDAP (Lightweight Directory Access Protocol)?|TCP port 389|UDP port 389|TCP port 636|TCP port 3268|0|LDAP uses TCP port 389 for unencrypted communication. LDAPS (LDAP over SSL/TLS) uses TCP port 636. Global Catalog LDAP uses port 3268. LDAP queries Active Directory for user and organizational information.|04. Enumeration|4.1 LDAP
+
+What is the purpose of LDAP in Windows Active Directory environments?|File storage|Querying and modifying directory information (users, groups, OUs)|Email routing|Web hosting|1|LDAP provides a protocol for querying and modifying Active Directory, allowing retrieval of user accounts, group memberships, organizational units, computer objects, and directory schema information in domain environments.|04. Enumeration|4.1 LDAP
+
+Which tool can perform LDAP enumeration queries from Linux?|ldapsearch|smbclient|snmpwalk|nslookup|0|ldapsearch is the command-line LDAP client for querying directory servers. It can enumerate users, groups, computers, and organizational structure. Example: ldapsearch -x -h <DC-IP> -b "DC=domain,DC=com"|04. Enumeration|4.1 Tools
+
+What is DNS zone transfer (AXFR) enumeration used for?|Cracking passwords|Retrieving all DNS records from a misconfigured DNS server|Port scanning|Exploiting web applications|1|DNS zone transfer (AXFR) retrieves a complete copy of all DNS records in a zone from a DNS server. Misconfigured servers allow unauthorized zone transfers, revealing complete network infrastructure, hostnames, and IP mappings.|04. Enumeration|4.1 DNS
+
+Which command performs a DNS zone transfer attempt?|dig axfr @nameserver domain.com|nslookup -type=A domain.com|ping domain.com|traceroute domain.com|0|The dig command with axfr parameter attempts a zone transfer: dig axfr @ns1.example.com example.com. If successful, it dumps all DNS records. Most DNS servers are now configured to prevent unauthorized transfers.|04. Enumeration|4.1 DNS
+
+What is NFS (Network File System) primarily used for?|Windows file sharing|Unix/Linux file sharing over network|Email transmission|Database access|1|NFS is the Unix/Linux equivalent of Windows SMB, allowing file sharing between Unix/Linux systems over a network. Developed by Sun Microsystems, it's commonly used in Unix environments and relies on RPC.|04. Enumeration|4.1 NFS
+
+Which command shows mounted NFS shares on a remote system?|showmount -e <target>|mount|df|nfsstat|0|The showmount -e command queries a remote NFS server to list exported shares and their access permissions. This reveals which directories are shared and which hosts can mount them, useful for identifying potential access points.|04. Enumeration|4.1 NFS
+
+What protocol does NFS rely on for service registration?|SMB|RPC (Remote Procedure Call)|SNMP|LDAP|1|NFS relies on RPC (Remote Procedure Call) and the portmapper/rpcbind service (port 111) to register and discover NFS services and their dynamically assigned ports. This is why RPC enumeration often reveals NFS services.|04. Enumeration|4.1 NFS
+
+Which port is used by the RPC portmapper/rpcbind service?|TCP/UDP port 111|TCP port 135|UDP port 137|TCP port 445|0|RPC portmapper (also called rpcbind) listens on TCP and UDP port 111. It acts as a directory service, mapping RPC program numbers to the dynamic ports where RPC services (like NFS, mountd) are actually listening.|04. Enumeration|4.1 RPC
+
+What command enumerates RPC services registered with portmapper?|rpcinfo -p <target>|netstat|ps|ifconfig|0|The rpcinfo -p command queries the portmapper on a target system to list all registered RPC services, their program numbers, versions, protocols, and dynamically assigned ports. Essential for enumerating NFS and RPC-based services.|04. Enumeration|4.1 RPC
+
+Which Microsoft RPC endpoint is commonly used for Windows remote management?|Port 3389|Port 135 (RPC Endpoint Mapper)|Port 445|Port 389|1|Port 135 (RPC Endpoint Mapper) is the Windows equivalent of portmapper. It dynamically assigns ports for RPC services and is used by many Windows management protocols including DCOM, WMI, and remote administration.|04. Enumeration|4.1 RPC
+
+What protocol can be used to enumerate email addresses on a mail server?|HTTP|SMTP (Simple Mail Transfer Protocol)|FTP|Telnet|1|SMTP commands VRFY (verify) and EXPN (expand) can enumerate valid email addresses and mailing lists on mail servers. Modern servers often disable these commands to prevent enumeration, but legacy systems may still respond.|04. Enumeration|4.1 SMTP
+
+Which SMTP command verifies if a specific email address exists on the server?|MAIL FROM|RCPT TO|VRFY|HELO|2|The VRFY (verify) command checks if a specific user exists on the mail server. Example: "VRFY admin" returns whether admin@domain exists. Many servers disable VRFY to prevent user enumeration attacks.|04. Enumeration|4.1 SMTP
+
+What is the purpose of the SMTP EXPN command?|To send an email|To expand a mailing list and reveal all members|To encrypt communication|To authenticate|1|EXPN (expand) expands mailing lists to reveal member email addresses. Example: "EXPN staff" shows all members of staff@domain. Like VRFY, it's often disabled on secure mail servers to prevent reconnaissance.|04. Enumeration|4.1 SMTP
+
+Which Metasploit module can be used for SMTP user enumeration?|auxiliary/scanner/smtp/smtp_enum|exploit/windows/smb/ms17_010_eternalblue|auxiliary/scanner/http/dir_scanner|auxiliary/scanner/snmp/snmp_enum|0|The auxiliary/scanner/smtp/smtp_enum Metasploit module attempts to enumerate valid users on SMTP servers using VRFY, EXPN, and RCPT TO commands with wordlists, identifying valid email addresses.|04. Enumeration|4.1 Tools
+
+What is finger protocol used for?|File transfer|Retrieving user information on Unix/Linux systems|Network time synchronization|Web hosting|1|The finger protocol (port 79) retrieves information about users logged into Unix/Linux systems including login names, full names, terminal info, idle time, and login time. It's largely obsolete and disabled on modern systems due to security concerns.|04. Enumeration|4.1 Legacy Protocols
+
+Which tool automates SMB enumeration including shares, users, and password policies?|Nmap|enum4linux|Wireshark|Hashcat|1|enum4linux is a wrapper script that automates SMB/NetBIOS enumeration by running multiple tools (smbclient, rpcclient, net, nmblookup) to extract users, shares, groups, password policies, domain info, and more from Windows systems.|04. Enumeration|4.1 Tools
+
+What information can be extracted from Windows password policy enumeration?|Encryption algorithms used|Minimum password length, complexity requirements, lockout thresholds|Network topology|Hardware specifications|1|Password policy enumeration reveals minimum/maximum password age, length requirements, complexity requirements, password history, account lockout threshold, lockout duration, and lockout observation window - valuable for planning brute-force attacks.|04. Enumeration|4.1 Windows Enumeration
+
+Which Windows tool displays NetBIOS name table cache?|ipconfig|nbtstat|netstat|route|1|nbtstat (NetBIOS over TCP/IP Statistics) displays NetBIOS name tables, showing local and remote NetBIOS names, MAC addresses, and name types. Command: nbtstat -A <IP> for remote systems, nbtstat -n for local.|04. Enumeration|4.1 Windows Commands
+
+What does the rpcclient tool allow you to do on Windows systems?|Crack passwords|Execute RPC commands to enumerate users, groups, and shares|Scan ports|Capture packets|1|rpcclient is a Linux tool for executing MS-RPC functions on Windows systems. Commands like enumdomusers, enumdomgroups, srvinfo, and querydispinfo enumerate detailed user and domain information over SMB.|04. Enumeration|4.1 Tools
+
+Which enum4linux option retrieves user listing from Windows systems?|enum4linux -U <target>|enum4linux -S <target>|enum4linux -P <target>|enum4linux -o <target>|0|enum4linux options: -U (users), -S (shares), -G (groups), -P (password policy), -o (OS info), -a (all enumeration). The -U flag specifically enumerates user accounts on the target Windows system.|04. Enumeration|4.1 Tools
+
+What is the IPC$ share used for in Windows networks?|File storage|Inter-Process Communication for remote administration|Printer sharing|Web hosting|1|IPC$ (Inter-Process Communication) is a hidden administrative share used for named pipes enabling remote administration, RPC communication, and SMB session establishment. Null sessions exploit IPC$ for anonymous enumeration.|04. Enumeration|4.1 SMB
+
+Which hidden administrative shares exist by default on Windows systems?|C$, ADMIN$, IPC$|PUBLIC$, TEMP$, USERS$|HOME$, DATA$, BACKUP$|WEB$, FTP$, MAIL$|0|Default hidden administrative shares (marked with $): C$ (root of C: drive), ADMIN$ (Windows directory), IPC$ (inter-process communication). These require administrator privileges to access and are used for remote administration.|04. Enumeration|4.1 SMB
+
+What is the purpose of the Windows SID (Security Identifier)?|IP address assignment|Uniquely identifying security principals (users, groups, computers)|Encrypting data|Routing packets|1|SIDs uniquely identify security principals in Windows. Format: S-1-5-21-[domain/computer]-[RID]. RID enumeration uses SIDs to discover user accounts. Well-known SIDs include 500 (Administrator) and 501 (Guest).|04. Enumeration|4.1 Windows Enumeration
+
+Which RID (Relative Identifier) is assigned to the built-in Administrator account?|500|501|1000|1001|0|RID 500 is the built-in Administrator account, RID 501 is Guest, RID 502 is KRBTGT (Kerberos). User accounts start at RID 1000+. RID enumeration can identify accounts even if renamed.|04. Enumeration|4.1 Windows Enumeration
+
+What is SNMP community string brute-forcing?|Port scanning|Attempting common community strings (public, private) to gain SNMP access|Password cracking for user accounts|SQL injection|1|SNMP community string brute-forcing tries common strings (public, private, manager, cisco, admin) and wordlists against SNMP services to find valid authentication. Tools like onesixtyone and snmp-check automate this process.|04. Enumeration|4.1 SNMP
+
+Which tool performs fast SNMP community string scanning?|onesixtyone|nmap|Wireshark|Metasploit|0|onesixtyone is a fast SNMP scanner that tests multiple community strings against multiple hosts simultaneously. It's much faster than snmpwalk for brute-forcing community strings across network ranges.|04. Enumeration|4.1 Tools
+
+What is the purpose of banner grabbing during enumeration?|To create graphics|To capture service banners revealing version and software information|To intercept passwords|To perform DoS attacks|1|Banner grabbing captures initial service responses (banners) that often reveal service type, version, OS information, and software details. Methods include netcat, telnet, nmap -sV, or simply connecting to services.|04. Enumeration|4.1 Service Detection
+
+Which simple tool can be used for manual banner grabbing by connecting to services?|ping|netcat (nc)|ipconfig|route|1|Netcat (nc) is the "Swiss Army knife" of networking. For banner grabbing: nc <target> <port> connects to a service and displays its banner. Example: nc 192.168.1.1 21 grabs FTP banner.|04. Enumeration|4.1 Tools
+
+What Windows command enumerates logged-in users and active sessions?|net user|net session|net view|net share|1|net session displays active SMB sessions showing remote connections to the local system. net user lists local users, net view shows network resources, net share lists shared resources.|04. Enumeration|4.1 Windows Commands

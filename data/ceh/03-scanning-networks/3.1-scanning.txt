@@ -1,0 +1,102 @@
+# Module 03: Scanning Networks
+# Format: question|answer_a|answer_b|answer_c|answer_d|correct_idx|explanation|domain|subdomain
+
+What is the primary purpose of port scanning during a penetration test?|To install malware on target systems|To identify open ports and services running on target hosts|To crack passwords on discovered services|To perform denial of service attacks|1|Port scanning identifies open ports and the services/applications listening on those ports. This information is used to discover potential attack vectors, identify vulnerable services, and map the target's network infrastructure.|03. Scanning Networks|3.1 Fundamentals
+
+Which layer of the OSI model do TCP and UDP ports operate at?|Application Layer|Presentation Layer|Transport Layer|Network Layer|2|Ports are a Transport Layer (Layer 4) construct. TCP and UDP both operate at the Transport Layer and use 16-bit port numbers (0-65535) to multiplex connections and identify services.|03. Scanning Networks|3.1 Fundamentals
+
+How many possible port numbers exist for TCP and UDP?|1024|32768|65536|128000|2|Port numbers are 16-bit values, providing 2^16 = 65,536 possible ports (numbered 0-65535). Ports 0-1023 are well-known ports, 1024-49151 are registered ports, and 49152-65535 are dynamic/private ports.|03. Scanning Networks|3.1 Fundamentals
+
+What is the purpose of a ping sweep before conducting a port scan?|To exploit vulnerabilities|To identify live hosts before spending time scanning|To install backdoors|To crack encryption|1|A ping sweep identifies which hosts are alive and responsive on a network before port scanning. This saves time by avoiding port scans of non-responsive systems and provides an overview of active hosts in the target range.|03. Scanning Networks|3.1 Ping Sweeps
+
+Which ICMP message type is used in a standard ping?|ICMP Echo Request (Type 8)|ICMP Destination Unreachable (Type 3)|ICMP Redirect (Type 5)|ICMP Time Exceeded (Type 11)|0|A ping uses ICMP Echo Request (Type 8) messages. The responding system sends back an ICMP Echo Reply (Type 0) if it's alive and ICMP is not blocked by firewalls.|03. Scanning Networks|3.1 Ping Sweeps
+
+Which tool is specifically designed for efficient ping sweeps of multiple hosts?|Wireshark|fping|Metasploit|John the Ripper|1|fping is optimized for pinging multiple hosts in parallel, making it much faster than standard ping for sweeping network ranges. It can process entire subnets efficiently and show elapsed round-trip times.|03. Scanning Networks|3.1 Tools
+
+What fping parameter shows only hosts that are alive during a ping sweep?|fping -d|fping -a|fping -s|fping -v|1|The -a parameter in fping displays only alive/responsive hosts. Combined with -g (generate target list) and -e (show elapsed time), it provides a concise view of active systems: fping -aeg 192.168.1.0/24|03. Scanning Networks|3.1 Tools
+
+Why might a ping sweep produce false negatives (showing hosts as down when they're actually up)?|DNS misconfiguration|Firewall blocking ICMP traffic|Incorrect subnet mask|Weak passwords|1|Host-based and network-based firewalls commonly block ICMP Echo Request messages as a security measure. A blocked ICMP request means no response is received, falsely indicating the host is down when it may actually be operational.|03. Scanning Networks|3.1 Ping Sweeps
+
+What is the default number of ports that nmap scans if no port specification is provided?|100 ports|1000 ports|10000 ports|All 65536 ports|1|By default, nmap scans the 1,000 most commonly used ports to balance thoroughness with speed. These ports are statistically most likely to have listening services. You can override this with -p to scan specific ports or --top-ports N.|03. Scanning Networks|3.1 Nmap
+
+Which nmap scan type is also called a "half-open scan"?|TCP Connect scan (-sT)|SYN scan (-sS)|UDP scan (-sU)|Xmas scan (-sX)|1|The SYN scan (-sS) is called "half-open" because it doesn't complete the TCP three-way handshake. It sends SYN, receives SYN/ACK for open ports, then sends RST instead of ACK, leaving connections half-open and potentially avoiding logging.|03. Scanning Networks|3.1 Nmap
+
+What response does a closed TCP port send when it receives a SYN packet?|SYN/ACK|RST (Reset)|FIN|ACK|1|A closed port responds to a SYN with a RST (Reset) packet, immediately terminating the connection attempt. This is defined behavior in TCP/IP that allows scanners to definitively identify closed ports.|03. Scanning Networks|3.1 TCP Scanning
+
+Which nmap scan completes the full TCP three-way handshake?|SYN scan (-sS)|Connect scan (-sT)|FIN scan (-sF)|Null scan (-sN)|1|The TCP Connect scan (-sT) completes the full three-way handshake (SYN, SYN/ACK, ACK) by using the operating system's connect() system call. It's more reliable but also more likely to be logged by target systems.|03. Scanning Networks|3.1 Nmap
+
+Why does the SYN scan require root/administrative privileges?|To access encrypted traffic|To create raw packets that bypass normal OS network stack|To modify system files|To decrypt SSL/TLS|1|The SYN scan requires root privileges because it creates raw packets from scratch, bypassing the OS's normal TCP/IP stack. This allows sending a SYN followed by RST without completing the connection, which normal socket APIs don't support.|03. Scanning Networks|3.1 Nmap
+
+Which TCP flags are set in an nmap Xmas scan (-sX)?|SYN, ACK, RST|FIN, PSH, URG|SYN only|No flags (Null scan)|1|An Xmas scan sets FIN, PSH, and URG flags simultaneously, making the packet "light up like a Christmas tree" in protocol analyzers. This unusual combination can bypass some firewalls and elicit different responses than standard scans.|03. Scanning Networks|3.1 TCP Scanning
+
+What result does nmap typically show for open ports when running an Xmas scan?|open|closed|open|filtered|filtered|2|Xmas scans show "open|filtered" for open ports because open ports don't respond to illegal flag combinations (per RFC 793). Without a response, nmap cannot distinguish between an open port (silent) and a filtered port (blocked by firewall).|03. Scanning Networks|3.1 TCP Scanning
+
+Which nmap scan sends packets with no TCP flags set?|Xmas scan (-sX)|Null scan (-sN)|FIN scan (-sF)|ACK scan (-sA)|1|The Null scan (-sN) sends TCP packets with no flags set at all. Like Xmas and FIN scans, closed ports respond with RST, while open ports remain silent, resulting in "open|filtered" status.|03. Scanning Networks|3.1 TCP Scanning
+
+What is the primary challenge with UDP port scanning?|UDP uses encryption|UDP has no defined connection handshake or reliable response mechanism|UDP ports cannot be scanned|UDP requires special hardware|1|UDP is connectionless with no handshake protocol. Applications may or may not respond to probes, and UDP doesn't guarantee delivery. This makes it difficult to determine if silence means closed port, open but non-responsive service, or packet loss.|03. Scanning Networks|3.1 UDP Scanning
+
+What ICMP message indicates a closed UDP port?|ICMP Echo Reply|ICMP Port Unreachable (Type 3, Code 3)|ICMP Time Exceeded|ICMP Redirect|1|When a UDP packet reaches a closed port, the OS responds with an ICMP Port Unreachable message (Type 3, Code 3). This is the primary way UDP scanners determine a port is closed. No response typically indicates open or filtered.|03. Scanning Networks|3.1 UDP Scanning
+
+Why do UDP scans typically take much longer than TCP scans?|UDP packets are larger|UDP scans must wait for timeouts and send multiple retries due to unreliable protocol|UDP requires encryption|UDP uses more bandwidth|1|UDP scans are slow because: (1) no response is ambiguous (open/filtered/lost packet), requiring multiple retry attempts; (2) delays are inserted between retries; (3) rate-limiting by OS and networks slows ICMP unreachable messages.|03. Scanning Networks|3.1 UDP Scanning
+
+What nmap parameter controls the timing/speed of scans?|-T (0-5)|--speed|--fast|--throttle|0|The -T parameter sets timing templates from 0-5: T0 (Paranoid), T1 (Sneaky), T2 (Polite), T3 (Normal - default), T4 (Aggressive), T5 (Insane). Higher values scan faster but are more detectable and may trigger IDS/IPS.|03. Scanning Networks|3.1 Nmap
+
+Which nmap timing template is recommended for evading IDS detection?|T0 (Paranoid) or T1 (Sneaky)|T3 (Normal)|T4 (Aggressive)|T5 (Insane)|0|T0 (Paranoid) and T1 (Sneaky) use very slow scan rates with long delays between packets, making detection by IDS/IPS less likely. T0 waits 5 minutes between packets, while T1 waits 15 seconds - extremely slow but stealthy.|03. Scanning Networks|3.1 IDS Evasion
+
+What nmap switch enables OS detection/fingerprinting?|nmap -A|nmap -O|nmap -sV|nmap -sO|1|The -O switch enables OS detection through TCP/IP stack fingerprinting. Nmap analyzes responses to various probes and compares them against a database of known OS signatures to identify the target's operating system.|03. Scanning Networks|3.1 OS Detection
+
+Which nmap switch performs service version detection?|nmap -sV|nmap -O|nmap -sS|nmap -A|0|The -sV switch enables service/version detection. Nmap connects to open ports and analyzes banner information and service responses to identify specific applications and versions (e.g., "Apache 2.4.41" instead of just "http").|03. Scanning Networks|3.1 Service Detection
+
+What does the nmap -A switch enable?|Aggressive scan with OS detection, version detection, script scanning, and traceroute|Authentication bypass|Anonymization of scan source|Automatic exploitation|0|The -A (Aggressive) switch enables multiple advanced features simultaneously: OS detection (-O), version detection (-sV), script scanning (--script=default), and traceroute. It provides comprehensive information but is easily detected.|03. Scanning Networks|3.1 Nmap
+
+How does nmap perform banner grabbing?|By exploiting vulnerabilities|By connecting to services and reading their identification banners|By sniffing network traffic|By brute-forcing credentials|1|Banner grabbing involves connecting to a service (like SSH, FTP, HTTP) and reading the banner/greeting message it sends. This banner often reveals the service type, version, and sometimes OS information without authentication.|03. Scanning Networks|3.1 Service Detection
+
+Which nmap option specifies custom ports or port ranges to scan?|nmap -p|nmap --ports|nmap -port|nmap -P|0|The -p option specifies ports: -p 80 (single), -p 80,443 (multiple), -p 1-1000 (range), -p- (all 65535 ports), or -p U:53,T:80 (UDP port 53 and TCP port 80).|03. Scanning Networks|3.1 Nmap
+
+What does the nmap -Pn switch do?|Performs a ping scan only|Skips host discovery and treats all hosts as online|Enables proxy scanning|Scans privileged ports only|1|The -Pn (no ping) switch skips the host discovery phase and treats all specified hosts as online. Useful when ICMP is blocked but you know hosts are up, though it wastes time scanning truly offline hosts.|03. Scanning Networks|3.1 Nmap
+
+Which nmap scan type can help identify firewall rules by analyzing ACK responses?|ACK scan (-sA)|SYN scan (-sS)|Connect scan (-sT)|Null scan (-sN)|0|ACK scan (-sA) sends packets with only the ACK flag set. It doesn't identify open ports but determines if ports are filtered or unfiltered by analyzing RST responses, helping map firewall rules.|03. Scanning Networks|3.1 Firewall Detection
+
+What is the purpose of nmap's --script option?|To automate exploitation|To run NSE (Nmap Scripting Engine) scripts for advanced probing|To generate scan reports|To hide scan activity|1|The --script option runs NSE (Nmap Scripting Engine) scripts written in Lua. Scripts can perform vulnerability detection, brute-forcing, service enumeration, backdoor detection, and much more beyond basic scanning.|03. Scanning Networks|3.1 Nmap NSE
+
+Which nmap NSE script category is safe and unlikely to crash services?|intrusive|exploit|auth|safe|3|NSE script categories include: safe (unlikely to crash), intrusive (may crash), malware (detects infections), exploit (attempts exploitation), vuln (vulnerability checks), auth (authentication testing), brute (brute-forcing), and discovery (network discovery).|03. Scanning Networks|3.1 Nmap NSE
+
+What nmap command would scan for common vulnerabilities using NSE scripts?|nmap --script=vuln target|nmap -sV target|nmap -A target|nmap --exploit target|0|The command nmap --script=vuln target runs all NSE scripts in the "vuln" category, checking for common vulnerabilities like Heartbleed, SMBv1, SQL injection, XSS, and other known CVEs.|03. Scanning Networks|3.1 Nmap NSE
+
+Which tool is known for extremely fast port scanning using asynchronous I/O?|Nmap|Masscan|Wireshark|Netcat|1|Masscan can scan the entire Internet in under 6 minutes (theoretically). It uses asynchronous transmission and custom TCP/IP stack to achieve rates of millions of packets per second, much faster than nmap for large-scale scans.|03. Scanning Networks|3.1 Tools
+
+What makes Masscan faster than nmap?|Better algorithms|Asynchronous packet transmission without waiting for responses|More CPU cores|Cloud-based scanning|1|Masscan uses asynchronous I/O and its own TCP/IP stack, sending packets without waiting for responses. It uses a custom stateless scanner that transmits and receives independently, enabling extremely high packet rates (up to 25 million packets/second).|03. Scanning Networks|3.1 Tools
+
+Which tool can craft custom packets with arbitrary TCP/IP header values?|Nmap|Ping|Hping3|Traceroute|2|Hping3 is a packet crafting tool that allows creating custom TCP, UDP, ICMP, and RAW-IP packets with arbitrary header values. It's useful for firewall testing, OS fingerprinting, and advanced port scanning with custom flags.|03. Scanning Networks|3.1 Tools
+
+What is the primary use of packet crafting in penetration testing?|Data encryption|Creating malformed or unusual packets to evade IDS/firewalls or test edge cases|Password cracking|Social engineering|1|Packet crafting creates custom packets with unusual flag combinations, fragmented packets, or malformed headers that may bypass firewalls/IDS, trigger unexpected behavior, or test how systems handle protocol violations.|03. Scanning Networks|3.1 Packet Crafting
+
+Which nmap option enables IPv6 scanning?|nmap -6|nmap --ipv6|nmap -v6|nmap -sIPv6|0|The -6 option enables IPv6 scanning. Example: nmap -6 fe80::1. IPv6 scanning requires IPv6 connectivity and may behave differently than IPv4 due to different network characteristics and filtering.|03. Scanning Networks|3.1 Nmap
+
+What does the nmap --reason flag display?|Exploit reasons|Why nmap determined each port's state (e.g., SYN/ACK received)|Performance reasons for slow scans|Authentication failure reasons|1|The --reason flag shows why nmap classified each port as open/closed/filtered, displaying the actual packet response received (e.g., "syn-ack" for open, "reset" for closed, "no-response" for filtered).|03. Scanning Networks|3.1 Nmap
+
+Which nmap option saves results in all three major formats (normal, XML, grepable)?|nmap -oA|nmap -oAll|nmap -oX -oN -oG|nmap --save-all|0|The -oA option saves output in three formats with the same base filename: .nmap (normal), .xml (XML), and .gnmap (grepable). Example: nmap -oA scan_results target saves three files.|03. Scanning Networks|3.1 Nmap
+
+What type of scan is also known as "stealth scanning"?|Full connect scan|SYN scan|UDP scan|Ping scan|1|SYN scans (-sS) are called "stealth scans" or "half-open scans" because they don't complete the TCP handshake, potentially avoiding detection by older logging systems that only log completed connections. Modern IDS/firewalls still detect them.|03. Scanning Networks|3.1 TCP Scanning
+
+What is the purpose of fragmentation in port scanning (-f option in nmap)?|To scan faster|To split packets into fragments that may evade simple packet filters|To encrypt scan traffic|To reduce bandwidth|1|The -f option fragments packets into 8-byte chunks (or --mtu for custom size), potentially evading simple packet filters and firewalls that don't reassemble fragments. However, modern stateful firewalls defeat this technique.|03. Scanning Networks|3.1 IDS Evasion
+
+Which nmap technique uses decoy IP addresses to obscure the true source of a scan?|nmap -D (Decoy scan)|nmap -S (Spoof)|nmap -P (Proxy)|nmap -H (Hide)|0|The -D option generates decoy scan packets from fake IP addresses alongside real scan traffic, making it difficult for the target to determine the actual scanner's IP: nmap -D RND:10 target uses 10 random decoys.|03. Scanning Networks|3.1 IDS Evasion
+
+What nmap option sets a custom source port for scans?|nmap -g or --source-port|nmap -p|nmap -sport|nmap --port-source|0|The -g or --source-port option sets a specific source port (e.g., -g 53 for DNS or -g 80 for HTTP). Some firewalls allow traffic from certain source ports, so using port 53 or 80 might bypass filtering.|03. Scanning Networks|3.1 IDS Evasion
+
+Which technique involves sending packets with randomized data payloads to evade pattern-based detection?|Port randomization|Data payload randomization|IP fragmentation|Source spoofing|1|Data payload randomization adds random or custom data to packets instead of predictable patterns. The --data-length option in nmap appends random bytes, potentially evading signature-based IDS that look for specific scan patterns.|03. Scanning Networks|3.1 IDS Evasion
+
+What is the purpose of the nmap --spoof-mac option?|To scan MAC addresses|To change the source MAC address in packets|To detect MAC flooding|To crack WPA2|1|The --spoof-mac option changes the source MAC address in Ethernet frames to 0 (random), a vendor name (--spoof-mac Apple), or specific MAC. Only effective on local network segments; routers strip MAC addresses.|03. Scanning Networks|3.1 IDS Evasion
+
+Which nmap scan sends packets with only the FIN flag set?|FIN scan (-sF)|Xmas scan (-sX)|Null scan (-sN)|ACK scan (-sA)|0|FIN scan (-sF) sends packets with only the FIN flag set. According to RFC 793, closed ports should respond with RST, while open ports should ignore it, though results are often "open|filtered" due to lack of response.|03. Scanning Networks|3.1 TCP Scanning
+
+What does the nmap -sL option do?|Performs list scan - DNS resolution without sending packets to targets|Scans localhost only|Lists available scan types|Shows license information|0|The -sL (List scan) performs DNS reverse-lookups on target IPs without sending any packets to hosts, making it a completely passive reconnaissance technique useful for identifying hostnames in an IP range.|03. Scanning Networks|3.1 Passive Scanning
+
+Which Windows-based GUI tool provides port scanning with a graphical interface?|Nmap|Zenmap|Wireshark|MegaPing|3|MegaPing is a Windows GUI tool that includes port scanning, ping sweeps, traceroute, WHOIS, and DNS tools. Zenmap is also a GUI but is specifically nmap's official cross-platform GUI frontend.|03. Scanning Networks|3.1 Tools
+
+What is Zenmap?|A vulnerability scanner|The official graphical frontend for nmap|A packet analyzer|An exploitation framework|1|Zenmap is nmap's official cross-platform GUI, providing a user-friendly interface for nmap with profile management, topology mapping, scan comparison, and saved scan results. It's essentially nmap with a point-and-click interface.|03. Scanning Networks|3.1 Tools
+
+Why might an nmap scan show a port as "filtered"?|The port is closed|A firewall or packet filter is blocking access to the port|The service crashed|The port number is invalid|1|"Filtered" means nmap cannot determine if the port is open because packets are being dropped by a firewall, packet filter, or network device. No response is received - not even a RST from closed ports.|03. Scanning Networks|3.1 Port States
+
+What is the difference between "open|filtered" and "filtered" port states in nmap?|No difference|"open|filtered" means nmap can't distinguish between open and filtered; "filtered" means definite packet filtering|"open|filtered" means definitely open|"filtered" means definitely closed|1|"Open|filtered" appears when scans that rely on lack of response (UDP, FIN, Xmas, Null) can't distinguish an open port from a filtered one. "Filtered" means probe packets don't reach the port (ICMP unreachable or other indication).|03. Scanning Networks|3.1 Port States

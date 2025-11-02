@@ -1,10 +1,11 @@
 /// Tool execution engine
 use super::traits::*;
 use anyhow::Result;
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
 /// Default executor implementation
 pub struct DefaultExecutor {
+    #[allow(dead_code)]
     max_concurrent: usize,
 }
 

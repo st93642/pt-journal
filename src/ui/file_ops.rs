@@ -20,7 +20,24 @@ where
     F: Fn(Session, PathBuf) + 'static,
 {
     let dialog = FileDialog::new();
-    dialog.set_title("Open Session");
+    dialog.set_title("Open Session - Select session.json");
+    
+    // Set initial folder to default sessions directory
+    let default_dir = store::default_sessions_dir();
+    if default_dir.exists() {
+        let file = gio::File::for_path(&default_dir);
+        dialog.set_initial_folder(Some(&file));
+    }
+    
+    // Create file filter for session.json files
+    let filter = gtk4::FileFilter::new();
+    filter.set_name(Some("PT Journal Sessions (session.json)"));
+    filter.add_pattern("session.json");
+    filter.add_mime_type("application/json");
+    
+    let filters = gio::ListStore::new::<gtk4::FileFilter>();
+    filters.append(&filter);
+    dialog.set_filters(Some(&filters));
     
     let window_weak = window.downgrade();
     dialog.open(Some(window), None::<&gio::Cancellable>, move |res| {
@@ -48,17 +65,45 @@ where
     F: Fn(PathBuf) + 'static,
 {
     let dialog = FileDialog::new();
-    dialog.set_title("Save Session As");
-    dialog.set_initial_name(Some(&format!("{}.json", session.name)));
+    dialog.set_title("Save Session As - Choose Folder Name");
+    
+    // Set initial folder to default sessions directory
+    let default_dir = store::default_sessions_dir();
+    if default_dir.exists() {
+        let file = gio::File::for_path(&default_dir);
+        dialog.set_initial_folder(Some(&file));
+    }
+    
+    // Remove .json extension, just use session name as folder
+    let default_name = session.name.replace(['/', '\\', ':', '*', '?', '"', '<', '>', '|'], "_");
+    let default_name = if default_name.is_empty() {
+        "pt-session".to_string()
+    } else {
+        default_name
+    };
+    
+    // Set initial name without .json extension - will become folder name
+    dialog.set_initial_name(Some(&default_name));
     
     let session_clone = session.clone();
     let window_weak = window.downgrade();
+    
+    // Use save dialog which will let user choose/create a folder
     dialog.save(Some(window), None::<&gio::Cancellable>, move |res| {
         if let Ok(file) = res {
-            if let Some(path) = file.path() {
+            if let Some(mut path) = file.path() {
+                // Remove any extension user might have added
+                if path.extension().is_some() {
+                    path.set_extension("");
+                }
+                
+                // Path is now the session folder
+                // Create folder structure and save
                 match store::save_session(&path, &session_clone) {
                     Ok(_) => {
-                        on_saved(path);
+                        // Return path to session.json for consistency
+                        let session_file = path.join("session.json");
+                        on_saved(session_file);
                     }
                     Err(err) => {
                         eprintln!("Failed to save session: {err:?}");

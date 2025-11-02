@@ -27,9 +27,31 @@ pub fn default_sessions_dir() -> PathBuf {
 
 #[allow(dead_code)]
 pub fn save_session(path: &Path, session: &Session) -> Result<()> {
+    // Create session folder structure
+    // path should be: /path/to/session-name/session.json
+    let session_dir = if path.file_name().and_then(|n| n.to_str()) == Some("session.json") {
+        // Already points to session.json, use parent as session dir
+        path.parent().unwrap_or(path)
+    } else {
+        // Path is just a directory or file, ensure we have a folder
+        if path.extension().is_some() {
+            // Has extension, might be old format - convert to folder
+            path.parent().unwrap_or(Path::new("."))
+        } else {
+            // No extension, treat as folder
+            path
+        }
+    };
+    
+    // Create session directory and evidence subdirectory
+    fs::create_dir_all(session_dir)?;
+    fs::create_dir_all(session_dir.join("evidence"))?;
+    
+    // Save session.json in the session folder
+    let session_file = session_dir.join("session.json");
     let json = serde_json::to_string_pretty(session)?;
-    fs::create_dir_all(path.parent().unwrap_or(Path::new(".")))?;
-    fs::write(path, json)?;
+    fs::write(session_file, json)?;
+    
     Ok(())
 }
 

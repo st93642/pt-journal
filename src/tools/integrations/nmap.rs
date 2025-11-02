@@ -373,7 +373,6 @@ impl SecurityTool for NmapTool {
                 // Check if running as root (on Unix systems)
                 #[cfg(unix)]
                 {
-                    use std::os::unix::fs::PermissionsExt;
                     // This is a simplified check - in production you'd check effective UID
                     // For now, just warn in validation
                 }

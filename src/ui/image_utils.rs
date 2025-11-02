@@ -98,22 +98,25 @@ pub fn save_pixbuf_to_png(pixbuf: &gdk::gdk_pixbuf::Pixbuf, path: &std::path::Pa
 }
 
 /// Get the images directory for the current session
-/// Images are stored in an 'evidence' folder next to the session file
+/// Images are stored in an 'evidence' folder within the session folder
+/// Works with new structure: session-name/session.json → session-name/evidence/
 #[allow(dead_code)]
 pub fn get_session_images_dir(session_path: Option<&Path>) -> std::path::PathBuf {
     match session_path {
         Some(path) => {
-            // Store images in 'evidence' subfolder next to the session.json file
-            if let Some(parent) = path.parent() {
-                let images_dir = parent.join("evidence");
-                let _ = std::fs::create_dir_all(&images_dir);
-                images_dir
+            // New format: session-name/session.json → session-name/evidence/
+            // Old format: /path/to/session.json → /path/to/evidence/
+            let session_dir = if path.file_name() == Some(std::ffi::OsStr::new("session.json")) {
+                // New format: use parent directory of session.json
+                path.parent().unwrap_or(path)
             } else {
-                // Fallback if no parent directory
-                let images_dir = std::path::PathBuf::from("./evidence");
-                let _ = std::fs::create_dir_all(&images_dir);
-                images_dir
-            }
+                // Old format or direct parent path
+                path.parent().unwrap_or(std::path::Path::new("."))
+            };
+            
+            let images_dir = session_dir.join("evidence");
+            let _ = std::fs::create_dir_all(&images_dir);
+            images_dir
         }
         None => {
             // If no session path, use global evidence directory

@@ -2,6 +2,7 @@ pub mod canvas;
 pub mod canvas_utils;
 pub mod detail_panel;
 pub mod file_ops;
+pub mod handlers;
 pub mod header_bar;
 pub mod image_utils;
 pub mod main;

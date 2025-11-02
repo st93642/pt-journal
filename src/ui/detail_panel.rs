@@ -10,7 +10,7 @@ use crate::model::Step;
 
 /// Struct holding all detail panel widgets (supports both tutorial and quiz views)
 pub struct DetailPanel {
-    pub container: GtkBox,
+    pub center_container: GtkBox,  // Center column (desc/notes/canvas)
     pub checkbox: CheckButton,
     pub title_label: Label,
     pub content_stack: Stack,  // Switches between tutorial and quiz views
@@ -21,6 +21,8 @@ pub struct DetailPanel {
     pub notes_view: TextView,
     pub canvas_fixed: Fixed,
     pub canvas_items: Rc<RefCell<Vec<CanvasItem>>>,
+    
+    // Tool panel (will be placed in right column)
     pub tool_panel: ToolExecutionPanel,
     
     // Quiz view widget
@@ -28,12 +30,13 @@ pub struct DetailPanel {
 }
 
 /// Create the detail panel with all widgets (supports tutorial and quiz views)
+/// Returns center column content (desc/notes/canvas) - tools panel accessed separately via tool_panel field
 pub fn create_detail_panel() -> DetailPanel {
-    let right = GtkBox::new(Orientation::Vertical, 8);
-    right.set_margin_top(8);
-    right.set_margin_bottom(8);
-    right.set_margin_start(8);
-    right.set_margin_end(8);
+    let center = GtkBox::new(Orientation::Vertical, 8);
+    center.set_margin_top(8);
+    center.set_margin_bottom(8);
+    center.set_margin_start(8);
+    center.set_margin_end(8);
 
     let checkbox = CheckButton::with_label("Completed");
     let title_label = Label::new(None);
@@ -96,20 +99,13 @@ pub fn create_detail_panel() -> DetailPanel {
         .build();
     canvas_frame.set_size_request(-1, 80);
 
-    // Create resizable panes for tutorial view
+    // Create resizable panes for tutorial view: desc -> notes -> canvas
     let main_paned = Paned::new(Orientation::Vertical);
     main_paned.set_vexpand(true);
     main_paned.set_resize_start_child(true);
     main_paned.set_resize_end_child(true);
     main_paned.set_shrink_start_child(false);
     main_paned.set_shrink_end_child(false);
-
-    let middle_paned = Paned::new(Orientation::Vertical);
-    middle_paned.set_vexpand(true);
-    middle_paned.set_resize_start_child(true);
-    middle_paned.set_resize_end_child(true);
-    middle_paned.set_shrink_start_child(false);
-    middle_paned.set_shrink_end_child(false);
 
     let bottom_paned = Paned::new(Orientation::Vertical);
     bottom_paned.set_vexpand(true);
@@ -118,25 +114,17 @@ pub fn create_detail_panel() -> DetailPanel {
     bottom_paned.set_shrink_start_child(false);
     bottom_paned.set_shrink_end_child(false);
 
-    // Tool execution panel
-    let tool_panel = ToolExecutionPanel::new();
-    let tool_frame = Frame::builder()
-        .label("Security Tools")
-        .child(&tool_panel.container)
-        .build();
-
-    // Set up the pane hierarchy: desc -> tools -> notes -> canvas
+    // Set up the pane hierarchy: desc -> notes -> canvas (tools removed from center)
     bottom_paned.set_start_child(Some(&notes_frame));
     bottom_paned.set_end_child(Some(&canvas_frame));
-    bottom_paned.set_position(250);
-
-    middle_paned.set_start_child(Some(&tool_frame));
-    middle_paned.set_end_child(Some(&bottom_paned));
-    middle_paned.set_position(300);
+    bottom_paned.set_position(200);
 
     main_paned.set_start_child(Some(&desc_frame));
-    main_paned.set_end_child(Some(&middle_paned));
+    main_paned.set_end_child(Some(&bottom_paned));
     main_paned.set_position(200);
+
+    // === TOOL EXECUTION PANEL (separate from center column) ===
+    let tool_panel = ToolExecutionPanel::new();
 
     // === QUIZ VIEW ===
     let quiz_widget = QuizWidget::new();
@@ -148,12 +136,12 @@ pub fn create_detail_panel() -> DetailPanel {
     content_stack.add_named(&quiz_widget.container, Some("quiz"));
     content_stack.set_visible_child_name("tutorial"); // Default to tutorial view
 
-    // Add top section and stack to right panel
-    right.append(&top_box);
-    right.append(&content_stack);
+    // Add top section and stack to center panel
+    center.append(&top_box);
+    center.append(&content_stack);
 
     DetailPanel {
-        container: right,
+        center_container: center,
         checkbox,
         title_label,
         content_stack,

@@ -5,6 +5,7 @@ pub mod post_exploitation;
 pub mod reporting;
 pub mod bug_bounty_hunting;
 pub mod comptia_secplus;
+pub mod pentest_exam;
 
 use crate::model::{Phase, Step};
 use uuid::Uuid;
@@ -19,6 +20,7 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         create_reporting_phase(),
         create_bug_bounty_hunting_phase(),
         create_comptia_secplus_phase(),
+        create_pentest_exam_phase(),
     ]
 }
 
@@ -154,6 +156,17 @@ fn create_bug_bounty_hunting_phase() -> Phase {
     Phase {
         id: Uuid::new_v4(),
         name: "Bug Bounty Hunting".to_string(),
+        steps,
+        notes: String::new(),
+    }
+}
+
+fn create_pentest_exam_phase() -> Phase {
+    let steps = pentest_exam::get_all_pentest_steps();
+    
+    Phase {
+        id: Uuid::new_v4(),
+        name: "CompTIA PenTest+".to_string(),
         steps,
         notes: String::new(),
     }

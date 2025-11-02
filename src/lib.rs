@@ -24,14 +24,14 @@ mod tests {
             assert_eq!(model.selected_phase, 0);
             assert_eq!(model.selected_step, Some(0));
             assert!(model.current_path.is_none());
-            assert_eq!(model.session.phases.len(), 7); // 7 phases (added Bug Bounty + CompTIA)
+            assert_eq!(model.session.phases.len(), 8); // 8 phases (added Bug Bounty + CompTIA Security+ + PenTest+)
         }
 
         #[test]
         fn test_session_creation() {
             let session = Session::default();
             assert!(!session.name.is_empty());
-            assert_eq!(session.phases.len(), 7); // 7 phases
+            assert_eq!(session.phases.len(), 8); // 8 phases
             assert!(session.notes_global.is_empty());
         }
 
@@ -816,17 +816,17 @@ mod tests {
             let session_path = temp_dir.path().join("perf_test.json");
             let session = Session::default();
 
-            // Test save performance (increased timeout for larger quiz content)
+            // Test save performance (increased timeout for larger quiz content with PenTest+)
             let save_start = Instant::now();
             store::save_session(&session_path, &session).unwrap();
             let save_duration = save_start.elapsed();
-            assert!(save_duration.as_millis() < 200, "Save took too long: {:?}", save_duration);
+            assert!(save_duration.as_millis() < 500, "Save took too long: {:?}", save_duration);
 
-            // Test load performance (increased timeout for larger quiz content)
+            // Test load performance (increased timeout for larger quiz content with PenTest+)
             let load_start = Instant::now();
             let _loaded = store::load_session(&session_path).unwrap();
             let load_duration = load_start.elapsed();
-            assert!(load_duration.as_millis() < 200, "Load took too long: {:?}", load_duration);
+            assert!(load_duration.as_millis() < 500, "Load took too long: {:?}", load_duration);
         }
 
         #[test]

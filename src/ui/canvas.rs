@@ -268,7 +268,8 @@ fn handle_image_drop(
     // Try direct pixbuf
     if let Ok(pixbuf) = value.get::<gdk::gdk_pixbuf::Pixbuf>() {
         // Save pixbuf to file
-        let image_path = save_pasted_image(None, Some(&pixbuf));
+        let session_path = model.borrow().current_path.clone();
+        let image_path = save_pasted_image(None, Some(&pixbuf), session_path.as_deref());
         match create_texture_from_pixbuf(&pixbuf) {
             Ok(texture) => {
                 add_image_to_canvas(canvas_items, model, fixed_weak, texture, x, y, image_path);
@@ -331,7 +332,8 @@ fn handle_clipboard_paste(
             match result {
                 Ok(Some(texture)) => {
                     // Save texture to file
-                    let image_path = save_pasted_image(Some(&texture), None);
+                    let session_path = model.borrow().current_path.clone();
+                    let image_path = save_pasted_image(Some(&texture), None, session_path.as_deref());
                     // Calculate position to avoid overlapping
                     let (x, y) = calculate_paste_position(&canvas_items);
                     add_image_to_canvas(&canvas_items, &model, &fixed_weak, texture, x, y, image_path);
@@ -349,7 +351,8 @@ fn handle_clipboard_paste(
                             Ok(value) => {
                                 if let Ok(pixbuf) = value.get::<gdk::gdk_pixbuf::Pixbuf>() {
                                     // Save pixbuf to file
-                                    let image_path = save_pasted_image(None, Some(&pixbuf));
+                                    let session_path = model_pb.borrow().current_path.clone();
+                                    let image_path = save_pasted_image(None, Some(&pixbuf), session_path.as_deref());
                                     match create_texture_from_pixbuf(&pixbuf) {
                                         Ok(texture) => {
                                             // Calculate position to avoid overlapping

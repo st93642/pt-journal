@@ -4,6 +4,7 @@ pub mod tutorials;
 pub mod quiz;
 pub mod ui;
 pub mod dispatcher;
+pub mod tools;
 
 #[cfg(test)]
 mod tests {

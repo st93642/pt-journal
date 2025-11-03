@@ -1,6 +1,7 @@
 use gtk4::glib;
 use gtk4::prelude::*;
 use gtk4::{ApplicationWindow, Button, CheckButton, ListBox};
+use vte::prelude::*;
 use std::cell::RefCell;
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
@@ -65,6 +66,10 @@ fn save_tool_output(
     );
     let file_path = evidence_dir.join(&filename);
 
+    // Clean output for file storage - strip ANSI codes but preserve formatting
+    let stdout_clean = crate::ui::tool_execution::strip_ansi_preserve_format(stdout);
+    let stderr_clean = crate::ui::tool_execution::strip_ansi_preserve_format(stderr);
+
     // Create content with metadata and output
     let mut content = String::new();
     content.push_str(&format!("Tool: {}\n", tool_name));
@@ -76,15 +81,15 @@ fn save_tool_output(
     content.push_str("=".repeat(80).as_str());
     content.push_str("\n\n");
 
-    if !stdout.is_empty() {
+    if !stdout_clean.is_empty() {
         content.push_str("=== STDOUT ===\n\n");
-        content.push_str(stdout);
+        content.push_str(&stdout_clean);
         content.push_str("\n\n");
     }
 
-    if !stderr.is_empty() {
+    if !stderr_clean.is_empty() {
         content.push_str("=== STDERR ===\n\n");
-        content.push_str(stderr);
+        content.push_str(&stderr_clean);
         content.push_str("\n");
     }
 
@@ -374,7 +379,7 @@ pub fn setup_tool_execution_handlers(
     let cancel_btn = tool_panel.cancel_button.clone();
     let progress_bar = tool_panel.progress_bar.clone();
     let status_label = tool_panel.status_label.clone();
-    let output_view = tool_panel.output_view.clone();
+    let terminal = tool_panel.terminal.clone();
     let state_exec = state.clone();
 
     execute_button.clone().connect_clicked(move |_| {
@@ -440,8 +445,8 @@ pub fn setup_tool_execution_handlers(
 
         let password = password.unwrap();
 
-        // Clear previous output
-        output_view.buffer().set_text("");
+        // Clear previous output - write a separator to terminal
+        terminal.feed(b"\r\n\r\n========== New Execution ==========\r\n");
 
         // Show executing state with progress
         spinner.set_visible(true);
@@ -504,7 +509,7 @@ pub fn setup_tool_execution_handlers(
         let progress_bar_result = progress_bar.clone();
         let execute_button_result = execute_button.clone();
         let status_label_result = status_label.clone();
-        let output_view_result = output_view.clone();
+        let terminal_result = terminal.clone();
         let state_result = state_exec.clone();
         let tool_name_result = tool_name.clone();
         let target_result = target.clone();
@@ -583,46 +588,55 @@ pub fn setup_tool_execution_handlers(
                             ));
                         }
 
-                        let buffer = output_view_result.buffer();
-                        let mut output = String::new();
-
-                        // Add stdout
+                        // Write output directly to terminal
+                        // Normalize line endings to prevent formatting issues
                         if !exec_result.stdout.is_empty() {
-                            output.push_str("=== STDOUT ===\n");
-                            output.push_str(&exec_result.stdout);
-                            output.push_str("\n\n");
+                            terminal_result.feed(b"\r\n=== STDOUT ===\r\n");
+                            // Replace any \r\n or \r with \r\n for consistent line endings
+                            let stdout_normalized = exec_result.stdout
+                                .replace("\r\n", "\n")
+                                .replace('\r', "\n")
+                                .replace('\n', "\r\n");
+                            terminal_result.feed(stdout_normalized.as_bytes());
+                            terminal_result.feed(b"\r\n");
                         }
 
-                        // Add stderr
+                        // Write stderr
                         if !exec_result.stderr.is_empty() {
-                            output.push_str("=== STDERR ===\n");
-                            output.push_str(&exec_result.stderr);
-                            output.push_str("\n\n");
+                            terminal_result.feed(b"\r\n=== STDERR ===\r\n");
+                            let stderr_normalized = exec_result.stderr
+                                .replace("\r\n", "\n")
+                                .replace('\r', "\n")
+                                .replace('\n', "\r\n");
+                            terminal_result.feed(stderr_normalized.as_bytes());
+                            terminal_result.feed(b"\r\n");
                         }
 
-                        // Add evidence info
+                        // Write evidence info
                         if !exec_result.evidence.is_empty() {
-                            output.push_str(&format!("=== EVIDENCE ({} items) ===\n", exec_result.evidence.len()));
+                            let evidence_header = format!("\r\n=== EVIDENCE ({} items) ===\r\n", exec_result.evidence.len());
+                            terminal_result.feed(evidence_header.as_bytes());
                             for evidence in &exec_result.evidence {
-                                output.push_str(&format!("- {} ({})\n", evidence.path, evidence.kind));
+                                let evidence_line = format!("- {} ({})\r\n", evidence.path, evidence.kind);
+                                terminal_result.feed(evidence_line.as_bytes());
                             }
                         }
-
-                        buffer.set_text(&output);
                     }
                     Err(e) => {
                         // Check if it's an authentication error
                         if e.contains("Authentication failed") || e.contains("Incorrect password") {
                             status_label_result.set_text("❌ Authentication failed - Incorrect password");
-                            output_view_result.buffer().set_text(&format!(
-                                "Authentication Error\n\n{}\n\n\
+                            let error_msg = format!(
+                                "\n\n❌ Authentication Error\n\n{}\n\n\
                                 Please try again and ensure you enter the correct system password.\n\
-                                Note: This is your sudo/root password, not the application password.",
+                                Note: This is your sudo/root password, not the application password.\n\n",
                                 e
-                            ));
+                            );
+                            terminal_result.feed(error_msg.as_bytes());
                         } else {
                             status_label_result.set_text(&format!("Failed: {}", e));
-                            output_view_result.buffer().set_text(&format!("Error: {}", e));
+                            let error_msg = format!("\n\n❌ Error: {}\n\n", e);
+                            terminal_result.feed(error_msg.as_bytes());
                         }
                     }
                 }
@@ -913,7 +927,7 @@ pub fn rebuild_steps_list(
 
 /// Helper function to load a step into the detail panel
 pub fn load_step_into_panel(model: &Rc<RefCell<AppModel>>, detail_panel: &Rc<DetailPanel>) {
-    let (step_opt, _phase_idx, _step_idx) = {
+    let (step_opt, _phase_idx, _step_idx, session_path) = {
         let model_borrow = model.borrow();
         let phase_idx = model_borrow.selected_phase;
         let step_idx = model_borrow.selected_step;
@@ -925,7 +939,8 @@ pub fn load_step_into_panel(model: &Rc<RefCell<AppModel>>, detail_panel: &Rc<Det
                 .and_then(|phase| phase.steps.get(sidx))
                 .cloned()
         });
-        (step, phase_idx, step_idx)
+        let session_path = model_borrow.current_path.clone();
+        (step, phase_idx, step_idx, session_path)
     };
 
     if let Some(step) = step_opt {
@@ -961,11 +976,12 @@ pub fn load_step_into_panel(model: &Rc<RefCell<AppModel>>, detail_panel: &Rc<Det
             // Update notes
             detail_panel.notes_view.buffer().set_text(&step.get_notes());
 
-            // Load canvas evidence
+            // Load canvas evidence with session path for resolving relative paths
             load_step_evidence(
                 &detail_panel.canvas_fixed,
                 detail_panel.canvas_items.clone(),
                 &step,
+                session_path.as_deref(),
             );
         }
     }

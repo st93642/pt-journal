@@ -5,13 +5,14 @@
 /// - Configuration inputs
 /// - Execute button
 /// - Progress indicators
-/// - Result display
+/// - Embedded terminal for output
 use gtk4::prelude::*;
 use gtk4::glib;
+use vte::prelude::*;
 #[allow(deprecated)]
 use gtk4::{
     Box as GtkBox, Button, ComboBoxText, Dialog, Entry, Label, Orientation, PasswordEntry,
-    ResponseType, Spinner, TextView, ProgressBar,
+    ResponseType, Spinner, ProgressBar,
 };
 
 use crate::tools::executor::DefaultExecutor;
@@ -32,7 +33,7 @@ pub struct ToolExecutionPanel {
     pub spinner: Spinner,
     pub progress_bar: ProgressBar,
     pub status_label: Label,
-    pub output_view: TextView,
+    pub terminal: vte::Terminal,
 }
 
 #[allow(deprecated)]
@@ -126,24 +127,119 @@ impl ToolExecutionPanel {
         progress_bar.set_show_text(true);
         container.append(&progress_bar);
 
-        // Output display
-        let output_frame = gtk4::Frame::new(Some("Tool Output"));
-        let output_scroll = gtk4::ScrolledWindow::new();
-        output_scroll.set_min_content_height(200);
-        output_scroll.set_vexpand(true);
+        // Embedded Terminal
+        let terminal_frame = gtk4::Frame::new(Some("Terminal"));
+        let terminal_scroll = gtk4::ScrolledWindow::new();
+        terminal_scroll.set_min_content_height(300);
+        terminal_scroll.set_vexpand(true);
+        terminal_scroll.set_hexpand(true);
 
-        let output_view = TextView::new();
-        output_view.set_editable(false);
-        output_view.set_monospace(true);
-        output_view.set_wrap_mode(gtk4::WrapMode::Word);
-        output_view.set_margin_top(4);
-        output_view.set_margin_bottom(4);
-        output_view.set_margin_start(4);
-        output_view.set_margin_end(4);
+        let terminal = vte::Terminal::new();
+        terminal.set_scroll_on_output(true);
+        terminal.set_scroll_on_keystroke(true);
+        terminal.set_scrollback_lines(10000);
+        terminal.set_mouse_autohide(true);
+        
+        // Set terminal colors (dark theme with better visibility)
+        // Foreground and background
+        let fg = gtk4::gdk::RGBA::new(0.9, 0.9, 0.9, 1.0);  // Light gray text
+        let bg = gtk4::gdk::RGBA::new(0.12, 0.12, 0.12, 1.0);  // Dark gray background
+        terminal.set_color_foreground(&fg);
+        terminal.set_color_background(&bg);
+        
+        // Set 16-color palette for better visibility
+        // This matches common terminal color schemes but with better contrast
+        let palette = [
+            // Normal colors (0-7)
+            gtk4::gdk::RGBA::new(0.2, 0.2, 0.2, 1.0),      // 0: Black
+            gtk4::gdk::RGBA::new(0.8, 0.3, 0.3, 1.0),      // 1: Red
+            gtk4::gdk::RGBA::new(0.4, 0.8, 0.4, 1.0),      // 2: Green
+            gtk4::gdk::RGBA::new(0.8, 0.8, 0.3, 1.0),      // 3: Yellow
+            gtk4::gdk::RGBA::new(0.4, 0.7, 1.0, 1.0),      // 4: Blue (directories) - Bright cyan-blue
+            gtk4::gdk::RGBA::new(0.8, 0.4, 0.8, 1.0),      // 5: Magenta
+            gtk4::gdk::RGBA::new(0.4, 0.8, 0.8, 1.0),      // 6: Cyan
+            gtk4::gdk::RGBA::new(0.85, 0.85, 0.85, 1.0),   // 7: White
+            // Bright colors (8-15)
+            gtk4::gdk::RGBA::new(0.4, 0.4, 0.4, 1.0),      // 8: Bright Black (Gray)
+            gtk4::gdk::RGBA::new(1.0, 0.4, 0.4, 1.0),      // 9: Bright Red
+            gtk4::gdk::RGBA::new(0.5, 1.0, 0.5, 1.0),      // 10: Bright Green
+            gtk4::gdk::RGBA::new(1.0, 1.0, 0.5, 1.0),      // 11: Bright Yellow
+            gtk4::gdk::RGBA::new(0.5, 0.8, 1.0, 1.0),      // 12: Bright Blue (also directories)
+            gtk4::gdk::RGBA::new(1.0, 0.5, 1.0, 1.0),      // 13: Bright Magenta
+            gtk4::gdk::RGBA::new(0.5, 1.0, 1.0, 1.0),      // 14: Bright Cyan
+            gtk4::gdk::RGBA::new(1.0, 1.0, 1.0, 1.0),      // 15: Bright White
+        ];
+        let palette_refs: Vec<&gtk4::gdk::RGBA> = palette.iter().collect();
+        terminal.set_colors(Some(&fg), Some(&bg), &palette_refs);
+        
+        // Add right-click context menu for copy/paste
+        let right_click = gtk4::GestureClick::new();
+        right_click.set_button(3); // Right mouse button
+        
+        let terminal_clone = terminal.clone();
+        right_click.connect_pressed(move |_gesture, _n_press, x, y| {
+            // Create context menu
+            let menu = gtk4::gio::Menu::new();
+            
+            // Copy menu item
+            menu.append(Some("Copy"), Some("terminal.copy"));
+            
+            // Paste menu item  
+            menu.append(Some("Paste"), Some("terminal.paste"));
+            
+            // Create popover menu
+            let popover = gtk4::PopoverMenu::from_model(Some(&menu));
+            popover.set_parent(&terminal_clone);
+            popover.set_has_arrow(false);
+            popover.set_pointing_to(Some(&gtk4::gdk::Rectangle::new(x as i32, y as i32, 1, 1)));
+            
+            // Add action group for the terminal
+            let action_group = gtk4::gio::SimpleActionGroup::new();
+            
+            // Copy action - using VTE's copy_clipboard_format
+            let copy_action = gtk4::gio::SimpleAction::new("copy", None);
+            let terminal_copy = terminal_clone.clone();
+            copy_action.connect_activate(move |_, _| {
+                terminal_copy.copy_clipboard_format(vte::Format::Text);
+            });
+            action_group.add_action(&copy_action);
+            
+            // Paste action
+            let paste_action = gtk4::gio::SimpleAction::new("paste", None);
+            let terminal_paste = terminal_clone.clone();
+            paste_action.connect_activate(move |_, _| {
+                terminal_paste.paste_clipboard();
+            });
+            action_group.add_action(&paste_action);
+            
+            // Insert action group
+            terminal_clone.insert_action_group("terminal", Some(&action_group));
+            
+            popover.popup();
+        });
+        
+        terminal.add_controller(right_click);
+        
+        // Spawn a shell in the terminal
+        terminal.spawn_async(
+            vte::PtyFlags::DEFAULT,
+            None, // working directory (use current)
+            &["/bin/bash"],
+            &[], // environment
+            glib::SpawnFlags::DEFAULT,
+            || {}, // child setup
+            -1, // timeout
+            None::<&gtk4::gio::Cancellable>,
+            |result| {
+                if let Err(e) = result {
+                    eprintln!("Failed to spawn terminal: {}", e);
+                }
+            },
+        );
 
-        output_scroll.set_child(Some(&output_view));
-        output_frame.set_child(Some(&output_scroll));
-        container.append(&output_frame);
+        terminal_scroll.set_child(Some(&terminal));
+        terminal_frame.set_child(Some(&terminal_scroll));
+        container.append(&terminal_frame);
 
         Self {
             container,
@@ -156,7 +252,7 @@ impl ToolExecutionPanel {
             spinner,
             progress_bar,
             status_label,
-            output_view,
+            terminal,
         }
     }
 
@@ -184,17 +280,21 @@ impl ToolExecutionPanel {
         }
     }
 
-    /// Append text to the output view
-    pub fn append_output(&self, text: &str) {
-        let buffer = self.output_view.buffer();
-        let mut end_iter = buffer.end_iter();
-        buffer.insert(&mut end_iter, text);
+    /// Write text to the terminal
+    pub fn write_to_terminal(&self, text: &str) {
+        self.terminal.feed(text.as_bytes());
     }
 
-    /// Clear the output view
-    pub fn clear_output(&self) {
-        let buffer = self.output_view.buffer();
-        buffer.set_text("");
+    /// Clear the terminal
+    pub fn clear_terminal(&self) {
+        self.terminal.reset(true, true);
+    }
+
+    /// Execute command in terminal
+    pub fn execute_in_terminal(&self, command: &str) {
+        // Feed the command to the terminal followed by Enter
+        let full_command = format!("{}\n", command);
+        self.terminal.feed(full_command.as_bytes());
     }
 
     /// Get the selected tool name
@@ -767,6 +867,14 @@ fn strip_ansi_codes(text: &str) -> String {
     result
 }
 
+/// Strip ANSI codes but preserve all formatting (public for use in handlers)
+pub fn strip_ansi_preserve_format(text: &str) -> String {
+    text.lines()
+        .map(|line| strip_ansi_codes(line))
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
 /// Execute tool with sudo privileges and cancellation support
 pub fn execute_tool_with_cancel(
     tool_name: &str,
@@ -844,13 +952,9 @@ fn execute_tool_with_sudo_cancellable(
 
                 let duration = start.elapsed();
 
-                // Clean up stderr - remove ANSI codes, sudo prompts, and progress lines
+                // Get raw output
                 let stderr = String::from_utf8_lossy(&output.stderr).to_string();
-                let stderr_clean = clean_tool_output(&stderr);
-                
-                // Clean up stdout as well
                 let stdout = String::from_utf8_lossy(&output.stdout).to_string();
-                let stdout_clean = clean_tool_output(&stdout);
 
                 // Check for authentication failure
                 let exit_code = status.code().unwrap_or(-1);
@@ -867,9 +971,10 @@ fn execute_tool_with_sudo_cancellable(
                     return Err(format!("Tool '{}' not found. Please install it first.\nSee Instructions for installation commands.", tool_name));
                 }
 
+                // Return raw output for terminal display
                 return Ok(ExecutionResult {
-                    stdout: stdout_clean,
-                    stderr: stderr_clean,
+                    stdout,
+                    stderr,
                     exit_code,
                     duration,
                     parsed_result: None,
@@ -928,13 +1033,9 @@ fn execute_tool_with_sudo(
 
     let duration = start.elapsed();
 
-    // Clean up stderr - remove ANSI codes, sudo prompts, and progress lines
+    // Get raw output
     let stderr = String::from_utf8_lossy(&output.stderr).to_string();
-    let stderr_clean = clean_tool_output(&stderr);
-    
-    // Clean up stdout as well
     let stdout = String::from_utf8_lossy(&output.stdout).to_string();
-    let stdout_clean = clean_tool_output(&stdout);
 
     // Check for authentication failure (more specific patterns)
     let exit_code = output.status.code().unwrap_or(-1);
@@ -951,9 +1052,10 @@ fn execute_tool_with_sudo(
         return Err(format!("Tool '{}' not found. Please install it first.\nSee Instructions for installation commands.", tool_name));
     }
 
+    // Return raw output for terminal display
     Ok(ExecutionResult {
-        stdout: stdout_clean,
-        stderr: stderr_clean,
+        stdout,
+        stderr,
         exit_code,
         duration,
         parsed_result: None,

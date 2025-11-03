@@ -3,6 +3,7 @@ use gtk4::glib;
 use gtk4::prelude::*;
 use gtk4::{gdk, Fixed, Picture};
 use std::cell::RefCell;
+use std::path::{Path, PathBuf};
 use std::rc::Rc;
 use uuid;
 
@@ -11,11 +12,52 @@ use super::canvas_utils::{
 };
 use super::image_utils::{create_texture_from_pixbuf, save_pasted_image};
 
+/// Copy a file to the evidence directory and return relative path
+fn copy_file_to_evidence(source_path: &Path, session_path: Option<&Path>) -> Option<String> {
+    // Get evidence directory (creates it if needed)
+    let evidence_dir = match session_path {
+        Some(path) => {
+            let session_dir = if path.file_name() == Some(std::ffi::OsStr::new("session.json")) {
+                path.parent().unwrap_or(path)
+            } else {
+                path.parent().unwrap_or(Path::new("."))
+            };
+            let evidence_dir = session_dir.join("evidence");
+            let _ = std::fs::create_dir_all(&evidence_dir);
+            evidence_dir
+        }
+        None => {
+            let evidence_dir = PathBuf::from("./evidence");
+            let _ = std::fs::create_dir_all(&evidence_dir);
+            evidence_dir
+        }
+    };
+
+    // Generate unique filename with timestamp
+    let timestamp = chrono::Utc::now().timestamp_millis();
+    let extension = source_path
+        .extension()
+        .and_then(|e| e.to_str())
+        .unwrap_or("png");
+    let filename = format!("evidence_{}.{}", timestamp, extension);
+    let dest_path = evidence_dir.join(&filename);
+
+    // Copy the file
+    match std::fs::copy(source_path, &dest_path) {
+        Ok(_) => Some(format!("evidence/{}", filename)),
+        Err(e) => {
+            eprintln!("Failed to copy file to evidence directory: {}", e);
+            None
+        }
+    }
+}
+
 /// Load evidence for a specific step onto the canvas
 pub fn load_step_evidence(
     fixed: &Fixed,
     canvas_items: Rc<RefCell<Vec<CanvasItem>>>,
     step: &crate::model::Step,
+    session_path: Option<&Path>,
 ) {
     // Clear existing canvas items and widgets
     canvas_items.borrow_mut().clear();
@@ -25,11 +67,32 @@ pub fn load_step_evidence(
         fixed.remove(&child);
     }
 
+    // Determine the base directory for resolving relative paths
+    let base_dir = match session_path {
+        Some(path) => {
+            if path.file_name() == Some(std::ffi::OsStr::new("session.json")) {
+                // New format: session.json is inside the session directory
+                path.parent().unwrap_or(path).to_path_buf()
+            } else {
+                // Old format or direct parent
+                path.parent().unwrap_or(Path::new(".")).to_path_buf()
+            }
+        }
+        None => PathBuf::from("."),
+    };
+
     // Load evidence from the step
     let evidence_list = step.get_evidence();
     for evidence in &evidence_list {
+        // Resolve the path: if relative, resolve from base_dir; if absolute, use as-is
+        let evidence_path = if Path::new(&evidence.path).is_relative() {
+            base_dir.join(&evidence.path)
+        } else {
+            PathBuf::from(&evidence.path)
+        };
+
         // Try to create texture from the evidence path
-        match create_texture_from_file(std::path::Path::new(&evidence.path)) {
+        match create_texture_from_file(&evidence_path) {
             Ok(texture) => {
                 // Validate texture dimensions to prevent GTK crashes
                 if texture.width() == 0 || texture.height() == 0 {
@@ -287,6 +350,13 @@ fn handle_image_drop(
             if is_valid_image_extension(&path) {
                 // Try creating texture from file
                 if let Ok(texture) = create_texture_from_file(&path) {
+                    // Copy the file to evidence directory and get relative path
+                    let session_path = state.model().borrow().current_path.clone();
+                    let relative_path = copy_file_to_evidence(
+                        &path,
+                        session_path.as_deref()
+                    );
+                    
                     add_image_to_canvas(
                         canvas_items,
                         state,
@@ -294,7 +364,7 @@ fn handle_image_drop(
                         texture,
                         x,
                         y,
-                        Some(path.to_string_lossy().to_string()),
+                        relative_path,
                     );
                     return true;
                 }

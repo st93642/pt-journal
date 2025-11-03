@@ -1,11 +1,10 @@
 /// Gobuster integration - Directory/subdomain enumeration and fuzzing
-/// 
+///
 /// Supports Gobuster modes:
 /// - Directory/file brute-forcing (dir mode)
 /// - DNS subdomain enumeration (dns mode)
 /// - Virtual host discovery (vhost mode)
 /// - Output parsing and evidence extraction
-
 use crate::model::Evidence;
 use crate::tools::traits::*;
 use anyhow::{anyhow, Result};
@@ -73,25 +72,26 @@ impl GobusterTool {
     /// Parse directory/file findings from output
     fn parse_dir_findings(output: &str) -> Vec<FoundItem> {
         let mut items = Vec::new();
-        
+
         // Match lines like: "/admin (Status: 200) [Size: 1234]"
         // or "/backup.zip (Status: 301) -> http://example.com/backup/"
-        let dir_regex = Regex::new(
-            r"(?m)^(/[^\s]+)\s+\(Status:\s+(\d+)\)(?:\s+\[Size:\s+(\d+)\])?"
-        ).unwrap();
-        
+        let dir_regex =
+            Regex::new(r"(?m)^(/[^\s]+)\s+\(Status:\s+(\d+)\)(?:\s+\[Size:\s+(\d+)\])?").unwrap();
+
         for captures in dir_regex.captures_iter(output) {
             let path = captures[1].to_string();
             let status_code = captures[2].parse::<u16>().ok();
-            let size = captures.get(3).and_then(|m| m.as_str().parse::<usize>().ok());
-            
+            let size = captures
+                .get(3)
+                .and_then(|m| m.as_str().parse::<usize>().ok());
+
             // Determine if it's a directory or file
             let item_type = if path.ends_with('/') {
                 "directory"
             } else {
                 "file"
             };
-            
+
             items.push(FoundItem {
                 path,
                 status_code,
@@ -99,28 +99,27 @@ impl GobusterTool {
                 item_type: item_type.to_string(),
             });
         }
-        
+
         items
     }
 
     /// Parse DNS subdomain findings from output
     fn parse_dns_findings(output: &str) -> Vec<FoundItem> {
         let mut items = Vec::new();
-        
+
         // Match lines like: "Found: admin.example.com"
         // or "admin.example.com [123.45.67.89]"
-        let dns_regex = Regex::new(
-            r"(?:Found:\s+)?([a-zA-Z0-9][a-zA-Z0-9\-]*\.[a-zA-Z0-9\-\.]+)"
-        ).unwrap();
-        
+        let dns_regex =
+            Regex::new(r"(?:Found:\s+)?([a-zA-Z0-9][a-zA-Z0-9\-]*\.[a-zA-Z0-9\-\.]+)").unwrap();
+
         for captures in dns_regex.captures_iter(output) {
             let subdomain = captures[1].to_string();
-            
+
             // Skip if it's not a valid subdomain format
             if !subdomain.contains('.') {
                 continue;
             }
-            
+
             items.push(FoundItem {
                 path: subdomain,
                 status_code: None,
@@ -128,27 +127,27 @@ impl GobusterTool {
                 item_type: "subdomain".to_string(),
             });
         }
-        
+
         // Remove duplicates
         items.sort_by(|a, b| a.path.cmp(&b.path));
         items.dedup_by(|a, b| a.path == b.path);
-        
+
         items
     }
 
     /// Parse vhost findings from output
     fn parse_vhost_findings(output: &str) -> Vec<FoundItem> {
         let mut items = Vec::new();
-        
+
         // Match lines like: "Found: vhost.example.com (Status: 200)"
-        let vhost_regex = Regex::new(
-            r"(?:Found:\s+)?([a-zA-Z0-9][a-zA-Z0-9\-\.]+)(?:\s+\(Status:\s+(\d+)\))?"
-        ).unwrap();
-        
+        let vhost_regex =
+            Regex::new(r"(?:Found:\s+)?([a-zA-Z0-9][a-zA-Z0-9\-\.]+)(?:\s+\(Status:\s+(\d+)\))?")
+                .unwrap();
+
         for captures in vhost_regex.captures_iter(output) {
             let vhost = captures[1].to_string();
             let status_code = captures.get(2).and_then(|m| m.as_str().parse::<u16>().ok());
-            
+
             items.push(FoundItem {
                 path: vhost,
                 status_code,
@@ -156,7 +155,7 @@ impl GobusterTool {
                 item_type: "vhost".to_string(),
             });
         }
-        
+
         items
     }
 
@@ -164,11 +163,11 @@ impl GobusterTool {
     fn count_requests(output: &str) -> usize {
         // Look for progress indicators or total count
         let progress_regex = Regex::new(r"Progress:\s+\d+\s+/\s+(\d+)").unwrap();
-        
+
         if let Some(captures) = progress_regex.captures(output) {
             return captures[1].parse::<usize>().unwrap_or(0);
         }
-        
+
         0
     }
 
@@ -176,17 +175,17 @@ impl GobusterTool {
     fn extract_status_codes(output: &str) -> Vec<u16> {
         let mut codes = Vec::new();
         let code_regex = Regex::new(r"Status:\s+(\d+)").unwrap();
-        
+
         for captures in code_regex.captures_iter(output) {
             if let Ok(code) = captures[1].parse::<u16>() {
                 codes.push(code);
             }
         }
-        
+
         // Sort and deduplicate
         codes.sort();
         codes.dedup();
-        
+
         codes
     }
 }
@@ -213,17 +212,18 @@ impl SecurityTool for GobusterTool {
         }
 
         let version_str = String::from_utf8_lossy(&output.stdout);
-        
+
         // Parse version like "Gobuster v3.6"
         let version_regex = Regex::new(r"[Gg]obuster\s+v?(\d+)\.(\d+)(?:\.(\d+))?").unwrap();
-        
+
         if let Some(captures) = version_regex.captures(&version_str) {
             let major = captures[1].parse().unwrap_or(0);
             let minor = captures[2].parse().unwrap_or(0);
-            let patch = captures.get(3)
+            let patch = captures
+                .get(3)
                 .and_then(|m| m.as_str().parse().ok())
                 .unwrap_or(0);
-            
+
             return Ok(ToolVersion::new(major, minor, patch));
         }
 
@@ -302,13 +302,18 @@ impl SecurityTool for GobusterTool {
             ToolResult::Parsed { data } => {
                 if let Some(found_items) = data.get("found_items").and_then(|v| v.as_array()) {
                     if !found_items.is_empty() {
-                        let mode = data.get("mode")
+                        let mode = data
+                            .get("mode")
                             .and_then(|v| v.as_str())
                             .unwrap_or("unknown");
-                        
+
                         evidence.push(Evidence {
                             id: Uuid::new_v4(),
-                            path: format!("gobuster_{}_{}.txt", mode.to_lowercase(), Utc::now().timestamp()),
+                            path: format!(
+                                "gobuster_{}_{}.txt",
+                                mode.to_lowercase(),
+                                Utc::now().timestamp()
+                            ),
                             kind: format!("gobuster-{}", mode.to_lowercase()),
                             x: 0.0,
                             y: 0.0,
@@ -363,17 +368,24 @@ impl SecurityTool for GobusterTool {
         // Check for required wordlist in dir/vhost modes
         match self.mode {
             GobusterMode::Dir | GobusterMode::Vhost => {
-                let has_wordlist = config.arguments.iter()
+                let has_wordlist = config
+                    .arguments
+                    .iter()
                     .any(|arg| arg == "-w" || arg == "--wordlist");
-                
+
                 if !has_wordlist {
-                    return Err(anyhow!("Wordlist (-w) is required for {} mode", self.mode.to_string()));
+                    return Err(anyhow!(
+                        "Wordlist (-w) is required for {} mode",
+                        self.mode.to_string()
+                    ));
                 }
             }
             GobusterMode::Dns => {
-                let has_wordlist = config.arguments.iter()
+                let has_wordlist = config
+                    .arguments
+                    .iter()
                     .any(|arg| arg == "-w" || arg == "--wordlist");
-                
+
                 if !has_wordlist {
                     return Err(anyhow!("Wordlist (-w) is required for DNS mode"));
                 }
@@ -492,7 +504,10 @@ Found: staging.example.com (Status: 403)
 
         let result = tool.build_command(&config);
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("Target is required"));
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("Target is required"));
     }
 
     #[test]
@@ -516,10 +531,7 @@ Found: staging.example.com (Status: 403)
     #[test]
     fn test_build_command_dns_mode() {
         let tool = GobusterTool::with_mode(GobusterMode::Dns);
-        let config = ToolConfig::builder()
-            .target("example.com")
-            .build()
-            .unwrap();
+        let config = ToolConfig::builder().target("example.com").build().unwrap();
 
         let cmd = tool.build_command(&config).unwrap();
         let cmd_str = format!("{:?}", cmd);
@@ -667,17 +679,25 @@ Found: staging.example.com (Status: 403)
     #[test]
     fn test_check_availability() {
         let tool = GobusterTool::new();
-        
+
         // This test will only pass if Gobuster is installed
         match tool.check_availability() {
             Ok(version) => {
-                println!("Gobuster version: {}.{}.{}", version.major, version.minor, version.patch);
+                println!(
+                    "Gobuster version: {}.{}.{}",
+                    version.major, version.minor, version.patch
+                );
                 assert!(version.major > 0 || version.minor > 0);
             }
             Err(e) => {
-                println!("Gobuster not available (expected in test environment): {}", e);
-                assert!(e.to_string().contains("not found") || 
-                        e.to_string().contains("Could not parse"));
+                println!(
+                    "Gobuster not available (expected in test environment): {}",
+                    e
+                );
+                assert!(
+                    e.to_string().contains("not found")
+                        || e.to_string().contains("Could not parse")
+                );
             }
         }
     }

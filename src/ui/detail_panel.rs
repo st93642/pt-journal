@@ -1,30 +1,33 @@
-/// Detail panel module for displaying step details (checkbox, title, description, notes, canvas, tools)
-use gtk4::prelude::*;
-use gtk4::{Box as GtkBox, Orientation, CheckButton, Label, TextView, Frame, ScrolledWindow, Paned, Fixed, Stack};
-use std::rc::Rc;
-use std::cell::RefCell;
+use crate::model::Step;
 use crate::ui::canvas_utils::CanvasItem;
 use crate::ui::quiz_widget::QuizWidget;
 use crate::ui::tool_execution::ToolExecutionPanel;
-use crate::model::Step;
+/// Detail panel module for displaying step details (checkbox, title, description, notes, canvas, tools)
+use gtk4::prelude::*;
+use gtk4::{
+    Box as GtkBox, CheckButton, Fixed, Frame, Label, Orientation, Paned, ScrolledWindow, Stack,
+    TextView,
+};
+use std::cell::RefCell;
+use std::rc::Rc;
 
 /// Struct holding all detail panel widgets (supports both tutorial and quiz views)
 pub struct DetailPanel {
-    pub center_container: GtkBox,  // Center column (desc/notes/canvas)
+    pub center_container: GtkBox, // Center column (desc/notes/canvas)
     pub checkbox: CheckButton,
     pub title_label: Label,
-    pub content_stack: Stack,  // Switches between tutorial and quiz views
-    
+    pub content_stack: Stack, // Switches between tutorial and quiz views
+
     // Tutorial view widgets
     pub tutorial_container: Paned,
     pub desc_view: TextView,
     pub notes_view: TextView,
     pub canvas_fixed: Fixed,
     pub canvas_items: Rc<RefCell<Vec<CanvasItem>>>,
-    
+
     // Tool panel (will be placed in right column)
     pub tool_panel: ToolExecutionPanel,
-    
+
     // Quiz view widget
     pub quiz_widget: QuizWidget,
 }
@@ -49,7 +52,7 @@ pub fn create_detail_panel() -> DetailPanel {
     top_box.append(&title_label);
 
     // === TUTORIAL VIEW ===
-    
+
     // Description view (for user notes in description area)
     let desc_view = TextView::new();
     desc_view.set_editable(true);
@@ -77,10 +80,7 @@ pub fn create_detail_panel() -> DetailPanel {
     notes_scroll.set_child(Some(&notes_view));
     notes_scroll.set_vexpand(true);
     notes_scroll.set_min_content_height(100);
-    let notes_frame = Frame::builder()
-        .label("Notes")
-        .child(&notes_scroll)
-        .build();
+    let notes_frame = Frame::builder().label("Notes").child(&notes_scroll).build();
     notes_frame.set_size_request(-1, 80);
 
     // Canvas for evidence/images
@@ -159,13 +159,15 @@ pub fn create_detail_panel() -> DetailPanel {
 pub fn load_step_into_panel(panel: &DetailPanel, step: &Step) {
     // Update title and checkbox (common to both views)
     panel.title_label.set_text(&step.title);
-    panel.checkbox.set_active(step.status == crate::model::StepStatus::Done);
-    
+    panel
+        .checkbox
+        .set_active(step.status == crate::model::StepStatus::Done);
+
     // Switch view based on step type
     if step.is_quiz() {
         // Show quiz view
         panel.content_stack.set_visible_child_name("quiz");
-        
+
         // Load quiz content
         if let Some(quiz_step) = step.get_quiz_step() {
             panel.quiz_widget.hide_explanation(); // Clear explanation from previous quiz
@@ -175,14 +177,14 @@ pub fn load_step_into_panel(panel: &DetailPanel, step: &Step) {
     } else {
         // Show tutorial view
         panel.content_stack.set_visible_child_name("tutorial");
-        
+
         // Load tutorial content
         let description = step.get_description();
         let notes = step.get_notes();
-        
+
         panel.desc_view.buffer().set_text(&description);
         panel.notes_view.buffer().set_text(&notes);
-        
+
         // Canvas evidence will be loaded separately by caller (canvas.rs)
     }
 }
@@ -190,7 +192,7 @@ pub fn load_step_into_panel(panel: &DetailPanel, step: &Step) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn test_detail_panel_creation() {
         // This test ensures the module compiles correctly

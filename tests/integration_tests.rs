@@ -1,10 +1,10 @@
 // Integration tests for the PT Journal application
+use pt_journal::dispatcher::*;
 use pt_journal::model::*;
 use pt_journal::store;
-use pt_journal::dispatcher::*;
 use pt_journal::ui::state::*;
-use std::rc::Rc;
 use std::cell::RefCell;
+use std::rc::Rc;
 use tempfile::TempDir;
 
 mod test_runner;
@@ -43,19 +43,19 @@ fn test_phase_structure() {
 fn test_save_and_load_session() {
     let temp_dir = TempDir::new().unwrap();
     let session_path = temp_dir.path().join("test_session.json");
-    
+
     let mut session = Session::default();
     session.name = "Test Session".to_string();
     session.notes_global = "Test notes".to_string();
-    
+
     if let Some(step) = session.phases[0].steps.get_mut(0) {
         step.status = StepStatus::Done;
         step.notes = "Test step notes".to_string();
     }
-    
+
     store::save_session(&session_path, &session).unwrap();
     let loaded_session = store::load_session(&session_path).unwrap();
-    
+
     assert_eq!(loaded_session.name, session.name);
     assert_eq!(loaded_session.notes_global, session.notes_global);
     assert_eq!(loaded_session.phases.len(), session.phases.len());
@@ -64,10 +64,10 @@ fn test_save_and_load_session() {
 fn test_session_data_integrity() {
     let temp_dir = TempDir::new().unwrap();
     let session_path = temp_dir.path().join("integrity_test.json");
-    
+
     let mut session = Session::default();
     session.notes_global = "Global test notes".to_string();
-    
+
     // Only modify tutorial steps in first 5 phases (pentesting phases)
     // Skip bug bounty (phase 5) and CompTIA (phase 6) as they may have quiz steps
     for (phase_idx, phase) in session.phases.iter_mut().enumerate().take(5) {
@@ -81,35 +81,67 @@ fn test_session_data_integrity() {
             }
         }
     }
-    
+
     store::save_session(&session_path, &session).unwrap();
     let loaded_session = store::load_session(&session_path).unwrap();
-    
+
     assert_eq!(loaded_session.notes_global, session.notes_global);
     assert_eq!(loaded_session.phases.len(), session.phases.len());
-    
+
     // Check only the first 5 tutorial phases for data integrity
-    for (phase_idx, (original_phase, loaded_phase)) in session.phases.iter()
+    for (phase_idx, (original_phase, loaded_phase)) in session
+        .phases
+        .iter()
         .zip(&loaded_session.phases)
         .enumerate()
-        .take(5) 
+        .take(5)
     {
-        assert_eq!(loaded_phase.name, original_phase.name, "Phase {} name mismatch", phase_idx);
-        assert_eq!(loaded_phase.steps.len(), original_phase.steps.len(), "Phase {} step count mismatch", phase_idx);
-        
-        for (step_idx, (original_step, loaded_step)) in original_phase.steps.iter()
+        assert_eq!(
+            loaded_phase.name, original_phase.name,
+            "Phase {} name mismatch",
+            phase_idx
+        );
+        assert_eq!(
+            loaded_phase.steps.len(),
+            original_phase.steps.len(),
+            "Phase {} step count mismatch",
+            phase_idx
+        );
+
+        for (step_idx, (original_step, loaded_step)) in original_phase
+            .steps
+            .iter()
             .zip(&loaded_phase.steps)
-            .enumerate() 
+            .enumerate()
         {
-            assert_eq!(loaded_step.title, original_step.title, "Phase {} Step {} title mismatch", phase_idx, step_idx);
-            assert_eq!(loaded_step.status, original_step.status, "Phase {} Step {} status mismatch", phase_idx, step_idx);
-            
+            assert_eq!(
+                loaded_step.title, original_step.title,
+                "Phase {} Step {} title mismatch",
+                phase_idx, step_idx
+            );
+            assert_eq!(
+                loaded_step.status, original_step.status,
+                "Phase {} Step {} status mismatch",
+                phase_idx, step_idx
+            );
+
             // Only check notes/description on tutorial steps using getter methods
             if !original_step.is_quiz() {
-                assert_eq!(loaded_step.get_notes(), original_step.get_notes(), 
-                    "Phase {} Step {} '{}' notes mismatch", phase_idx, step_idx, original_step.title);
-                assert_eq!(loaded_step.get_description(), original_step.get_description(),
-                    "Phase {} Step {} description mismatch", phase_idx, step_idx);
+                assert_eq!(
+                    loaded_step.get_notes(),
+                    original_step.get_notes(),
+                    "Phase {} Step {} '{}' notes mismatch",
+                    phase_idx,
+                    step_idx,
+                    original_step.title
+                );
+                assert_eq!(
+                    loaded_step.get_description(),
+                    original_step.get_description(),
+                    "Phase {} Step {} description mismatch",
+                    phase_idx,
+                    step_idx
+                );
             }
         }
     }
@@ -120,17 +152,20 @@ fn test_dispatcher_message_routing() {
     let dispatcher = create_dispatcher();
     let messages = Rc::new(RefCell::new(Vec::new()));
     let msg_clone = messages.clone();
-    
+
     {
         let mut disp = dispatcher.borrow_mut();
-        disp.register("test", Box::new(move |msg| {
-            msg_clone.borrow_mut().push(format!("{:?}", msg));
-        }));
+        disp.register(
+            "test",
+            Box::new(move |msg| {
+                msg_clone.borrow_mut().push(format!("{:?}", msg));
+            }),
+        );
     }
-    
+
     dispatcher.borrow().dispatch(&AppMessage::PhaseSelected(1));
     dispatcher.borrow().dispatch(&AppMessage::StepSelected(2));
-    
+
     assert_eq!(messages.borrow().len(), 2);
 }
 
@@ -139,7 +174,7 @@ fn test_state_manager_phase_selection() {
     let model = Rc::new(RefCell::new(AppModel::default()));
     let dispatcher = create_dispatcher();
     let state = StateManager::new(model.clone(), dispatcher);
-    
+
     state.select_phase(2);
     assert_eq!(model.borrow().selected_phase, 2);
     assert!(model.borrow().selected_step.is_none());
@@ -149,37 +184,45 @@ fn test_state_manager_step_updates() {
     let model = Rc::new(RefCell::new(AppModel::default()));
     let dispatcher = create_dispatcher();
     let state = StateManager::new(model.clone(), dispatcher);
-    
+
     state.update_step_notes(0, 0, "Updated notes".to_string());
     // Use getter method instead of accessing legacy field
-    assert_eq!(model.borrow().session.phases[0].steps[0].get_notes(), "Updated notes");
-    
+    assert_eq!(
+        model.borrow().session.phases[0].steps[0].get_notes(),
+        "Updated notes"
+    );
+
     state.update_step_status(0, 0, StepStatus::Done);
-    assert!(matches!(model.borrow().session.phases[0].steps[0].status, StepStatus::Done));
+    assert!(matches!(
+        model.borrow().session.phases[0].steps[0].status,
+        StepStatus::Done
+    ));
 }
 
 // Integration workflow tests
 fn test_full_workflow() {
     let temp_dir = TempDir::new().unwrap();
     let session_path = temp_dir.path().join("workflow.json");
-    
+
     let mut session = Session::default();
     session.name = "Workflow Test".to_string();
-    
+
     for step in &mut session.phases[0].steps[0..3] {
         step.status = StepStatus::Done;
         step.set_notes(format!("Completed: {}", step.title)); // Use set_notes() method
     }
-    
+
     store::save_session(&session_path, &session).unwrap();
     let loaded = store::load_session(&session_path).unwrap();
-    
+
     assert_eq!(loaded.name, "Workflow Test");
     for i in 0..3 {
         assert!(matches!(loaded.phases[0].steps[i].status, StepStatus::Done));
         // Verify notes were saved and loaded correctly
-        assert_eq!(loaded.phases[0].steps[i].get_notes(), 
-            format!("Completed: {}", loaded.phases[0].steps[i].title));
+        assert_eq!(
+            loaded.phases[0].steps[i].get_notes(),
+            format!("Completed: {}", loaded.phases[0].steps[i].title)
+        );
     }
 }
 
@@ -190,20 +233,29 @@ fn main() {
         ("test_phase_structure", test_phase_structure),
         ("test_save_and_load_session", test_save_and_load_session),
         ("test_session_data_integrity", test_session_data_integrity),
-        ("test_dispatcher_message_routing", test_dispatcher_message_routing),
-        ("test_state_manager_phase_selection", test_state_manager_phase_selection),
-        ("test_state_manager_step_updates", test_state_manager_step_updates),
+        (
+            "test_dispatcher_message_routing",
+            test_dispatcher_message_routing,
+        ),
+        (
+            "test_state_manager_phase_selection",
+            test_state_manager_phase_selection,
+        ),
+        (
+            "test_state_manager_step_updates",
+            test_state_manager_step_updates,
+        ),
         ("test_full_workflow", test_full_workflow),
     ];
-    
+
     let mut runner = test_runner::TestRunner::new(tests.len());
-    
+
     for (name, test_fn) in tests {
         runner.run_test(name, test_fn);
     }
-    
+
     runner.finish();
-    
+
     if runner.has_failures() {
         std::process::exit(1);
     }

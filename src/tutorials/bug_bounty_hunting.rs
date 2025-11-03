@@ -1,8 +1,8 @@
 // Bug Bounty Hunting Phase - Comprehensive methodology for ethical hacking programs
 // Based on OWASP Bug Bounty Guide, HackerOne/Bugcrowd best practices, and ISO 29147
 
-use uuid::Uuid;
 use crate::model::{Phase, Step};
+use uuid::Uuid;
 
 pub const STEPS: &[(&str, &str)] = &[
     (
@@ -2675,10 +2675,26 @@ mod tests {
     #[test]
     fn test_step_content_structure() {
         for (title, description) in STEPS {
-            assert!(description.contains("OBJECTIVE:"), "Step '{}' missing OBJECTIVE section", title);
-            assert!(description.contains("STEP-BY-STEP PROCESS:"), "Step '{}' missing STEP-BY-STEP PROCESS section", title);
-            assert!(description.contains("WHAT TO LOOK FOR:"), "Step '{}' missing WHAT TO LOOK FOR section", title);
-            assert!(description.contains("COMMON PITFALLS:"), "Step '{}' missing COMMON PITFALLS section", title);
+            assert!(
+                description.contains("OBJECTIVE:"),
+                "Step '{}' missing OBJECTIVE section",
+                title
+            );
+            assert!(
+                description.contains("STEP-BY-STEP PROCESS:"),
+                "Step '{}' missing STEP-BY-STEP PROCESS section",
+                title
+            );
+            assert!(
+                description.contains("WHAT TO LOOK FOR:"),
+                "Step '{}' missing WHAT TO LOOK FOR section",
+                title
+            );
+            assert!(
+                description.contains("COMMON PITFALLS:"),
+                "Step '{}' missing COMMON PITFALLS section",
+                title
+            );
         }
     }
 }

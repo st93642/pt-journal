@@ -1,30 +1,40 @@
 use gtk4::prelude::*;
-use gtk4::{Application, ApplicationWindow, gdk, Paned, Frame};
-use std::rc::Rc;
+use gtk4::{gdk, Application, ApplicationWindow, Frame, Paned};
 use std::cell::RefCell;
+use std::rc::Rc;
 
+use crate::dispatcher::create_dispatcher;
 use crate::model::AppModel;
 use crate::ui::canvas::setup_canvas;
+use crate::ui::state::StateManager;
 
 pub fn build_ui(app: &Application, model: AppModel) {
     let model = Rc::new(RefCell::new(model));
+    
+    // Create dispatcher for event-driven communication
+    let dispatcher = create_dispatcher();
+    
+    // Create state manager
+    let state = Rc::new(StateManager::new(model.clone(), dispatcher.clone()));
 
     let window = ApplicationWindow::builder()
         .application(app)
         .title("PT Journal")
-        .default_width(1600)  // Wider window for 3-column layout
+        .default_width(1600) // Wider window for 3-column layout
         .default_height(900)
         .build();
 
     // Add CSS styling for selected canvas items
     if let Some(display) = gdk::Display::default() {
         let css_provider = gtk4::CssProvider::new();
-        css_provider.load_from_string("
+        css_provider.load_from_string(
+            "
             .selected {
                 border: 2px solid #3584e4;
                 border-radius: 4px;
             }
-        ");
+        ",
+        );
         gtk4::style_context_add_provider_for_display(
             &display,
             &css_provider,
@@ -33,16 +43,18 @@ pub fn build_ui(app: &Application, model: AppModel) {
     }
 
     // Header bar with Open/Save and Sidebar toggle
-    let (header, btn_open, btn_save, btn_save_as, btn_sidebar) = crate::ui::header_bar::create_header_bar();
+    let (header, btn_open, btn_save, btn_save_as, btn_sidebar) =
+        crate::ui::header_bar::create_header_bar();
     window.set_titlebar(Some(&header));
 
     // Left panel: phase selector + steps list
-    let (left_box, _phase_model, phase_combo, steps_list) = crate::ui::sidebar::create_sidebar(&model);
+    let (left_box, _phase_model, phase_combo, steps_list) =
+        crate::ui::sidebar::create_sidebar(&model);
 
     // Center panel: detail view with checkbox, title, description, notes, canvas
     let detail_panel = crate::ui::detail_panel::create_detail_panel();
     let center = detail_panel.center_container.clone();
-    
+
     // Right panel: security tools
     let tool_frame = Frame::builder()
         .label("Security Tools")
@@ -52,77 +64,77 @@ pub fn build_ui(app: &Application, model: AppModel) {
         .margin_start(4)
         .margin_end(8)
         .build();
-    
+
     // Keep reference to full detail_panel for handlers
     let detail_panel_ref = Rc::new(detail_panel);
 
     // === SETUP SIGNAL HANDLERS ===
-    
+
     // Quiz widget handlers
-    crate::ui::handlers::setup_quiz_handlers(detail_panel_ref.clone(), model.clone());
-    
+    crate::ui::handlers::setup_quiz_handlers(detail_panel_ref.clone(), state.clone());
+
     // Tool execution handlers
     crate::ui::handlers::setup_tool_execution_handlers(
         detail_panel_ref.clone(),
-        model.clone(),
-        &window
+        state.clone(),
+        &window,
     );
-    
+
     // Phase selection handler
     let phase_handler_id = crate::ui::handlers::setup_phase_handler(
         &phase_combo,
         &steps_list,
-        model.clone(),
-        detail_panel_ref.clone()
+        state.clone(),
+        detail_panel_ref.clone(),
     );
-    
+
     // Step selection handlers (wired during rebuild_steps_list)
-    crate::ui::handlers::setup_step_handlers(&steps_list, model.clone(), detail_panel_ref.clone());
-    
+    crate::ui::handlers::setup_step_handlers(&steps_list, state.clone(), detail_panel_ref.clone());
+
     // Notes text view handlers
-    crate::ui::handlers::setup_notes_handlers(detail_panel_ref.clone(), model.clone());
-    
+    crate::ui::handlers::setup_notes_handlers(detail_panel_ref.clone(), state.clone());
+
     // File operation handlers
     crate::ui::handlers::setup_file_handlers(
         &btn_open,
         &btn_save,
         &btn_save_as,
         &window,
-        model.clone(),
+        state.clone(),
         detail_panel_ref.clone(),
         &phase_combo,
         phase_handler_id,
-        &steps_list
+        &steps_list,
     );
-    
+
     // Sidebar toggle handler
     crate::ui::handlers::setup_sidebar_handler(&btn_sidebar, &left_box);
-    
+
     // === SETUP CANVAS ===
     setup_canvas(
         &detail_panel_ref.canvas_fixed,
         detail_panel_ref.canvas_items.clone(),
-        model.clone()
+        state.clone(),
     );
 
     // === LAYOUT ===
     // Three-column layout: Sidebar (left) | Content (center) | Tools (right)
-    
+
     // First split: center + tools
     let center_tools_paned = Paned::new(gtk4::Orientation::Horizontal);
     center_tools_paned.set_start_child(Some(&center));
     center_tools_paned.set_end_child(Some(&tool_frame));
-    center_tools_paned.set_position(900);  // Center takes 900px, tools get the rest
+    center_tools_paned.set_position(900); // Center takes 900px, tools get the rest
     center_tools_paned.set_resize_start_child(true);
     center_tools_paned.set_resize_end_child(true);
     center_tools_paned.set_shrink_start_child(false);
     center_tools_paned.set_shrink_end_child(false);
-    
+
     // Second split: sidebar + (center + tools)
     let main_paned = Paned::new(gtk4::Orientation::Horizontal);
     main_paned.set_start_child(Some(&left_box));
     main_paned.set_end_child(Some(&center_tools_paned));
-    main_paned.set_position(320);  // Sidebar width
+    main_paned.set_position(320); // Sidebar width
     main_paned.set_resize_start_child(true);
     main_paned.set_resize_end_child(true);
     main_paned.set_shrink_start_child(false);
@@ -132,8 +144,7 @@ pub fn build_ui(app: &Application, model: AppModel) {
 
     // === INITIAL LOAD ===
     // Load first phase and step
-    crate::ui::handlers::rebuild_steps_list(&steps_list, &model, &detail_panel_ref);
+    crate::ui::handlers::rebuild_steps_list(&steps_list, &state.model(), &detail_panel_ref);
 
     window.present();
 }
-

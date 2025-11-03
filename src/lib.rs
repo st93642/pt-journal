@@ -1,18 +1,18 @@
-pub mod model;
-pub mod store;
-pub mod tutorials;
-pub mod quiz;
-pub mod ui;
 pub mod dispatcher;
+pub mod model;
+pub mod quiz;
+pub mod store;
 pub mod tools;
+pub mod tutorials;
+pub mod ui;
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use assert_matches::assert_matches;
     use std::fs;
     use tempfile::TempDir;
     use uuid::Uuid;
-    use assert_matches::assert_matches;
 
     // Model Tests
     mod model_tests {
@@ -64,12 +64,12 @@ mod tests {
             let report_phase = &session.phases[4];
             assert_eq!(report_phase.name, "Reporting");
             assert_eq!(report_phase.steps.len(), 4); // 4 reporting steps
-            
+
             // Test Bug Bounty Hunting phase
             let bug_bounty_phase = &session.phases[5];
             assert_eq!(bug_bounty_phase.name, "Bug Bounty Hunting");
             assert!(bug_bounty_phase.steps.len() > 0); // Has steps
-            
+
             // Test CompTIA Security+ phase
             let comptia_phase = &session.phases[6];
             assert_eq!(comptia_phase.name, "CompTIA Security+");
@@ -123,16 +123,36 @@ mod tests {
                     if step.is_tutorial() {
                         let description = step.get_description();
                         // Each tutorial step should have detailed description
-                        assert!(description.len() > 100, "Step description too short for: {}", step.title);
+                        assert!(
+                            description.len() > 100,
+                            "Step description too short for: {}",
+                            step.title
+                        );
 
                         // Description should contain key sections
-                        assert!(description.contains("OBJECTIVE"), "Missing OBJECTIVE in: {}", step.title);
-                        assert!(description.contains("STEP-BY-STEP PROCESS"), "Missing STEP-BY-STEP in: {}", step.title);
-                        assert!(description.contains("WHAT TO LOOK FOR"), "Missing WHAT TO LOOK FOR in: {}", step.title);
+                        assert!(
+                            description.contains("OBJECTIVE"),
+                            "Missing OBJECTIVE in: {}",
+                            step.title
+                        );
+                        assert!(
+                            description.contains("STEP-BY-STEP PROCESS"),
+                            "Missing STEP-BY-STEP in: {}",
+                            step.title
+                        );
+                        assert!(
+                            description.contains("WHAT TO LOOK FOR"),
+                            "Missing WHAT TO LOOK FOR in: {}",
+                            step.title
+                        );
                     } else if step.is_quiz() {
                         // Quiz steps should have questions
                         if let Some(quiz_step) = step.get_quiz_step() {
-                            assert!(quiz_step.questions.len() > 0, "Quiz step has no questions: {}", step.title);
+                            assert!(
+                                quiz_step.questions.len() > 0,
+                                "Quiz step has no questions: {}",
+                                step.title
+                            );
                         }
                     }
                 }
@@ -167,7 +187,7 @@ mod tests {
 
             // Test invalid phase bounds
             model.selected_phase = 10; // Beyond available phases
-            // Should not panic, just store the value
+                                       // Should not panic, just store the value
             assert_eq!(model.selected_phase, 10);
         }
     }
@@ -181,7 +201,8 @@ mod tests {
         #[test]
         fn test_save_and_load_session() {
             let temp_dir = TempDir::new().unwrap();
-            let session_path = temp_dir.path().join("test_session.json");
+            let session_folder = temp_dir.path().join("test_session");
+            let session_file = session_folder.join("session.json");
 
             // Create a test session
             let mut session = Session::default();
@@ -194,11 +215,11 @@ mod tests {
                 step.set_notes("Test step notes".to_string());
             }
 
-            // Save session
-            store::save_session(&session_path, &session).unwrap();
+            // Save to folder structure
+            store::save_session(&session_folder, &session).unwrap();
 
-            // Load session
-            let loaded_session = store::load_session(&session_path).unwrap();
+            // Load from session.json
+            let loaded_session = store::load_session(&session_file).unwrap();
 
             // Verify data integrity
             assert_eq!(loaded_session.name, session.name);
@@ -211,7 +232,10 @@ mod tests {
                     assert_eq!(loaded_step.status, original_step.status);
                     assert_eq!(loaded_step.get_notes(), original_step.get_notes());
                     assert_eq!(loaded_step.title, original_step.title);
-                    assert_eq!(loaded_step.get_description(), original_step.get_description());
+                    assert_eq!(
+                        loaded_step.get_description(),
+                        original_step.get_description()
+                    );
                 }
             }
         }
@@ -219,13 +243,16 @@ mod tests {
         #[test]
         fn test_save_load_with_timestamps() {
             let temp_dir = TempDir::new().unwrap();
-            let session_path = temp_dir.path().join("timestamp_test.json");
+            let session_folder = temp_dir.path().join("timestamp_test");
+            let session_path = session_folder.join("session.json");
 
             let session = Session::default();
             let original_time = session.created_at;
 
-            // Save and load
-            store::save_session(&session_path, &session).unwrap();
+            // Save (now creates folder structure)
+            store::save_session(&session_folder, &session).unwrap();
+
+            // Load from session.json file
             let loaded_session = store::load_session(&session_path).unwrap();
 
             // Timestamps should be preserved
@@ -235,16 +262,35 @@ mod tests {
         #[test]
         fn test_save_to_nonexistent_directory() {
             let temp_dir = TempDir::new().unwrap();
-            let nonexistent_path = temp_dir.path().join("nonexistent").join("subdir").join("session.json");
+            let session_folder = temp_dir
+                .path()
+                .join("nonexistent")
+                .join("subdir")
+                .join("my_session");
+            let session_file = session_folder.join("session.json");
 
             let session = Session::default();
 
-            // Should succeed when creating parent directories
-            let result = store::save_session(&nonexistent_path, &session);
-            assert!(result.is_ok(), "Saving to nonexistent directory should create directories and succeed");
+            // Should succeed when creating parent directories (now creates folder structure)
+            let result = store::save_session(&session_folder, &session);
+            assert!(
+                result.is_ok(),
+                "Saving to nonexistent directory should create directories and succeed"
+            );
 
-            // Verify the file was actually created
-            assert!(nonexistent_path.exists(), "Session file should exist after saving");
+            // Verify the folder and file were created
+            assert!(
+                session_folder.exists(),
+                "Session folder should exist after saving"
+            );
+            assert!(
+                session_file.exists(),
+                "Session file should exist after saving"
+            );
+            assert!(
+                session_folder.join("evidence").exists(),
+                "Evidence folder should exist after saving"
+            );
         }
 
         #[test]
@@ -273,7 +319,8 @@ mod tests {
         #[test]
         fn test_session_data_integrity() {
             let temp_dir = TempDir::new().unwrap();
-            let session_path = temp_dir.path().join("integrity_test.json");
+            let session_folder = temp_dir.path().join("integrity_test");
+            let session_file = session_folder.join("session.json");
 
             let mut session = Session::default();
 
@@ -290,19 +337,29 @@ mod tests {
                 }
             }
 
-            // Save and load
-            store::save_session(&session_path, &session).unwrap();
-            let loaded_session = store::load_session(&session_path).unwrap();
+            // Save to folder structure and load from session.json
+            store::save_session(&session_folder, &session).unwrap();
+            let loaded_session = store::load_session(&session_file).unwrap();
 
             // Verify all data is preserved
             assert_eq!(loaded_session.notes_global, session.notes_global);
             assert_eq!(loaded_session.phases.len(), session.phases.len());
 
-            for (_phase_idx, (original_phase, loaded_phase)) in session.phases.iter().zip(&loaded_session.phases).enumerate() {
+            for (_phase_idx, (original_phase, loaded_phase)) in session
+                .phases
+                .iter()
+                .zip(&loaded_session.phases)
+                .enumerate()
+            {
                 assert_eq!(loaded_phase.name, original_phase.name);
                 assert_eq!(loaded_phase.steps.len(), original_phase.steps.len());
 
-                for (_step_idx, (original_step, loaded_step)) in original_phase.steps.iter().zip(&loaded_phase.steps).enumerate() {
+                for (_step_idx, (original_step, loaded_step)) in original_phase
+                    .steps
+                    .iter()
+                    .zip(&loaded_phase.steps)
+                    .enumerate()
+                {
                     assert_eq!(loaded_step.title, original_step.title);
                     assert_eq!(loaded_step.description, original_step.description);
                     assert_eq!(loaded_step.status, original_step.status);
@@ -312,43 +369,49 @@ mod tests {
                 }
             }
         }
-        
+
         #[test]
         fn test_quiz_progress_persistence() {
             use crate::model::*;
             use crate::quiz::parse_question_line;
             use chrono::Utc;
-            
+
             let temp_dir = TempDir::new().unwrap();
-            let session_path = temp_dir.path().join("quiz_progress_test.json");
+            let session_folder = temp_dir.path().join("quiz_progress_test");
+            let session_file = session_folder.join("session.json");
 
             // Create a session with a quiz step
             let mut session = Session::default();
-            
+
             // Create a simple quiz step
             let questions = vec![
-                parse_question_line("What is 2+2?|4|3|5|6|0|Addition is commutative|Math|Arithmetic").unwrap(),
-                parse_question_line("What is 3+3?|6|5|7|8|0|Simple arithmetic|Math|Arithmetic").unwrap(),
-                parse_question_line("What is 4+4?|8|7|9|10|0|More addition|Math|Arithmetic").unwrap(),
+                parse_question_line(
+                    "What is 2+2?|4|3|5|6|0|Addition is commutative|Math|Arithmetic",
+                )
+                .unwrap(),
+                parse_question_line("What is 3+3?|6|5|7|8|0|Simple arithmetic|Math|Arithmetic")
+                    .unwrap(),
+                parse_question_line("What is 4+4?|8|7|9|10|0|More addition|Math|Arithmetic")
+                    .unwrap(),
             ];
-            
+
             let quiz_step = QuizStep::new(
                 Uuid::new_v4(),
                 "Math Quiz".to_string(),
                 "Basic Arithmetic".to_string(),
                 questions,
             );
-            
+
             let step = Step::new_quiz(
                 Uuid::new_v4(),
                 "Math Quiz Step".to_string(),
                 vec!["quiz".to_string(), "test".to_string()],
                 quiz_step,
             );
-            
+
             // Replace first step with our quiz step
             session.phases[0].steps[0] = step;
-            
+
             // Simulate answering questions
             if let Some(quiz_step) = session.phases[0].steps[0].quiz_mut_safe() {
                 // Answer question 0 correctly
@@ -360,7 +423,7 @@ mod tests {
                     progress.first_attempt_correct = true;
                     progress.last_attempted = Some(Utc::now());
                 }
-                
+
                 // Answer question 1 incorrectly
                 if let Some(progress) = quiz_step.progress.get_mut(1) {
                     progress.answered = true;
@@ -370,24 +433,24 @@ mod tests {
                     progress.first_attempt_correct = false;
                     progress.last_attempted = Some(Utc::now());
                 }
-                
+
                 // View explanation for question 2 without answering
                 if let Some(progress) = quiz_step.progress.get_mut(2) {
                     progress.explanation_viewed_before_answer = true;
                 }
             }
-            
-            // Save session
-            store::save_session(&session_path, &session).unwrap();
-            
-            // Load session
-            let loaded_session = store::load_session(&session_path).unwrap();
-            
+
+            // Save to folder structure
+            store::save_session(&session_folder, &session).unwrap();
+
+            // Load from session.json
+            let loaded_session = store::load_session(&session_file).unwrap();
+
             // Verify quiz progress was preserved
             if let Some(loaded_quiz_step) = loaded_session.phases[0].steps[0].get_quiz_step() {
                 assert_eq!(loaded_quiz_step.questions.len(), 3);
                 assert_eq!(loaded_quiz_step.progress.len(), 3);
-                
+
                 // Check question 0 progress (correct answer)
                 let progress_0 = &loaded_quiz_step.progress[0];
                 assert_eq!(progress_0.answered, true);
@@ -397,7 +460,7 @@ mod tests {
                 assert_eq!(progress_0.first_attempt_correct, true);
                 assert_eq!(progress_0.explanation_viewed_before_answer, false);
                 assert!(progress_0.awards_points());
-                
+
                 // Check question 1 progress (incorrect answer)
                 let progress_1 = &loaded_quiz_step.progress[1];
                 assert_eq!(progress_1.answered, true);
@@ -406,13 +469,13 @@ mod tests {
                 assert_eq!(progress_1.attempts, 1);
                 assert_eq!(progress_1.first_attempt_correct, false);
                 assert!(!progress_1.awards_points());
-                
+
                 // Check question 2 progress (viewed explanation)
                 let progress_2 = &loaded_quiz_step.progress[2];
                 assert_eq!(progress_2.answered, false);
                 assert_eq!(progress_2.explanation_viewed_before_answer, true);
                 assert!(!progress_2.awards_points());
-                
+
                 // Verify statistics calculation
                 let stats = loaded_quiz_step.statistics();
                 assert_eq!(stats.total_questions, 3);
@@ -437,14 +500,16 @@ mod tests {
         #[test]
         fn test_full_session_workflow() {
             let temp_dir = TempDir::new().unwrap();
-            let session_path = temp_dir.path().join("workflow_test.json");
+            let session_folder = temp_dir.path().join("workflow_test");
+            let session_file = session_folder.join("session.json");
 
             // Create and modify session
             let mut session = Session::default();
             session.name = "Integration Test Session".to_string();
 
             // Simulate user workflow: complete some reconnaissance steps
-            for step in &mut session.phases[0].steps[0..3] { // First 3 recon steps
+            for step in &mut session.phases[0].steps[0..3] {
+                // First 3 recon steps
                 step.status = StepStatus::Done;
                 step.set_notes(format!("Completed: {}", step.title));
             }
@@ -452,20 +517,25 @@ mod tests {
             // Add phase notes
             session.phases[0].notes = "Reconnaissance phase completed".to_string();
 
-            // Save session
-            store::save_session(&session_path, &session).unwrap();
+            // Save to folder structure
+            store::save_session(&session_folder, &session).unwrap();
 
-            // Simulate app restart - load session
-            let loaded_session = store::load_session(&session_path).unwrap();
+            // Simulate app restart - load from session.json
+            let loaded_session = store::load_session(&session_file).unwrap();
 
             // Verify workflow state is preserved
             assert_eq!(loaded_session.name, "Integration Test Session");
-            assert_eq!(loaded_session.phases[0].notes, "Reconnaissance phase completed");
+            assert_eq!(
+                loaded_session.phases[0].notes,
+                "Reconnaissance phase completed"
+            );
 
             // Verify completed steps
             for i in 0..3 {
                 assert_matches!(loaded_session.phases[0].steps[i].status, StepStatus::Done);
-                assert!(loaded_session.phases[0].steps[i].get_notes().starts_with("Completed:"));
+                assert!(loaded_session.phases[0].steps[i]
+                    .get_notes()
+                    .starts_with("Completed:"));
             }
 
             // Verify other steps remain todo
@@ -479,7 +549,15 @@ mod tests {
             let session = Session::default();
 
             // Verify logical phase progression (first 5 phases are pentesting methodology)
-            let phase_names = ["Reconnaissance", "Vulnerability Analysis", "Exploitation", "Post-Exploitation", "Reporting", "Bug Bounty Hunting", "CompTIA Security+"];
+            let phase_names = [
+                "Reconnaissance",
+                "Vulnerability Analysis",
+                "Exploitation",
+                "Post-Exploitation",
+                "Reporting",
+                "Bug Bounty Hunting",
+                "CompTIA Security+",
+            ];
             for (idx, expected_name) in phase_names.iter().enumerate() {
                 assert_eq!(session.phases[idx].name, *expected_name);
             }
@@ -489,10 +567,10 @@ mod tests {
             for (idx, &expected_count) in expected_step_counts.iter().enumerate() {
                 assert_eq!(session.phases[idx].steps.len(), expected_count);
             }
-            
+
             // Bug Bounty Hunting phase should have steps
             assert!(session.phases[5].steps.len() > 0);
-            
+
             // CompTIA Security+ phase should have quiz steps
             assert_eq!(session.phases[6].steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
         }
@@ -506,7 +584,7 @@ mod tests {
                 "OBJECTIVE",
                 "STEP-BY-STEP PROCESS",
                 "WHAT TO LOOK FOR",
-                "COMMON PITFALLS"
+                "COMMON PITFALLS",
             ];
 
             for phase in &session.phases {
@@ -515,13 +593,20 @@ mod tests {
                     if step.is_tutorial() {
                         let description = step.get_description();
                         for &section in &required_sections {
-                            assert!(description.contains(section),
-                                   "Step '{}' missing section '{}'", step.title, section);
+                            assert!(
+                                description.contains(section),
+                                "Step '{}' missing section '{}'",
+                                step.title,
+                                section
+                            );
                         }
 
                         // Verify step has reasonable content length
-                        assert!(description.len() > 200,
-                               "Step '{}' description too short", step.title);
+                        assert!(
+                            description.len() > 200,
+                            "Step '{}' description too short",
+                            step.title
+                        );
                     }
                 }
             }
@@ -533,30 +618,47 @@ mod tests {
 
             // Test that all major pentesting areas are covered
             let expected_recon_techniques = [
-                "subdomain", "dns", "nmap", "service", "web technologies",
-                "tls", "whois", "cloud", "email", "screenshot", "javascript"
+                "subdomain",
+                "dns",
+                "nmap",
+                "service",
+                "web technologies",
+                "tls",
+                "whois",
+                "cloud",
+                "email",
+                "screenshot",
+                "javascript",
             ];
 
-            let recon_descriptions: Vec<String> = session.phases[0].steps
+            let recon_descriptions: Vec<String> = session.phases[0]
+                .steps
                 .iter()
                 .map(|s| s.get_description())
                 .collect();
 
             for technique in &expected_recon_techniques {
-                assert!(recon_descriptions.iter().any(|desc| desc.to_lowercase().contains(technique)),
-                       "Missing {} coverage in reconnaissance", technique);
+                assert!(
+                    recon_descriptions
+                        .iter()
+                        .any(|desc| desc.to_lowercase().contains(technique)),
+                    "Missing {} coverage in reconnaissance",
+                    technique
+                );
             }
         }
 
         #[test]
         fn test_comprehensive_session_workflow() {
             let temp_dir = TempDir::new().unwrap();
-            let session_path = temp_dir.path().join("comprehensive_workflow.json");
+            let session_folder = temp_dir.path().join("comprehensive_workflow");
+            let session_file = session_folder.join("session.json");
 
             // Create a fully populated session
             let mut session = Session::default();
             session.name = "Comprehensive Test Session".to_string();
-            session.notes_global = "This is a comprehensive test of all session features.".to_string();
+            session.notes_global =
+                "This is a comprehensive test of all session features.".to_string();
 
             // Modify all phases
             for (phase_idx, phase) in session.phases.iter_mut().enumerate() {
@@ -564,9 +666,13 @@ mod tests {
 
                 // Modify some steps in each phase
                 for (step_idx, step) in phase.steps.iter_mut().enumerate() {
-                    if step_idx % 3 == 0 { // Every third step
+                    if step_idx % 3 == 0 {
+                        // Every third step
                         step.status = StepStatus::Done;
-                        step.set_notes(format!("Completed step {} in phase {}", step_idx, phase_idx));
+                        step.set_notes(format!(
+                            "Completed step {} in phase {}",
+                            step_idx, phase_idx
+                        ));
                         step.completed_at = Some(Utc::now());
 
                         // Add some evidence (only for tutorial steps)
@@ -580,42 +686,64 @@ mod tests {
                                 y: 0.0,
                             });
                         }
-                    } else if step_idx % 3 == 1 { // Every other third step
+                    } else if step_idx % 3 == 1 {
+                        // Every other third step
                         step.status = StepStatus::InProgress;
-                        step.set_notes(format!("In progress: step {} in phase {}", step_idx, phase_idx));
+                        step.set_notes(format!(
+                            "In progress: step {} in phase {}",
+                            step_idx, phase_idx
+                        ));
                     }
                     // Leave some as Todo
                 }
             }
 
-            // Save the comprehensive session
-            store::save_session(&session_path, &session).unwrap();
+            // Save to folder structure
+            store::save_session(&session_folder, &session).unwrap();
 
-            // Load and verify
-            let loaded = store::load_session(&session_path).unwrap();
+            // Load from session.json and verify
+            let loaded = store::load_session(&session_file).unwrap();
 
             assert_eq!(loaded.name, session.name);
             assert_eq!(loaded.notes_global, session.notes_global);
             assert_eq!(loaded.phases.len(), session.phases.len());
 
             // Verify each phase
-            for (_phase_idx, (original_phase, loaded_phase)) in session.phases.iter().zip(&loaded.phases).enumerate() {
+            for (_phase_idx, (original_phase, loaded_phase)) in
+                session.phases.iter().zip(&loaded.phases).enumerate()
+            {
                 assert_eq!(loaded_phase.name, original_phase.name);
                 assert_eq!(loaded_phase.notes, original_phase.notes);
                 assert_eq!(loaded_phase.steps.len(), original_phase.steps.len());
 
                 // Verify each step
-                for (_step_idx, (original_step, loaded_step)) in original_phase.steps.iter().zip(&loaded_phase.steps).enumerate() {
+                for (_step_idx, (original_step, loaded_step)) in original_phase
+                    .steps
+                    .iter()
+                    .zip(&loaded_phase.steps)
+                    .enumerate()
+                {
                     assert_eq!(loaded_step.title, original_step.title);
-                    assert_eq!(loaded_step.get_description(), original_step.get_description());
+                    assert_eq!(
+                        loaded_step.get_description(),
+                        original_step.get_description()
+                    );
                     assert_eq!(loaded_step.status, original_step.status);
                     assert_eq!(loaded_step.get_notes(), original_step.get_notes());
                     assert_eq!(loaded_step.tags, original_step.tags);
-                    assert_eq!(loaded_step.get_evidence().len(), original_step.get_evidence().len());
+                    assert_eq!(
+                        loaded_step.get_evidence().len(),
+                        original_step.get_evidence().len()
+                    );
 
                     // Verify evidence (only for tutorial steps)
                     if loaded_step.is_tutorial() {
-                        for (_evidence_idx, (orig_ev, loaded_ev)) in original_step.get_evidence().iter().zip(loaded_step.get_evidence()).enumerate() {
+                        for (_evidence_idx, (orig_ev, loaded_ev)) in original_step
+                            .get_evidence()
+                            .iter()
+                            .zip(loaded_step.get_evidence())
+                            .enumerate()
+                        {
                             assert_eq!(loaded_ev.path, orig_ev.path);
                             assert_eq!(loaded_ev.kind, orig_ev.kind);
                             assert_eq!(loaded_ev.created_at, orig_ev.created_at);
@@ -690,11 +818,12 @@ mod tests {
             }
 
             let temp_dir = TempDir::new().unwrap();
-            let session_path = temp_dir.path().join("large_session.json");
+            let session_folder = temp_dir.path().join("large_session");
+            let session_file = session_folder.join("session.json");
 
             // Should handle large sessions
-            store::save_session(&session_path, &session).unwrap();
-            let loaded = store::load_session(&session_path).unwrap();
+            store::save_session(&session_folder, &session).unwrap();
+            let loaded = store::load_session(&session_file).unwrap();
 
             assert_eq!(loaded.name, session.name);
             assert_eq!(loaded.notes_global, session.notes_global);
@@ -713,12 +842,14 @@ mod tests {
             session2.name = "Session Two".to_string();
             session2.notes_global = "Second session".to_string();
 
-            let path1 = temp_dir.path().join("session1.json");
-            let path2 = temp_dir.path().join("session2.json");
+            let folder1 = temp_dir.path().join("session1");
+            let folder2 = temp_dir.path().join("session2");
+            let path1 = folder1.join("session.json");
+            let path2 = folder2.join("session.json");
 
             // Save both sessions
-            store::save_session(&path1, &session1).unwrap();
-            store::save_session(&path2, &session2).unwrap();
+            store::save_session(&folder1, &session1).unwrap();
+            store::save_session(&folder2, &session2).unwrap();
 
             // Load and verify they remain separate
             let loaded1 = store::load_session(&path1).unwrap();
@@ -808,26 +939,39 @@ mod tests {
             let duration = start.elapsed();
 
             // Session creation should be fast (< 100ms)
-            assert!(duration.as_millis() < 100, "Session creation took too long: {:?}", duration);
+            assert!(
+                duration.as_millis() < 100,
+                "Session creation took too long: {:?}",
+                duration
+            );
         }
 
         #[test]
         fn test_serialization_performance() {
             let temp_dir = TempDir::new().unwrap();
-            let session_path = temp_dir.path().join("perf_test.json");
+            let session_folder = temp_dir.path().join("perf_test");
+            let session_file = session_folder.join("session.json");
             let session = Session::default();
 
             // Test save performance (increased timeout for larger quiz content with PenTest+)
             let save_start = Instant::now();
-            store::save_session(&session_path, &session).unwrap();
+            store::save_session(&session_folder, &session).unwrap();
             let save_duration = save_start.elapsed();
-            assert!(save_duration.as_millis() < 500, "Save took too long: {:?}", save_duration);
+            assert!(
+                save_duration.as_millis() < 500,
+                "Save took too long: {:?}",
+                save_duration
+            );
 
             // Test load performance (increased timeout for larger quiz content with PenTest+)
             let load_start = Instant::now();
-            let _loaded = store::load_session(&session_path).unwrap();
+            let _loaded = store::load_session(&session_file).unwrap();
             let load_duration = load_start.elapsed();
-            assert!(load_duration.as_millis() < 500, "Load took too long: {:?}", load_duration);
+            assert!(
+                load_duration.as_millis() < 500,
+                "Load took too long: {:?}",
+                load_duration
+            );
         }
 
         #[test]
@@ -850,27 +994,32 @@ mod tests {
             }
 
             // Should be reasonable size (< 1MB of text)
-            assert!(total_chars < 1_000_000, "Content too large: {} chars", total_chars);
+            assert!(
+                total_chars < 1_000_000,
+                "Content too large: {} chars",
+                total_chars
+            );
         }
     }
 
     // Property-based tests
     mod property_tests {
         use super::*;
-        use proptest::prelude::*;
         use crate::model::*;
+        use proptest::prelude::*;
 
         proptest! {
             #[test]
             fn test_session_name_preservation(name in ".*") {
                 let temp_dir = TempDir::new().unwrap();
-                let session_path = temp_dir.path().join("prop_test.json");
+                let session_folder = temp_dir.path().join("prop_test");
+                let session_file = session_folder.join("session.json");
 
                 let mut session = Session::default();
                 session.name = name.clone();
 
-                store::save_session(&session_path, &session).unwrap();
-                let loaded = store::load_session(&session_path).unwrap();
+                store::save_session(&session_folder, &session).unwrap();
+                let loaded = store::load_session(&session_file).unwrap();
 
                 prop_assert_eq!(loaded.name, name);
             }
@@ -878,13 +1027,14 @@ mod tests {
             #[test]
             fn test_notes_preservation(notes in ".*") {
                 let temp_dir = TempDir::new().unwrap();
-                let session_path = temp_dir.path().join("prop_notes_test.json");
+                let session_folder = temp_dir.path().join("prop_notes_test");
+                let session_file = session_folder.join("session.json");
 
                 let mut session = Session::default();
                 session.notes_global = notes.clone();
 
-                store::save_session(&session_path, &session).unwrap();
-                let loaded = store::load_session(&session_path).unwrap();
+                store::save_session(&session_folder, &session).unwrap();
+                let loaded = store::load_session(&session_file).unwrap();
 
                 prop_assert_eq!(loaded.notes_global, notes);
             }
@@ -892,15 +1042,16 @@ mod tests {
             #[test]
             fn test_step_notes_preservation(notes in ".*") {
                 let temp_dir = TempDir::new().unwrap();
-                let session_path = temp_dir.path().join("prop_step_notes_test.json");
+                let session_folder = temp_dir.path().join("prop_step_notes_test");
+                let session_file = session_folder.join("session.json");
 
                 let mut session = Session::default();
                 if let Some(step) = session.phases[0].steps.get_mut(0) {
                     step.set_notes(notes.clone());
                 }
 
-                store::save_session(&session_path, &session).unwrap();
-                let loaded = store::load_session(&session_path).unwrap();
+                store::save_session(&session_folder, &session).unwrap();
+                let loaded = store::load_session(&session_file).unwrap();
 
                 prop_assert_eq!(&loaded.phases[0].steps[0].get_notes(), &notes);
             }

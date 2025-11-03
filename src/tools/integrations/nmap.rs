@@ -1,12 +1,11 @@
 /// Nmap integration - Network exploration and security auditing
-/// 
+///
 /// Supports various Nmap scan types:
 /// - Port scanning (TCP/UDP)
 /// - Service/version detection
 /// - OS detection
 /// - Script scanning (NSE)
 /// - Output parsing and evidence extraction
-
 use crate::model::Evidence;
 use crate::tools::traits::*;
 use anyhow::{anyhow, Result};
@@ -105,10 +104,10 @@ impl NmapTool {
     /// Parse port information from Nmap output
     fn parse_ports(output: &str) -> Vec<Port> {
         let mut ports = Vec::new();
-        
+
         // Match lines like: "80/tcp   open  http"
         let port_regex = Regex::new(r"(\d+)/(tcp|udp)\s+(\w+)").unwrap();
-        
+
         for line in output.lines() {
             if let Some(captures) = port_regex.captures(line) {
                 if let Ok(number) = captures[1].parse::<u16>() {
@@ -120,24 +119,22 @@ impl NmapTool {
                 }
             }
         }
-        
+
         ports
     }
 
     /// Parse service information from Nmap output
     fn parse_services(output: &str) -> Vec<Service> {
         let mut services = Vec::new();
-        
+
         // Match lines like: "80/tcp   open  http    Apache httpd 2.4.41"
-        let service_regex = Regex::new(
-            r"(\d+)/(tcp|udp)\s+open\s+(\S+)(?:\s+(.+))?"
-        ).unwrap();
-        
+        let service_regex = Regex::new(r"(\d+)/(tcp|udp)\s+open\s+(\S+)(?:\s+(.+))?").unwrap();
+
         for line in output.lines() {
             if let Some(captures) = service_regex.captures(line) {
                 if let Ok(port) = captures[1].parse::<u16>() {
                     let version = captures.get(4).map(|m| m.as_str().trim().to_string());
-                    
+
                     services.push(Service {
                         port,
                         protocol: captures[2].to_string(),
@@ -147,7 +144,7 @@ impl NmapTool {
                 }
             }
         }
-        
+
         services
     }
 
@@ -155,17 +152,17 @@ impl NmapTool {
     fn parse_os_detection(output: &str) -> Option<String> {
         // Look for "OS details:" line
         let os_regex = Regex::new(r"OS details:\s*(.+)").unwrap();
-        
+
         if let Some(captures) = os_regex.captures(output) {
             return Some(captures[1].trim().to_string());
         }
-        
+
         // Alternative: look for "Running:" line
         let running_regex = Regex::new(r"Running:\s*(.+)").unwrap();
         if let Some(captures) = running_regex.captures(output) {
             return Some(captures[1].trim().to_string());
         }
-        
+
         None
     }
 
@@ -173,7 +170,7 @@ impl NmapTool {
     fn parse_script_results(output: &str) -> Vec<ScriptResult> {
         let mut results = Vec::new();
         let script_regex = Regex::new(r"\|_([^:]+):\s*(.+)").unwrap();
-        
+
         for line in output.lines() {
             if let Some(captures) = script_regex.captures(line) {
                 results.push(ScriptResult {
@@ -182,7 +179,7 @@ impl NmapTool {
                 });
             }
         }
-        
+
         results
     }
 }
@@ -209,17 +206,18 @@ impl SecurityTool for NmapTool {
         }
 
         let version_str = String::from_utf8_lossy(&output.stdout);
-        
+
         // Parse version like "Nmap version 7.94 ( https://nmap.org )"
         let version_regex = Regex::new(r"Nmap version (\d+)\.(\d+)(?:\.(\d+))?").unwrap();
-        
+
         if let Some(captures) = version_regex.captures(&version_str) {
             let major = captures[1].parse().unwrap_or(0);
             let minor = captures[2].parse().unwrap_or(0);
-            let patch = captures.get(3)
+            let patch = captures
+                .get(3)
                 .and_then(|m| m.as_str().parse().ok())
                 .unwrap_or(0);
-            
+
             return Ok(ToolVersion::new(major, minor, patch));
         }
 
@@ -428,16 +426,16 @@ mod tests {
 
         let result = tool.build_command(&config);
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("Target is required"));
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("Target is required"));
     }
 
     #[test]
     fn test_build_command_with_target() {
         let tool = NmapTool::new();
-        let config = ToolConfig::builder()
-            .target("192.168.1.1")
-            .build()
-            .unwrap();
+        let config = ToolConfig::builder().target("192.168.1.1").build().unwrap();
 
         let result = tool.build_command(&config);
         assert!(result.is_ok());
@@ -546,7 +544,7 @@ PORT     STATE SERVICE
 
         let services = NmapTool::parse_services(output);
         assert_eq!(services.len(), 2);
-        
+
         // Services without version info should still be parsed
         assert_eq!(services[0].port, 22);
         assert_eq!(services[0].name, "ssh");
@@ -618,10 +616,7 @@ PORT     STATE SERVICE
     #[test]
     fn test_validate_prerequisites_empty_target() {
         let tool = NmapTool::new();
-        let config = ToolConfig::builder()
-            .target("   ")
-            .build()
-            .unwrap();
+        let config = ToolConfig::builder().target("   ").build().unwrap();
 
         let result = tool.validate_prerequisites(&config);
         assert!(result.is_err());
@@ -631,10 +626,7 @@ PORT     STATE SERVICE
     #[test]
     fn test_validate_prerequisites_valid() {
         let tool = NmapTool::new();
-        let config = ToolConfig::builder()
-            .target("192.168.1.1")
-            .build()
-            .unwrap();
+        let config = ToolConfig::builder().target("192.168.1.1").build().unwrap();
 
         let result = tool.validate_prerequisites(&config);
         assert!(result.is_ok());
@@ -699,18 +691,23 @@ OS details: Linux 5.4
     #[test]
     fn test_check_availability() {
         let tool = NmapTool::new();
-        
+
         // This test will only pass if Nmap is installed
         match tool.check_availability() {
             Ok(version) => {
                 // If Nmap is installed, verify version format
                 assert!(version.major > 0);
-                println!("Nmap version: {}.{}.{}", version.major, version.minor, version.patch);
+                println!(
+                    "Nmap version: {}.{}.{}",
+                    version.major, version.minor, version.patch
+                );
             }
             Err(e) => {
                 // If Nmap is not installed, verify error message
-                assert!(e.to_string().contains("Nmap not found") || 
-                        e.to_string().contains("Could not parse"));
+                assert!(
+                    e.to_string().contains("Nmap not found")
+                        || e.to_string().contains("Could not parse")
+                );
                 println!("Nmap not available (expected in test environment): {}", e);
             }
         }

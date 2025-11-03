@@ -1,12 +1,12 @@
+use crate::model::{AppModel, Session};
+use crate::store;
+use gtk4::gio;
 /// File operations module for open/save session dialogs
 use gtk4::prelude::*;
 use gtk4::{FileDialog, Window};
-use gtk4::gio;
-use std::rc::Rc;
 use std::cell::RefCell;
 use std::path::PathBuf;
-use crate::model::{AppModel, Session};
-use crate::store;
+use std::rc::Rc;
 
 /// Callback type for successful session load
 pub type OnSessionLoaded = Box<dyn Fn(Session, PathBuf)>;
@@ -21,24 +21,24 @@ where
 {
     let dialog = FileDialog::new();
     dialog.set_title("Open Session - Select session.json");
-    
+
     // Set initial folder to default sessions directory
     let default_dir = store::default_sessions_dir();
     if default_dir.exists() {
         let file = gio::File::for_path(&default_dir);
         dialog.set_initial_folder(Some(&file));
     }
-    
+
     // Create file filter for session.json files
     let filter = gtk4::FileFilter::new();
     filter.set_name(Some("PT Journal Sessions (session.json)"));
     filter.add_pattern("session.json");
     filter.add_mime_type("application/json");
-    
+
     let filters = gio::ListStore::new::<gtk4::FileFilter>();
     filters.append(&filter);
     dialog.set_filters(Some(&filters));
-    
+
     let window_weak = window.downgrade();
     dialog.open(Some(window), None::<&gio::Cancellable>, move |res| {
         if let Ok(file) = res {
@@ -66,28 +66,30 @@ where
 {
     let dialog = FileDialog::new();
     dialog.set_title("Save Session As - Choose Folder Name");
-    
+
     // Set initial folder to default sessions directory
     let default_dir = store::default_sessions_dir();
     if default_dir.exists() {
         let file = gio::File::for_path(&default_dir);
         dialog.set_initial_folder(Some(&file));
     }
-    
+
     // Remove .json extension, just use session name as folder
-    let default_name = session.name.replace(['/', '\\', ':', '*', '?', '"', '<', '>', '|'], "_");
+    let default_name = session
+        .name
+        .replace(['/', '\\', ':', '*', '?', '"', '<', '>', '|'], "_");
     let default_name = if default_name.is_empty() {
         "pt-session".to_string()
     } else {
         default_name
     };
-    
+
     // Set initial name without .json extension - will become folder name
     dialog.set_initial_name(Some(&default_name));
-    
+
     let session_clone = session.clone();
     let window_weak = window.downgrade();
-    
+
     // Use save dialog which will let user choose/create a folder
     dialog.save(Some(window), None::<&gio::Cancellable>, move |res| {
         if let Ok(file) = res {
@@ -96,7 +98,7 @@ where
                 if path.extension().is_some() {
                     path.set_extension("");
                 }
-                
+
                 // Path is now the session folder
                 // Create folder structure and save
                 match store::save_session(&path, &session_clone) {
@@ -118,16 +120,13 @@ where
 }
 
 /// Save a session to its current path, or show Save As dialog if no path
-pub fn save_session<F>(
-    window: &Window,
-    model: Rc<RefCell<AppModel>>,
-    on_saved: F,
-) where
+pub fn save_session<F>(window: &Window, model: Rc<RefCell<AppModel>>, on_saved: F)
+where
     F: Fn(PathBuf) + 'static,
 {
     let current_path = model.borrow().current_path.clone();
     let session = model.borrow().session.clone();
-    
+
     if let Some(path) = current_path {
         // Save to existing path
         match store::save_session(&path, &session) {
@@ -156,27 +155,29 @@ mod tests {
     use super::*;
     use crate::model::Session;
     use tempfile::TempDir;
-    
+
     #[test]
     fn test_save_session_to_existing_path() {
         let temp_dir = TempDir::new().unwrap();
-        let session_path = temp_dir.path().join("test.json");
-        
+        let session_folder = temp_dir.path().join("test_session");
+        let session_file = session_folder.join("session.json");
+
         let mut model = AppModel::default();
-        model.current_path = Some(session_path.clone());
+        model.current_path = Some(session_file.clone());
         model.session.name = "Test Session".to_string();
-        
-        // Save manually for testing
-        store::save_session(&session_path, &model.session).unwrap();
-        
+
+        // Save to folder structure for testing
+        store::save_session(&session_folder, &model.session).unwrap();
+
         // Verify file exists
-        assert!(session_path.exists());
-        
+        assert!(session_file.exists());
+        assert!(session_folder.join("evidence").exists());
+
         // Load and verify
-        let loaded = store::load_session(&session_path).unwrap();
+        let loaded = store::load_session(&session_file).unwrap();
         assert_eq!(loaded.name, "Test Session");
     }
-    
+
     #[test]
     fn test_session_clone() {
         let session = Session::default();

@@ -1,18 +1,21 @@
 /// Tool execution UI components
-/// 
+///
 /// Provides UI elements for running security tools from tutorial steps:
 /// - Tool selection dropdown
 /// - Configuration inputs
 /// - Execute button
 /// - Progress indicators
 /// - Result display
-
 use gtk4::prelude::*;
+use gtk4::glib;
 #[allow(deprecated)]
-use gtk4::{Box as GtkBox, Button, ComboBoxText, Entry, Label, Orientation, Spinner, TextView, Dialog, ResponseType, PasswordEntry};
+use gtk4::{
+    Box as GtkBox, Button, ComboBoxText, Dialog, Entry, Label, Orientation, PasswordEntry,
+    ResponseType, Spinner, TextView, ProgressBar,
+};
 
-use crate::tools::*;
 use crate::tools::executor::DefaultExecutor;
+use crate::tools::*;
 use std::process::{Command, Stdio};
 
 /// Tool execution panel widget
@@ -24,8 +27,10 @@ pub struct ToolExecutionPanel {
     pub target_entry: Entry,
     pub args_entry: Entry,
     pub execute_button: Button,
+    pub cancel_button: Button,
     pub info_button: Button,
     pub spinner: Spinner,
+    pub progress_bar: ProgressBar,
     pub status_label: Label,
     pub output_view: TextView,
 }
@@ -49,13 +54,13 @@ impl ToolExecutionPanel {
         let tool_label = Label::new(Some("Tool:"));
         tool_label.set_width_chars(10);
         tool_label.set_xalign(0.0);
-        
+
         let tool_selector = ComboBoxText::new();
         tool_selector.append(Some("nmap"), "Nmap - Port Scanner");
         tool_selector.append(Some("gobuster"), "Gobuster - Directory/Subdomain Enum");
         tool_selector.set_active_id(Some("nmap"));
         tool_selector.set_hexpand(true);
-        
+
         tool_box.append(&tool_label);
         tool_box.append(&tool_selector);
         container.append(&tool_box);
@@ -65,11 +70,11 @@ impl ToolExecutionPanel {
         let target_label = Label::new(Some("Target:"));
         target_label.set_width_chars(10);
         target_label.set_xalign(0.0);
-        
+
         let target_entry = Entry::new();
         target_entry.set_placeholder_text(Some("e.g., scanme.nmap.org or http://example.com"));
         target_entry.set_hexpand(true);
-        
+
         target_box.append(&target_label);
         target_box.append(&target_entry);
         container.append(&target_box);
@@ -79,43 +84,54 @@ impl ToolExecutionPanel {
         let args_label = Label::new(Some("Arguments:"));
         args_label.set_width_chars(10);
         args_label.set_xalign(0.0);
-        
+
         let args_entry = Entry::new();
         args_entry.set_placeholder_text(Some("e.g., -p 80,443 -sV"));
         args_entry.set_hexpand(true);
-        
+
         args_box.append(&args_label);
         args_box.append(&args_entry);
         container.append(&args_box);
 
-        // Execute button and spinner
+        // Execute button, cancel button, and spinner
         let button_box = GtkBox::new(Orientation::Horizontal, 8);
-        
+
         let execute_button = Button::with_label("Execute Tool");
         execute_button.add_css_class("suggested-action");
-        
+
+        let cancel_button = Button::with_label("Cancel");
+        cancel_button.add_css_class("destructive-action");
+        cancel_button.set_visible(false); // Hidden until execution starts
+
         let info_button = Button::with_label("ℹ️ Instructions");
         info_button.add_css_class("flat");
-        
+
         let spinner = Spinner::new();
         spinner.set_visible(false);
-        
+
         let status_label = Label::new(Some("Ready"));
         status_label.set_hexpand(true);
         status_label.set_xalign(0.0);
-        
+
         button_box.append(&execute_button);
+        button_box.append(&cancel_button);
         button_box.append(&info_button);
         button_box.append(&spinner);
         button_box.append(&status_label);
         container.append(&button_box);
+
+        // Progress bar
+        let progress_bar = ProgressBar::new();
+        progress_bar.set_visible(false);
+        progress_bar.set_show_text(true);
+        container.append(&progress_bar);
 
         // Output display
         let output_frame = gtk4::Frame::new(Some("Tool Output"));
         let output_scroll = gtk4::ScrolledWindow::new();
         output_scroll.set_min_content_height(200);
         output_scroll.set_vexpand(true);
-        
+
         let output_view = TextView::new();
         output_view.set_editable(false);
         output_view.set_monospace(true);
@@ -124,7 +140,7 @@ impl ToolExecutionPanel {
         output_view.set_margin_bottom(4);
         output_view.set_margin_start(4);
         output_view.set_margin_end(4);
-        
+
         output_scroll.set_child(Some(&output_view));
         output_frame.set_child(Some(&output_scroll));
         container.append(&output_frame);
@@ -135,8 +151,10 @@ impl ToolExecutionPanel {
             target_entry,
             args_entry,
             execute_button,
+            cancel_button,
             info_button,
             spinner,
+            progress_bar,
             status_label,
             output_view,
         }
@@ -153,11 +171,16 @@ impl ToolExecutionPanel {
             self.spinner.set_visible(true);
             self.spinner.start();
             self.execute_button.set_sensitive(false);
+            self.cancel_button.set_visible(true);
+            self.progress_bar.set_visible(true);
+            self.progress_bar.pulse();
             self.set_status("Executing...");
         } else {
             self.spinner.stop();
             self.spinner.set_visible(false);
             self.execute_button.set_sensitive(true);
+            self.cancel_button.set_visible(false);
+            self.progress_bar.set_visible(false);
         }
     }
 
@@ -187,10 +210,7 @@ impl ToolExecutionPanel {
     /// Get the arguments value
     pub fn get_arguments(&self) -> Vec<String> {
         let args_str = self.args_entry.text().to_string();
-        args_str
-            .split_whitespace()
-            .map(|s| s.to_string())
-            .collect()
+        args_str.split_whitespace().map(|s| s.to_string()).collect()
     }
 
     /// Wire up the execute button handler
@@ -226,44 +246,46 @@ impl ToolExecutionPanel {
 
     /// Show instructions dialog for the selected tool
     pub fn show_instructions_dialog(&self, window: &gtk4::Window) {
-        let tool_id = self.get_selected_tool().unwrap_or_else(|| "nmap".to_string());
+        let tool_id = self
+            .get_selected_tool()
+            .unwrap_or_else(|| "nmap".to_string());
         let instructions = get_tool_instructions(&tool_id);
-        
+
         let dialog = Dialog::with_buttons(
             Some(&format!("{} - Full Instructions", instructions.name)),
             Some(window),
-            gtk4::DialogFlags::DESTROY_WITH_PARENT,  // Removed MODAL flag
+            gtk4::DialogFlags::DESTROY_WITH_PARENT, // Removed MODAL flag
             &[("Close", ResponseType::Close)],
         );
-        
+
         dialog.set_default_size(1000, 650);
-        
+
         // Connect close button to actually close the dialog
         dialog.connect_response(move |dialog, response| {
             if response == ResponseType::Close {
                 dialog.close();
             }
         });
-        
+
         let content = dialog.content_area();
         content.set_margin_top(12);
         content.set_margin_bottom(12);
         content.set_margin_start(12);
         content.set_margin_end(12);
-        
+
         let scroll = gtk4::ScrolledWindow::new();
         scroll.set_vexpand(true);
         scroll.set_hexpand(true);
-        
+
         let vbox = GtkBox::new(Orientation::Vertical, 12);
-        
+
         // Description
         let desc_label = Label::new(Some(instructions.description));
         desc_label.set_wrap(true);
         desc_label.set_xalign(0.0);
         desc_label.set_margin_bottom(8);
         vbox.append(&desc_label);
-        
+
         // Installation
         let install_frame = gtk4::Frame::new(Some("Installation"));
         let install_box = GtkBox::new(Orientation::Vertical, 4);
@@ -271,14 +293,14 @@ impl ToolExecutionPanel {
         install_box.set_margin_bottom(8);
         install_box.set_margin_start(8);
         install_box.set_margin_end(8);
-        
+
         for cmd in &instructions.installation {
             let cmd_box = create_copyable_command_row(cmd);
             install_box.append(&cmd_box);
         }
         install_frame.set_child(Some(&install_box));
         vbox.append(&install_frame);
-        
+
         // Common Examples
         let examples_frame = gtk4::Frame::new(Some("Common Examples"));
         let examples_box = GtkBox::new(Orientation::Vertical, 8);
@@ -286,21 +308,21 @@ impl ToolExecutionPanel {
         examples_box.set_margin_bottom(8);
         examples_box.set_margin_start(8);
         examples_box.set_margin_end(8);
-        
+
         for example in &instructions.examples {
             let example_title = Label::new(Some(&format!("• {}", example.description)));
             example_title.set_xalign(0.0);
             example_title.set_wrap(true);
             example_title.add_css_class("heading");
             examples_box.append(&example_title);
-            
+
             let cmd_box = create_copyable_command_row(&example.command);
             cmd_box.set_margin_start(20);
             examples_box.append(&cmd_box);
         }
         examples_frame.set_child(Some(&examples_box));
         vbox.append(&examples_frame);
-        
+
         // Common Flags
         let flags_frame = gtk4::Frame::new(Some("Common Flags"));
         let flags_box = GtkBox::new(Orientation::Vertical, 4);
@@ -308,7 +330,7 @@ impl ToolExecutionPanel {
         flags_box.set_margin_bottom(8);
         flags_box.set_margin_start(8);
         flags_box.set_margin_end(8);
-        
+
         for flag in &instructions.common_flags {
             let flag_label = Label::new(Some(&format!("{} - {}", flag.flag, flag.description)));
             flag_label.set_xalign(0.0);
@@ -317,7 +339,7 @@ impl ToolExecutionPanel {
         }
         flags_frame.set_child(Some(&flags_box));
         vbox.append(&flags_frame);
-        
+
         // Tips
         if !instructions.tips.is_empty() {
             let tips_frame = gtk4::Frame::new(Some("Tips & Best Practices"));
@@ -326,7 +348,7 @@ impl ToolExecutionPanel {
             tips_box.set_margin_bottom(8);
             tips_box.set_margin_start(8);
             tips_box.set_margin_end(8);
-            
+
             for tip in &instructions.tips {
                 let tip_label = Label::new(Some(&format!("💡 {}", tip)));
                 tip_label.set_xalign(0.0);
@@ -336,23 +358,46 @@ impl ToolExecutionPanel {
             tips_frame.set_child(Some(&tips_box));
             vbox.append(&tips_frame);
         }
-        
+
         scroll.set_child(Some(&vbox));
         content.append(&scroll);
+
+        // Position dialog at top-left (0, 0) using window title matching
+        let window_title = format!("{} - Full Instructions", instructions.name);
         
+        // Show the dialog first
         dialog.present();
+        
+        // Then position it using a small delay to ensure it's mapped
+        glib::timeout_add_local_once(std::time::Duration::from_millis(100), move || {
+            // Try to position using wmctrl or xdotool if available
+            let _ = std::process::Command::new("wmctrl")
+                .args(&["-r", &window_title, "-e", "0,0,0,-1,-1"])
+                .output();
+            
+            // Fallback to xdotool
+            if let Ok(_) = std::process::Command::new("xdotool")
+                .args(&["search", "--name", &window_title, "windowmove", "0", "0"])
+                .output() {
+                // Success
+            }
+        });
     }
 
     /// Update placeholder text based on selected tool
     pub fn update_placeholders(&self, tool_id: &str) {
         match tool_id {
             "nmap" => {
-                self.target_entry.set_placeholder_text(Some("e.g., scanme.nmap.org or 192.168.1.1"));
-                self.args_entry.set_placeholder_text(Some("e.g., -p 80,443 -sV"));
+                self.target_entry
+                    .set_placeholder_text(Some("e.g., scanme.nmap.org or 192.168.1.1"));
+                self.args_entry
+                    .set_placeholder_text(Some("e.g., -p 80,443 -sV"));
             }
             "gobuster" => {
-                self.target_entry.set_placeholder_text(Some("e.g., http://example.com or example.com"));
-                self.args_entry.set_placeholder_text(Some("e.g., -w /path/to/wordlist.txt"));
+                self.target_entry
+                    .set_placeholder_text(Some("e.g., http://example.com or example.com"));
+                self.args_entry
+                    .set_placeholder_text(Some("e.g., -w /path/to/wordlist.txt"));
             }
             _ => {}
         }
@@ -392,21 +437,21 @@ struct ToolFlag {
 /// Extracts and copies only the arguments portion (everything after the tool name)
 fn create_copyable_command_row(command: &str) -> GtkBox {
     let row = GtkBox::new(Orientation::Horizontal, 8);
-    
+
     // Full command for display
     let cmd_label = Label::new(Some(command));
     cmd_label.set_selectable(true);
     cmd_label.set_xalign(0.0);
     cmd_label.set_hexpand(true);
     cmd_label.add_css_class("monospace");
-    
+
     // Extract arguments only (everything after first word/tool name)
     let args_only = extract_arguments(command);
-    
+
     let copy_button = Button::with_label("📋 Copy");
     copy_button.add_css_class("flat");
     copy_button.set_tooltip_text(Some("Copy command to clipboard"));
-    
+
     let args_clone = args_only.clone();
     copy_button.connect_clicked(move |_| {
         if let Some(display) = gtk4::gdk::Display::default() {
@@ -414,7 +459,7 @@ fn create_copyable_command_row(command: &str) -> GtkBox {
             clipboard.set_text(&args_clone);
         }
     });
-    
+
     row.append(&cmd_label);
     row.append(&copy_button);
     row
@@ -430,19 +475,19 @@ fn extract_arguments(command: &str) -> String {
     if parts.is_empty() {
         return String::new();
     }
-    
+
     // Skip the first part (tool name like "nmap", "gobuster", "sudo")
     let mut start_idx = 1;
-    
+
     // If command starts with "sudo", skip that and the next word (the actual tool)
     if parts[0] == "sudo" && parts.len() > 1 {
         start_idx = 2;
     }
-    
+
     if start_idx >= parts.len() {
         return String::new();
     }
-    
+
     // For nmap commands, the last argument is typically the target
     // For gobuster, arguments include the target as part of -u or -d flag
     let tool_name = if parts[0] == "sudo" && parts.len() > 1 {
@@ -450,19 +495,19 @@ fn extract_arguments(command: &str) -> String {
     } else {
         parts[0]
     };
-    
+
     // For nmap, exclude the last argument (target)
     // For other tools like gobuster, keep all arguments
     let end_idx = if tool_name == "nmap" && parts.len() > start_idx + 1 {
-        parts.len() - 1  // Exclude target
+        parts.len() - 1 // Exclude target
     } else {
         parts.len()
     };
-    
+
     if start_idx >= end_idx {
         return String::new();
     }
-    
+
     parts[start_idx..end_idx].join(" ")
 }
 
@@ -626,8 +671,8 @@ pub fn execute_tool_sync_wrapper(
     arguments: &[String],
     sudo_password: Option<&str>,
 ) -> Result<ExecutionResult, String> {
+    use crate::tools::integrations::gobuster::{GobusterMode, GobusterTool};
     use crate::tools::integrations::nmap::{NmapTool, ScanType};
-    use crate::tools::integrations::gobuster::{GobusterTool, GobusterMode};
 
     // If password provided, execute with sudo
     if let Some(password) = sudo_password {
@@ -639,11 +684,11 @@ pub fn execute_tool_sync_wrapper(
 
     // Build config
     let mut config_builder = ToolConfig::builder().target(target);
-    
+
     for arg in arguments {
         config_builder = config_builder.argument(arg);
     }
-    
+
     let config = config_builder
         .build()
         .map_err(|e| format!("Failed to build config: {}", e))?;
@@ -664,25 +709,102 @@ pub fn execute_tool_sync_wrapper(
     result.map_err(|e| format!("Execution failed: {}", e))
 }
 
-/// Execute tool with sudo privileges
-fn execute_tool_with_sudo(
+/// Clean up tool output by removing ANSI escape codes and progress lines
+fn clean_tool_output(text: &str) -> String {
+    text.lines()
+        .filter_map(|line| {
+            // Skip empty lines
+            if line.trim().is_empty() {
+                return None;
+            }
+            
+            // Skip sudo password prompts
+            if line.contains("[sudo] password for") {
+                return None;
+            }
+            
+            // Skip gobuster progress lines (contain [2K escape code and "Progress:")
+            if line.contains("[2K") && line.contains("Progress:") {
+                return None;
+            }
+            
+            // Remove ANSI escape codes
+            let cleaned = strip_ansi_codes(line);
+            
+            // Return cleaned line if it's not empty after cleanup
+            if cleaned.trim().is_empty() {
+                None
+            } else {
+                Some(cleaned)
+            }
+        })
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+/// Strip ANSI escape codes from a string
+fn strip_ansi_codes(text: &str) -> String {
+    let mut result = String::new();
+    let mut chars = text.chars().peekable();
+    
+    while let Some(ch) = chars.next() {
+        if ch == '\x1b' {
+            // Found escape sequence, skip until we hit a letter
+            if chars.peek() == Some(&'[') {
+                chars.next(); // consume '['
+                while let Some(&c) = chars.peek() {
+                    chars.next();
+                    if c.is_ascii_alphabetic() {
+                        break;
+                    }
+                }
+            }
+        } else {
+            result.push(ch);
+        }
+    }
+    
+    result
+}
+
+/// Execute tool with sudo privileges and cancellation support
+pub fn execute_tool_with_cancel(
+    tool_name: &str,
+    target: &str,
+    arguments: &[String],
+    sudo_password: Option<&str>,
+    cancel_flag: std::sync::Arc<std::sync::atomic::AtomicBool>,
+    child_process: std::sync::Arc<std::sync::Mutex<Option<u32>>>,
+) -> Result<ExecutionResult, String> {
+    if let Some(password) = sudo_password {
+        return execute_tool_with_sudo_cancellable(tool_name, target, arguments, password, cancel_flag, child_process);
+    }
+    
+    // Non-sudo path (not commonly used but keep for completeness)
+    execute_tool_sync_wrapper(tool_name, target, arguments, None)
+}
+
+/// Execute tool with sudo privileges and cancellation support
+fn execute_tool_with_sudo_cancellable(
     tool_name: &str,
     target: &str,
     arguments: &[String],
     password: &str,
+    cancel_flag: std::sync::Arc<std::sync::atomic::AtomicBool>,
+    child_process: std::sync::Arc<std::sync::Mutex<Option<u32>>>,
 ) -> Result<ExecutionResult, String> {
     let start = std::time::Instant::now();
-    
+
     // Build command arguments
     let mut args = vec!["-S".to_string(), tool_name.to_string()];
     args.extend(arguments.iter().cloned());
-    
+
     // For nmap, append target at the end (nmap-style: nmap -sS target)
     // For gobuster, target is already in arguments via -u or -d flag
     if tool_name == "nmap" {
         args.push(target.to_string());
     }
-    
+
     // Execute with sudo using password from stdin
     let mut child = Command::new("sudo")
         .args(&args)
@@ -691,45 +813,146 @@ fn execute_tool_with_sudo(
         .stderr(Stdio::piped())
         .spawn()
         .map_err(|e| format!("Failed to spawn sudo: {}", e))?;
-    
+
+    // Store the process ID for cancellation
+    if let Ok(mut guard) = child_process.lock() {
+        *guard = Some(child.id());
+    }
+
     // Write password to stdin
     if let Some(mut stdin) = child.stdin.take() {
         use std::io::Write;
-        writeln!(stdin, "{}", password)
-            .map_err(|e| format!("Failed to write password: {}", e))?;
+        writeln!(stdin, "{}", password).map_err(|e| format!("Failed to write password: {}", e))?;
     }
-    
+
+    // Poll for completion or cancellation
+    use std::time::Duration;
+    loop {
+        // Check if cancelled
+        if cancel_flag.load(std::sync::atomic::Ordering::SeqCst) {
+            // Kill the child process
+            let _ = child.kill();
+            return Err("Execution cancelled by user".to_string());
+        }
+
+        // Try to get status without blocking
+        match child.try_wait() {
+            Ok(Some(status)) => {
+                // Process finished
+                let output = child.wait_with_output()
+                    .map_err(|e| format!("Failed to collect output: {}", e))?;
+
+                let duration = start.elapsed();
+
+                // Clean up stderr - remove ANSI codes, sudo prompts, and progress lines
+                let stderr = String::from_utf8_lossy(&output.stderr).to_string();
+                let stderr_clean = clean_tool_output(&stderr);
+                
+                // Clean up stdout as well
+                let stdout = String::from_utf8_lossy(&output.stdout).to_string();
+                let stdout_clean = clean_tool_output(&stdout);
+
+                // Check for authentication failure
+                let exit_code = status.code().unwrap_or(-1);
+                if stderr.contains("Sorry, try again")
+                    || stderr.contains("authentication failure")
+                    || (stderr.contains("incorrect password") && exit_code != 0)
+                {
+                    return Err("Authentication failed: Incorrect password".to_string());
+                }
+
+                // Check for command not found
+                if stderr.contains("command not found") || stderr.contains(": not found") || (exit_code == 127)
+                {
+                    return Err(format!("Tool '{}' not found. Please install it first.\nSee Instructions for installation commands.", tool_name));
+                }
+
+                return Ok(ExecutionResult {
+                    stdout: stdout_clean,
+                    stderr: stderr_clean,
+                    exit_code,
+                    duration,
+                    parsed_result: None,
+                    evidence: vec![],
+                });
+            }
+            Ok(None) => {
+                // Still running, sleep briefly
+                std::thread::sleep(Duration::from_millis(100));
+            }
+            Err(e) => {
+                return Err(format!("Error checking process status: {}", e));
+            }
+        }
+    }
+}
+
+/// Execute tool with sudo privileges
+fn execute_tool_with_sudo(
+    tool_name: &str,
+    target: &str,
+    arguments: &[String],
+    password: &str,
+) -> Result<ExecutionResult, String> {
+    let start = std::time::Instant::now();
+
+    // Build command arguments
+    let mut args = vec!["-S".to_string(), tool_name.to_string()];
+    args.extend(arguments.iter().cloned());
+
+    // For nmap, append target at the end (nmap-style: nmap -sS target)
+    // For gobuster, target is already in arguments via -u or -d flag
+    if tool_name == "nmap" {
+        args.push(target.to_string());
+    }
+
+    // Execute with sudo using password from stdin
+    let mut child = Command::new("sudo")
+        .args(&args)
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .map_err(|e| format!("Failed to spawn sudo: {}", e))?;
+
+    // Write password to stdin
+    if let Some(mut stdin) = child.stdin.take() {
+        use std::io::Write;
+        writeln!(stdin, "{}", password).map_err(|e| format!("Failed to write password: {}", e))?;
+    }
+
     // Wait for completion
-    let output = child.wait_with_output()
+    let output = child
+        .wait_with_output()
         .map_err(|e| format!("Failed to wait for sudo: {}", e))?;
-    
+
     let duration = start.elapsed();
-    
-    // Clean up stderr - remove sudo password prompts
+
+    // Clean up stderr - remove ANSI codes, sudo prompts, and progress lines
     let stderr = String::from_utf8_lossy(&output.stderr).to_string();
-    let stderr_clean = stderr
-        .lines()
-        .filter(|line| !line.contains("[sudo] password for") && !line.trim().is_empty())
-        .collect::<Vec<_>>()
-        .join("\n");
+    let stderr_clean = clean_tool_output(&stderr);
     
+    // Clean up stdout as well
+    let stdout = String::from_utf8_lossy(&output.stdout).to_string();
+    let stdout_clean = clean_tool_output(&stdout);
+
     // Check for authentication failure (more specific patterns)
     let exit_code = output.status.code().unwrap_or(-1);
-    if stderr.contains("Sorry, try again") || 
-       stderr.contains("authentication failure") ||
-       (stderr.contains("incorrect password") && exit_code != 0) {
+    if stderr.contains("Sorry, try again")
+        || stderr.contains("authentication failure")
+        || (stderr.contains("incorrect password") && exit_code != 0)
+    {
         return Err("Authentication failed: Incorrect password".to_string());
     }
-    
+
     // Check for command not found (tool not installed)
-    if stderr.contains("command not found") || 
-       stderr.contains(": not found") ||
-       (exit_code == 127) {
+    if stderr.contains("command not found") || stderr.contains(": not found") || (exit_code == 127)
+    {
         return Err(format!("Tool '{}' not found. Please install it first.\nSee Instructions for installation commands.", tool_name));
     }
-    
+
     Ok(ExecutionResult {
-        stdout: String::from_utf8_lossy(&output.stdout).to_string(),
+        stdout: stdout_clean,
         stderr: stderr_clean,
         exit_code,
         duration,
@@ -750,49 +973,49 @@ pub fn show_password_dialog(window: &gtk4::Window) -> Option<String> {
             ("Authenticate", ResponseType::Accept),
         ],
     );
-    
+
     dialog.set_default_response(ResponseType::Accept);
     dialog.set_default_size(400, -1);
-    
+
     let content = dialog.content_area();
     content.set_margin_top(16);
     content.set_margin_bottom(16);
     content.set_margin_start(16);
     content.set_margin_end(16);
     content.set_spacing(12);
-    
+
     // Icon and message box
     let message_box = GtkBox::new(Orientation::Vertical, 8);
-    
+
     let title_label = Label::new(Some("Security tools require elevated privileges"));
     title_label.add_css_class("title-4");
     title_label.set_wrap(true);
-    
+
     let info_label = Label::new(Some(
         "Tools like Nmap and Gobuster need root access to perform low-level network operations.\nPlease enter your system password to continue."
     ));
     info_label.set_wrap(true);
     info_label.set_justify(gtk4::Justification::Center);
     info_label.add_css_class("dim-label");
-    
+
     message_box.append(&title_label);
     message_box.append(&info_label);
-    
+
     let password_entry = PasswordEntry::new();
     password_entry.set_show_peek_icon(true);
     password_entry.set_activates_default(true);
     password_entry.set_placeholder_text(Some("Enter your password"));
-    
+
     content.append(&message_box);
     content.append(&password_entry);
-    
+
     // Focus password entry when dialog opens
     password_entry.grab_focus();
-    
+
     // Store password in a Rc<RefCell> to capture from closure
     let password_result = std::rc::Rc::new(std::cell::RefCell::new(None));
     let password_result_clone = password_result.clone();
-    
+
     let password_entry_clone = password_entry.clone();
     dialog.connect_response(move |dialog, response| {
         if response == ResponseType::Accept {
@@ -803,14 +1026,14 @@ pub fn show_password_dialog(window: &gtk4::Window) -> Option<String> {
         }
         dialog.close();
     });
-    
+
     dialog.present();
-    
+
     // Run nested event loop to wait for dialog response
     while dialog.is_visible() {
         gtk4::glib::MainContext::default().iteration(true);
     }
-    
+
     // Extract the password before the borrow is dropped
     let result = password_result.borrow().clone();
     result
@@ -819,12 +1042,24 @@ pub fn show_password_dialog(window: &gtk4::Window) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::sync::Once;
+
+    static GTK_INIT: Once = Once::new();
+
+    fn ensure_gtk_init() -> bool {
+        let mut result = true;
+        GTK_INIT.call_once(|| {
+            if gtk4::init().is_err() {
+                eprintln!("Failed to initialize GTK - tests will be skipped");
+                result = false;
+            }
+        });
+        result
+    }
 
     #[test]
     fn test_tool_execution_panel_creation() {
-        // Skip GTK tests in non-graphical environment
-        if gtk4::init().is_err() {
-            println!("Skipping GTK test - no display available");
+        if !ensure_gtk_init() {
             return;
         }
 
@@ -835,13 +1070,13 @@ mod tests {
 
     #[test]
     fn test_parse_arguments() {
-        if gtk4::init().is_err() {
+        if !ensure_gtk_init() {
             return;
         }
 
         let panel = ToolExecutionPanel::new();
         panel.args_entry.set_text("-p 80,443 -sV");
-        
+
         let args = panel.get_arguments();
         assert_eq!(args.len(), 3);
         assert_eq!(args[0], "-p");
@@ -851,15 +1086,15 @@ mod tests {
 
     #[test]
     fn test_tool_selection() {
-        if gtk4::init().is_err() {
+        if !ensure_gtk_init() {
             return;
         }
 
         let panel = ToolExecutionPanel::new();
-        
+
         // Default should be nmap
         assert_eq!(panel.get_selected_tool(), Some("nmap".to_string()));
-        
+
         // Switch to gobuster
         panel.tool_selector.set_active_id(Some("gobuster"));
         assert_eq!(panel.get_selected_tool(), Some("gobuster".to_string()));
@@ -867,19 +1102,19 @@ mod tests {
 
     #[test]
     fn test_status_updates() {
-        if gtk4::init().is_err() {
+        if !ensure_gtk_init() {
             return;
         }
 
         let panel = ToolExecutionPanel::new();
-        
+
         panel.set_status("Testing status");
         assert_eq!(panel.status_label.text(), "Testing status");
-        
+
         panel.set_executing(true);
         assert!(!panel.execute_button.is_sensitive());
         assert!(panel.spinner.is_visible());
-        
+
         panel.set_executing(false);
         assert!(panel.execute_button.is_sensitive());
         assert!(!panel.spinner.is_visible());
@@ -887,20 +1122,20 @@ mod tests {
 
     #[test]
     fn test_output_operations() {
-        if gtk4::init().is_err() {
+        if !ensure_gtk_init() {
             return;
         }
 
         let panel = ToolExecutionPanel::new();
-        
+
         panel.append_output("Line 1\n");
         panel.append_output("Line 2\n");
-        
+
         let buffer = panel.output_view.buffer();
         let text = buffer.text(&buffer.start_iter(), &buffer.end_iter(), false);
         assert!(text.contains("Line 1"));
         assert!(text.contains("Line 2"));
-        
+
         panel.clear_output();
         let text = buffer.text(&buffer.start_iter(), &buffer.end_iter(), false);
         assert_eq!(text, "");

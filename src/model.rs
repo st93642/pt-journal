@@ -43,10 +43,10 @@ pub struct QuizAnswer {
 pub struct QuizQuestion {
     pub id: Uuid,
     pub question_text: String,
-    pub answers: Vec<QuizAnswer>,  // Typically 4 options (A, B, C, D)
+    pub answers: Vec<QuizAnswer>, // Typically 4 options (A, B, C, D)
     pub explanation: String,
-    pub domain: String,  // e.g., "1.0 General Security Concepts"
-    pub subdomain: String,  // e.g., "1.1 Compare and contrast various security controls"
+    pub domain: String,    // e.g., "1.0 General Security Concepts"
+    pub subdomain: String, // e.g., "1.1 Compare and contrast various security controls"
 }
 
 /// User's progress on a single question
@@ -57,7 +57,7 @@ pub struct QuestionProgress {
     pub selected_answer_index: Option<usize>,
     pub is_correct: Option<bool>,
     pub explanation_viewed_before_answer: bool,
-    pub first_attempt_correct: bool,  // For scoring - true only if correct on first try
+    pub first_attempt_correct: bool, // For scoring - true only if correct on first try
     pub attempts: u32,
     pub last_attempted: Option<DateTime<Utc>>,
 }
@@ -86,7 +86,7 @@ impl QuestionProgress {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct QuizStep {
     pub id: Uuid,
-    pub title: String,  // e.g., "Domain 1.1 - Security Controls"
+    pub title: String, // e.g., "Domain 1.1 - Security Controls"
     pub domain: String,
     pub questions: Vec<QuizQuestion>,
     pub progress: Vec<QuestionProgress>,
@@ -94,10 +94,11 @@ pub struct QuizStep {
 
 impl QuizStep {
     pub fn new(id: Uuid, title: String, domain: String, questions: Vec<QuizQuestion>) -> Self {
-        let progress = questions.iter()
+        let progress = questions
+            .iter()
             .map(|q| QuestionProgress::new(q.id))
             .collect();
-        
+
         Self {
             id,
             title,
@@ -111,10 +112,18 @@ impl QuizStep {
     pub fn statistics(&self) -> QuizStatistics {
         let total_questions = self.questions.len();
         let answered = self.progress.iter().filter(|p| p.answered).count();
-        let correct = self.progress.iter().filter(|p| p.is_correct == Some(true)).count();
-        let incorrect = self.progress.iter().filter(|p| p.is_correct == Some(false)).count();
+        let correct = self
+            .progress
+            .iter()
+            .filter(|p| p.is_correct == Some(true))
+            .count();
+        let incorrect = self
+            .progress
+            .iter()
+            .filter(|p| p.is_correct == Some(false))
+            .count();
         let first_attempt_correct = self.progress.iter().filter(|p| p.awards_points()).count();
-        
+
         let score_percentage = if total_questions > 0 {
             (first_attempt_correct as f32 / total_questions as f32) * 100.0
         } else {
@@ -139,7 +148,7 @@ pub struct QuizStatistics {
     pub answered: usize,
     pub correct: usize,
     pub incorrect: usize,
-    pub first_attempt_correct: usize,  // Questions answered correctly on first try without viewing explanation
+    pub first_attempt_correct: usize, // Questions answered correctly on first try without viewing explanation
     pub score_percentage: f32,
 }
 
@@ -158,9 +167,7 @@ pub enum StepContent {
         evidence: Vec<Evidence>,
     },
     /// Quiz-based learning step with questions and progress tracking
-    Quiz {
-        quiz_data: QuizStep,
-    },
+    Quiz { quiz_data: QuizStep },
 }
 
 impl Default for StepContent {
@@ -181,11 +188,11 @@ pub struct Step {
     pub tags: Vec<String>,
     pub status: StepStatus,
     pub completed_at: Option<DateTime<Utc>>,
-    
+
     /// The content of this step - either tutorial or quiz
     #[serde(default)]
     pub content: StepContent,
-    
+
     // Legacy fields for backward compatibility with existing sessions
     // These are automatically migrated to StepContent::Tutorial on load
     #[serde(default, skip_serializing)]
@@ -200,12 +207,7 @@ pub struct Step {
 
 impl Step {
     /// Create a new tutorial-based step
-    pub fn new_tutorial(
-        id: Uuid,
-        title: String,
-        description: String,
-        tags: Vec<String>,
-    ) -> Self {
+    pub fn new_tutorial(id: Uuid, title: String, description: String, tags: Vec<String>) -> Self {
         Self {
             id,
             title,
@@ -227,12 +229,7 @@ impl Step {
     }
 
     /// Create a new quiz-based step
-    pub fn new_quiz(
-        id: Uuid,
-        title: String,
-        tags: Vec<String>,
-        quiz_data: QuizStep,
-    ) -> Self {
+    pub fn new_quiz(id: Uuid, title: String, tags: Vec<String>, quiz_data: QuizStep) -> Self {
         Self {
             id,
             title,
@@ -285,7 +282,9 @@ impl Step {
     pub fn quiz_mut(&mut self) -> &mut QuizStep {
         match &mut self.content {
             StepContent::Quiz { quiz_data } => quiz_data,
-            StepContent::Tutorial { .. } => panic!("Attempted to access quiz content on tutorial step"),
+            StepContent::Tutorial { .. } => {
+                panic!("Attempted to access quiz content on tutorial step")
+            }
         }
     }
 
@@ -298,7 +297,7 @@ impl Step {
     }
 
     // Helper methods for backward compatibility with UI code
-    
+
     /// Get description (for tutorial steps)
     pub fn get_description(&self) -> String {
         match &self.content {
@@ -310,7 +309,9 @@ impl Step {
     /// Get description notes (for tutorial steps)
     pub fn get_description_notes(&self) -> String {
         match &self.content {
-            StepContent::Tutorial { description_notes, .. } => description_notes.clone(),
+            StepContent::Tutorial {
+                description_notes, ..
+            } => description_notes.clone(),
             StepContent::Quiz { .. } => String::new(),
         }
     }
@@ -333,7 +334,10 @@ impl Step {
 
     /// Set description notes (for tutorial steps)
     pub fn set_description_notes(&mut self, text: String) {
-        if let StepContent::Tutorial { description_notes, .. } = &mut self.content {
+        if let StepContent::Tutorial {
+            description_notes, ..
+        } = &mut self.content
+        {
             *description_notes = text;
         }
     }
@@ -435,8 +439,8 @@ impl Default for AppModel {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::collections::HashSet;
     use assert_matches::assert_matches;
+    use std::collections::HashSet;
 
     #[test]
     fn test_step_status_variants() {
@@ -489,7 +493,7 @@ mod tests {
             "Description 1".to_string(),
             vec!["tag1".to_string()],
         );
-        
+
         let mut step2 = Step::new_tutorial(
             Uuid::new_v4(),
             "Step 2".to_string(),
@@ -554,7 +558,11 @@ mod tests {
             Uuid::new_v4(),
             "Tagged Step".to_string(),
             "Test".to_string(),
-            vec!["recon".to_string(), "passive".to_string(), "dns".to_string()],
+            vec![
+                "recon".to_string(),
+                "passive".to_string(),
+                "dns".to_string(),
+            ],
         );
 
         assert_eq!(step.tags.len(), 3);
@@ -589,12 +597,18 @@ mod tests {
         );
 
         // Test description_notes updates
-        if let StepContent::Tutorial { description_notes, .. } = &mut step.content {
+        if let StepContent::Tutorial {
+            description_notes, ..
+        } = &mut step.content
+        {
             *description_notes = "User notes in description area".to_string();
             assert_eq!(*description_notes, "User notes in description area");
 
             *description_notes = "Updated description notes with more content".to_string();
-            assert_eq!(*description_notes, "Updated description notes with more content");
+            assert_eq!(
+                *description_notes,
+                "Updated description notes with more content"
+            );
 
             // Test clearing description_notes
             description_notes.clear();
@@ -639,5 +653,3 @@ mod tests {
         }
     }
 }
-
-

@@ -1,8 +1,8 @@
 /// Certified Ethical Hacker (CEH) v12 quiz-based learning phase
-/// 
+///
 /// This module provides 24 modules of CEH v12 certification content covering the full
 /// EC-Council ethical hacking curriculum plus advanced topics:
-/// 
+///
 /// - Module 01: Introduction to Ethical Hacking
 /// - Module 02: Footprinting and Reconnaissance  
 /// - Module 03: Scanning Networks
@@ -29,12 +29,11 @@
 /// - Module 24: Blockchain and Web3 Security
 ///
 /// Questions are loaded from data/ceh/ directory structure.
-
-use crate::model::{Step, QuizStep};
+use crate::model::{QuizStep, Step};
 use crate::quiz::parse_question_file;
-use uuid::Uuid;
 use std::fs;
 use std::path::Path;
+use uuid::Uuid;
 
 /// Module 01: Introduction to Ethical Hacking
 pub const MODULE_01: &str = "01. Introduction to Ethical Hacking";
@@ -109,22 +108,34 @@ pub const MODULE_23: &str = "23. DevSecOps and CI/CD Pipeline Security";
 pub const MODULE_24: &str = "24. Blockchain and Web3 Security";
 
 /// Load questions from a file in the data directory
-fn load_questions_from_file(relative_path: &str) -> Result<Vec<crate::model::QuizQuestion>, String> {
+fn load_questions_from_file(
+    relative_path: &str,
+) -> Result<Vec<crate::model::QuizQuestion>, String> {
     let base_path = Path::new("data/ceh");
     let full_path = base_path.join(relative_path);
-    
+
     // Check if file exists
     if !full_path.exists() {
         return Err(format!("Question file not found: {}", full_path.display()));
     }
-    
+
     // Read file content
-    let content = fs::read_to_string(&full_path)
-        .map_err(|e| format!("Failed to read question file {}: {}", full_path.display(), e))?;
-    
+    let content = fs::read_to_string(&full_path).map_err(|e| {
+        format!(
+            "Failed to read question file {}: {}",
+            full_path.display(),
+            e
+        )
+    })?;
+
     // Parse questions
-    parse_question_file(&content)
-        .map_err(|e| format!("Failed to parse questions from {}: {}", full_path.display(), e))
+    parse_question_file(&content).map_err(|e| {
+        format!(
+            "Failed to parse questions from {}: {}",
+            full_path.display(),
+            e
+        )
+    })
 }
 
 /// Create a quiz step from a question file
@@ -134,22 +145,21 @@ fn create_quiz_step_from_file(
     file_path: &str,
 ) -> Result<Step, String> {
     let questions = load_questions_from_file(file_path)?;
-    
+
     if questions.is_empty() {
         return Err(format!("No questions loaded from {}", file_path));
     }
-    
-    let quiz_step = QuizStep::new(
-        Uuid::new_v4(),
-        title.clone(),
-        module,
-        questions,
-    );
-    
+
+    let quiz_step = QuizStep::new(Uuid::new_v4(), title.clone(), module, questions);
+
     Ok(Step::new_quiz(
         Uuid::new_v4(),
         title,
-        vec!["quiz".to_string(), "ceh".to_string(), "ethical-hacker".to_string()],
+        vec![
+            "quiz".to_string(),
+            "ceh".to_string(),
+            "ethical-hacker".to_string(),
+        ],
         quiz_step,
     ))
 }
@@ -157,7 +167,7 @@ fn create_quiz_step_from_file(
 /// Get all quiz steps for Module 01 (Introduction to Ethical Hacking)
 pub fn get_module_01_steps() -> Vec<Step> {
     let mut steps = Vec::new();
-    
+
     match create_quiz_step_from_file(
         "1.1 Ethical Hacking Fundamentals".to_string(),
         MODULE_01.to_string(),
@@ -166,14 +176,14 @@ pub fn get_module_01_steps() -> Vec<Step> {
         Ok(step) => steps.push(step),
         Err(e) => eprintln!("Warning: Failed to load Module 01: {}", e),
     }
-    
+
     steps
 }
 
 /// Get all quiz steps for Module 02 (Footprinting and Reconnaissance)
 pub fn get_module_02_steps() -> Vec<Step> {
     let mut steps = Vec::new();
-    
+
     match create_quiz_step_from_file(
         "2.1 Footprinting and OSINT".to_string(),
         MODULE_02.to_string(),
@@ -182,14 +192,14 @@ pub fn get_module_02_steps() -> Vec<Step> {
         Ok(step) => steps.push(step),
         Err(e) => eprintln!("Warning: Failed to load Module 02: {}", e),
     }
-    
+
     steps
 }
 
 /// Get all quiz steps for Module 03 (Scanning Networks)
 pub fn get_module_03_steps() -> Vec<Step> {
     let mut steps = Vec::new();
-    
+
     match create_quiz_step_from_file(
         "3.1 Network Scanning Techniques".to_string(),
         MODULE_03.to_string(),
@@ -198,14 +208,14 @@ pub fn get_module_03_steps() -> Vec<Step> {
         Ok(step) => steps.push(step),
         Err(e) => eprintln!("Warning: Failed to load Module 03: {}", e),
     }
-    
+
     steps
 }
 
 /// Get all quiz steps for Module 04 (Enumeration)
 pub fn get_module_04_steps() -> Vec<Step> {
     let mut steps = Vec::new();
-    
+
     match create_quiz_step_from_file(
         "4.1 Service Enumeration".to_string(),
         MODULE_04.to_string(),
@@ -214,14 +224,14 @@ pub fn get_module_04_steps() -> Vec<Step> {
         Ok(step) => steps.push(step),
         Err(e) => eprintln!("Warning: Failed to load Module 04: {}", e),
     }
-    
+
     steps
 }
 
 /// Get all quiz steps for Module 05 (Vulnerability Analysis)
 pub fn get_module_05_steps() -> Vec<Step> {
     let mut steps = Vec::new();
-    
+
     match create_quiz_step_from_file(
         "5.1 Vulnerability Assessment".to_string(),
         MODULE_05.to_string(),
@@ -230,14 +240,14 @@ pub fn get_module_05_steps() -> Vec<Step> {
         Ok(step) => steps.push(step),
         Err(e) => eprintln!("Warning: Failed to load Module 05: {}", e),
     }
-    
+
     steps
 }
 
 /// Get all quiz steps for Module 06 (System Hacking)
 pub fn get_module_06_steps() -> Vec<Step> {
     let mut steps = Vec::new();
-    
+
     match create_quiz_step_from_file(
         "6.1 System Hacking Techniques".to_string(),
         MODULE_06.to_string(),
@@ -246,14 +256,14 @@ pub fn get_module_06_steps() -> Vec<Step> {
         Ok(step) => steps.push(step),
         Err(e) => eprintln!("Warning: Failed to load Module 06: {}", e),
     }
-    
+
     steps
 }
 
 /// Get all quiz steps for Module 07 (Malware Threats)
 pub fn get_module_07_steps() -> Vec<Step> {
     let mut steps = Vec::new();
-    
+
     match create_quiz_step_from_file(
         "7.1 Malware and Trojans".to_string(),
         MODULE_07.to_string(),
@@ -262,14 +272,14 @@ pub fn get_module_07_steps() -> Vec<Step> {
         Ok(step) => steps.push(step),
         Err(e) => eprintln!("Warning: Failed to load Module 07: {}", e),
     }
-    
+
     steps
 }
 
 /// Get all quiz steps for Module 08 (Sniffing)
 pub fn get_module_08_steps() -> Vec<Step> {
     let mut steps = Vec::new();
-    
+
     match create_quiz_step_from_file(
         "8.1 Network Sniffing".to_string(),
         MODULE_08.to_string(),
@@ -278,14 +288,14 @@ pub fn get_module_08_steps() -> Vec<Step> {
         Ok(step) => steps.push(step),
         Err(e) => eprintln!("Warning: Failed to load Module 08: {}", e),
     }
-    
+
     steps
 }
 
 /// Get all quiz steps for Module 09 (Social Engineering)
 pub fn get_module_09_steps() -> Vec<Step> {
     let mut steps = Vec::new();
-    
+
     match create_quiz_step_from_file(
         "9.1 Social Engineering Attacks".to_string(),
         MODULE_09.to_string(),
@@ -294,14 +304,14 @@ pub fn get_module_09_steps() -> Vec<Step> {
         Ok(step) => steps.push(step),
         Err(e) => eprintln!("Warning: Failed to load Module 09: {}", e),
     }
-    
+
     steps
 }
 
 /// Get all quiz steps for Module 10 (Denial of Service)
 pub fn get_module_10_steps() -> Vec<Step> {
     let mut steps = Vec::new();
-    
+
     match create_quiz_step_from_file(
         "10.1 DoS and DDoS Attacks".to_string(),
         MODULE_10.to_string(),
@@ -310,14 +320,14 @@ pub fn get_module_10_steps() -> Vec<Step> {
         Ok(step) => steps.push(step),
         Err(e) => eprintln!("Warning: Failed to load Module 10: {}", e),
     }
-    
+
     steps
 }
 
 /// Get all quiz steps for Module 11 (Session Hijacking)
 pub fn get_module_11_steps() -> Vec<Step> {
     let mut steps = Vec::new();
-    
+
     match create_quiz_step_from_file(
         "11.1 Session Hijacking Techniques".to_string(),
         MODULE_11.to_string(),
@@ -326,14 +336,14 @@ pub fn get_module_11_steps() -> Vec<Step> {
         Ok(step) => steps.push(step),
         Err(e) => eprintln!("Warning: Failed to load Module 11: {}", e),
     }
-    
+
     steps
 }
 
 /// Get all quiz steps for Module 12 (Evading IDSs, Firewalls, and Honeypots)
 pub fn get_module_12_steps() -> Vec<Step> {
     let mut steps = Vec::new();
-    
+
     match create_quiz_step_from_file(
         "12.1 IDS/IPS Evasion".to_string(),
         MODULE_12.to_string(),
@@ -342,14 +352,14 @@ pub fn get_module_12_steps() -> Vec<Step> {
         Ok(step) => steps.push(step),
         Err(e) => eprintln!("Warning: Failed to load Module 12: {}", e),
     }
-    
+
     steps
 }
 
 /// Get all quiz steps for Module 13 (Hacking Web Servers)
 pub fn get_module_13_steps() -> Vec<Step> {
     let mut steps = Vec::new();
-    
+
     match create_quiz_step_from_file(
         "13.1 Web Server Attacks".to_string(),
         MODULE_13.to_string(),
@@ -358,14 +368,14 @@ pub fn get_module_13_steps() -> Vec<Step> {
         Ok(step) => steps.push(step),
         Err(e) => eprintln!("Warning: Failed to load Module 13: {}", e),
     }
-    
+
     steps
 }
 
 /// Get all quiz steps for Module 14 (Hacking Web Applications)
 pub fn get_module_14_steps() -> Vec<Step> {
     let mut steps = Vec::new();
-    
+
     match create_quiz_step_from_file(
         "14.1 Web Application Attacks".to_string(),
         MODULE_14.to_string(),
@@ -374,14 +384,14 @@ pub fn get_module_14_steps() -> Vec<Step> {
         Ok(step) => steps.push(step),
         Err(e) => eprintln!("Warning: Failed to load Module 14: {}", e),
     }
-    
+
     steps
 }
 
 /// Get all quiz steps for Module 15 (SQL Injection)
 pub fn get_module_15_steps() -> Vec<Step> {
     let mut steps = Vec::new();
-    
+
     match create_quiz_step_from_file(
         "15.1 SQL Injection Techniques".to_string(),
         MODULE_15.to_string(),
@@ -390,14 +400,14 @@ pub fn get_module_15_steps() -> Vec<Step> {
         Ok(step) => steps.push(step),
         Err(e) => eprintln!("Warning: Failed to load Module 15: {}", e),
     }
-    
+
     steps
 }
 
 /// Get all quiz steps for Module 16 (Hacking Wireless Networks)
 pub fn get_module_16_steps() -> Vec<Step> {
     let mut steps = Vec::new();
-    
+
     match create_quiz_step_from_file(
         "16.1 Wireless Network Attacks".to_string(),
         MODULE_16.to_string(),
@@ -406,14 +416,14 @@ pub fn get_module_16_steps() -> Vec<Step> {
         Ok(step) => steps.push(step),
         Err(e) => eprintln!("Warning: Failed to load Module 16: {}", e),
     }
-    
+
     steps
 }
 
 /// Get all quiz steps for Module 17 (Hacking Mobile Platforms)
 pub fn get_module_17_steps() -> Vec<Step> {
     let mut steps = Vec::new();
-    
+
     match create_quiz_step_from_file(
         "17.1 Mobile Platform Attacks".to_string(),
         MODULE_17.to_string(),
@@ -422,14 +432,14 @@ pub fn get_module_17_steps() -> Vec<Step> {
         Ok(step) => steps.push(step),
         Err(e) => eprintln!("Warning: Failed to load Module 17: {}", e),
     }
-    
+
     steps
 }
 
 /// Get all quiz steps for Module 18 (IoT and OT Hacking)
 pub fn get_module_18_steps() -> Vec<Step> {
     let mut steps = Vec::new();
-    
+
     match create_quiz_step_from_file(
         "18.1 IoT and OT Security".to_string(),
         MODULE_18.to_string(),
@@ -438,14 +448,14 @@ pub fn get_module_18_steps() -> Vec<Step> {
         Ok(step) => steps.push(step),
         Err(e) => eprintln!("Warning: Failed to load Module 18: {}", e),
     }
-    
+
     steps
 }
 
 /// Get all quiz steps for Module 19 (Cloud Computing)
 pub fn get_module_19_steps() -> Vec<Step> {
     let mut steps = Vec::new();
-    
+
     match create_quiz_step_from_file(
         "19.1 Cloud Security".to_string(),
         MODULE_19.to_string(),
@@ -454,14 +464,14 @@ pub fn get_module_19_steps() -> Vec<Step> {
         Ok(step) => steps.push(step),
         Err(e) => eprintln!("Warning: Failed to load Module 19: {}", e),
     }
-    
+
     steps
 }
 
 /// Get all quiz steps for Module 20 (Cryptography)
 pub fn get_module_20_steps() -> Vec<Step> {
     let mut steps = Vec::new();
-    
+
     match create_quiz_step_from_file(
         "20.1 Cryptographic Systems".to_string(),
         MODULE_20.to_string(),
@@ -470,14 +480,14 @@ pub fn get_module_20_steps() -> Vec<Step> {
         Ok(step) => steps.push(step),
         Err(e) => eprintln!("Warning: Failed to load Module 20: {}", e),
     }
-    
+
     steps
 }
 
 /// Get all quiz steps for Module 21 (AI and Machine Learning Security)
 pub fn get_module_21_steps() -> Vec<Step> {
     let mut steps = Vec::new();
-    
+
     match create_quiz_step_from_file(
         "21.1 AI/ML Security".to_string(),
         MODULE_21.to_string(),
@@ -486,14 +496,14 @@ pub fn get_module_21_steps() -> Vec<Step> {
         Ok(step) => steps.push(step),
         Err(e) => eprintln!("Warning: Failed to load Module 21: {}", e),
     }
-    
+
     steps
 }
 
 /// Get all quiz steps for Module 22 (Kubernetes and Container Security)
 pub fn get_module_22_steps() -> Vec<Step> {
     let mut steps = Vec::new();
-    
+
     match create_quiz_step_from_file(
         "22.1 Kubernetes & Containers".to_string(),
         MODULE_22.to_string(),
@@ -502,14 +512,14 @@ pub fn get_module_22_steps() -> Vec<Step> {
         Ok(step) => steps.push(step),
         Err(e) => eprintln!("Warning: Failed to load Module 22: {}", e),
     }
-    
+
     steps
 }
 
 /// Get all quiz steps for Module 23 (DevSecOps and CI/CD Pipeline Security)
 pub fn get_module_23_steps() -> Vec<Step> {
     let mut steps = Vec::new();
-    
+
     match create_quiz_step_from_file(
         "23.1 DevSecOps & CI/CD".to_string(),
         MODULE_23.to_string(),
@@ -518,14 +528,14 @@ pub fn get_module_23_steps() -> Vec<Step> {
         Ok(step) => steps.push(step),
         Err(e) => eprintln!("Warning: Failed to load Module 23: {}", e),
     }
-    
+
     steps
 }
 
 /// Get all quiz steps for Module 24 (Blockchain and Web3 Security)
 pub fn get_module_24_steps() -> Vec<Step> {
     let mut steps = Vec::new();
-    
+
     match create_quiz_step_from_file(
         "24.1 Blockchain & Web3".to_string(),
         MODULE_24.to_string(),
@@ -534,14 +544,14 @@ pub fn get_module_24_steps() -> Vec<Step> {
         Ok(step) => steps.push(step),
         Err(e) => eprintln!("Warning: Failed to load Module 24: {}", e),
     }
-    
+
     steps
 }
 
 /// Get all CEH v12 quiz steps across all 24 modules
 pub fn get_all_ceh_steps() -> Vec<Step> {
     let mut all_steps = Vec::new();
-    
+
     all_steps.extend(get_module_01_steps());
     all_steps.extend(get_module_02_steps());
     all_steps.extend(get_module_03_steps());
@@ -566,44 +576,47 @@ pub fn get_all_ceh_steps() -> Vec<Step> {
     all_steps.extend(get_module_22_steps());
     all_steps.extend(get_module_23_steps());
     all_steps.extend(get_module_24_steps());
-    
+
     all_steps
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn test_load_module_01_steps() {
         let steps = get_module_01_steps();
         assert_eq!(steps.len(), 1, "Module 01 should have 1 step");
-        
+
         // Verify it's a quiz step
         for step in &steps {
             assert!(step.is_quiz(), "All Module 01 steps should be quiz steps");
         }
-        
+
         // Verify title
         assert_eq!(steps[0].title, "1.1 Ethical Hacking Fundamentals");
     }
-    
+
     #[test]
     fn test_load_questions_from_file_success() {
         let result = load_questions_from_file("01-ethical-hacking/1.1-fundamentals.txt");
-        assert!(result.is_ok(), "Should successfully load Module 01 questions");
-        
+        assert!(
+            result.is_ok(),
+            "Should successfully load Module 01 questions"
+        );
+
         let questions = result.unwrap();
         assert_eq!(questions.len(), 50, "Should have 50 questions");
     }
-    
+
     #[test]
     fn test_load_questions_from_nonexistent_file() {
         let result = load_questions_from_file("nonexistent/file.txt");
         assert!(result.is_err(), "Should fail for nonexistent file");
         assert!(result.unwrap_err().contains("not found"));
     }
-    
+
     #[test]
     fn test_create_quiz_step_from_file() {
         let result = create_quiz_step_from_file(
@@ -611,13 +624,13 @@ mod tests {
             MODULE_01.to_string(),
             "01-ethical-hacking/1.1-fundamentals.txt",
         );
-        
+
         assert!(result.is_ok(), "Should create quiz step successfully");
-        
+
         let step = result.unwrap();
         assert_eq!(step.title, "Test Step");
         assert!(step.is_quiz());
-        
+
         // Verify quiz content
         if let Some(quiz_step) = step.get_quiz_step() {
             assert_eq!(quiz_step.questions.len(), 50);
@@ -626,7 +639,7 @@ mod tests {
             panic!("Step should contain quiz data");
         }
     }
-    
+
     #[test]
     fn test_get_all_ceh_steps() {
         let all_steps = get_all_ceh_steps();

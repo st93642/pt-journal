@@ -18,7 +18,7 @@ pub fn default_sessions_dir() -> PathBuf {
             return path;
         }
     }
-    
+
     // Fallback: create in current directory
     let path = PathBuf::from("./pt-journal-sessions");
     let _ = fs::create_dir_all(&path);
@@ -42,16 +42,16 @@ pub fn save_session(path: &Path, session: &Session) -> Result<()> {
             path
         }
     };
-    
+
     // Create session directory and evidence subdirectory
     fs::create_dir_all(session_dir)?;
     fs::create_dir_all(session_dir.join("evidence"))?;
-    
+
     // Save session.json in the session folder
     let session_file = session_dir.join("session.json");
     let json = serde_json::to_string_pretty(session)?;
     fs::write(session_file, json)?;
-    
+
     Ok(())
 }
 
@@ -59,14 +59,14 @@ pub fn save_session(path: &Path, session: &Session) -> Result<()> {
 pub fn load_session(path: &Path) -> Result<Session> {
     let content = fs::read_to_string(path)?;
     let mut session: Session = serde_json::from_str(&content)?;
-    
+
     // Migrate legacy step data to new StepContent format
     for phase in &mut session.phases {
         for step in &mut phase.steps {
             step.migrate_from_legacy();
         }
     }
-    
+
     Ok(session)
 }
 
@@ -74,11 +74,11 @@ pub fn load_session(path: &Path) -> Result<Session> {
 mod tests {
     use super::*;
     use crate::model::*;
+    use assert_matches::assert_matches;
+    use chrono::Utc;
     use std::fs;
     use tempfile::TempDir;
-    use assert_matches::assert_matches;
     use uuid::Uuid;
-    use chrono::Utc;
 
     #[test]
     fn test_default_sessions_directory() {
@@ -94,25 +94,33 @@ mod tests {
     #[test]
     fn test_save_session_creates_directories() {
         let temp_dir = TempDir::new().unwrap();
-        let nested_path = temp_dir.path().join("deep").join("nested").join("path").join("session.json");
+        let session_folder = temp_dir
+            .path()
+            .join("deep")
+            .join("nested")
+            .join("path")
+            .join("my_session");
+        let session_file = session_folder.join("session.json");
 
         let session = Session::default();
 
-        // Should create all intermediate directories
-        let result = save_session(&nested_path, &session);
+        // Should create all intermediate directories and folder structure
+        let result = save_session(&session_folder, &session);
         assert!(result.is_ok());
 
-        // Verify file exists
-        assert!(nested_path.exists());
+        // Verify file and folders exist
+        assert!(session_file.exists());
+        assert!(session_folder.join("evidence").exists());
 
         // Verify parent directories exist
-        assert!(nested_path.parent().unwrap().exists());
+        assert!(session_folder.parent().unwrap().exists());
     }
 
     #[test]
     fn test_save_load_roundtrip() {
         let temp_dir = TempDir::new().unwrap();
-        let session_path = temp_dir.path().join("roundtrip_test.json");
+        let session_folder = temp_dir.path().join("roundtrip_test");
+        let session_file = session_folder.join("session.json");
 
         // Create a complex session
         let mut session = Session::default();
@@ -135,9 +143,9 @@ mod tests {
 
         session.phases[0].notes = "Phase completed".to_string();
 
-        // Save and load
-        save_session(&session_path, &session).unwrap();
-        let loaded = load_session(&session_path).unwrap();
+        // Save to folder and load from session.json
+        save_session(&session_folder, &session).unwrap();
+        let loaded = load_session(&session_file).unwrap();
 
         // Verify all data
         assert_eq!(loaded.name, session.name);
@@ -156,7 +164,8 @@ mod tests {
     #[test]
     fn test_save_session_with_unicode() {
         let temp_dir = TempDir::new().unwrap();
-        let session_path = temp_dir.path().join("unicode_test.json");
+        let session_folder = temp_dir.path().join("unicode_test");
+        let session_file = session_folder.join("session.json");
 
         let mut session = Session::default();
         session.name = "Тест сессии 🚀".to_string();
@@ -166,12 +175,15 @@ mod tests {
             step.set_notes("Шаги с кириллицей: Привет мир!".to_string());
         }
 
-        save_session(&session_path, &session).unwrap();
-        let loaded = load_session(&session_path).unwrap();
+        save_session(&session_folder, &session).unwrap();
+        let loaded = load_session(&session_file).unwrap();
 
         assert_eq!(loaded.name, session.name);
         assert_eq!(loaded.notes_global, session.notes_global);
-        assert_eq!(loaded.phases[0].steps[0].get_notes(), session.phases[0].steps[0].get_notes());
+        assert_eq!(
+            loaded.phases[0].steps[0].get_notes(),
+            session.phases[0].steps[0].get_notes()
+        );
     }
 
     #[test]
@@ -224,25 +236,27 @@ mod tests {
     #[test]
     fn test_session_file_permissions() {
         let temp_dir = TempDir::new().unwrap();
-        let session_path = temp_dir.path().join("permissions_test.json");
+        let session_folder = temp_dir.path().join("permissions_test");
+        let session_file = session_folder.join("session.json");
 
         let session = Session::default();
-        save_session(&session_path, &session).unwrap();
+        save_session(&session_folder, &session).unwrap();
 
         // Verify file exists and is readable
-        assert!(session_path.exists());
-        let metadata = fs::metadata(&session_path).unwrap();
+        assert!(session_file.exists());
+        let metadata = fs::metadata(&session_file).unwrap();
         assert!(metadata.is_file());
 
         // Should be able to read the content back
-        let content = fs::read_to_string(&session_path).unwrap();
+        let content = fs::read_to_string(&session_file).unwrap();
         assert!(content.contains("New Engagement"));
     }
 
     #[test]
     fn test_concurrent_access() {
         let temp_dir = TempDir::new().unwrap();
-        let session_path = temp_dir.path().join("concurrent.json");
+        let session_folder = temp_dir.path().join("concurrent_test");
+        let session_file = session_folder.join("session.json");
 
         let session = Session::default();
 
@@ -250,12 +264,10 @@ mod tests {
         for i in 0..5 {
             let mut test_session = session.clone();
             test_session.name = format!("Concurrent Test {}", i);
-            save_session(&session_path, &test_session).unwrap();
+            save_session(&session_folder, &test_session).unwrap();
 
-            let loaded = load_session(&session_path).unwrap();
+            let loaded = load_session(&session_file).unwrap();
             assert_eq!(loaded.name, format!("Concurrent Test {}", i));
         }
     }
 }
-
-

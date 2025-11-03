@@ -20,13 +20,13 @@ impl TestRunner {
             start_time: Instant::now(),
         }
     }
-    
+
     pub fn run_test<F>(&mut self, name: &str, test_fn: F)
     where
         F: FnOnce() + std::panic::UnwindSafe,
     {
         let result = std::panic::catch_unwind(test_fn);
-        
+
         match result {
             Ok(_) => {
                 self.passed += 1;
@@ -46,11 +46,11 @@ impl TestRunner {
             }
         }
     }
-    
+
     fn print_progress(&self, success: bool) {
         let completed = self.passed + self.failed;
         let progress = (completed as f64 / self.total as f64 * 50.0) as usize;
-        
+
         print!("\r[");
         for i in 0..50 {
             if i < progress {
@@ -68,23 +68,32 @@ impl TestRunner {
         print!("] {}/{} ", completed, self.total);
         io::stdout().flush().unwrap();
     }
-    
+
     pub fn finish(&self) {
         println!("\n");
         let duration = self.start_time.elapsed();
-        
+
         if self.failed == 0 {
-            println!("✓ All {} tests passed in {:.2}s", self.total, duration.as_secs_f64());
+            println!(
+                "✓ All {} tests passed in {:.2}s",
+                self.total,
+                duration.as_secs_f64()
+            );
         } else {
-            println!("✗ {} tests failed, {} passed in {:.2}s\n", self.failed, self.passed, duration.as_secs_f64());
-            
+            println!(
+                "✗ {} tests failed, {} passed in {:.2}s\n",
+                self.failed,
+                self.passed,
+                duration.as_secs_f64()
+            );
+
             for (name, error) in &self.failures {
                 println!("FAILED: {}", name);
                 println!("  {}\n", error);
             }
         }
     }
-    
+
     pub fn has_failures(&self) -> bool {
         self.failed > 0
     }
@@ -93,7 +102,7 @@ impl TestRunner {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn test_runner_creation() {
         let runner = TestRunner::new(10);
@@ -101,7 +110,7 @@ mod tests {
         assert_eq!(runner.passed, 0);
         assert_eq!(runner.failed, 0);
     }
-    
+
     #[test]
     fn test_successful_test() {
         let mut runner = TestRunner::new(1);
@@ -111,7 +120,7 @@ mod tests {
         assert_eq!(runner.passed, 1);
         assert_eq!(runner.failed, 0);
     }
-    
+
     #[test]
     fn test_failed_test() {
         let mut runner = TestRunner::new(1);

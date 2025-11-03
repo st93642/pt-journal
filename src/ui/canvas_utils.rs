@@ -1,5 +1,5 @@
+use gtk4::gdk;
 use gtk4::prelude::*;
-use gtk4::{gdk};
 
 /// Canvas item representing an image on the canvas
 #[derive(Clone)]
@@ -19,7 +19,10 @@ pub struct CanvasItem {
 pub fn is_valid_image_extension(path: &std::path::Path) -> bool {
     if let Some(ext) = path.extension() {
         let ext_str = ext.to_string_lossy().to_lowercase();
-        matches!(ext_str.as_str(), "png" | "jpg" | "jpeg" | "gif" | "bmp" | "tiff" | "webp")
+        matches!(
+            ext_str.as_str(),
+            "png" | "jpg" | "jpeg" | "gif" | "bmp" | "tiff" | "webp"
+        )
     } else {
         false
     }
@@ -57,7 +60,12 @@ pub fn create_texture_from_file(path: &std::path::Path) -> Result<gdk::Texture, 
 }
 
 /// Create a canvas item from a texture
-pub fn create_canvas_item(texture: gdk::Texture, x: f64, y: f64, path: Option<String>) -> CanvasItem {
+pub fn create_canvas_item(
+    texture: gdk::Texture,
+    x: f64,
+    y: f64,
+    path: Option<String>,
+) -> CanvasItem {
     let width = texture.width() as f64;
     let height = texture.height() as f64;
     CanvasItem {

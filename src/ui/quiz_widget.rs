@@ -1,9 +1,11 @@
+use crate::model::QuizStep;
 /// Quiz widget module for displaying quiz questions and handling user interactions
 use gtk4::prelude::*;
-use gtk4::{Box as GtkBox, Orientation, Label, CheckButton, Button, Frame, ScrolledWindow, Separator};
-use std::rc::Rc;
+use gtk4::{
+    Box as GtkBox, Button, CheckButton, Frame, Label, Orientation, ScrolledWindow, Separator,
+};
 use std::cell::RefCell;
-use crate::model::QuizStep;
+use std::rc::Rc;
 
 /// Struct holding all quiz widget components
 pub struct QuizWidget {
@@ -30,8 +32,8 @@ impl QuizWidget {
         container.set_margin_bottom(8);
         container.set_margin_start(8);
         container.set_margin_end(8);
-        container.set_vexpand(true);  // Ensure it expands to fill space
-        container.set_visible(true);  // Ensure it's visible
+        container.set_vexpand(true); // Ensure it expands to fill space
+        container.set_visible(true); // Ensure it's visible
 
         // Progress indicator (Question X of Y)
         let progress_label = Label::new(Some("Question 1 of 10"));
@@ -57,30 +59,30 @@ impl QuizWidget {
 
         let mut answer_buttons = Vec::new();
         let labels = vec!["A", "B", "C", "D"];
-        
+
         for (i, label_text) in labels.iter().enumerate() {
             let button_box = GtkBox::new(Orientation::Horizontal, 8);
-            
+
             // Create radio button (use CheckButton with group)
             let check = if i == 0 {
                 CheckButton::new()
             } else {
                 CheckButton::new()
             };
-            
+
             // Group all buttons together so only one can be selected
             if i > 0 {
                 check.set_group(Some(&answer_buttons[0]));
             }
-            
+
             let label = Label::new(Some(&format!("{}. Answer option {}", label_text, i + 1)));
             label.set_xalign(0.0);
             label.set_wrap(true);
             label.set_hexpand(true);
-            
+
             button_box.append(&check);
             button_box.append(&label);
-            
+
             answer_box.append(&button_box);
             answer_buttons.push(check);
         }
@@ -133,7 +135,7 @@ impl QuizWidget {
             .child(&explanation_scroll)
             .build();
         explanation_frame.set_visible(false); // Hidden initially
-        
+
         container.append(&explanation_frame);
 
         // Statistics label at the bottom
@@ -170,7 +172,7 @@ impl QuizWidget {
 
         // Always start at the first question when loading a new quiz
         *self.current_question_index.borrow_mut() = 0;
-        
+
         // Refresh the display
         self.refresh_current_question(quiz_step);
     }
@@ -204,13 +206,15 @@ impl QuizWidget {
             self.question_label.set_text(&question.question_text);
 
             // Load answers
-            for (i, (button, answer)) in self.answer_buttons.iter().zip(&question.answers).enumerate() {
+            for (i, (button, answer)) in self
+                .answer_buttons
+                .iter()
+                .zip(&question.answers)
+                .enumerate()
+            {
                 if let Some(label) = button.next_sibling() {
                     if let Some(label) = label.downcast_ref::<Label>() {
-                        label.set_text(&format!("{}. {}", 
-                            (b'A' + i as u8) as char, 
-                            answer.text
-                        ));
+                        label.set_text(&format!("{}. {}", (b'A' + i as u8) as char, answer.text));
                     }
                 }
                 button.set_active(false); // Clear selection
@@ -225,7 +229,7 @@ impl QuizWidget {
                             button.set_active(true);
                         }
                     }
-                    
+
                     // Show explanation if it was viewed
                     if progress.explanation_viewed_before_answer || progress.answered {
                         self.show_explanation(&question.explanation, progress.is_correct);
@@ -235,7 +239,8 @@ impl QuizWidget {
 
             // Update navigation buttons
             self.prev_button.set_sensitive(idx > 0);
-            self.next_button.set_sensitive(idx < quiz_step.questions.len() - 1);
+            self.next_button
+                .set_sensitive(idx < quiz_step.questions.len() - 1);
         }
 
         // Update statistics
@@ -249,8 +254,10 @@ impl QuizWidget {
             Some(false) => "✗ Incorrect. ",
             None => "",
         };
-        
-        self.explanation_view.buffer().set_text(&format!("{}{}", feedback, explanation));
+
+        self.explanation_view
+            .buffer()
+            .set_text(&format!("{}{}", feedback, explanation));
         self.explanation_frame.set_visible(true);
     }
 
@@ -264,10 +271,7 @@ impl QuizWidget {
         let stats = quiz_step.statistics();
         self.stats_label.set_text(&format!(
             "Progress: {}/{} answered | Correct: {} | Score: {:.1}%",
-            stats.answered,
-            stats.total_questions,
-            stats.correct,
-            stats.score_percentage
+            stats.answered, stats.total_questions, stats.correct, stats.score_percentage
         ));
     }
 

@@ -1,14 +1,17 @@
-use gtk4::prelude::*;
-use gtk4::{gdk};
-use std::path::Path;
 use chrono;
+use gtk4::gdk;
+use gtk4::prelude::*;
+use std::path::Path;
 
 /// Check if a file path has a valid image extension
 #[allow(dead_code)]
 pub fn is_valid_image_extension(path: &Path) -> bool {
     if let Some(ext) = path.extension() {
         let ext_str = ext.to_string_lossy().to_lowercase();
-        matches!(ext_str.as_str(), "png" | "jpg" | "jpeg" | "gif" | "bmp" | "tiff" | "webp")
+        matches!(
+            ext_str.as_str(),
+            "png" | "jpg" | "jpeg" | "gif" | "bmp" | "tiff" | "webp"
+        )
     } else {
         false
     }
@@ -50,11 +53,16 @@ pub fn create_texture_from_file(path: &Path) -> Result<gdk::Texture, String> {
 
 /// Attempt to create a texture from a pixbuf with error handling
 /// This is a wrapper for testing purposes
-pub fn create_texture_from_pixbuf(pixbuf: &gdk::gdk_pixbuf::Pixbuf) -> Result<gdk::Texture, String> {
+pub fn create_texture_from_pixbuf(
+    pixbuf: &gdk::gdk_pixbuf::Pixbuf,
+) -> Result<gdk::Texture, String> {
     // Validate pixbuf dimensions
     if pixbuf.width() <= 0 || pixbuf.height() <= 0 {
-        return Err(format!("Cannot create texture from pixbuf with invalid dimensions: {}x{}",
-                          pixbuf.width(), pixbuf.height()));
+        return Err(format!(
+            "Cannot create texture from pixbuf with invalid dimensions: {}x{}",
+            pixbuf.width(),
+            pixbuf.height()
+        ));
     }
     Ok(gdk::Texture::for_pixbuf(pixbuf))
 }
@@ -90,7 +98,10 @@ pub fn save_texture_to_png(texture: &gdk::Texture, path: &std::path::Path) -> Re
 
 /// Save a pixbuf to a PNG file
 #[allow(dead_code)]
-pub fn save_pixbuf_to_png(pixbuf: &gdk::gdk_pixbuf::Pixbuf, path: &std::path::Path) -> Result<(), String> {
+pub fn save_pixbuf_to_png(
+    pixbuf: &gdk::gdk_pixbuf::Pixbuf,
+    path: &std::path::Path,
+) -> Result<(), String> {
     match pixbuf.savev(path, "png", &[]) {
         Ok(_) => Ok(()),
         Err(e) => Err(format!("Failed to save pixbuf to PNG: {}", e)),
@@ -113,7 +124,7 @@ pub fn get_session_images_dir(session_path: Option<&Path>) -> std::path::PathBuf
                 // Old format or direct parent path
                 path.parent().unwrap_or(std::path::Path::new("."))
             };
-            
+
             let images_dir = session_dir.join("evidence");
             let _ = std::fs::create_dir_all(&images_dir);
             images_dir

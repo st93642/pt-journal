@@ -1,12 +1,12 @@
-pub mod reconnaissance;
-pub mod vulnerability_analysis;
-pub mod exploitation;
-pub mod post_exploitation;
-pub mod reporting;
 pub mod bug_bounty_hunting;
-pub mod comptia_secplus;
-pub mod pentest_exam;
 pub mod ceh;
+pub mod comptia_secplus;
+pub mod exploitation;
+pub mod pentest_exam;
+pub mod post_exploitation;
+pub mod reconnaissance;
+pub mod reporting;
+pub mod vulnerability_analysis;
 
 use crate::model::{Phase, Step};
 use uuid::Uuid;
@@ -133,7 +133,7 @@ fn create_reporting_phase() -> Phase {
 
 fn create_comptia_secplus_phase() -> Phase {
     let steps = comptia_secplus::get_all_comptia_steps();
-    
+
     Phase {
         id: Uuid::new_v4(),
         name: "CompTIA Security+".to_string(),
@@ -165,7 +165,7 @@ fn create_bug_bounty_hunting_phase() -> Phase {
 
 fn create_pentest_exam_phase() -> Phase {
     let steps = pentest_exam::get_all_pentest_steps();
-    
+
     Phase {
         id: Uuid::new_v4(),
         name: "CompTIA PenTest+".to_string(),
@@ -176,7 +176,7 @@ fn create_pentest_exam_phase() -> Phase {
 
 fn create_ceh_phase() -> Phase {
     let steps = ceh::get_all_ceh_steps();
-    
+
     Phase {
         id: Uuid::new_v4(),
         name: "Certified Ethical Hacker (CEH)".to_string(),

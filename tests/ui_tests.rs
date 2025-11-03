@@ -1,10 +1,10 @@
+use pt_journal::model::*;
+use pt_journal::ui::image_utils;
+use std::fs;
 /// UI component tests for PT Journal
 /// These tests cover image utilities, drag-drop, clipboard, security, and text input
 use std::path::Path;
-use std::fs;
 use tempfile::NamedTempFile;
-use pt_journal::ui::image_utils;
-use pt_journal::model::*;
 use uuid::Uuid;
 
 #[cfg(test)]
@@ -14,23 +14,43 @@ mod image_utils_tests {
     #[test]
     fn test_is_valid_image_extension() {
         // Valid extensions
-        assert!(image_utils::is_valid_image_extension(Path::new("image.png")));
-        assert!(image_utils::is_valid_image_extension(Path::new("photo.JPG")));
+        assert!(image_utils::is_valid_image_extension(Path::new(
+            "image.png"
+        )));
+        assert!(image_utils::is_valid_image_extension(Path::new(
+            "photo.JPG"
+        )));
         assert!(image_utils::is_valid_image_extension(Path::new("pic.jpeg")));
         assert!(image_utils::is_valid_image_extension(Path::new("file.gif")));
         assert!(image_utils::is_valid_image_extension(Path::new("test.bmp")));
-        assert!(image_utils::is_valid_image_extension(Path::new("scan.tiff")));
-        assert!(image_utils::is_valid_image_extension(Path::new("modern.webp")));
+        assert!(image_utils::is_valid_image_extension(Path::new(
+            "scan.tiff"
+        )));
+        assert!(image_utils::is_valid_image_extension(Path::new(
+            "modern.webp"
+        )));
 
         // Case insensitive
-        assert!(image_utils::is_valid_image_extension(Path::new("IMAGE.PNG")));
-        assert!(image_utils::is_valid_image_extension(Path::new("photo.JpG")));
+        assert!(image_utils::is_valid_image_extension(Path::new(
+            "IMAGE.PNG"
+        )));
+        assert!(image_utils::is_valid_image_extension(Path::new(
+            "photo.JpG"
+        )));
 
         // Invalid extensions
-        assert!(!image_utils::is_valid_image_extension(Path::new("document.txt")));
-        assert!(!image_utils::is_valid_image_extension(Path::new("script.js")));
-        assert!(!image_utils::is_valid_image_extension(Path::new("archive.zip")));
-        assert!(!image_utils::is_valid_image_extension(Path::new("video.mp4")));
+        assert!(!image_utils::is_valid_image_extension(Path::new(
+            "document.txt"
+        )));
+        assert!(!image_utils::is_valid_image_extension(Path::new(
+            "script.js"
+        )));
+        assert!(!image_utils::is_valid_image_extension(Path::new(
+            "archive.zip"
+        )));
+        assert!(!image_utils::is_valid_image_extension(Path::new(
+            "video.mp4"
+        )));
 
         // No extension
         assert!(!image_utils::is_valid_image_extension(Path::new("image")));
@@ -174,13 +194,19 @@ mod drag_drop_tests {
         ];
 
         for file in valid_files {
-            assert!(image_utils::is_valid_image_extension(file),
-                   "File {:?} should be accepted", file);
+            assert!(
+                image_utils::is_valid_image_extension(file),
+                "File {:?} should be accepted",
+                file
+            );
         }
 
         for file in invalid_files {
-            assert!(!image_utils::is_valid_image_extension(file),
-                   "File {:?} should be rejected", file);
+            assert!(
+                !image_utils::is_valid_image_extension(file),
+                "File {:?} should be rejected",
+                file
+            );
         }
     }
 
@@ -246,12 +272,22 @@ mod performance_tests {
     fn test_file_extension_check_performance() {
         // Test that extension checking is fast
         let test_files = vec![
-            "image.png", "photo.jpg", "diagram.jpeg", "icon.gif",
-            "pic.bmp", "scan.tiff", "modern.webp", "document.txt",
-            "script.py", "video.mp4", "archive.zip", "no_ext",
+            "image.png",
+            "photo.jpg",
+            "diagram.jpeg",
+            "icon.gif",
+            "pic.bmp",
+            "scan.tiff",
+            "modern.webp",
+            "document.txt",
+            "script.py",
+            "video.mp4",
+            "archive.zip",
+            "no_ext",
         ];
 
-        for _ in 0..1000 { // Run multiple times for performance
+        for _ in 0..1000 {
+            // Run multiple times for performance
             for file in &test_files {
                 let _ = image_utils::is_valid_image_extension(Path::new(file));
             }
@@ -331,13 +367,20 @@ mod security_tests {
     fn test_invalid_file_types() {
         // Test that non-image files are rejected at extension level
         let non_images = vec![
-            "malicious.exe", "script.sh", "document.pdf",
-            "spreadsheet.xlsx", "database.db", "binary.bin",
+            "malicious.exe",
+            "script.sh",
+            "document.pdf",
+            "spreadsheet.xlsx",
+            "database.db",
+            "binary.bin",
         ];
 
         for file in non_images {
-            assert!(!image_utils::is_valid_image_extension(Path::new(file)),
-                   "File {} should be rejected", file);
+            assert!(
+                !image_utils::is_valid_image_extension(Path::new(file)),
+                "File {} should be rejected",
+                file
+            );
         }
     }
 }
@@ -411,13 +454,23 @@ mod text_input_tests {
         );
 
         // Empty strings should be handled
-        if let StepContent::Tutorial { notes, description_notes, .. } = &step.content {
+        if let StepContent::Tutorial {
+            notes,
+            description_notes,
+            ..
+        } = &step.content
+        {
             assert!(notes.is_empty());
             assert!(description_notes.is_empty());
         }
 
         // Setting to empty should work
-        if let StepContent::Tutorial { notes, description_notes, .. } = &mut step.content {
+        if let StepContent::Tutorial {
+            notes,
+            description_notes,
+            ..
+        } = &mut step.content
+        {
             *notes = "".to_string();
             *description_notes = "".to_string();
             assert!(notes.is_empty());

@@ -323,12 +323,13 @@ pub fn setup_tool_execution_handlers(
             return;
         }
         
-        if target.trim().is_empty() {
+        let tool_name = tool_id.unwrap();
+        
+        // For gobuster, target is in arguments; for nmap, target is separate
+        if tool_name == "nmap" && target.trim().is_empty() {
             status_label.set_text("Error: Target required");
             return;
         }
-        
-        let tool_name = tool_id.unwrap();
         
         // Check if session exists, if not prompt for save
         let session_path = model.borrow().current_path.clone();
@@ -499,14 +500,19 @@ pub fn setup_tool_execution_handlers(
     tool_selector_change.connect_changed(move |combo| {
         if let Some(tool_id) = combo.active_id() {
             let tool_id_str = tool_id.as_str();
+            
+            // Clear fields when switching tools
+            target_entry_change.set_text("");
+            args_entry_change.set_text("");
+            
             match tool_id_str {
                 "nmap" => {
                     target_entry_change.set_placeholder_text(Some("e.g., scanme.nmap.org or 192.168.1.1"));
                     args_entry_change.set_placeholder_text(Some("e.g., -p 80,443 -sV"));
                 }
                 "gobuster" => {
-                    target_entry_change.set_placeholder_text(Some("e.g., http://example.com or example.com"));
-                    args_entry_change.set_placeholder_text(Some("e.g., dir -w /path/to/wordlist.txt"));
+                    target_entry_change.set_placeholder_text(Some("(not used - target is in arguments)"));
+                    args_entry_change.set_placeholder_text(Some("e.g., dir -u http://example.com -w data/wordlists/common.txt"));
                 }
                 _ => {}
             }
@@ -793,10 +799,10 @@ pub fn load_step_into_panel(
             detail_panel.title_label.set_text(&step.title);
             
             // Update description (with user notes if any)
-            let desc_text = if step.description_notes.is_empty() {
+            let desc_text = if step.get_description_notes().is_empty() {
                 step.get_description().to_string()
             } else {
-                step.description_notes.clone()
+                step.get_description_notes()
             };
             detail_panel.desc_view.buffer().set_text(&desc_text);
             

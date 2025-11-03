@@ -236,7 +236,7 @@ impl ToolExecutionPanel {
             &[("Close", ResponseType::Close)],
         );
         
-        dialog.set_default_size(800, 600);
+        dialog.set_default_size(1000, 650);
         
         // Connect close button to actually close the dialog
         dialog.connect_response(move |dialog, response| {
@@ -403,9 +403,9 @@ fn create_copyable_command_row(command: &str) -> GtkBox {
     // Extract arguments only (everything after first word/tool name)
     let args_only = extract_arguments(command);
     
-    let copy_button = Button::with_label("📋 Copy Args");
+    let copy_button = Button::with_label("📋 Copy");
     copy_button.add_css_class("flat");
-    copy_button.set_tooltip_text(Some("Copy arguments only (tool name excluded)"));
+    copy_button.set_tooltip_text(Some("Copy command to clipboard"));
     
     let args_clone = args_only.clone();
     copy_button.connect_clicked(move |_| {
@@ -556,27 +556,27 @@ fn get_tool_instructions(tool_id: &str) -> ToolInstructions {
             examples: vec![
                 ToolExample {
                     description: "Directory/file brute-forcing (dir mode)".to_string(),
-                    command: "gobuster dir -u http://example.com -w /usr/share/wordlists/dirb/common.txt".to_string(),
+                    command: "gobuster dir -u http://example.com -w data/wordlists/common.txt".to_string(),
                 },
                 ToolExample {
                     description: "DNS subdomain enumeration".to_string(),
-                    command: "gobuster dns -d example.com -w /usr/share/wordlists/subdomains.txt".to_string(),
+                    command: "gobuster dns -d example.com -w data/wordlists/subdomains.txt".to_string(),
                 },
                 ToolExample {
                     description: "Virtual host discovery".to_string(),
-                    command: "gobuster vhost -u http://example.com -w /usr/share/wordlists/vhosts.txt".to_string(),
+                    command: "gobuster vhost -u http://example.com -w data/wordlists/vhosts.txt".to_string(),
                 },
                 ToolExample {
                     description: "Directory scan with extensions and status codes".to_string(),
-                    command: "gobuster dir -u http://example.com -w wordlist.txt -x php,html,txt -s 200,301,302".to_string(),
+                    command: "gobuster dir -u http://example.com -w data/wordlists/common.txt -x php,html,txt -s 200,301,302".to_string(),
                 },
                 ToolExample {
                     description: "Fast scan with increased threads".to_string(),
-                    command: "gobuster dir -u http://example.com -w wordlist.txt -t 50".to_string(),
+                    command: "gobuster dir -u http://example.com -w data/wordlists/common.txt -t 50".to_string(),
                 },
                 ToolExample {
                     description: "Scan with custom User-Agent and cookies".to_string(),
-                    command: "gobuster dir -u http://example.com -w wordlist.txt -a 'Mozilla/5.0' -c 'session=abc123'".to_string(),
+                    command: "gobuster dir -u http://example.com -w data/wordlists/common.txt -a 'Mozilla/5.0' -c 'session=abc123'".to_string(),
                 },
             ],
             common_flags: vec![
@@ -597,11 +597,11 @@ fn get_tool_instructions(tool_id: &str) -> ToolInstructions {
                 ToolFlag { flag: "-q".to_string(), description: "Quiet mode (no banner/progress)".to_string() },
             ],
             tips: vec![
-                "Always use a good wordlist - quality over quantity! Try SecLists collection",
+                "PT Journal includes wordlists in data/wordlists/ (common.txt, subdomains.txt, vhosts.txt)",
+                "Always use a good wordlist - quality over quantity! Try SecLists collection for more",
                 "Start with small wordlists for quick reconnaissance, then use larger ones",
                 "Use -x to check for backup files: -x .bak,.old,.backup,.zip",
                 "Adjust threads (-t) based on target - too many can trigger rate limiting",
-                "For WordPress: try /usr/share/wordlists/wfuzz/general/common.txt",
                 "Combine with other tools: use Nmap results to target specific services",
                 "Filter by status codes: -s 200,301,302 to reduce noise",
             ],
@@ -676,7 +676,12 @@ fn execute_tool_with_sudo(
     // Build command arguments
     let mut args = vec!["-S".to_string(), tool_name.to_string()];
     args.extend(arguments.iter().cloned());
-    args.push(target.to_string());
+    
+    // For nmap, append target at the end (nmap-style: nmap -sS target)
+    // For gobuster, target is already in arguments via -u or -d flag
+    if tool_name == "nmap" {
+        args.push(target.to_string());
+    }
     
     // Execute with sudo using password from stdin
     let mut child = Command::new("sudo")
@@ -708,10 +713,19 @@ fn execute_tool_with_sudo(
         .collect::<Vec<_>>()
         .join("\n");
     
-    // Check for authentication failure
+    // Check for authentication failure (more specific patterns)
     let exit_code = output.status.code().unwrap_or(-1);
-    if exit_code == 1 && stderr.contains("sudo:") {
+    if stderr.contains("Sorry, try again") || 
+       stderr.contains("authentication failure") ||
+       (stderr.contains("incorrect password") && exit_code != 0) {
         return Err("Authentication failed: Incorrect password".to_string());
+    }
+    
+    // Check for command not found (tool not installed)
+    if stderr.contains("command not found") || 
+       stderr.contains(": not found") ||
+       (exit_code == 127) {
+        return Err(format!("Tool '{}' not found. Please install it first.\nSee Instructions for installation commands.", tool_name));
     }
     
     Ok(ExecutionResult {

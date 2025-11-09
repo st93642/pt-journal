@@ -7,6 +7,9 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use tempfile::TempDir;
 
+// GTK imports for UI integration tests
+use gtk4::prelude::*;
+
 mod test_runner;
 
 // Model Tests
@@ -14,14 +17,14 @@ fn test_default_app_model() {
     let model = AppModel::default();
     assert_eq!(model.selected_phase, 0);
     assert_eq!(model.selected_step, Some(0));
-    assert!(model.current_path.is_none());
-    assert_eq!(model.session.phases.len(), 7); // Updated: 5 pentesting + Bug Bounty + CompTIA
+    assert_eq!(model.current_path, None);
+    assert_eq!(model.session.phases.len(), 9); // Updated: 5 pentesting + Bug Bounty + CompTIA + CEH
 }
 
 fn test_session_creation() {
     let session = Session::default();
     assert!(!session.name.is_empty());
-    assert_eq!(session.phases.len(), 7); // Updated: 5 pentesting + Bug Bounty + CompTIA
+    assert_eq!(session.phases.len(), 9); // Updated: 5 pentesting + Bug Bounty + CompTIA + CEH
     assert!(session.notes_global.is_empty());
 }
 
@@ -42,7 +45,7 @@ fn test_phase_structure() {
 // Store Tests
 fn test_save_and_load_session() {
     let temp_dir = TempDir::new().unwrap();
-    let session_path = temp_dir.path().join("test_session.json");
+    let session_path = temp_dir.path().join("test_session");
 
     let mut session = Session::default();
     session.name = "Test Session".to_string();
@@ -54,7 +57,8 @@ fn test_save_and_load_session() {
     }
 
     store::save_session(&session_path, &session).unwrap();
-    let loaded_session = store::load_session(&session_path).unwrap();
+    let session_file = session_path.join("session.json");
+    let loaded_session = store::load_session(&session_file).unwrap();
 
     assert_eq!(loaded_session.name, session.name);
     assert_eq!(loaded_session.notes_global, session.notes_global);
@@ -63,7 +67,7 @@ fn test_save_and_load_session() {
 
 fn test_session_data_integrity() {
     let temp_dir = TempDir::new().unwrap();
-    let session_path = temp_dir.path().join("integrity_test.json");
+    let session_path = temp_dir.path().join("integrity_test");
 
     let mut session = Session::default();
     session.notes_global = "Global test notes".to_string();
@@ -83,7 +87,8 @@ fn test_session_data_integrity() {
     }
 
     store::save_session(&session_path, &session).unwrap();
-    let loaded_session = store::load_session(&session_path).unwrap();
+    let session_file = session_path.join("session.json");
+    let loaded_session = store::load_session(&session_file).unwrap();
 
     assert_eq!(loaded_session.notes_global, session.notes_global);
     assert_eq!(loaded_session.phases.len(), session.phases.len());
@@ -202,7 +207,7 @@ fn test_state_manager_step_updates() {
 // Integration workflow tests
 fn test_full_workflow() {
     let temp_dir = TempDir::new().unwrap();
-    let session_path = temp_dir.path().join("workflow.json");
+    let session_path = temp_dir.path().join("workflow");
 
     let mut session = Session::default();
     session.name = "Workflow Test".to_string();
@@ -213,7 +218,8 @@ fn test_full_workflow() {
     }
 
     store::save_session(&session_path, &session).unwrap();
-    let loaded = store::load_session(&session_path).unwrap();
+    let session_file = session_path.join("session.json");
+    let loaded = store::load_session(&session_file).unwrap();
 
     assert_eq!(loaded.name, "Workflow Test");
     for i in 0..3 {
@@ -224,6 +230,58 @@ fn test_full_workflow() {
             format!("Completed: {}", loaded.phases[0].steps[i].title)
         );
     }
+}
+
+// UI Integration Tests (require GTK)
+fn test_tool_execution_panel_creation() {
+    gtk4::init().expect("Failed to initialize GTK");
+
+    let panel = pt_journal::ui::tool_execution::ToolExecutionPanel::new();
+    assert_eq!(panel.get_target(), "");
+    assert_eq!(panel.get_arguments().len(), 0);
+}
+
+fn test_parse_arguments() {
+    gtk4::init().expect("Failed to initialize GTK");
+
+    let panel = pt_journal::ui::tool_execution::ToolExecutionPanel::new();
+    panel.args_entry.set_text("-p 80,443 -sV");
+
+    let args = panel.get_arguments();
+    assert_eq!(args.len(), 3);
+    assert_eq!(args[0], "-p");
+    assert_eq!(args[1], "80,443");
+    assert_eq!(args[2], "-sV");
+}
+
+fn test_tool_selection() {
+    gtk4::init().expect("Failed to initialize GTK");
+
+    let panel = pt_journal::ui::tool_execution::ToolExecutionPanel::new();
+
+    // Default should be nmap
+    assert_eq!(panel.get_selected_tool(), Some("nmap".to_string()));
+
+    // Switch to gobuster
+    panel.tool_selector.set_active_id(Some("gobuster"));
+    assert_eq!(panel.get_selected_tool(), Some("gobuster".to_string()));
+}
+
+fn test_status_updates() {
+    gtk4::init().expect("Failed to initialize GTK");
+
+    let panel = pt_journal::ui::tool_execution::ToolExecutionPanel::new();
+
+    panel.set_status("Testing status");
+    assert_eq!(panel.status_label.text(), "Testing status");
+
+    panel.set_executing(true);
+    assert!(!panel.execute_button.is_sensitive());
+    assert!(panel.spinner.is_visible());
+
+    panel.set_executing(false);
+    assert!(panel.execute_button.is_sensitive());
+    assert!(!panel.spinner.is_visible());
 }
 
 fn main() {
@@ -246,6 +304,10 @@ fn main() {
             test_state_manager_step_updates,
         ),
         ("test_full_workflow", test_full_workflow),
+        ("test_tool_execution_panel_creation", test_tool_execution_panel_creation),
+        ("test_parse_arguments", test_parse_arguments),
+        ("test_tool_selection", test_tool_selection),
+        ("test_status_updates", test_status_updates),
     ];
 
     let mut runner = test_runner::TestRunner::new(tests.len());

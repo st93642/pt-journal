@@ -323,6 +323,66 @@ pub fn setup_quiz_handlers(detail_panel: Rc<DetailPanel>, state: Rc<StateManager
             }
         }
     });
+
+    // Finish button
+    let finish_button = quiz_widget.finish_button.clone();
+    let state_finish = state.clone();
+    let panel_finish = detail_panel.clone();
+    finish_button.connect_clicked(move |_| {
+        let (phase_idx, step_idx) = {
+            let model_rc = state_finish.model();
+            let model_borrow = model_rc.borrow();
+            (model_borrow.selected_phase, model_borrow.selected_step)
+        };
+
+        if let Some(step_idx) = step_idx {
+            // Mark the quiz step as completed
+            state_finish.update_step_status(phase_idx, step_idx, StepStatus::Done);
+
+            // Get final statistics
+            let (stats, quiz_step_opt) = {
+                let model_rc = state_finish.model();
+                let model_borrow = model_rc.borrow();
+                let step = model_borrow
+                    .session
+                    .phases
+                    .get(phase_idx)
+                    .and_then(|phase| phase.steps.get(step_idx));
+
+                if let Some(step) = step {
+                    if let Some(quiz_step) = step.get_quiz_step() {
+                        (Some(quiz_step.statistics()), Some(quiz_step.clone()))
+                    } else {
+                        (None, None)
+                    }
+                } else {
+                    (None, None)
+                }
+            };
+
+            if let (Some(stats), Some(quiz_step)) = (stats, quiz_step_opt) {
+                // Show completion message with final statistics
+                let completion_message = format!(
+                    "🎉 Quiz Completed!\n\n\
+                    Final Score: {:.1}%\n\
+                    Questions Answered: {}/{}\n\
+                    Correct Answers: {}\n\
+                    First Attempt Correct: {}\n\n\
+                    Well done! You can now proceed to the next step.",
+                    stats.score_percentage,
+                    stats.answered,
+                    stats.total_questions,
+                    stats.correct,
+                    stats.first_attempt_correct
+                );
+
+                panel_finish.quiz_widget.show_explanation(&completion_message, None);
+
+                // Update statistics display
+                panel_finish.quiz_widget.update_statistics(&quiz_step);
+            }
+        }
+    });
 }
 
 /// Wire up tool execution panel (Execute button, tool selector)

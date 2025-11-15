@@ -218,36 +218,26 @@ cargo test --lib
 
 ---
 
-## 🎯 Next Steps (Per ROADMAP_SECURITY_TOOLS.md)
+## 🎯 Next Steps
 
-### Week 4-5: Additional Tool Integrations
-- [x] **Gobuster** - Directory/subdomain enumeration ✅
-- [ ] **Nikto** - Web server scanner
-- [ ] **SQLMap** - SQL injection testing
-- [ ] **FFUF** - Fast web fuzzer
-- [ ] **Nuclei** - Vulnerability scanner
+### Immediate Priorities (Next 2 Weeks)
+- [ ] **Nikto Integration** - Web server vulnerability scanner
+- [ ] **SQLMap Integration** - SQL injection testing tool
+- [ ] **FFUF Integration** - Fast web fuzzer
+- [ ] **Real-time Output Streaming** - Live tool execution display
 
-### Week 6-8: UI Integration
-- [ ] Add "Run Tool" button to tutorial steps
-- [ ] Progress indicators for long-running scans
-- [ ] Result display in detail panel
-- [ ] Evidence auto-linking to canvas
-- [ ] Tool selection dropdown
-- [ ] Real-time output streaming
+### Phase 1 Completion (Weeks 3-4)
+- [ ] **Nuclei Integration** - Vulnerability scanner with templates
+- [ ] **Burp Suite Integration** - Web proxy and scanner
+- [ ] **Metasploit Integration** - Exploitation framework
+- [ ] **Advanced Tool Configuration UI** - Dynamic forms and validation
 
-### Week 9-10: Advanced Features
-- [ ] Async execution with tokio
-- [ ] Parallel tool execution
-- [ ] Result caching
-- [ ] Tool templates/presets
-- [ ] Export results (JSON/CSV/PDF)
+### Future Phases
+📖 **See [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) for the complete 16-week roadmap**
 
-### Week 11-12: Polish & Documentation
-- [ ] User documentation
-- [ ] Video tutorials
-- [ ] Performance optimization
-- [ ] Error recovery
-- [ ] Integration with existing phases
+- **Phase 2 (Weeks 5-8)**: Advanced UI Features, Evidence Management 2.0, Workflow Automation
+- **Phase 3 (Weeks 9-12)**: Platform Integration, Team Collaboration, Enterprise Features  
+- **Phase 4 (Weeks 13-16)**: AI & Machine Learning, Automation & Scripting, Mobile & Remote
 
 ---
 

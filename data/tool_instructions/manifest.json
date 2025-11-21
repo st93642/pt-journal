@@ -1,0 +1,487 @@
+[
+  {
+    "id": "amass",
+    "label": "Amass - Asset Discovery",
+    "category": "Reconnaissance"
+  },
+  {
+    "id": "sublist3r",
+    "label": "Sublist3r - Subdomain Enumeration",
+    "category": "Reconnaissance"
+  },
+  {
+    "id": "theHarvester",
+    "label": "theHarvester - OSINT Gathering",
+    "category": "Reconnaissance"
+  },
+  {
+    "id": "dnsrecon",
+    "label": "DNSRecon - DNS Reconnaissance",
+    "category": "Reconnaissance"
+  },
+  {
+    "id": "dnsenum",
+    "label": "DNSenum - DNS Enumeration",
+    "category": "Reconnaissance"
+  },
+  {
+    "id": "maltego",
+    "label": "Maltego - Intelligence Platform",
+    "category": "Reconnaissance"
+  },
+  {
+    "id": "recon-ng",
+    "label": "Recon-ng - Web Recon Framework",
+    "category": "Reconnaissance"
+  },
+  {
+    "id": "photon",
+    "label": "Photon - Web Crawler",
+    "category": "Reconnaissance"
+  },
+  {
+    "id": "spiderfoot",
+    "label": "SpiderFoot - OSINT Automation",
+    "category": "Reconnaissance"
+  },
+  {
+    "id": "nmap",
+    "label": "Nmap - Port Scanner",
+    "category": "Scanning & Enumeration"
+  },
+  {
+    "id": "masscan",
+    "label": "Masscan - Internet-scale Scanner",
+    "category": "Scanning & Enumeration"
+  },
+  {
+    "id": "naabu",
+    "label": "Naabu - Fast Port Scanner",
+    "category": "Scanning & Enumeration"
+  },
+  {
+    "id": "nikto",
+    "label": "Nikto - Web Scanner",
+    "category": "Scanning & Enumeration"
+  },
+  {
+    "id": "dirb",
+    "label": "Dirb - Directory Brute Forcer",
+    "category": "Scanning & Enumeration"
+  },
+  {
+    "id": "gobuster",
+    "label": "Gobuster - Directory/Subdomain Enum",
+    "category": "Scanning & Enumeration"
+  },
+  {
+    "id": "ffuf",
+    "label": "ffuf - Fast Web Fuzzer",
+    "category": "Scanning & Enumeration"
+  },
+  {
+    "id": "wfuzz",
+    "label": "Wfuzz - Web Fuzzer",
+    "category": "Scanning & Enumeration"
+  },
+  {
+    "id": "enum4linux",
+    "label": "Enum4linux - SMB Enumeration",
+    "category": "Scanning & Enumeration"
+  },
+  {
+    "id": "smbmap",
+    "label": "SMBMap - SMB Share Enumerator",
+    "category": "Scanning & Enumeration"
+  },
+  {
+    "id": "snmpwalk",
+    "label": "SNMPwalk - SNMP Enumeration",
+    "category": "Scanning & Enumeration"
+  },
+  {
+    "id": "onesixtyone",
+    "label": "Onesixtyone - SNMP Scanner",
+    "category": "Scanning & Enumeration"
+  },
+  {
+    "id": "sqlmap",
+    "label": "sqlmap - SQL Injection",
+    "category": "Vulnerability Analysis"
+  },
+  {
+    "id": "sslyze",
+    "label": "SSLyze - SSL/TLS Scanner",
+    "category": "Vulnerability Analysis"
+  },
+  {
+    "id": "testssl",
+    "label": "TestSSL.sh - SSL/TLS Auditor",
+    "category": "Vulnerability Analysis"
+  },
+  {
+    "id": "wpscan",
+    "label": "WPScan - WordPress Scanner",
+    "category": "Vulnerability Analysis"
+  },
+  {
+    "id": "joomscan",
+    "label": "Joomscan - Joomla Scanner",
+    "category": "Vulnerability Analysis"
+  },
+  {
+    "id": "nuclei",
+    "label": "Nuclei - Vulnerability Scanner",
+    "category": "Vulnerability Analysis"
+  },
+  {
+    "id": "lynis",
+    "label": "Lynis - Security Audit",
+    "category": "Vulnerability Analysis"
+  },
+  {
+    "id": "unix-privesc-check",
+    "label": "Unix-Privesc-Check - Priv Esc Scanner",
+    "category": "Vulnerability Analysis"
+  },
+  {
+    "id": "metasploit",
+    "label": "Metasploit Framework",
+    "category": "Exploitation"
+  },
+  {
+    "id": "searchsploit",
+    "label": "SearchSploit - Exploit Search",
+    "category": "Exploitation"
+  },
+  {
+    "id": "commix",
+    "label": "Commix - Command Injection",
+    "category": "Exploitation"
+  },
+  {
+    "id": "weevely",
+    "label": "Weevely - PHP Web Shell",
+    "category": "Exploitation"
+  },
+  {
+    "id": "hydra",
+    "label": "Hydra - Login Brute Force",
+    "category": "Exploitation"
+  },
+  {
+    "id": "medusa",
+    "label": "Medusa - Password Cracker",
+    "category": "Exploitation"
+  },
+  {
+    "id": "ncrack",
+    "label": "NCrack - Network Authentication Cracker",
+    "category": "Exploitation"
+  },
+  {
+    "id": "patator",
+    "label": "Patator - Multi-protocol Brute Forcer",
+    "category": "Exploitation"
+  },
+  {
+    "id": "john",
+    "label": "John the Ripper - Password Cracker",
+    "category": "Exploitation"
+  },
+  {
+    "id": "hashcat",
+    "label": "Hashcat - Password Recovery",
+    "category": "Exploitation"
+  },
+  {
+    "id": "fcrackzip",
+    "label": "FCrackZip - Zip Password Cracker",
+    "category": "Exploitation"
+  },
+  {
+    "id": "pdfcrack",
+    "label": "PDFCrack - PDF Password Recovery",
+    "category": "Exploitation"
+  },
+  {
+    "id": "mimikatz",
+    "label": "Mimikatz - Windows Credential Extractor",
+    "category": "Post-Exploitation"
+  },
+  {
+    "id": "pspy",
+    "label": "Pspy - Linux Process Monitor",
+    "category": "Post-Exploitation"
+  },
+  {
+    "id": "chisel",
+    "label": "Chisel - SOCKS Proxy",
+    "category": "Post-Exploitation"
+  },
+  {
+    "id": "ligolo-ng",
+    "label": "Ligolo-ng - Network Tunneling",
+    "category": "Post-Exploitation"
+  },
+  {
+    "id": "pwncat",
+    "label": "Pwncat - Reverse Shell Handler",
+    "category": "Post-Exploitation"
+  },
+  {
+    "id": "evil-winrm",
+    "label": "Evil-WinRM - Windows Shell",
+    "category": "Post-Exploitation"
+  },
+  {
+    "id": "bloodhound-python",
+    "label": "BloodHound-Python - AD Explorer",
+    "category": "Post-Exploitation"
+  },
+  {
+    "id": "impacket-scripts",
+    "label": "Impacket Scripts",
+    "category": "Post-Exploitation"
+  },
+  {
+    "id": "powersploit",
+    "label": "PowerSploit - PowerShell Toolkit",
+    "category": "Post-Exploitation"
+  },
+  {
+    "id": "empire",
+    "label": "Empire - Post-Exploitation Framework",
+    "category": "Post-Exploitation"
+  },
+  {
+    "id": "linpeas",
+    "label": "LinPEAS - Linux Priv Esc Scanner",
+    "category": "Privilege Escalation"
+  },
+  {
+    "id": "winpeas",
+    "label": "WinPEAS - Windows Priv Esc Scanner",
+    "category": "Privilege Escalation"
+  },
+  {
+    "id": "linux-smart-enumeration",
+    "label": "Linux Smart Enumeration",
+    "category": "Privilege Escalation"
+  },
+  {
+    "id": "linux-exploit-suggester",
+    "label": "Linux Exploit Suggester",
+    "category": "Privilege Escalation"
+  },
+  {
+    "id": "windows-exploit-suggester",
+    "label": "Windows Exploit Suggester",
+    "category": "Privilege Escalation"
+  },
+  {
+    "id": "crunch",
+    "label": "Crunch - Wordlist Generator",
+    "category": "Password Attacks"
+  },
+  {
+    "id": "cewl",
+    "label": "CeWL - Custom Wordlist Generator",
+    "category": "Password Attacks"
+  },
+  {
+    "id": "hashid",
+    "label": "HashID - Hash Identifier",
+    "category": "Password Attacks"
+  },
+  {
+    "id": "aircrack-ng",
+    "label": "Aircrack-ng - Wireless Security Suite",
+    "category": "Wireless"
+  },
+  {
+    "id": "kismet",
+    "label": "Kismet - Wireless Network Detector",
+    "category": "Wireless"
+  },
+  {
+    "id": "reaver",
+    "label": "Reaver - WPS Attack Tool",
+    "category": "Wireless"
+  },
+  {
+    "id": "bully",
+    "label": "Bully - WPS Attack Tool",
+    "category": "Wireless"
+  },
+  {
+    "id": "wifite",
+    "label": "Wifite - Automated Wireless Auditor",
+    "category": "Wireless"
+  },
+  {
+    "id": "mdk4",
+    "label": "MDK4 - Wireless Attack Tool",
+    "category": "Wireless"
+  },
+  {
+    "id": "dirbuster",
+    "label": "DirBuster - Web Content Scanner",
+    "category": "Web Application"
+  },
+  {
+    "id": "whatweb",
+    "label": "WhatWeb - Web Technology Identifier",
+    "category": "Web Application"
+  },
+  {
+    "id": "wappalyzer",
+    "label": "Wappalyzer - Technology Detector",
+    "category": "Web Application"
+  },
+  {
+    "id": "subjack",
+    "label": "Subjack - Subdomain Takeover",
+    "category": "Web Application"
+  },
+  {
+    "id": "wireshark",
+    "label": "Wireshark - Network Analyzer",
+    "category": "Network Sniffing & Spoofing"
+  },
+  {
+    "id": "tshark",
+    "label": "TShark - CLI Network Analyzer",
+    "category": "Network Sniffing & Spoofing"
+  },
+  {
+    "id": "tcpdump",
+    "label": "TCPDump - Packet Analyzer",
+    "category": "Network Sniffing & Spoofing"
+  },
+  {
+    "id": "ettercap",
+    "label": "Ettercap - Network Sniffer",
+    "category": "Network Sniffing & Spoofing"
+  },
+  {
+    "id": "driftnet",
+    "label": "Driftnet - Image Sniffer",
+    "category": "Network Sniffing & Spoofing"
+  },
+  {
+    "id": "dsniff",
+    "label": "Dsniff - Password Sniffer",
+    "category": "Network Sniffing & Spoofing"
+  },
+  {
+    "id": "mitmproxy",
+    "label": "Mitmproxy - HTTPS Proxy",
+    "category": "Network Sniffing & Spoofing"
+  },
+  {
+    "id": "bettercap",
+    "label": "Bettercap - Network Attack Tool",
+    "category": "Network Sniffing & Spoofing"
+  },
+  {
+    "id": "sbd",
+    "label": "SBD - Netcat Alternative",
+    "category": "Maintaining Access"
+  },
+  {
+    "id": "cryptcat",
+    "label": "Cryptcat - Encrypted Netcat",
+    "category": "Maintaining Access"
+  },
+  {
+    "id": "dnscat2",
+    "label": "DNScat2 - DNS Tunnel",
+    "category": "Maintaining Access"
+  },
+  {
+    "id": "steghide",
+    "label": "Steghide - Steganography Tool",
+    "category": "Steganography"
+  },
+  {
+    "id": "outguess",
+    "label": "Outguess - Steganography Tool",
+    "category": "Steganography"
+  },
+  {
+    "id": "exiftool",
+    "label": "ExifTool - Metadata Reader",
+    "category": "Steganography"
+  },
+  {
+    "id": "binwalk",
+    "label": "Binwalk - Firmware Analyzer",
+    "category": "Steganography"
+  },
+  {
+    "id": "foremost",
+    "label": "Foremost - File Carver",
+    "category": "Steganography"
+  },
+  {
+    "id": "strings",
+    "label": "Strings - Text Extractor",
+    "category": "Steganography"
+  },
+  {
+    "id": "scalpel",
+    "label": "Scalpel - File Carver",
+    "category": "Forensics"
+  },
+  {
+    "id": "bulk_extractor",
+    "label": "Bulk Extractor - Forensic Analyzer",
+    "category": "Forensics"
+  },
+  {
+    "id": "xxd",
+    "label": "XXD - Hex Dump",
+    "category": "Forensics"
+  },
+  {
+    "id": "hexedit",
+    "label": "Hexedit - Hex Editor",
+    "category": "Forensics"
+  },
+  {
+    "id": "dradis",
+    "label": "Dradis - Collaboration Platform",
+    "category": "Reporting"
+  },
+  {
+    "id": "faraday",
+    "label": "Faraday - IDE for Pentesters",
+    "category": "Reporting"
+  },
+  {
+    "id": "setoolkit",
+    "label": "Social Engineer Toolkit",
+    "category": "Social Engineering"
+  },
+  {
+    "id": "hackrf",
+    "label": "HackRF - SDR Tool",
+    "category": "Hardware Hacking"
+  },
+  {
+    "id": "gqrx",
+    "label": "GQRX - SDR Receiver",
+    "category": "Hardware Hacking"
+  },
+  {
+    "id": "gnuradio",
+    "label": "GNU Radio - SDR Framework",
+    "category": "Hardware Hacking"
+  },
+  {
+    "id": "urh",
+    "label": "Universal Radio Hacker",
+    "category": "Hardware Hacking"
+  }
+]

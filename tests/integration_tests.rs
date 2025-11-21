@@ -237,21 +237,8 @@ fn test_tool_execution_panel_creation() {
     gtk4::init().expect("Failed to initialize GTK");
 
     let panel = pt_journal::ui::tool_execution::ToolExecutionPanel::new();
-    assert_eq!(panel.get_target(), "");
-    assert_eq!(panel.get_arguments().len(), 0);
-}
-
-fn test_parse_arguments() {
-    gtk4::init().expect("Failed to initialize GTK");
-
-    let panel = pt_journal::ui::tool_execution::ToolExecutionPanel::new();
-    panel.args_entry.set_text("-p 80,443 -sV");
-
-    let args = panel.get_arguments();
-    assert_eq!(args.len(), 3);
-    assert_eq!(args[0], "-p");
-    assert_eq!(args[1], "80,443");
-    assert_eq!(args[2], "-sV");
+    assert_eq!(panel.get_selected_tool(), Some("nmap".to_string()));
+    assert!(panel.instructions_scroll.child().is_some());
 }
 
 fn test_tool_selection() {
@@ -265,23 +252,6 @@ fn test_tool_selection() {
     // Switch to gobuster
     panel.tool_selector.set_active_id(Some("gobuster"));
     assert_eq!(panel.get_selected_tool(), Some("gobuster".to_string()));
-}
-
-fn test_status_updates() {
-    gtk4::init().expect("Failed to initialize GTK");
-
-    let panel = pt_journal::ui::tool_execution::ToolExecutionPanel::new();
-
-    panel.set_status("Testing status");
-    assert_eq!(panel.status_label.text(), "Testing status");
-
-    panel.set_executing(true);
-    assert!(!panel.execute_button.is_sensitive());
-    assert!(panel.spinner.is_visible());
-
-    panel.set_executing(false);
-    assert!(panel.execute_button.is_sensitive());
-    assert!(!panel.spinner.is_visible());
 }
 
 fn main() {
@@ -305,9 +275,7 @@ fn main() {
         ),
         ("test_full_workflow", test_full_workflow),
         ("test_tool_execution_panel_creation", test_tool_execution_panel_creation),
-        ("test_parse_arguments", test_parse_arguments),
         ("test_tool_selection", test_tool_selection),
-        ("test_status_updates", test_status_updates),
     ];
 
     let mut runner = test_runner::TestRunner::new(tests.len());

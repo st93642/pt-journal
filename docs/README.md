@@ -98,19 +98,18 @@ This directory contains comprehensive technical documentation for the PT Journal
 - Learning established patterns
 
 #### 🛠️ [../TOOL_INSTRUCTIONS_FEATURE.md](../TOOL_INSTRUCTIONS_FEATURE.md)
-**Purpose**: Tool instructions dialog feature documentation  
-**Size**: 10KB (291 lines)  
+**Purpose**: Data-driven security tool instruction system overview  
+**Size**: 4KB (119 lines)  
 **Contents**:
-- Feature overview and implementation details
-- UI components and user experience flow
-- Technical implementation patterns
-- Copyable command system
-- Evidence timestamp format updates
+- Module/data architecture and caching strategy
+- Manifest & instruction JSON schema
+- Authoring workflow for new tools/sections
+- Runtime behavior, fallbacks, and testing notes
 
 **Use this when**:
-- Understanding the tool instructions feature
-- Extending the instruction system
-- Learning UI implementation patterns
+- Adding or updating instruction content
+- Understanding how the UI renders structured sections
+- Troubleshooting missing or malformed instruction data
 
 ---
 

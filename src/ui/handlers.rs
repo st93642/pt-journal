@@ -267,7 +267,9 @@ pub fn setup_quiz_handlers(detail_panel: Rc<DetailPanel>, state: Rc<StateManager
                     stats.first_attempt_correct
                 );
 
-                panel_finish.quiz_widget.show_explanation(&completion_message, None);
+                panel_finish
+                    .quiz_widget
+                    .show_explanation(&completion_message, None);
 
                 // Update statistics display
                 panel_finish.quiz_widget.update_statistics(&quiz_step);
@@ -304,12 +306,13 @@ pub fn setup_phase_handler(
     let state_clone = state.clone();
     let detail_panel_clone = detail_panel.clone();
 
-        let handler_id = phase_combo.connect_selected_notify(move |combo| {
+    let handler_id = phase_combo.connect_selected_notify(move |combo| {
         let selected = combo.selected();
         // Use state manager to change phase (dispatches events)
         state_clone.select_phase(selected as usize);
         rebuild_steps_list(&steps_list_clone, &state_clone.model(), &detail_panel_clone);
-    });    Rc::new(handler_id)
+    });
+    Rc::new(handler_id)
 }
 
 /// Wire up step selection and checkbox handlers

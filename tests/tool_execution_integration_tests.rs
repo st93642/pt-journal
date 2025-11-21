@@ -18,7 +18,10 @@ fn test_tool_config_builder() {
     assert_eq!(config.target, Some("192.168.1.1".to_string()));
     assert_eq!(config.arguments.len(), 3);
     assert_eq!(config.timeout, Some(Duration::from_secs(300)));
-    assert_eq!(config.env_vars.get("TEST_VAR"), Some(&"test_value".to_string()));
+    assert_eq!(
+        config.env_vars.get("TEST_VAR"),
+        Some(&"test_value".to_string())
+    );
 }
 
 #[test]
@@ -87,7 +90,7 @@ fn test_nmap_scan_types() {
 
 #[test]
 fn test_gobuster_tool_creation() {
-    use pt_journal::tools::integrations::gobuster::{GobusterTool, GobusterMode};
+    use pt_journal::tools::integrations::gobuster::{GobusterMode, GobusterTool};
 
     let tool = GobusterTool::default();
     assert_eq!(tool.name(), "gobuster");
@@ -98,13 +101,9 @@ fn test_gobuster_tool_creation() {
 
 #[test]
 fn test_gobuster_modes() {
-    use pt_journal::tools::integrations::gobuster::{GobusterTool, GobusterMode};
+    use pt_journal::tools::integrations::gobuster::{GobusterMode, GobusterTool};
 
-    let modes = vec![
-        GobusterMode::Dir,
-        GobusterMode::Dns,
-        GobusterMode::Vhost,
-    ];
+    let modes = vec![GobusterMode::Dir, GobusterMode::Dns, GobusterMode::Vhost];
 
     for mode in modes {
         // Modes exist and can be created
@@ -123,24 +122,29 @@ fn test_tool_executor_creation() {
 
 #[test]
 fn test_tool_registry() {
-    use pt_journal::tools::registry::ToolRegistry;
-    use pt_journal::tools::integrations::nmap::NmapTool;
     use pt_journal::tools::integrations::gobuster::GobusterTool;
+    use pt_journal::tools::integrations::nmap::NmapTool;
+    use pt_journal::tools::registry::ToolRegistry;
 
     let mut registry = ToolRegistry::new();
-    
+
     // Initially empty
     assert_eq!(registry.list_tools().len(), 0);
-    
+
     // Register tools
     registry.register(Box::new(NmapTool::default())).unwrap();
-    registry.register(Box::new(GobusterTool::default())).unwrap();
-    
+    registry
+        .register(Box::new(GobusterTool::default()))
+        .unwrap();
+
     let tools = registry.list_tools();
     assert_eq!(tools.len(), 2, "Should have 2 registered tools");
     assert!(tools.iter().any(|t| t == "nmap"), "Should include nmap");
-    assert!(tools.iter().any(|t| t == "gobuster"), "Should include gobuster");
-    
+    assert!(
+        tools.iter().any(|t| t == "gobuster"),
+        "Should include gobuster"
+    );
+
     // Registering same tool twice should fail
     let result = registry.register(Box::new(NmapTool::default()));
     assert!(result.is_err(), "Should not allow duplicate registration");
@@ -151,10 +155,10 @@ fn test_mock_tool_execution() {
     // Test with nmap tool (will fail gracefully if not installed)
     use pt_journal::tools::executor::DefaultExecutor;
     use pt_journal::tools::integrations::nmap::{NmapTool, ScanType};
-    
+
     let executor = DefaultExecutor::new();
     let tool = NmapTool::with_scan_type(ScanType::TcpConnect);
-    
+
     let config = ToolConfig::builder()
         .target("127.0.0.1")
         .argument("-p")
@@ -162,7 +166,7 @@ fn test_mock_tool_execution() {
         .timeout(Duration::from_secs(1))
         .build()
         .unwrap();
-    
+
     let result = executor.execute(&tool, &config);
     // Result can be Ok or Err depending on nmap installation
     // We're just testing that the execution path works
@@ -203,7 +207,10 @@ fn test_tool_config_environment_variables() {
         .unwrap();
 
     assert_eq!(config.env_vars.len(), 2);
-    assert_eq!(config.env_vars.get("HTTP_PROXY"), Some(&"http://proxy:8080".to_string()));
+    assert_eq!(
+        config.env_vars.get("HTTP_PROXY"),
+        Some(&"http://proxy:8080".to_string())
+    );
 }
 
 #[test]
@@ -251,8 +258,8 @@ fn test_execution_result_with_error() {
 
 #[test]
 fn test_tool_evidence_creation() {
-    use pt_journal::model::Evidence;
     use chrono::Utc;
+    use pt_journal::model::Evidence;
     use uuid::Uuid;
 
     let evidence = Evidence {
@@ -292,7 +299,8 @@ fn test_concurrent_tool_configs() {
 fn test_tool_output_parsing_placeholder() {
     // Placeholder for future parsed result testing
     let result = ExecutionResult {
-        stdout: "Nmap scan report for example.com\nPORT STATE SERVICE\n80/tcp open http".to_string(),
+        stdout: "Nmap scan report for example.com\nPORT STATE SERVICE\n80/tcp open http"
+            .to_string(),
         stderr: String::new(),
         exit_code: 0,
         duration: Duration::from_secs(1),
@@ -307,8 +315,8 @@ fn test_tool_output_parsing_placeholder() {
 
 #[test]
 fn test_tool_names_are_lowercase() {
-    use pt_journal::tools::integrations::nmap::NmapTool;
     use pt_journal::tools::integrations::gobuster::GobusterTool;
+    use pt_journal::tools::integrations::nmap::NmapTool;
 
     let nmap = NmapTool::default();
     let gobuster = GobusterTool::default();

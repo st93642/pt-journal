@@ -274,7 +274,10 @@ fn main() {
             test_state_manager_step_updates,
         ),
         ("test_full_workflow", test_full_workflow),
-        ("test_tool_execution_panel_creation", test_tool_execution_panel_creation),
+        (
+            "test_tool_execution_panel_creation",
+            test_tool_execution_panel_creation,
+        ),
         ("test_tool_selection", test_tool_selection),
     ];
 

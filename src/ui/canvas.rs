@@ -352,11 +352,8 @@ fn handle_image_drop(
                 if let Ok(texture) = create_texture_from_file(&path) {
                     // Copy the file to evidence directory and get relative path
                     let session_path = state.model().borrow().current_path.clone();
-                    let relative_path = copy_file_to_evidence(
-                        &path,
-                        session_path.as_deref()
-                    );
-                    
+                    let relative_path = copy_file_to_evidence(&path, session_path.as_deref());
+
                     add_image_to_canvas(
                         canvas_items,
                         state,
@@ -470,7 +467,8 @@ fn handle_clipboard_paste(
                                 Ok(value) => {
                                     if let Ok(pixbuf) = value.get::<gdk::gdk_pixbuf::Pixbuf>() {
                                         // Save pixbuf to file
-                                        let session_path = state_pb.model().borrow().current_path.clone();
+                                        let session_path =
+                                            state_pb.model().borrow().current_path.clone();
                                         let image_path = save_pasted_image(
                                             None,
                                             Some(&pixbuf),

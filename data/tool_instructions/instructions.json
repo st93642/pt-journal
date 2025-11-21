@@ -5,28 +5,51 @@
     "summary": "OWASP Amass performs in-depth attack surface mapping for external assets. It combines passive and active reconnaissance with graph exports and historical tracking.",
     "installation_guides": [
       {
-        "platform": "Snap package",
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from repos or Go toolchain",
         "steps": [
           {
-            "detail": "sudo snap install amass",
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y amass",
+            "copyable": true
+          },
+          {
+            "detail": "mkdir -p ~/.config/amass",
+            "copyable": true
+          },
+          {
+            "detail": "amass -version",
             "copyable": true
           }
         ]
       },
       {
-        "platform": "Install via Go",
+        "platform": "Kali Linux",
+        "summary": "Pre-installed with companion wordlists",
         "steps": [
           {
-            "detail": "GO111MODULE=on go install -v github.com/owasp-amass/amass/v4/...",
+            "detail": "sudo apt install -y amass amass-wordlists",
+            "copyable": true
+          },
+          {
+            "detail": "ls /usr/share/amass/wordlists",
             "copyable": true
           }
         ]
       },
       {
-        "platform": "Docker",
+        "platform": "Docker / Alternative",
+        "summary": "Official containerized deployment",
         "steps": [
           {
             "detail": "docker pull caffix/amass",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v $PWD:/output caffix/amass enum -passive -d example.com",
             "copyable": true
           }
         ]
@@ -91,10 +114,97 @@
       "Export graphs (viz) to share with teammates or include in reports.",
       "Blend passive + active modes for accuracy while limiting noise."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "Passive OSINT baseline",
+        "steps": [
+          {
+            "title": "Configure API keys",
+            "details": "Edit ~/.config/amass/config.ini with VirusTotal, Shodan, SecurityTrails tokens.",
+            "command": "nano ~/.config/amass/config.ini"
+          },
+          {
+            "title": "Run passive sweep",
+            "details": "Collect subdomains without touching target infrastructure.",
+            "command": "amass enum -passive -d example.com -o passive.txt"
+          },
+          {
+            "title": "Review discoveries",
+            "details": "Examine the database for new assets.",
+            "command": "amass db -d example.com -show"
+          }
+        ]
+      },
+      {
+        "title": "Active brute-force enumeration",
+        "steps": [
+          {
+            "title": "Launch active scan",
+            "details": "Use wordlists with custom resolvers for brute force.",
+            "command": "amass enum -active -brute -w /usr/share/amass/wordlists/all.txt -d example.com -src -ip"
+          },
+          {
+            "title": "Export graph",
+            "details": "Generate GEXF for Maltego or Gephi.",
+            "command": "amass viz -d example.com -o graph.gexf"
+          },
+          {
+            "title": "Track changes",
+            "details": "Monitor new assets over time.",
+            "command": "amass track -d example.com -last 2"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Passive → Active → Verification",
+        "stages": [
+          {
+            "label": "Amass passive",
+            "description": "Gather all public subdomain data.",
+            "command": "amass enum -passive -d example.com -o passive.txt"
+          },
+          {
+            "label": "DNS validation",
+            "description": "Verify candidates resolve.",
+            "command": "dnsrecon -d example.com -D passive.txt -t brt"
+          },
+          {
+            "label": "Port scanning",
+            "description": "Identify services on validated hosts.",
+            "command": "nmap -sV -iL live.txt -oA scans/services"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[Passive] api.example.com",
+        "meaning": "Square brackets indicate which module sourced the finding.",
+        "severity": "info"
+      },
+      {
+        "indicator": "ASN: 13335",
+        "meaning": "ASN context helps identify ownership and scope boundaries.",
+        "severity": "info"
+      },
+      {
+        "indicator": "Address: 203.0.113.42",
+        "meaning": "Resolved IPs ready for port scanning.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Recursive crawl with custom resolvers",
+        "command": "amass enum -active -brute -w custom.txt -min-for-recursive 3 -rf resolvers.txt -d example.com",
+        "scenario": "Recursively enumerate when finding multiple subdomains at a level.",
+        "notes": [
+          "Use --max-depth to prevent infinite loops on wildcard zones."
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -104,19 +214,39 @@
     "summary": "Sublist3r is a fast Python subdomain enumeration tool designed to enumerate subdomains of websites using OSINT.",
     "installation_guides": [
       {
-        "platform": "Install from pip",
+        "platform": "Debian/Ubuntu",
+        "summary": null,
         "steps": [
           {
-            "detail": "pip3 install sublist3r",
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y sublist3r",
+            "copyable": true
+          },
+          {
+            "detail": "sublist3r -h",
             "copyable": true
           }
         ]
       },
       {
-        "platform": "Install from source",
+        "platform": "Kali Linux",
+        "summary": "Pre-installed",
         "steps": [
           {
-            "detail": "git clone https://github.com/aboul3la/Sublist3r.git",
+            "detail": "sublist3r -d example.com",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "git clone https://github.com/aboul3la/Sublist3r",
             "copyable": true
           },
           {
@@ -188,10 +318,67 @@
       "Save results for later analysis and correlation.",
       "Consider rate limiting to avoid being blocked by search engines."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "Basic subdomain enumeration",
+        "steps": [
+          {
+            "title": "Run search",
+            "details": "Query multiple search engines for subdomains.",
+            "command": "sublist3r -d example.com -o subdomains.txt"
+          },
+          {
+            "title": "Verify live",
+            "details": "Check which subdomains resolve.",
+            "command": "cat subdomains.txt | dnsx -silent -o live_subs.txt"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Subdomain discovery → HTTP probing",
+        "stages": [
+          {
+            "label": "Sublist3r enum",
+            "description": "Gather subdomains from public sources.",
+            "command": "sublist3r -d example.com -o subs.txt"
+          },
+          {
+            "label": "DNS resolution",
+            "description": "Filter only live hosts.",
+            "command": "dnsx -l subs.txt -resp-only -o resolved.txt"
+          },
+          {
+            "label": "HTTP detection",
+            "description": "Identify web services.",
+            "command": "httpx -l resolved.txt -title -tech-detect -o web_services.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[-] Enumerating subdomains now for example.com",
+        "meaning": "Sublist3r started; sources include Google, Bing, Yahoo, etc.",
+        "severity": "info"
+      },
+      {
+        "indicator": "[+] api.example.com",
+        "meaning": "Subdomain discovered and added to results.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Threaded brute force",
+        "command": "sublist3r -d example.com -b -t 50 -o subs_bruteforce.txt",
+        "scenario": "Enable brute force with 50 threads for faster enumeration.",
+        "notes": [
+          "Requires local wordlists in Sublist3r/subbrute/"
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -201,22 +388,47 @@
     "summary": "theHarvester is an OSINT tool for gathering emails, subdomains, hosts, employee names, open ports, and banners from different public sources.",
     "installation_guides": [
       {
-        "platform": "Install from git",
+        "platform": "Debian/Ubuntu",
+        "summary": null,
         "steps": [
           {
-            "detail": "git clone https://github.com/laramies/theHarvester.git",
+            "detail": "sudo apt update",
             "copyable": true
           },
           {
-            "detail": "cd theHarvester",
+            "detail": "sudo apt install -y theharvester",
             "copyable": true
           },
           {
-            "detail": "pip3 install -r requirements.txt",
+            "detail": "theHarvester -h",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Pre-installed",
+        "steps": [
+          {
+            "detail": "theHarvester -d example.com -l 100 -b google",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "docker pull kalilinux/kali-rolling",
             "copyable": true
           },
           {
-            "detail": "python3 theHarvester.py -h",
+            "detail": "docker run -it kalilinux/kali-rolling bash",
+            "copyable": true
+          },
+          {
+            "detail": "apt update && apt install -y theharvester",
             "copyable": true
           }
         ]
@@ -276,10 +488,72 @@
       "Be aware of API rate limits for various sources.",
       "Export results for correlation with other tools."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "OSINT gathering for pentest scope",
+        "steps": [
+          {
+            "title": "Email enumeration",
+            "details": "Harvest employee emails from search engines.",
+            "command": "theHarvester -d example.com -l 500 -b google -f emails"
+          },
+          {
+            "title": "Subdomain discovery",
+            "details": "Extract subdomains using multiple sources.",
+            "command": "theHarvester -d example.com -l 1000 -b all -f osint_results"
+          },
+          {
+            "title": "Shodan integration",
+            "details": "Query Shodan for exposed services.",
+            "command": "theHarvester -d example.com -b shodan -f shodan_intel"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "theHarvester → Email validation → Phishing prep",
+        "stages": [
+          {
+            "label": "Harvest emails",
+            "description": "Gather all public email addresses.",
+            "command": "theHarvester -d example.com -l 1000 -b linkedin,google -f emails.html"
+          },
+          {
+            "label": "Validate addresses",
+            "description": "Check if emails are active (external tool).",
+            "command": "# Use external SMTP validation or Hunter.io"
+          },
+          {
+            "label": "Build target list",
+            "description": "Create phishing campaign targets.",
+            "command": "cat emails.html | grep @ | sort -u > phishing_targets.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[*] Searching Google",
+        "meaning": "theHarvester is querying a specific data source.",
+        "severity": "info"
+      },
+      {
+        "indicator": "admin@example.com",
+        "meaning": "Email address discovered; useful for social engineering assessments.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Multi-source comprehensive scan",
+        "command": "theHarvester -d example.com -l 5000 -b google,bing,linkedin,twitter,shodan,virustotal -f full_osint.xml",
+        "scenario": "Aggregate data from all available sources for complete OSINT picture.",
+        "notes": [
+          "Configure API keys in /etc/theHarvester/api-keys.yaml for premium sources."
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -289,10 +563,39 @@
     "summary": "DNSRecon is a powerful DNS enumeration script that provides multiple techniques for gathering DNS information.",
     "installation_guides": [
       {
-        "platform": "Install from git",
+        "platform": "Debian/Ubuntu",
+        "summary": null,
         "steps": [
           {
-            "detail": "git clone https://github.com/darkoperator/dnsrecon.git",
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y dnsrecon",
+            "copyable": true
+          },
+          {
+            "detail": "dnsrecon -h",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Pre-installed",
+        "steps": [
+          {
+            "detail": "dnsrecon -d example.com",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "git clone https://github.com/darkoperator/dnsrecon",
             "copyable": true
           },
           {
@@ -301,15 +604,6 @@
           },
           {
             "detail": "pip3 install -r requirements.txt",
-            "copyable": true
-          }
-        ]
-      },
-      {
-        "platform": "Kali Linux (pre-installed)",
-        "steps": [
-          {
-            "detail": "dnsrecon -h",
             "copyable": true
           }
         ]
@@ -369,10 +663,77 @@
       "Combine with other DNS tools for comprehensive coverage.",
       "Document all DNS findings for attack surface mapping."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "DNS enumeration and zone transfer",
+        "steps": [
+          {
+            "title": "Standard enumeration",
+            "details": "Query A, AAAA, NS, MX, SOA records.",
+            "command": "dnsrecon -d example.com -t std"
+          },
+          {
+            "title": "Zone transfer attempt",
+            "details": "Try AXFR against all NS servers.",
+            "command": "dnsrecon -d example.com -t axfr"
+          },
+          {
+            "title": "Reverse lookup",
+            "details": "Map IPs back to hostnames.",
+            "command": "dnsrecon -d example.com -t rvl -r 192.168.1.0/24"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "DNS recon → Certificate transparency → Amass",
+        "stages": [
+          {
+            "label": "DNSRecon std",
+            "description": "Baseline DNS records.",
+            "command": "dnsrecon -d example.com -t std -j dns_base.json"
+          },
+          {
+            "label": "Certificate logs",
+            "description": "Query crt.sh for certificate-based subdomains.",
+            "command": "curl -s 'https://crt.sh/?q=%25.example.com&output=json' | jq -r '.[].name_value' | sort -u > crt_subs.txt"
+          },
+          {
+            "label": "Amass merge",
+            "description": "Combine findings and enrich with Amass.",
+            "command": "amass enum -d example.com -passive -df crt_subs.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[*] Performing General Enumeration",
+        "meaning": "DNSRecon is running standard record queries.",
+        "severity": "info"
+      },
+      {
+        "indicator": "[+] AXFR successful",
+        "meaning": "Zone transfer worked; full zone data captured.",
+        "severity": "warning"
+      },
+      {
+        "indicator": "[-] AXFR failed",
+        "meaning": "Zone transfer blocked; expected for hardened DNS.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Brute force with custom wordlist",
+        "command": "dnsrecon -d example.com -t brt -D /usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt -n 8.8.8.8",
+        "scenario": "Use large wordlists against public resolvers for thorough coverage.",
+        "notes": [
+          "Save results as JSON with -j for easy parsing."
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -383,26 +744,38 @@
     "installation_guides": [
       {
         "platform": "Debian/Ubuntu",
+        "summary": null,
         "steps": [
           {
-            "detail": "sudo apt install dnsenum",
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y dnsenum",
+            "copyable": true
+          },
+          {
+            "detail": "dnsenum -h",
             "copyable": true
           }
         ]
       },
       {
-        "platform": "Install from source",
+        "platform": "Kali Linux",
+        "summary": "Pre-installed",
         "steps": [
           {
-            "detail": "git clone https://github.com/fwaeytens/dnsenum.git",
+            "detail": "dnsenum example.com",
             "copyable": true
-          },
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
+        "steps": [
           {
-            "detail": "cd dnsenum",
-            "copyable": true
-          },
-          {
-            "detail": "chmod +x dnsenum.pl",
+            "detail": "docker run --rm kalilinux/kali-rolling dnsenum example.com",
             "copyable": true
           }
         ]
@@ -462,10 +835,72 @@
       "Combine results with other DNS tools for completeness.",
       "Save subdomain lists for later testing phases."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "Full DNS enumeration",
+        "steps": [
+          {
+            "title": "Default scan",
+            "details": "Enumerate DNS with built-in wordlist.",
+            "command": "dnsenum example.com"
+          },
+          {
+            "title": "Custom wordlist",
+            "details": "Use your own subdomain list.",
+            "command": "dnsenum --subfile /usr/share/seclists/Discovery/DNS/fierce-hostlist.txt example.com"
+          },
+          {
+            "title": "Output results",
+            "details": "Save findings to file.",
+            "command": "dnsenum -o dnsenum_results.xml example.com"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "DNSenum → Screenshot automation",
+        "stages": [
+          {
+            "label": "DNS discovery",
+            "description": "Find all subdomains and IPs.",
+            "command": "dnsenum --threads 10 example.com > dnsenum.txt"
+          },
+          {
+            "label": "Extract hostnames",
+            "description": "Parse out discovered hosts.",
+            "command": "grep 'example.com' dnsenum.txt | awk '{print $1}' | sort -u > hosts.txt"
+          },
+          {
+            "label": "Screenshot capture",
+            "description": "Use EyeWitness or Aquatone.",
+            "command": "eyewitness -f hosts.txt --web"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Brute forcing with /usr/share/dnsenum/dns.txt",
+        "meaning": "DNSenum is using default wordlist for subdomain brute force.",
+        "severity": "info"
+      },
+      {
+        "indicator": "admin.example.com. 300 IN A 203.0.113.10",
+        "meaning": "Subdomain resolved; TTL and IP provided.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Reverse lookup of netblock",
+        "command": "dnsenum --enum --noreverse --threads 20 example.com",
+        "scenario": "Skip reverse lookups to speed up enumeration.",
+        "notes": [
+          "Use --dnsserver to specify custom resolver for testing."
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -475,10 +910,47 @@
     "summary": "Maltego is an interactive data mining tool that renders directed graphs for link analysis. It's excellent for visualizing relationships between entities.",
     "installation_guides": [
       {
-        "platform": "Kali Linux (Community Edition)",
+        "platform": "Debian/Ubuntu",
+        "summary": null,
         "steps": [
           {
+            "detail": "wget https://www.maltego.com/downloads/maltego-ce.deb",
+            "copyable": true
+          },
+          {
+            "detail": "sudo dpkg -i maltego-ce.deb",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt --fix-broken install",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Pre-installed in some editions",
+        "steps": [
+          {
+            "detail": "sudo apt install -y maltego",
+            "copyable": true
+          },
+          {
             "detail": "maltego",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Community image available",
+        "steps": [
+          {
+            "detail": "# Maltego GUI requires X11 forwarding or VNC",
+            "copyable": true
+          },
+          {
+            "detail": "# Use official installers for desktop environments",
             "copyable": true
           }
         ]
@@ -525,10 +997,77 @@
       "Combine with OSINT data for comprehensive intelligence.",
       "Consider API keys for premium transforms and data sources."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "Initial OSINT investigation",
+        "steps": [
+          {
+            "title": "Launch Maltego",
+            "details": "Open the GUI and create/sign in to account.",
+            "command": "maltego"
+          },
+          {
+            "title": "Create new graph",
+            "details": "Start with a domain entity.",
+            "command": "# Add domain from entity palette"
+          },
+          {
+            "title": "Run transforms",
+            "details": "Right-click domain → Run All Transforms → To DNS/Websites",
+            "command": "# Graphically expands relationships"
+          },
+          {
+            "title": "Visualize attack surface",
+            "details": "Examine connections and identify high-value targets.",
+            "command": "# Review graph layout"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Maltego → Export → Recon-ng import",
+        "stages": [
+          {
+            "label": "Maltego graph",
+            "description": "Build comprehensive attack surface map visually.",
+            "command": "# Use Maltego GUI transforms"
+          },
+          {
+            "label": "Export entities",
+            "description": "Save discovered entities to CSV/XML.",
+            "command": "# File → Export → Graph to CSV"
+          },
+          {
+            "label": "Recon-ng import",
+            "description": "Load data into Recon-ng for scriptable recon.",
+            "command": "# Use Recon-ng import modules"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Entity: Domain [example.com]",
+        "meaning": "Central pivot point for transforms.",
+        "severity": "info"
+      },
+      {
+        "indicator": "Transform: To DNS Name [NS]",
+        "meaning": "Discovered nameservers linked to domain.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "API-driven transforms",
+        "command": "# Configure API keys in Maltego → Transforms → Hub",
+        "scenario": "Enable premium transforms for deeper OSINT (Shodan, VirusTotal, PassiveTotal).",
+        "notes": [
+          "Automate with Maltego TRX framework for custom transforms."
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -538,10 +1077,39 @@
     "summary": "Recon-ng is a powerful Web Reconnaissance framework with a modular interface similar to Metasploit.",
     "installation_guides": [
       {
-        "platform": "Install from git",
+        "platform": "Debian/Ubuntu",
+        "summary": null,
         "steps": [
           {
-            "detail": "git clone https://github.com/lanmaster53/recon-ng.git",
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y recon-ng",
+            "copyable": true
+          },
+          {
+            "detail": "recon-ng",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Pre-installed",
+        "steps": [
+          {
+            "detail": "recon-ng",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "git clone https://github.com/lanmaster53/recon-ng",
             "copyable": true
           },
           {
@@ -549,7 +1117,7 @@
             "copyable": true
           },
           {
-            "detail": "pip3 install -r requirements.txt",
+            "detail": "pip3 install -r REQUIREMENTS",
             "copyable": true
           },
           {
@@ -609,10 +1177,77 @@
       "Chain modules for comprehensive reconnaissance.",
       "Export data for analysis in other tools."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "Modular reconnaissance workflow",
+        "steps": [
+          {
+            "title": "Create workspace",
+            "details": "Organize findings by target.",
+            "command": "[recon-ng] > workspaces create example_pentest"
+          },
+          {
+            "title": "Install modules",
+            "details": "Add recon modules from marketplace.",
+            "command": "[recon-ng][example_pentest] > marketplace install all"
+          },
+          {
+            "title": "Configure API keys",
+            "details": "Set keys for premium data sources.",
+            "command": "[recon-ng][example_pentest] > keys add shodan_api YOUR_KEY"
+          },
+          {
+            "title": "Load and run module",
+            "details": "Execute reconnaissance tasks.",
+            "command": "[recon-ng][example_pentest] > modules load recon/domains-hosts/hackertarget\\n options set SOURCE example.com\\n run"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Recon-ng → Database export → Report generation",
+        "stages": [
+          {
+            "label": "Module execution",
+            "description": "Run multiple recon modules to populate DB.",
+            "command": "# Run modules via CLI or rc script"
+          },
+          {
+            "label": "Query database",
+            "description": "Extract hosts, contacts, credentials.",
+            "command": "[recon-ng] > db query SELECT * FROM hosts"
+          },
+          {
+            "label": "Generate report",
+            "description": "Export findings to HTML/CSV.",
+            "command": "[recon-ng] > modules load reporting/html\\n run"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[*] Module loaded: recon/domains-hosts/hackertarget",
+        "meaning": "Recon-ng loaded the module successfully.",
+        "severity": "info"
+      },
+      {
+        "indicator": "[+] Found: admin.example.com (203.0.113.5)",
+        "meaning": "New host discovered and added to workspace database.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Scripted reconnaissance with resource files",
+        "command": "recon-ng -r recon_script.rc",
+        "scenario": "Automate multi-module workflows with resource files.",
+        "notes": [
+          "Example rc file:\\nworkspaces create auto_recon\\nmodules load recon/domains-hosts/hackertarget\\noptions set SOURCE example.com\\nrun"
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -622,10 +1257,11 @@
     "summary": "Photon is an incredibly fast crawler designed for OSINT that extracts URLs, emails, files, website accounts, and more.",
     "installation_guides": [
       {
-        "platform": "Install from git",
+        "platform": "Debian/Ubuntu",
+        "summary": null,
         "steps": [
           {
-            "detail": "git clone https://github.com/s0md3v/Photon.git",
+            "detail": "git clone https://github.com/s0md3v/Photon",
             "copyable": true
           },
           {
@@ -638,6 +1274,34 @@
           },
           {
             "detail": "python3 photon.py -h",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "git clone https://github.com/s0md3v/Photon ~/Photon",
+            "copyable": true
+          },
+          {
+            "detail": "cd ~/Photon && pip3 install -r requirements.txt",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "docker pull s0md3v/photon",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -v $PWD:/output s0md3v/photon -u https://example.com -o /output",
             "copyable": true
           }
         ]
@@ -701,10 +1365,72 @@
       "Save all output for later analysis and correlation.",
       "Combine with other tools for comprehensive reconnaissance."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "Website crawling and data extraction",
+        "steps": [
+          {
+            "title": "Basic crawl",
+            "details": "Harvest URLs, emails, JS files from target site.",
+            "command": "python3 photon.py -u https://example.com -o output/"
+          },
+          {
+            "title": "Deep crawl with threads",
+            "details": "Accelerate with multithreading.",
+            "command": "python3 photon.py -u https://example.com -t 20 -o results/"
+          },
+          {
+            "title": "Review findings",
+            "details": "Examine extracted intelligence.",
+            "command": "ls output/example.com/"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Photon → JS analysis → Endpoint discovery",
+        "stages": [
+          {
+            "label": "Photon crawl",
+            "description": "Extract all links and assets.",
+            "command": "python3 photon.py -u https://app.example.com -o photon_out/"
+          },
+          {
+            "label": "JavaScript extraction",
+            "description": "Find hidden API endpoints in JS files.",
+            "command": "cat photon_out/app.example.com/scripts.txt | httpx -silent > js_files.txt"
+          },
+          {
+            "label": "LinkFinder analysis",
+            "description": "Parse JS for URLs and parameters.",
+            "command": "python3 linkfinder.py -i js_files.txt -o endpoints.html"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] Extracting URLs",
+        "meaning": "Photon is crawling and collecting all hyperlinks.",
+        "severity": "info"
+      },
+      {
+        "indicator": "[!] admin@example.com",
+        "meaning": "Email address found; potential target for social engineering.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Crawl with custom headers and cookies",
+        "command": "python3 photon.py -u https://example.com --headers 'Authorization: Bearer TOKEN' --cookies 'session=abc123' -o auth_crawl/",
+        "scenario": "Authenticated crawling to discover internal pages.",
+        "notes": [
+          "Export cookies from browser DevTools for testing."
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -714,10 +1440,11 @@
     "summary": "SpiderFoot is an OSINT automation tool that integrates with numerous data sources to gather intelligence on IP addresses, domain names, email addresses, etc.",
     "installation_guides": [
       {
-        "platform": "Install from git",
+        "platform": "Debian/Ubuntu",
+        "summary": null,
         "steps": [
           {
-            "detail": "git clone https://github.com/smicallef/spiderfoot.git",
+            "detail": "git clone https://github.com/smicallef/spiderfoot",
             "copyable": true
           },
           {
@@ -729,7 +1456,39 @@
             "copyable": true
           },
           {
-            "detail": "python3 sf.py -h",
+            "detail": "python3 sf.py -l 127.0.0.1:5001",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from repos",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y spiderfoot",
+            "copyable": true
+          },
+          {
+            "detail": "spiderfoot -l 127.0.0.1:5001",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "docker pull spiderfoot/spiderfoot",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -p 5001:5001 spiderfoot/spiderfoot",
             "copyable": true
           }
         ]
@@ -793,10 +1552,72 @@
       "Use strict correlation to reduce false positives.",
       "Export results for integration with other tools."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "Automated OSINT collection",
+        "steps": [
+          {
+            "title": "Start web interface",
+            "details": "Launch SpiderFoot server.",
+            "command": "python3 sf.py -l 127.0.0.1:5001"
+          },
+          {
+            "title": "Create scan",
+            "details": "Navigate to http://127.0.0.1:5001 and start new scan with domain target.",
+            "command": "# Use web UI"
+          },
+          {
+            "title": "Review findings",
+            "details": "Examine discovered subdomains, IPs, emails, vulnerabilities.",
+            "command": "# Export results from web UI"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "SpiderFoot → Vulnerability correlation",
+        "stages": [
+          {
+            "label": "SpiderFoot scan",
+            "description": "Run automated OSINT modules.",
+            "command": "# Configure scan via web UI"
+          },
+          {
+            "label": "Export CSV",
+            "description": "Download findings for analysis.",
+            "command": "# Export from web UI"
+          },
+          {
+            "label": "Nuclei scanning",
+            "description": "Test discovered endpoints for CVEs.",
+            "command": "nuclei -l discovered_hosts.txt -t cves/"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[MODULE] DNS Resolution",
+        "meaning": "SpiderFoot module actively resolving hostnames.",
+        "severity": "info"
+      },
+      {
+        "indicator": "[FINDING] Subdomain: api.example.com",
+        "meaning": "New subdomain discovered via passive DNS.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "CLI-driven scan with custom modules",
+        "command": "python3 sf.py -s example.com -m sfp_dnsbrute,sfp_shodan,sfp_virustotal -o json -q",
+        "scenario": "Run headless scan with specific modules for automation.",
+        "notes": [
+          "Configure API keys in spiderfoot.yaml for enhanced results."
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -807,27 +1628,50 @@
     "installation_guides": [
       {
         "platform": "Debian/Ubuntu",
+        "summary": "Install from the official repositories and keep scripts up to date.",
         "steps": [
           {
-            "detail": "sudo apt install nmap",
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y nmap",
+            "copyable": true
+          },
+          {
+            "detail": "nmap --version",
             "copyable": true
           }
         ]
       },
       {
-        "platform": "Red Hat/CentOS/Fedora",
+        "platform": "Kali Linux",
+        "summary": "Kali ships an up-to-date Nmap plus extra NSE scripts.",
         "steps": [
           {
-            "detail": "sudo yum install nmap",
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y nmap nmap-common",
+            "copyable": true
+          },
+          {
+            "detail": "sudo nmap --script-updatedb",
             "copyable": true
           }
         ]
       },
       {
-        "platform": "macOS (Homebrew)",
+        "platform": "Docker / Alternative",
+        "summary": "Run Nmap in a disposable container when you cannot install it locally.",
         "steps": [
           {
-            "detail": "brew install nmap",
+            "detail": "docker pull instrumenta/nmap",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -it instrumenta/nmap -sV scanme.nmap.org",
             "copyable": true
           }
         ]
@@ -1054,22 +1898,54 @@
     "installation_guides": [
       {
         "platform": "Debian/Ubuntu",
+        "summary": "Build from source for latest features",
         "steps": [
           {
-            "detail": "sudo apt install masscan",
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y git gcc make libpcap-dev",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/robertdavidgraham/masscan",
+            "copyable": true
+          },
+          {
+            "detail": "cd masscan && make -j",
+            "copyable": true
+          },
+          {
+            "detail": "sudo make install",
             "copyable": true
           }
         ]
       },
       {
-        "platform": "Build from source",
+        "platform": "Kali Linux",
+        "summary": "Pre-installed package",
         "steps": [
           {
-            "detail": "git clone https://github.com/robertdavidgraham/masscan.git",
+            "detail": "sudo apt install -y masscan",
             "copyable": true
           },
           {
-            "detail": "cd masscan && make",
+            "detail": "masscan --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Containerized execution with network access",
+        "steps": [
+          {
+            "detail": "docker pull ivre/masscan",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm --net=host ivre/masscan -p80,443 192.168.1.0/24",
             "copyable": true
           }
         ]
@@ -1142,10 +2018,67 @@
       "Always exclude production ranges if not in scope.",
       "Plan scans during maintenance to avoid IDS alerts."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "Internet-scale port discovery",
+        "steps": [
+          {
+            "title": "Configure exclusions",
+            "details": "Create exclude.txt with out-of-scope networks to honor ROE.",
+            "command": "echo '192.168.0.0/16' > exclude.txt"
+          },
+          {
+            "title": "Launch fast sweep",
+            "details": "Scan entire ranges at millions of packets/second.",
+            "command": "sudo masscan 10.0.0.0/8 -p80,443,8080,8443 --rate 10000 --excludefile exclude.txt -oG masscan.gnmap"
+          },
+          {
+            "title": "Parse results",
+            "details": "Extract open ports for Nmap follow-up.",
+            "command": "grep 'Host:' masscan.gnmap | awk '{print $2}' | sort -u > live_hosts.txt"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Mass discovery → Nmap validation",
+        "stages": [
+          {
+            "label": "Masscan sweep",
+            "description": "Quickly identify live services across huge ranges.",
+            "command": "sudo masscan 10.0.0.0/16 -p1-65535 --rate 50000 -oL masscan.list"
+          },
+          {
+            "label": "Nmap deep scan",
+            "description": "Validate and fingerprint services on discovered hosts.",
+            "command": "nmap -sV -sC -iL masscan.list -oA detailed"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Discovered open port 80/tcp on 10.0.1.5",
+        "meaning": "Masscan found a responsive port; follow up with Nmap for service details.",
+        "severity": "info"
+      },
+      {
+        "indicator": "rate: 10000.00 kpps",
+        "meaning": "Current packet rate; tune with --rate to balance speed vs. network stability.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Banners and application detection",
+        "command": "sudo masscan 192.168.0.0/16 -p80,443,8080 --banners --rate 10000 -oJ masscan.json",
+        "scenario": "Grab banners inline to identify web servers and load balancers.",
+        "notes": [
+          "Combine with --source-ip when scanning through multiple interfaces."
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -1155,10 +2088,51 @@
     "summary": "Naabu is a fast port scanner written in Go that allows you to enumerate valid ports for hosts in a fast and reliable manner.",
     "installation_guides": [
       {
-        "platform": "Install from source",
+        "platform": "Debian/Ubuntu",
+        "summary": null,
         "steps": [
           {
+            "detail": "sudo apt install -y golang-go",
+            "copyable": true
+          },
+          {
             "detail": "go install -v github.com/projectdiscovery/naabu/v2/cmd/naabu@latest",
+            "copyable": true
+          },
+          {
+            "detail": "export PATH=$PATH:~/go/bin",
+            "copyable": true
+          },
+          {
+            "detail": "naabu -version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from Go or use pre-built binary",
+        "steps": [
+          {
+            "detail": "sudo apt install -y golang",
+            "copyable": true
+          },
+          {
+            "detail": "go install github.com/projectdiscovery/naabu/v2/cmd/naabu@latest",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run via ProjectDiscovery image",
+        "steps": [
+          {
+            "detail": "docker pull projectdiscovery/naabu",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm projectdiscovery/naabu -host example.com",
             "copyable": true
           }
         ]
@@ -1222,10 +2196,72 @@
       "Combine with Nmap for detailed service detection.",
       "Use CIDR notation for network scanning."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "Fast port scanning workflow",
+        "steps": [
+          {
+            "title": "Single host scan",
+            "details": "Enumerate all ports on a target quickly.",
+            "command": "naabu -host example.com -p - -o naabu_output.txt"
+          },
+          {
+            "title": "Subnet scan",
+            "details": "Scan multiple hosts from file or CIDR.",
+            "command": "naabu -list targets.txt -p 80,443,8080,8443 -o web_ports.txt"
+          },
+          {
+            "title": "Service integration",
+            "details": "Pipe results to httpx for web service probing.",
+            "command": "cat naabu_output.txt | httpx -silent -o live_web.txt"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Naabu → Nuclei pipeline",
+        "stages": [
+          {
+            "label": "Port discovery",
+            "description": "Identify all open ports rapidly.",
+            "command": "naabu -host example.com -p - -json -o ports.json"
+          },
+          {
+            "label": "HTTP probing",
+            "description": "Find live web services.",
+            "command": "cat ports.json | jq -r '.host + \":\" + (.port|tostring)' | httpx -silent -o services.txt"
+          },
+          {
+            "label": "Vulnerability scanning",
+            "description": "Run Nuclei templates against live services.",
+            "command": "nuclei -list services.txt -t cves/ -o findings.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "example.com:443",
+        "meaning": "Open port found; format is host:port for easy piping.",
+        "severity": "info"
+      },
+      {
+        "indicator": "[INF] Running SYN scan with root privileges",
+        "meaning": "Naabu detected sudo/root and switched to faster SYN scanning.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Rate-limited stealth scan",
+        "command": "naabu -host 192.168.1.0/24 -p - -rate 1000 -retries 2 -timeout 5000 -o stealthy.txt",
+        "scenario": "Reduce scan rate and increase timeouts to evade IDS/IPS.",
+        "notes": [
+          "Combine with -exclude-ports to skip honeypot services."
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -1236,15 +2272,25 @@
     "installation_guides": [
       {
         "platform": "Debian/Ubuntu",
+        "summary": null,
         "steps": [
           {
-            "detail": "sudo apt install nikto",
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y nikto",
+            "copyable": true
+          },
+          {
+            "detail": "nikto -Version",
             "copyable": true
           }
         ]
       },
       {
-        "platform": "Kali Linux (pre-installed)",
+        "platform": "Kali Linux",
+        "summary": "Pre-installed",
         "steps": [
           {
             "detail": "nikto -h",
@@ -1253,18 +2299,15 @@
         ]
       },
       {
-        "platform": "Install from source",
+        "platform": "Docker / Alternative",
+        "summary": null,
         "steps": [
           {
-            "detail": "git clone https://github.com/sullo/nikto.git",
+            "detail": "docker pull securecodebox/nikto",
             "copyable": true
           },
           {
-            "detail": "cd nikto/program",
-            "copyable": true
-          },
-          {
-            "detail": "perl nikto.pl -h",
+            "detail": "docker run --rm securecodebox/nikto -h http://example.com",
             "copyable": true
           }
         ]
@@ -1328,10 +2371,72 @@
       "Tune scanning options to reduce noise on sensitive targets.",
       "Combine with other web scanners for comprehensive coverage."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "Web server vulnerability scanning",
+        "steps": [
+          {
+            "title": "Basic scan",
+            "details": "Scan a web server for known issues.",
+            "command": "nikto -h http://example.com"
+          },
+          {
+            "title": "SSL/TLS scan",
+            "details": "Test HTTPS sites.",
+            "command": "nikto -h https://example.com -ssl"
+          },
+          {
+            "title": "Save report",
+            "details": "Output findings to HTML.",
+            "command": "nikto -h http://example.com -o nikto_report.html -Format html"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Nikto → Manual verification → Exploit testing",
+        "stages": [
+          {
+            "label": "Nikto scan",
+            "description": "Identify potential vulnerabilities.",
+            "command": "nikto -h https://app.example.com -o nikto.txt"
+          },
+          {
+            "label": "Review findings",
+            "description": "Filter false positives and prioritize.",
+            "command": "grep -i 'OSVDB' nikto.txt"
+          },
+          {
+            "label": "Manual testing",
+            "description": "Verify findings with Burp Suite or curl.",
+            "command": "curl -v https://app.example.com/admin"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "+ OSVDB-3092: /admin/: This might be interesting",
+        "meaning": "Nikto found a potentially sensitive directory.",
+        "severity": "warning"
+      },
+      {
+        "indicator": "+ Server: Apache/2.4.41",
+        "meaning": "Web server version detected; check for CVEs.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Tuned scan with custom plugins",
+        "command": "nikto -h http://example.com -Tuning 123456789 -Display V -o detailed.html",
+        "scenario": "Enable all tuning categories for comprehensive testing.",
+        "notes": [
+          "Use -mutate for username/password guessing against auth endpoints."
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -1342,16 +2447,16 @@
     "installation_guides": [
       {
         "platform": "Debian/Ubuntu",
+        "summary": null,
         "steps": [
           {
-            "detail": "sudo apt install dirb",
+            "detail": "sudo apt update",
             "copyable": true
-          }
-        ]
-      },
-      {
-        "platform": "Kali Linux (pre-installed)",
-        "steps": [
+          },
+          {
+            "detail": "sudo apt install -y dirb",
+            "copyable": true
+          },
           {
             "detail": "dirb",
             "copyable": true
@@ -1359,18 +2464,21 @@
         ]
       },
       {
-        "platform": "Install from source",
+        "platform": "Kali Linux",
+        "summary": "Pre-installed",
         "steps": [
           {
-            "detail": "git clone https://github.com/v0re/dirb.git",
+            "detail": "dirb http://example.com",
             "copyable": true
-          },
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
+        "steps": [
           {
-            "detail": "cd dirb",
-            "copyable": true
-          },
-          {
-            "detail": "make && sudo make install",
+            "detail": "docker run --rm kalilinux/kali-rolling dirb http://example.com",
             "copyable": true
           }
         ]
@@ -1434,10 +2542,72 @@
       "Save results for analysis and later testing.",
       "Consider rate limiting to avoid detection."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "Directory brute forcing",
+        "steps": [
+          {
+            "title": "Default wordlist scan",
+            "details": "Use built-in wordlist.",
+            "command": "dirb http://example.com"
+          },
+          {
+            "title": "Custom wordlist",
+            "details": "Provide your own directory list.",
+            "command": "dirb http://example.com /usr/share/seclists/Discovery/Web-Content/common.txt"
+          },
+          {
+            "title": "Save results",
+            "details": "Output to file.",
+            "command": "dirb http://example.com -o dirb_results.txt"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Dirb → Content review → Nikto deep scan",
+        "stages": [
+          {
+            "label": "Directory discovery",
+            "description": "Find hidden paths.",
+            "command": "dirb http://example.com /usr/share/dirb/wordlists/big.txt -o dirb.txt"
+          },
+          {
+            "label": "Interesting paths",
+            "description": "Identify admin panels, backups, etc.",
+            "command": "grep '200' dirb.txt"
+          },
+          {
+            "label": "Vulnerability scan",
+            "description": "Run Nikto on discovered directories.",
+            "command": "nikto -h http://example.com/admin/"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "+ http://example.com/admin/ (CODE:200|SIZE:1234)",
+        "meaning": "Directory found with HTTP 200 response.",
+        "severity": "warning"
+      },
+      {
+        "indicator": "+ http://example.com/backup.zip (CODE:200|SIZE:5678)",
+        "meaning": "Potentially sensitive file discovered.",
+        "severity": "critical"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Recursive scan with extensions",
+        "command": "dirb http://example.com /usr/share/dirb/wordlists/common.txt -r -X .php,.txt,.bak",
+        "scenario": "Recursively scan found directories and test for specific file extensions.",
+        "notes": [
+          "Use -w to avoid waiting between requests on stable networks."
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -1448,35 +2618,50 @@
     "installation_guides": [
       {
         "platform": "Debian/Ubuntu",
+        "summary": null,
         "steps": [
           {
-            "detail": "sudo apt install gobuster",
+            "detail": "sudo apt install -y golang",
             "copyable": true
-          }
-        ]
-      },
-      {
-        "platform": "Install via Go",
-        "steps": [
+          },
           {
             "detail": "go install github.com/OJ/gobuster/v3@latest",
             "copyable": true
+          },
+          {
+            "detail": "export PATH=$PATH:~/go/bin",
+            "copyable": true
+          },
+          {
+            "detail": "gobuster version",
+            "copyable": true
           }
         ]
       },
       {
-        "platform": "Manual download",
+        "platform": "Kali Linux",
+        "summary": "Pre-installed or via apt",
         "steps": [
           {
-            "detail": "wget https://github.com/OJ/gobuster/releases/download/v3.6.0/gobuster_Linux_x86_64.tar.gz",
+            "detail": "sudo apt install -y gobuster",
             "copyable": true
           },
           {
-            "detail": "tar -xzf gobuster_Linux_x86_64.tar.gz",
+            "detail": "gobuster -h",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "docker pull gobuster/gobuster",
             "copyable": true
           },
           {
-            "detail": "sudo mv gobuster /usr/local/bin/",
+            "detail": "docker run --rm gobuster/gobuster dir -u http://example.com -w /wordlist.txt",
             "copyable": true
           }
         ]
@@ -1550,10 +2735,72 @@
       "Add -x php,asp,bak for common backup files.",
       "Combine Gobuster output with proxy logs for deeper insights."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "Directory and subdomain enumeration",
+        "steps": [
+          {
+            "title": "Directory brute force",
+            "details": "Find hidden paths on web server.",
+            "command": "gobuster dir -u http://example.com -w /usr/share/seclists/Discovery/Web-Content/raft-medium-words.txt"
+          },
+          {
+            "title": "Virtual host discovery",
+            "details": "Enumerate vhosts on target.",
+            "command": "gobuster vhost -u http://example.com -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt"
+          },
+          {
+            "title": "Subdomain enumeration",
+            "details": "DNS-based subdomain brute force.",
+            "command": "gobuster dns -d example.com -w /usr/share/seclists/Discovery/DNS/fierce-hostlist.txt"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Gobuster → Feroxbuster → Manual verification",
+        "stages": [
+          {
+            "label": "Initial discovery",
+            "description": "Quick scan with Gobuster.",
+            "command": "gobuster dir -u https://example.com -w common.txt -o gobuster.txt"
+          },
+          {
+            "label": "Recursive deep scan",
+            "description": "Use Feroxbuster for thorough crawling.",
+            "command": "feroxbuster -u https://example.com -w raft-large.txt --depth 4"
+          },
+          {
+            "label": "Manual testing",
+            "description": "Review findings and test manually.",
+            "command": "curl -v https://example.com/api/v1/users"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "/admin (Status: 302) [Size: 0] [--> /login]",
+        "meaning": "Found redirect; follow to discover auth page.",
+        "severity": "info"
+      },
+      {
+        "indicator": "/api/v1 (Status: 200) [Size: 1234]",
+        "meaning": "API endpoint discovered; test for documentation or open endpoints.",
+        "severity": "warning"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Multi-extension fuzzing with rate limiting",
+        "command": "gobuster dir -u https://example.com -w wordlist.txt -x php,html,txt,bak -t 50 --delay 100ms -o results.txt",
+        "scenario": "Test for files with multiple extensions while controlling request rate.",
+        "notes": [
+          "Use -b to exclude specific status codes like 404,403."
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -1564,31 +2811,50 @@
     "installation_guides": [
       {
         "platform": "Debian/Ubuntu",
+        "summary": null,
         "steps": [
           {
-            "detail": "sudo apt install ffuf",
-            "copyable": true
-          }
-        ]
-      },
-      {
-        "platform": "Install via Go",
-        "steps": [
-          {
-            "detail": "go install github.com/ffuf/ffuf@latest",
-            "copyable": true
-          }
-        ]
-      },
-      {
-        "platform": "Manual build",
-        "steps": [
-          {
-            "detail": "git clone https://github.com/ffuf/ffuf.git",
+            "detail": "sudo apt install -y golang",
             "copyable": true
           },
           {
-            "detail": "cd ffuf && go build",
+            "detail": "go install github.com/ffuf/ffuf/v2@latest",
+            "copyable": true
+          },
+          {
+            "detail": "export PATH=$PATH:~/go/bin",
+            "copyable": true
+          },
+          {
+            "detail": "ffuf -V",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Pre-installed or via apt",
+        "steps": [
+          {
+            "detail": "sudo apt install -y ffuf",
+            "copyable": true
+          },
+          {
+            "detail": "ffuf -h",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "docker pull ffuf/ffuf",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm ffuf/ffuf -u http://example.com/FUZZ -w /wordlist.txt",
             "copyable": true
           }
         ]
@@ -1662,10 +2928,72 @@
       "Throttle threads (-t) for fragile targets or WAFs.",
       "Store results (-o output.json) for later analysis or reporting."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "Fast web fuzzing",
+        "steps": [
+          {
+            "title": "Directory fuzzing",
+            "details": "Discover hidden paths.",
+            "command": "ffuf -u http://example.com/FUZZ -w /usr/share/seclists/Discovery/Web-Content/raft-medium-words.txt"
+          },
+          {
+            "title": "Parameter fuzzing",
+            "details": "Test for hidden GET parameters.",
+            "command": "ffuf -u http://example.com/api?FUZZ=test -w params.txt"
+          },
+          {
+            "title": "Virtual host fuzzing",
+            "details": "Find vhosts with Host header manipulation.",
+            "command": "ffuf -u http://example.com -H 'Host: FUZZ.example.com' -w subdomains.txt -fs 1234"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "ffuf → Filter tuning → Export",
+        "stages": [
+          {
+            "label": "Initial fuzzing",
+            "description": "Run basic directory scan.",
+            "command": "ffuf -u https://example.com/FUZZ -w common.txt -mc 200,301,302"
+          },
+          {
+            "label": "Filter false positives",
+            "description": "Exclude by size or word count.",
+            "command": "ffuf -u https://example.com/FUZZ -w wordlist.txt -fs 4242 -fw 100"
+          },
+          {
+            "label": "Export for reporting",
+            "description": "Save results in JSON.",
+            "command": "ffuf -u https://example.com/FUZZ -w wordlist.txt -o results.json -of json"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[Status: 200, Size: 1234, Words: 56, Lines: 42]",
+        "meaning": "Successful response with content metrics.",
+        "severity": "info"
+      },
+      {
+        "indicator": "admin [Status: 301, Size: 0]",
+        "meaning": "Redirect found; potential admin interface.",
+        "severity": "warning"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Multi-stage fuzzing with recursion",
+        "command": "ffuf -u https://example.com/FUZZ -w dirs.txt -recursion -recursion-depth 2 -e .php,.html -v",
+        "scenario": "Automatically fuzz discovered directories with extensions.",
+        "notes": [
+          "Use -rate to limit requests per second for IDS evasion."
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -1676,35 +3004,42 @@
     "installation_guides": [
       {
         "platform": "Debian/Ubuntu",
+        "summary": null,
         "steps": [
           {
-            "detail": "sudo apt install wfuzz",
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y wfuzz",
+            "copyable": true
+          },
+          {
+            "detail": "wfuzz -h",
             "copyable": true
           }
         ]
       },
       {
-        "platform": "Install from pip",
+        "platform": "Kali Linux",
+        "summary": "Pre-installed",
+        "steps": [
+          {
+            "detail": "wfuzz --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
         "steps": [
           {
             "detail": "pip3 install wfuzz",
             "copyable": true
-          }
-        ]
-      },
-      {
-        "platform": "Install from source",
-        "steps": [
-          {
-            "detail": "git clone https://github.com/xmendez/wfuzz.git",
-            "copyable": true
           },
           {
-            "detail": "cd wfuzz",
-            "copyable": true
-          },
-          {
-            "detail": "python3 setup.py install",
+            "detail": "wfuzz -h",
             "copyable": true
           }
         ]
@@ -1768,10 +3103,72 @@
       "Save interesting results for manual testing.",
       "Use POST data for form and API testing."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "Web application fuzzing",
+        "steps": [
+          {
+            "title": "Basic directory fuzzing",
+            "details": "Discover web paths.",
+            "command": "wfuzz -w /usr/share/seclists/Discovery/Web-Content/common.txt http://example.com/FUZZ"
+          },
+          {
+            "title": "Parameter fuzzing",
+            "details": "Test for hidden parameters.",
+            "command": "wfuzz -w params.txt -u http://example.com/search?FUZZ=test"
+          },
+          {
+            "title": "POST data fuzzing",
+            "details": "Fuzz form parameters.",
+            "command": "wfuzz -w usernames.txt -w passwords.txt -d 'user=FUZZ&pass=FUZ2Z' http://example.com/login"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Wfuzz → Response analysis → SQLi testing",
+        "stages": [
+          {
+            "label": "Parameter discovery",
+            "description": "Find all query parameters.",
+            "command": "wfuzz -w params.txt http://example.com/?FUZZ=1 --hc 404"
+          },
+          {
+            "label": "Response differentiation",
+            "description": "Identify parameters that change behavior.",
+            "command": "wfuzz -w params.txt http://example.com/?FUZZ=1 --hh 1234"
+          },
+          {
+            "label": "SQLi probing",
+            "description": "Test discovered parameters for SQL injection.",
+            "command": "sqlmap -u 'http://example.com/?id=1' --batch --level 3"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "000000042:   200        56 L     123 W    1234 Ch",
+        "meaning": "Response with HTTP 200, 56 lines, 123 words, 1234 characters.",
+        "severity": "info"
+      },
+      {
+        "indicator": "admin",
+        "meaning": "Potential admin path found; verify manually.",
+        "severity": "warning"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Multi-position fuzzing with filters",
+        "command": "wfuzz -w users.txt -w passes.txt -d 'username=FUZZ&password=FUZ2Z' --hc 401,403 http://example.com/login",
+        "scenario": "Simultaneously fuzz multiple positions and filter by status codes.",
+        "notes": [
+          "Use --sc 200 to show only successful responses."
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -1782,27 +3179,38 @@
     "installation_guides": [
       {
         "platform": "Debian/Ubuntu",
+        "summary": null,
         "steps": [
           {
-            "detail": "sudo apt install enum4linux",
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y enum4linux",
+            "copyable": true
+          },
+          {
+            "detail": "enum4linux -h",
             "copyable": true
           }
         ]
       },
       {
-        "platform": "Kali Linux (pre-installed)",
+        "platform": "Kali Linux",
+        "summary": "Pre-installed",
         "steps": [
           {
-            "detail": "enum4linux",
+            "detail": "enum4linux -a 192.168.1.10",
             "copyable": true
           }
         ]
       },
       {
-        "platform": "Install from source",
+        "platform": "Docker / Alternative",
+        "summary": null,
         "steps": [
           {
-            "detail": "git clone https://github.com/CiscoCXSecurity/enum4linux.git",
+            "detail": "git clone https://github.com/CiscoCXSecurity/enum4linux",
             "copyable": true
           },
           {
@@ -1874,10 +3282,72 @@
       "Document share information for potential access paths.",
       "Combine with SMB exploitation tools for follow-up testing."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "SMB/Windows enumeration",
+        "steps": [
+          {
+            "title": "Full enumeration",
+            "details": "Run all enum4linux checks.",
+            "command": "enum4linux -a 192.168.1.10"
+          },
+          {
+            "title": "User enumeration",
+            "details": "List users on Windows target.",
+            "command": "enum4linux -U 192.168.1.10"
+          },
+          {
+            "title": "Share enumeration",
+            "details": "Discover SMB shares.",
+            "command": "enum4linux -S 192.168.1.10"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Enum4linux → SMBMap → Credential testing",
+        "stages": [
+          {
+            "label": "Initial SMB recon",
+            "description": "Discover shares and users.",
+            "command": "enum4linux -a 192.168.1.10 | tee enum4linux.txt"
+          },
+          {
+            "label": "Share mapping",
+            "description": "List accessible shares.",
+            "command": "smbmap -H 192.168.1.10"
+          },
+          {
+            "label": "Credential stuffing",
+            "description": "Test common credentials.",
+            "command": "crackmapexec smb 192.168.1.10 -u users.txt -p passwords.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] Got domain/workgroup name: WORKGROUP",
+        "meaning": "Target is part of a workgroup, not a domain.",
+        "severity": "info"
+      },
+      {
+        "indicator": "user:[admin] rid:[0x1f4]",
+        "meaning": "User account discovered with RID.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Authenticated enumeration",
+        "command": "enum4linux -u 'admin' -p 'Password123' -a 192.168.1.10",
+        "scenario": "Use known credentials for deeper enumeration.",
+        "notes": [
+          "Combine with enum4linux-ng for improved parsing and JSON output."
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -1887,19 +3357,39 @@
     "summary": "SMBMap allows users to enumerate samba share drives across an entire domain. Useful for identifying sensitive shares.",
     "installation_guides": [
       {
-        "platform": "Install from pip",
+        "platform": "Debian/Ubuntu",
+        "summary": null,
         "steps": [
           {
-            "detail": "pip3 install smbmap",
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y smbmap",
+            "copyable": true
+          },
+          {
+            "detail": "smbmap -h",
             "copyable": true
           }
         ]
       },
       {
-        "platform": "Install from source",
+        "platform": "Kali Linux",
+        "summary": "Pre-installed",
         "steps": [
           {
-            "detail": "git clone https://github.com/ShawnDEvans/smbmap.git",
+            "detail": "smbmap -H 192.168.1.10",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "git clone https://github.com/ShawnDEvans/smbmap",
             "copyable": true
           },
           {
@@ -1907,7 +3397,7 @@
             "copyable": true
           },
           {
-            "detail": "python3 setup.py install",
+            "detail": "pip3 install -r requirements.txt",
             "copyable": true
           }
         ]
@@ -1971,10 +3461,72 @@
       "Document permissions for potential privilege escalation.",
       "Be careful with file operations to avoid detection."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "SMB share enumeration",
+        "steps": [
+          {
+            "title": "Anonymous share listing",
+            "details": "List shares without credentials.",
+            "command": "smbmap -H 192.168.1.10"
+          },
+          {
+            "title": "Authenticated enumeration",
+            "details": "Use credentials to list shares and permissions.",
+            "command": "smbmap -H 192.168.1.10 -u admin -p Password123"
+          },
+          {
+            "title": "Recursive file listing",
+            "details": "List all files in accessible shares.",
+            "command": "smbmap -H 192.168.1.10 -u admin -p Password123 -R"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "SMBMap → Download sensitive files → Credential extraction",
+        "stages": [
+          {
+            "label": "Share discovery",
+            "description": "Identify readable shares.",
+            "command": "smbmap -H 192.168.1.10 -u guest -p '' > shares.txt"
+          },
+          {
+            "label": "Interesting files",
+            "description": "Search for sensitive data.",
+            "command": "smbmap -H 192.168.1.10 -u admin -p pass -R --exclude ADMIN$ C$ -A '.*password.*'"
+          },
+          {
+            "label": "Download and analyze",
+            "description": "Pull files for offline analysis.",
+            "command": "smbmap -H 192.168.1.10 -u admin -p pass --download 'Data\\passwords.txt'"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] Finding open SMB ports....",
+        "meaning": "SMBMap is testing SMB connectivity.",
+        "severity": "info"
+      },
+      {
+        "indicator": "READ, WRITE: \\\\192.168.1.10\\Data",
+        "meaning": "Share with read/write access found.",
+        "severity": "warning"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Command execution via SMB",
+        "command": "smbmap -H 192.168.1.10 -u admin -p Password123 -x 'ipconfig /all'",
+        "scenario": "Execute remote commands on Windows host via SMB.",
+        "notes": [
+          "Use -L to list drives, -r to browse specific shares."
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -1985,27 +3537,42 @@
     "installation_guides": [
       {
         "platform": "Debian/Ubuntu",
+        "summary": null,
         "steps": [
           {
-            "detail": "sudo apt install snmp",
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y snmp snmp-mibs-downloader",
+            "copyable": true
+          },
+          {
+            "detail": "sudo download-mibs",
+            "copyable": true
+          },
+          {
+            "detail": "snmpwalk -v2c -c public 192.168.1.1",
             "copyable": true
           }
         ]
       },
       {
-        "platform": "RHEL/CentOS",
+        "platform": "Kali Linux",
+        "summary": "Pre-installed",
         "steps": [
           {
-            "detail": "sudo yum install net-snmp-utils",
+            "detail": "snmpwalk -v2c -c public 192.168.1.1",
             "copyable": true
           }
         ]
       },
       {
-        "platform": "Install from source",
+        "platform": "Docker / Alternative",
+        "summary": null,
         "steps": [
           {
-            "detail": "wget https://sourceforge.net/projects/net-snmp/files/net-snmp/",
+            "detail": "docker run --rm kalilinux/kali-rolling snmpwalk -v2c -c public 192.168.1.1",
             "copyable": true
           }
         ]
@@ -2069,10 +3636,72 @@
       "Save output for analysis of device configuration.",
       "Combine with SNMP brute force tools for discovery."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "SNMP enumeration",
+        "steps": [
+          {
+            "title": "Basic walk",
+            "details": "Query all SNMP data with default community string.",
+            "command": "snmpwalk -v2c -c public 192.168.1.1"
+          },
+          {
+            "title": "Specific OID",
+            "details": "Query system information.",
+            "command": "snmpwalk -v2c -c public 192.168.1.1 1.3.6.1.2.1.1"
+          },
+          {
+            "title": "Save output",
+            "details": "Redirect results to file.",
+            "command": "snmpwalk -v2c -c public 192.168.1.1 > snmpwalk.txt"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Onesixtyone → SNMPwalk → Analysis",
+        "stages": [
+          {
+            "label": "Community string discovery",
+            "description": "Brute force SNMP community strings.",
+            "command": "onesixtyone -c community.txt 192.168.1.0/24"
+          },
+          {
+            "label": "Full SNMP walk",
+            "description": "Extract all SNMP data with discovered strings.",
+            "command": "snmpwalk -v2c -c private 192.168.1.1 > snmp_data.txt"
+          },
+          {
+            "label": "Parse sensitive info",
+            "description": "Extract usernames, processes, network config.",
+            "command": "grep -i 'user\\|pass\\|config' snmp_data.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "SNMPv2-MIB::sysDescr.0 = STRING: Cisco IOS",
+        "meaning": "System description reveals device type and OS.",
+        "severity": "info"
+      },
+      {
+        "indicator": "IF-MIB::ifDescr.1 = STRING: Ethernet0/0",
+        "meaning": "Network interface enumeration.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "SNMPv3 with authentication",
+        "command": "snmpwalk -v3 -u admin -l authPriv -a SHA -A authpass -x AES -X privpass 192.168.1.1",
+        "scenario": "Query SNMP with v3 authentication and encryption.",
+        "notes": [
+          "Use snmp-check for automated parsing and reporting."
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -2083,18 +3712,38 @@
     "installation_guides": [
       {
         "platform": "Debian/Ubuntu",
+        "summary": null,
         "steps": [
           {
-            "detail": "sudo apt install onesixtyone",
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y onesixtyone",
+            "copyable": true
+          },
+          {
+            "detail": "onesixtyone -h",
             "copyable": true
           }
         ]
       },
       {
-        "platform": "Install from source",
+        "platform": "Kali Linux",
+        "summary": "Pre-installed",
         "steps": [
           {
-            "detail": "git clone https://github.com/trailofbits/onesixtyone.git",
+            "detail": "onesixtyone 192.168.1.1",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "git clone https://github.com/trailofbits/onesixtyone",
             "copyable": true
           },
           {
@@ -2102,7 +3751,11 @@
             "copyable": true
           },
           {
-            "detail": "make && sudo make install",
+            "detail": "make",
+            "copyable": true
+          },
+          {
+            "detail": "sudo make install",
             "copyable": true
           }
         ]
@@ -2162,10 +3815,72 @@
       "Save results for follow-up SNMP enumeration.",
       "Combine with detailed SNMPwalk on discovered devices."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "SNMP community string bruteforce",
+        "steps": [
+          {
+            "title": "Single target",
+            "details": "Test common community strings.",
+            "command": "onesixtyone -c /usr/share/seclists/Discovery/SNMP/common-snmp-community-strings.txt 192.168.1.1"
+          },
+          {
+            "title": "Subnet scan",
+            "details": "Sweep entire network.",
+            "command": "onesixtyone -c community.txt -i targets.txt"
+          },
+          {
+            "title": "Save results",
+            "details": "Output to file.",
+            "command": "onesixtyone -c community.txt 192.168.1.0/24 -o snmp_results.txt"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Onesixtyone → SNMPwalk → Privilege escalation",
+        "stages": [
+          {
+            "label": "Discover community strings",
+            "description": "Brute force SNMP access.",
+            "command": "onesixtyone -c dict.txt 192.168.1.0/24 > communities.txt"
+          },
+          {
+            "label": "SNMP enumeration",
+            "description": "Extract configuration data.",
+            "command": "snmpwalk -v2c -c private 192.168.1.1 > snmp_full.txt"
+          },
+          {
+            "label": "Extract credentials",
+            "description": "Find cleartext passwords in SNMP data.",
+            "command": "grep -i 'password' snmp_full.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "192.168.1.1 [public] Hardware: x86_64",
+        "meaning": "Valid community string found with system info.",
+        "severity": "warning"
+      },
+      {
+        "indicator": "Scanning 256 hosts, 2 communities",
+        "meaning": "Onesixtyone is testing community strings across range.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Fast sweep with custom wordlist",
+        "command": "onesixtyone -c custom_communities.txt -i targets.txt -w 10",
+        "scenario": "Increase wait time for slower networks or devices.",
+        "notes": [
+          "Combine with Nmap SNMP scripts for comprehensive enumeration."
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -2281,31 +3996,47 @@
     "summary": "SSLyze is a powerful Python tool that can analyze the SSL configuration of a server by connecting to it and identifying any weaknesses.",
     "installation_guides": [
       {
-        "platform": "Install from pip",
+        "platform": "Debian/Ubuntu",
+        "summary": null,
         "steps": [
           {
             "detail": "pip3 install sslyze",
+            "copyable": true
+          },
+          {
+            "detail": "sslyze --help",
             "copyable": true
           }
         ]
       },
       {
-        "platform": "Install from source",
+        "platform": "Kali Linux",
+        "summary": "Pre-installed in some editions",
         "steps": [
           {
-            "detail": "git clone https://github.com/nabla-c0d3/sslyze.git",
+            "detail": "sudo apt update",
             "copyable": true
           },
           {
-            "detail": "cd sslyze",
+            "detail": "sudo apt install -y python3-sslyze",
             "copyable": true
           },
           {
-            "detail": "pip3 install -r requirements.txt",
+            "detail": "sslyze --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "docker pull nablac0d3/sslyze",
             "copyable": true
           },
           {
-            "detail": "python3 sslyze --help",
+            "detail": "docker run --rm nablac0d3/sslyze --regular example.com",
             "copyable": true
           }
         ]
@@ -2365,10 +4096,72 @@
       "Save results for documentation and reporting.",
       "Combine with other SSL tools for thorough analysis."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "SSL/TLS configuration audit",
+        "steps": [
+          {
+            "title": "Regular scan",
+            "details": "Run all SSL/TLS checks.",
+            "command": "sslyze --regular example.com:443"
+          },
+          {
+            "title": "Certificate validation",
+            "details": "Check certificate chain and trust.",
+            "command": "sslyze --certinfo example.com"
+          },
+          {
+            "title": "Vulnerability testing",
+            "details": "Test for Heartbleed, POODLE, etc.",
+            "command": "sslyze --heartbleed --sslv3 example.com"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "SSLyze → Report generation → Remediation",
+        "stages": [
+          {
+            "label": "SSL audit",
+            "description": "Scan all TLS aspects.",
+            "command": "sslyze --regular example.com --json_out sslyze.json"
+          },
+          {
+            "label": "Parse results",
+            "description": "Extract vulnerabilities and weak ciphers.",
+            "command": "jq '.server_scan_results[].scan_commands_results' sslyze.json"
+          },
+          {
+            "label": "Retest fixes",
+            "description": "Verify remediations.",
+            "command": "sslyze --regular example.com"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "VULNERABLE - Server is vulnerable to Heartbleed",
+        "meaning": "Critical vulnerability detected.",
+        "severity": "critical"
+      },
+      {
+        "indicator": "OK - TLS 1.3 Cipher Suites: TLS_AES_256_GCM_SHA384",
+        "meaning": "Strong cipher suite configured.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Batch scanning with custom CA bundle",
+        "command": "sslyze --targets_in hosts.txt --ca_file custom_ca.pem --json_out results.json",
+        "scenario": "Scan multiple hosts and validate against custom certificate authority.",
+        "notes": [
+          "Use --mozilla_config=modern to compare against Mozilla TLS guidelines."
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -2378,18 +4171,15 @@
     "summary": "TestSSL.sh is a free command line tool which checks a server's service on any port for the support of TLS/SSL ciphers, protocols as well as cryptographic flaws.",
     "installation_guides": [
       {
-        "platform": "Install from git",
+        "platform": "Debian/Ubuntu",
+        "summary": null,
         "steps": [
           {
-            "detail": "git clone https://github.com/drwetter/testssl.sh.git",
+            "detail": "git clone --depth 1 https://github.com/drwetter/testssl.sh.git",
             "copyable": true
           },
           {
             "detail": "cd testssl.sh",
-            "copyable": true
-          },
-          {
-            "detail": "chmod +x testssl.sh",
             "copyable": true
           },
           {
@@ -2399,10 +4189,29 @@
         ]
       },
       {
-        "platform": "Kali Linux (pre-installed)",
+        "platform": "Kali Linux",
+        "summary": "Pre-installed or via apt",
         "steps": [
           {
-            "detail": "testssl.sh",
+            "detail": "sudo apt install -y testssl.sh",
+            "copyable": true
+          },
+          {
+            "detail": "testssl.sh --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "docker pull drwetter/testssl.sh",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm drwetter/testssl.sh https://example.com",
             "copyable": true
           }
         ]
@@ -2466,10 +4275,77 @@
       "Test all ports that use SSL/TLS for complete coverage.",
       "Document findings for remediation tracking."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "Comprehensive SSL/TLS auditing",
+        "steps": [
+          {
+            "title": "Full test",
+            "details": "Run all SSL/TLS checks including vulnerabilities.",
+            "command": "./testssl.sh https://example.com"
+          },
+          {
+            "title": "Specific protocol test",
+            "details": "Check only TLS 1.3 support.",
+            "command": "./testssl.sh -p tls1_3 example.com"
+          },
+          {
+            "title": "Export results",
+            "details": "Save in multiple formats.",
+            "command": "./testssl.sh --htmlfile report.html --jsonfile report.json example.com"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "TestSSL → Vulnerability prioritization → Fix validation",
+        "stages": [
+          {
+            "label": "Initial scan",
+            "description": "Audit SSL/TLS configuration.",
+            "command": "./testssl.sh --severity HIGH example.com | tee testssl.log"
+          },
+          {
+            "label": "Extract issues",
+            "description": "Identify critical and high findings.",
+            "command": "grep -E 'CRITICAL|HIGH' testssl.log > issues.txt"
+          },
+          {
+            "label": "Post-remediation",
+            "description": "Verify fixes were effective.",
+            "command": "./testssl.sh example.com"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "VULNERABLE (NOT ok): ROBOT",
+        "meaning": "Server vulnerable to ROBOT attack.",
+        "severity": "critical"
+      },
+      {
+        "indicator": "TLS 1.3 (OK)",
+        "meaning": "TLS 1.3 is properly supported.",
+        "severity": "info"
+      },
+      {
+        "indicator": "Certificate Expiration: 89 days",
+        "meaning": "Certificate validity period.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Mass scanning with parallel execution",
+        "command": "cat domains.txt | parallel -j 10 './testssl.sh --quiet --jsonfile {}.json {}'",
+        "scenario": "Scan multiple domains in parallel for faster assessments.",
+        "notes": [
+          "Use --fast for quick scans that skip time-consuming tests."
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -2479,36 +4355,51 @@
     "summary": "WPScan is a black box WordPress vulnerability scanner written in Ruby that can be used to scan WordPress installations for security issues.",
     "installation_guides": [
       {
-        "platform": "Install from gem",
+        "platform": "Debian/Ubuntu",
+        "summary": null,
         "steps": [
           {
-            "detail": "gem install wpscan",
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y ruby rubygems",
+            "copyable": true
+          },
+          {
+            "detail": "sudo gem install wpscan",
+            "copyable": true
+          },
+          {
+            "detail": "wpscan --version",
             "copyable": true
           }
         ]
       },
       {
-        "platform": "Install from source",
+        "platform": "Kali Linux",
+        "summary": "Pre-installed",
         "steps": [
           {
-            "detail": "git clone https://github.com/wpscanteam/wpscan.git",
+            "detail": "wpscan --update",
             "copyable": true
           },
           {
-            "detail": "cd wpscan",
-            "copyable": true
-          },
-          {
-            "detail": "bundle install && rake install",
+            "detail": "wpscan -h",
             "copyable": true
           }
         ]
       },
       {
-        "platform": "Docker",
+        "platform": "Docker / Alternative",
+        "summary": null,
         "steps": [
           {
-            "detail": "docker run -it --rm wpscanteam/wpscan --url https://example.com",
+            "detail": "docker pull wpscanteam/wpscan",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm wpscanteam/wpscan --url https://example.com",
             "copyable": true
           }
         ]
@@ -2572,10 +4463,72 @@
       "Save results for later analysis and reporting.",
       "Be careful with brute force attempts to avoid lockouts."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "WordPress security assessment",
+        "steps": [
+          {
+            "title": "Basic scan",
+            "details": "Enumerate WordPress version, themes, plugins.",
+            "command": "wpscan --url https://example.com"
+          },
+          {
+            "title": "Aggressive enumeration",
+            "details": "Enumerate all plugins and users.",
+            "command": "wpscan --url https://example.com --enumerate ap,u"
+          },
+          {
+            "title": "Vulnerability detection",
+            "details": "Check for known CVEs with API token.",
+            "command": "wpscan --url https://example.com --api-token YOUR_TOKEN"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "WPScan → Credential brute force → Exploitation",
+        "stages": [
+          {
+            "label": "Enumerate users",
+            "description": "Discover WordPress usernames.",
+            "command": "wpscan --url https://example.com --enumerate u -o users.txt"
+          },
+          {
+            "label": "Brute force login",
+            "description": "Attempt password attacks.",
+            "command": "wpscan --url https://example.com -U users.txt -P passwords.txt"
+          },
+          {
+            "label": "Exploit vulnerable plugin",
+            "description": "Use Metasploit or manual exploit.",
+            "command": "searchsploit wordpress plugin_name"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] WordPress version 5.8 identified",
+        "meaning": "Outdated WordPress version detected.",
+        "severity": "warning"
+      },
+      {
+        "indicator": "[!] Title: Plugin XYZ <= 1.2.3 - SQL Injection",
+        "meaning": "Vulnerable plugin found.",
+        "severity": "critical"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Stealth scan with rate limiting",
+        "command": "wpscan --url https://example.com --enumerate ap,u --throttle 5000 --random-user-agent",
+        "scenario": "Slow down scan to avoid detection and use random user agents.",
+        "notes": [
+          "Register for free WPScan API token at https://wpscan.com/register"
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -2586,18 +4539,10 @@
     "installation_guides": [
       {
         "platform": "Debian/Ubuntu",
+        "summary": null,
         "steps": [
           {
-            "detail": "sudo apt install joomscan",
-            "copyable": true
-          }
-        ]
-      },
-      {
-        "platform": "Install from source",
-        "steps": [
-          {
-            "detail": "git clone https://github.com/rezasp/joomscan.git",
+            "detail": "git clone https://github.com/OWASP/joomscan.git",
             "copyable": true
           },
           {
@@ -2605,11 +4550,35 @@
             "copyable": true
           },
           {
-            "detail": "chmod +x joomscan.pl",
+            "detail": "perl joomscan.pl -h",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Pre-installed or install via git",
+        "steps": [
+          {
+            "detail": "sudo apt install -y joomscan",
             "copyable": true
           },
           {
-            "detail": "sudo perl joomscan.pl update",
+            "detail": "joomscan -h",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "docker pull vulnerscom/joomscan",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm vulnerscom/joomscan -u https://example.com",
             "copyable": true
           }
         ]
@@ -2673,10 +4642,72 @@
       "Check version against known vulnerabilities.",
       "Document all findings for remediation."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "Joomla! security scanning",
+        "steps": [
+          {
+            "title": "Basic scan",
+            "details": "Identify Joomla version and components.",
+            "command": "perl joomscan.pl -u https://example.com"
+          },
+          {
+            "title": "Enumerate components",
+            "details": "List installed extensions.",
+            "command": "perl joomscan.pl -u https://example.com -ec"
+          },
+          {
+            "title": "Check for vulnerabilities",
+            "details": "Query vulnerability database.",
+            "command": "perl joomscan.pl -u https://example.com -v"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Joomscan → Manual verification → Exploitation",
+        "stages": [
+          {
+            "label": "Initial scan",
+            "description": "Enumerate Joomla installation.",
+            "command": "perl joomscan.pl -u https://example.com -ec > joomscan.txt"
+          },
+          {
+            "label": "CVE lookup",
+            "description": "Search for known exploits.",
+            "command": "searchsploit joomla component_name"
+          },
+          {
+            "label": "Manual testing",
+            "description": "Verify vulnerabilities manually.",
+            "command": "curl https://example.com/components/com_vuln/exploit.php"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[++] Joomla version: 3.9.12",
+        "meaning": "Joomla version identified; check for CVEs.",
+        "severity": "info"
+      },
+      {
+        "indicator": "[++] Component: com_content [version 3.9.0]",
+        "meaning": "Component enumerated; research vulnerabilities.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Deep component enumeration with proxy",
+        "command": "perl joomscan.pl -u https://example.com -ec --proxy http://127.0.0.1:8080",
+        "scenario": "Route scan through Burp Suite for request analysis.",
+        "notes": [
+          "Use --cookie for authenticated scanning."
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -2686,19 +4717,51 @@
     "summary": "Nuclei is a fast and customizable vulnerability scanner based on simple YAML based DSL that enables you to detect vulnerabilities in misconfigurations.",
     "installation_guides": [
       {
-        "platform": "Install from source",
+        "platform": "Debian/Ubuntu",
+        "summary": null,
         "steps": [
           {
-            "detail": "go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest",
+            "detail": "sudo apt install -y golang",
+            "copyable": true
+          },
+          {
+            "detail": "go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest",
+            "copyable": true
+          },
+          {
+            "detail": "export PATH=$PATH:~/go/bin",
+            "copyable": true
+          },
+          {
+            "detail": "nuclei -version",
             "copyable": true
           }
         ]
       },
       {
-        "platform": "Update templates",
+        "platform": "Kali Linux",
+        "summary": "Pre-installed or via Go",
         "steps": [
           {
-            "detail": "nuclei -update-templates",
+            "detail": "sudo apt install -y golang",
+            "copyable": true
+          },
+          {
+            "detail": "go install github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "docker pull projectdiscovery/nuclei",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm projectdiscovery/nuclei -u https://example.com",
             "copyable": true
           }
         ]
@@ -2766,10 +4829,72 @@
       "Create custom templates for organization-specific checks.",
       "Combine with other scanners for comprehensive coverage."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "Automated vulnerability scanning",
+        "steps": [
+          {
+            "title": "Update templates",
+            "details": "Pull latest templates from repository.",
+            "command": "nuclei -update-templates"
+          },
+          {
+            "title": "Basic scan",
+            "details": "Scan single target with all templates.",
+            "command": "nuclei -u https://example.com"
+          },
+          {
+            "title": "CVE-focused scan",
+            "details": "Test only for known CVEs.",
+            "command": "nuclei -u https://example.com -t cves/"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Subdomain enum → HTTP probing → Nuclei scanning",
+        "stages": [
+          {
+            "label": "Discover subdomains",
+            "description": "Use Subfinder or Amass.",
+            "command": "subfinder -d example.com -o subs.txt"
+          },
+          {
+            "label": "Probe for HTTP",
+            "description": "Find live web services.",
+            "command": "httpx -l subs.txt -o live.txt"
+          },
+          {
+            "label": "Vulnerability scan",
+            "description": "Run Nuclei templates.",
+            "command": "nuclei -l live.txt -t cves/ -t vulnerabilities/ -o nuclei_findings.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[CVE-2021-12345] [high] https://example.com/path",
+        "meaning": "Critical CVE detected on target.",
+        "severity": "critical"
+      },
+      {
+        "indicator": "[tech-detect:wordpress] https://example.com",
+        "meaning": "Technology identified; useful for targeted testing.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom template execution with rate limiting",
+        "command": "nuclei -u https://example.com -t custom_templates/ -rl 150 -c 25 -severity critical,high -o findings.json -json",
+        "scenario": "Run custom templates with controlled request rate and concurrency.",
+        "notes": [
+          "Create custom templates in YAML format for specific vulnerabilities."
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -6458,27 +8583,38 @@
     "installation_guides": [
       {
         "platform": "Debian/Ubuntu",
+        "summary": null,
         "steps": [
           {
-            "detail": "sudo apt install whatweb",
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y whatweb",
+            "copyable": true
+          },
+          {
+            "detail": "whatweb --version",
             "copyable": true
           }
         ]
       },
       {
-        "platform": "Install from gem",
+        "platform": "Kali Linux",
+        "summary": "Pre-installed",
         "steps": [
           {
-            "detail": "gem install whatweb",
+            "detail": "whatweb https://example.com",
             "copyable": true
           }
         ]
       },
       {
-        "platform": "Install from source",
+        "platform": "Docker / Alternative",
+        "summary": null,
         "steps": [
           {
-            "detail": "git clone https://github.com/urbanadventurer/WhatWeb.git",
+            "detail": "git clone https://github.com/urbanadventurer/WhatWeb",
             "copyable": true
           },
           {
@@ -6486,7 +8622,7 @@
             "copyable": true
           },
           {
-            "detail": "sudo ruby whatweb.rb",
+            "detail": "sudo make install",
             "copyable": true
           }
         ]
@@ -6550,10 +8686,77 @@
       "Combine with other web scanning tools.",
       "Be aware of rate limiting on targets."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "Web technology fingerprinting",
+        "steps": [
+          {
+            "title": "Basic scan",
+            "details": "Identify technologies on single URL.",
+            "command": "whatweb https://example.com"
+          },
+          {
+            "title": "Aggressive scan",
+            "details": "Deep fingerprinting with higher aggression.",
+            "command": "whatweb -a 3 https://example.com"
+          },
+          {
+            "title": "Batch scanning",
+            "details": "Scan multiple URLs from file.",
+            "command": "whatweb -i urls.txt --log-verbose whatweb.log"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "WhatWeb → Technology-specific testing",
+        "stages": [
+          {
+            "label": "Technology detection",
+            "description": "Identify web stack.",
+            "command": "whatweb -a 3 https://example.com > tech.txt"
+          },
+          {
+            "label": "Parse technologies",
+            "description": "Extract frameworks and versions.",
+            "command": "grep -E 'WordPress|Joomla|Drupal|Apache|Nginx' tech.txt"
+          },
+          {
+            "label": "Targeted scanning",
+            "description": "Use appropriate scanner.",
+            "command": "# If WordPress found: wpscan --url https://example.com"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "HTTPServer[nginx/1.18.0]",
+        "meaning": "Web server identified with version.",
+        "severity": "info"
+      },
+      {
+        "indicator": "WordPress[5.8]",
+        "meaning": "CMS detected; run WPScan for deeper assessment.",
+        "severity": "info"
+      },
+      {
+        "indicator": "jQuery[3.5.1]",
+        "meaning": "JavaScript library version identified.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Stealth scan with custom user agent",
+        "command": "whatweb -a 1 --user-agent 'Mozilla/5.0...' -t 10 -i targets.txt --log-json=results.json",
+        "scenario": "Low aggression scan with custom UA and threading.",
+        "notes": [
+          "Use -a 1 for passive scanning, -a 4 for maximum aggression."
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -6563,20 +8766,60 @@
     "summary": "Wappalyzer identifies technologies on websites including content management systems, web servers, and frameworks.",
     "installation_guides": [
       {
-        "platform": "Command line version",
+        "platform": "Debian/Ubuntu",
+        "summary": "Install the CLI through npm for headless tech fingerprinting.",
         "steps": [
           {
-            "detail": "npm install -g wappalyzer",
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y nodejs npm",
+            "copyable": true
+          },
+          {
+            "detail": "sudo npm install -g wappalyzer",
+            "copyable": true
+          },
+          {
+            "detail": "wappalyzer --help",
             "copyable": true
           }
         ]
       },
       {
-        "platform": "Python library",
+        "platform": "Kali Linux",
+        "summary": "Use Kali's node ecosystem or the browser plugin for visual reconnaissance.",
         "steps": [
           {
-            "detail": "pip3 install python-wappalyzer",
+            "detail": "sudo apt install -y nodejs npm",
             "copyable": true
+          },
+          {
+            "detail": "sudo npm install -g wappalyzer",
+            "copyable": true
+          },
+          {
+            "detail": "wappalyzer https://example.com",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Use the official CLI container or browser extension when you cannot install npm globally.",
+        "steps": [
+          {
+            "detail": "docker pull wappalyzer/cli",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm wappalyzer/cli https://example.com",
+            "copyable": true
+          },
+          {
+            "detail": "# Browser: add the Wappalyzer extension from your store",
+            "copyable": false
           }
         ]
       }
@@ -6635,10 +8878,72 @@
       "Combine with vulnerability scans for context.",
       "Document technology stack for attack planning."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "Technology detection workflow",
+        "steps": [
+          {
+            "title": "Browser extension",
+            "details": "Browse target and view detected technologies in extension popup.",
+            "command": "# Click Wappalyzer icon"
+          },
+          {
+            "title": "CLI batch scan",
+            "details": "Analyze multiple URLs via command line.",
+            "command": "wappalyzer https://example.com https://app.example.com -o json > technologies.json"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Wappalyzer → Version research → Exploit selection",
+        "stages": [
+          {
+            "label": "Detect stack",
+            "description": "Identify all technologies.",
+            "command": "wappalyzer https://example.com"
+          },
+          {
+            "label": "CVE research",
+            "description": "Look up vulnerabilities for detected versions.",
+            "command": "searchsploit apache 2.4.41"
+          },
+          {
+            "label": "Targeted testing",
+            "description": "Use appropriate tools based on stack.",
+            "command": "nikto -h https://example.com"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "WordPress 5.7",
+        "meaning": "CMS version detected.",
+        "severity": "info"
+      },
+      {
+        "indicator": "nginx 1.18.0",
+        "meaning": "Web server identified.",
+        "severity": "info"
+      },
+      {
+        "indicator": "Google Analytics",
+        "meaning": "Third-party service detected.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Automated CI/CD integration",
+        "command": "wappalyzer https://example.com -o json | jq '.technologies[].name' > detected_tech.txt",
+        "scenario": "Integrate into build pipelines for continuous tech monitoring.",
+        "notes": [
+          "Use with security automation to trigger version-specific scans."
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },
@@ -6648,19 +8953,29 @@
     "summary": "Subjack is a tool for finding subdomain takeovers by checking DNS records for CNAMEs pointing to services.",
     "installation_guides": [
       {
-        "platform": "Install from go",
+        "platform": "Debian/Ubuntu",
+        "summary": null,
         "steps": [
           {
-            "detail": "go install -v github.com/haccer/subjack@latest",
+            "detail": "go install github.com/haccer/subjack@latest",
+            "copyable": true
+          },
+          {
+            "detail": "export PATH=$PATH:~/go/bin",
+            "copyable": true
+          },
+          {
+            "detail": "subjack -h",
             "copyable": true
           }
         ]
       },
       {
-        "platform": "Install from source",
+        "platform": "Kali Linux",
+        "summary": "Install from source",
         "steps": [
           {
-            "detail": "git clone https://github.com/haccer/subjack.git",
+            "detail": "git clone https://github.com/haccer/subjack",
             "copyable": true
           },
           {
@@ -6669,6 +8984,24 @@
           },
           {
             "detail": "go build",
+            "copyable": true
+          },
+          {
+            "detail": "sudo mv subjack /usr/local/bin/",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "docker pull haccer/subjack",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm haccer/subjack -w domains.txt -t 50 -o results.txt",
             "copyable": true
           }
         ]
@@ -6732,10 +9065,72 @@
       "Document all potential takeover opportunities.",
       "Verify findings manually before exploitation."
     ],
-    "step_sequences": [],
-    "workflow_guides": [],
-    "output_notes": [],
-    "advanced_usage": [],
+    "step_sequences": [
+      {
+        "title": "Subdomain takeover detection",
+        "steps": [
+          {
+            "title": "Basic scan",
+            "details": "Check for takeover vulnerabilities.",
+            "command": "subjack -w subdomains.txt -t 50 -timeout 30 -o takeovers.txt -ssl"
+          },
+          {
+            "title": "Verbose output",
+            "details": "See detailed CNAME information.",
+            "command": "subjack -w subdomains.txt -t 50 -v"
+          },
+          {
+            "title": "Verify findings",
+            "details": "Manually confirm takeover potential.",
+            "command": "dig CNAME suspicious.example.com"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Subdomain enum → Subjack → Exploitation",
+        "stages": [
+          {
+            "label": "Gather subdomains",
+            "description": "Use Amass or Subfinder.",
+            "command": "amass enum -passive -d example.com -o subs.txt"
+          },
+          {
+            "label": "Check for takeovers",
+            "description": "Scan for vulnerable CNAMEs.",
+            "command": "subjack -w subs.txt -t 50 -ssl -o vulnerable.txt"
+          },
+          {
+            "label": "Claim subdomain",
+            "description": "Register service and point CNAME.",
+            "command": "# Follow service-specific takeover process"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[Vulnerable] dev.example.com -> s3.amazonaws.com",
+        "meaning": "Subdomain pointing to unclaimed S3 bucket.",
+        "severity": "critical"
+      },
+      {
+        "indicator": "[Not Vulnerable] www.example.com",
+        "meaning": "Subdomain properly configured.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Integration with continuous monitoring",
+        "command": "subjack -w <(amass enum -passive -d example.com) -t 100 -ssl -a -o daily_check.txt",
+        "scenario": "Combine with Amass for fresh subdomain checks daily.",
+        "notes": [
+          "Use with alerting systems to notify on new takeover opportunities."
+        ]
+      }
+    ],
     "comparison_table": null,
     "resources": []
   },

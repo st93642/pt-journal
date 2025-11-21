@@ -321,4 +321,74 @@ mod tests {
             }
         }
     }
+
+    #[test]
+    fn recon_scanning_tools_have_populated_sections() {
+        let registry = load_registry().expect("instructions should load");
+        let critical_tools = [
+            "nmap",
+            "masscan",
+            "naabu",
+            "amass",
+            "sublist3r",
+            "theHarvester",
+            "dnsrecon",
+            "dnsenum",
+            "maltego",
+            "recon-ng",
+            "photon",
+            "spiderfoot",
+            "nikto",
+            "dirb",
+            "gobuster",
+            "ffuf",
+            "wfuzz",
+            "enum4linux",
+            "smbmap",
+            "snmpwalk",
+            "onesixtyone",
+            "sslyze",
+            "testssl",
+            "wpscan",
+            "joomscan",
+            "nuclei",
+            "whatweb",
+            "wappalyzer",
+            "subjack",
+        ];
+
+        for id in critical_tools {
+            let doc = registry
+                .instructions
+                .get(id)
+                .unwrap_or_else(|| panic!("missing instructions for {id}"));
+            assert!(
+                doc.installation_guides.len() >= 3,
+                "expected at least three installation guides for {id}"
+            );
+            for guide in &doc.installation_guides {
+                assert!(
+                    !guide.steps.is_empty(),
+                    "installation guide '{}' for {id} must include steps",
+                    guide.platform
+                );
+            }
+            assert!(
+                !doc.step_sequences.is_empty(),
+                "step sequences missing for {id}"
+            );
+            assert!(
+                !doc.workflow_guides.is_empty(),
+                "workflow guides missing for {id}"
+            );
+            assert!(
+                !doc.output_notes.is_empty(),
+                "output notes missing for {id}"
+            );
+            assert!(
+                !doc.advanced_usage.is_empty(),
+                "advanced usage missing for {id}"
+            );
+        }
+    }
 }

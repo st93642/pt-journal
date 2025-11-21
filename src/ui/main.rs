@@ -10,10 +10,10 @@ use crate::ui::state::StateManager;
 
 pub fn build_ui(app: &Application, model: AppModel) {
     let model = Rc::new(RefCell::new(model));
-    
+
     // Create dispatcher for event-driven communication
     let dispatcher = create_dispatcher();
-    
+
     // Create state manager
     let state = Rc::new(StateManager::new(model.clone(), dispatcher.clone()));
 

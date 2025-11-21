@@ -1,3 +1,16 @@
+/*****************************************************************************/
+/*                                                                           */
+/*  lib.rs                                               TTTTTTTT SSSSSSS II */
+/*                                                          TT    SS      II */
+/*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
+/*                                                          TT         SS II */
+/*  Created: Nov 21 2025 23:42 st93642                      TT    SSSSSSS II */
+/*  Updated: Nov 21 2025 23:42 st93642                                       */
+/*                                                                           */
+/*   Transport and Telecommunication Institute - Riga, Latvia                */
+/*                       https://tsi.lv                                      */
+/*****************************************************************************/
+
 pub mod dispatcher;
 pub mod model;
 pub mod quiz;

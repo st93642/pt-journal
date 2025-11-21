@@ -15,7 +15,7 @@
 
 PT Journal follows a layered architecture with clear separation of concerns:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │                    UI Layer (GTK4)                      │
 │  Main Window, Handlers, Panels, Widgets                │
@@ -44,7 +44,7 @@ PT Journal follows a layered architecture with clear separation of concerns:
 
 ## 📁 Directory Structure
 
-```
+```text
 pt-journal/
 ├── src/                        # Application source code (~21,500 lines)
 │   ├── main.rs                 # Application entry point (37 lines)
@@ -154,7 +154,7 @@ pt-journal/
 
 **Storage Structure**:
 
-```
+```text
 ~/Downloads/pt-journal-sessions/
 └── session-name/
     ├── session.json     # Full session data
@@ -178,7 +178,7 @@ pt-journal/
 
 **Architecture**:
 
-```
+```text
 tools/
 ├── traits.rs       # Core SecurityTool trait (6 methods)
 ├── executor.rs     # Execution engine with timeout/env support
@@ -296,7 +296,7 @@ dispatcher.dispatch(Message::SessionLoaded { session });
 
 **Content Structure**:
 
-```
+```text
 OBJECTIVE: What you're trying to achieve
 STEP-BY-STEP PROCESS: Commands and procedures
 WHAT TO LOOK FOR: Expected findings
@@ -310,13 +310,13 @@ DOCUMENTATION REQUIREMENTS: Evidence to capture
 
 **Format**: Pipe-delimited string (9 fields)
 
-```
+```text
 question|optionA|optionB|optionC|optionD|correct_idx|explanation|domain|subdomain
 ```
 
 **Example**:
 
-```
+```text
 What is the CIA triad?|Confidentiality, Integrity, Availability|...|...|...|0|The CIA triad stands for...|1.0 General Security Concepts|1.1 Security Controls
 ```
 
@@ -357,7 +357,7 @@ What is the CIA triad?|Confidentiality, Integrity, Availability|...|...|...|0|Th
 
 ### Test Organization
 
-```
+```text
 tests/
 ├── Unit tests (in src/lib.rs)
 │   ├── model_tests - Domain model validation (20+ tests)

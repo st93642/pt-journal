@@ -4,7 +4,7 @@ The security tool reference inside PT Journal is now powered by structured data 
 
 ## Architecture Overview
 
-```
+```text
 data/tool_instructions/
 ├── manifest.json       # ordered list of tools exposed in the UI
 └── instructions.json   # rich instruction documents keyed by id
@@ -17,6 +17,7 @@ data/tool_instructions/
 ## Data Schema
 
 ### Manifest (`manifest.json`)
+
 Each entry describes a selectable tool:
 
 ```json
@@ -32,6 +33,7 @@ Each entry describes a selectable tool:
 * `category` – grouping label; order in the file defines the group order in the UI.
 
 ### Instructions (`instructions.json`)
+
 Each instruction document contains:
 
 | Field | Type | Notes |
@@ -42,12 +44,12 @@ Each instruction document contains:
 | `quick_examples` | array of `{ description, command, notes[] }` | Replaces the old ad-hoc examples block. |
 | `common_flags` | array of `{ flag, description }` | Highlight frequently used switches. |
 | `operational_tips` | array of strings | Rendered as 💡 tips. |
-| `step_sequences` | array of named sequences with ordered steps (`title`, `details?`, `command?`). |
-| `workflow_guides` | array of `{ name, stages[] }` to describe end-to-end flows. |
-| `output_notes` | array of `{ indicator, meaning, severity? }` for interpreting scanner output. |
-| `advanced_usage` | array of `{ title, scenario?, command, notes[] }` for expert workflows. |
-| `comparison_table` | `{ caption?, columns[], rows[][] }` – row lengths must match column count. |
-| `resources` | array of `{ label, url, description? }` – displayed as clickable `LinkButton`s. |
+| `step_sequences` | array of named sequences with ordered steps (`title`, `details?`, `command?`). | |
+| `workflow_guides` | array of `{ name, stages[] }` to describe end-to-end flows. | |
+| `output_notes` | array of `{ indicator, meaning, severity? }` for interpreting scanner output. | |
+| `advanced_usage` | array of `{ title, scenario?, command, notes[] }` for expert workflows. | |
+| `comparison_table` | `{ caption?, columns[], rows[][] }` – row lengths must match column count. | |
+| `resources` | array of `{ label, url, description? }` – displayed as clickable `LinkButton`s. | |
 
 Example snippet:
 

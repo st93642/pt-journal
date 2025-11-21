@@ -1,3 +1,16 @@
+/*****************************************************************************/
+/*                                                                           */
+/*  store.rs                                             TTTTTTTT SSSSSSS II */
+/*                                                          TT    SS      II */
+/*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
+/*                                                          TT         SS II */
+/*  Created: Nov 21 2025 23:43 st93642                      TT    SSSSSSS II */
+/*  Updated: Nov 21 2025 23:43 st93642                                       */
+/*                                                                           */
+/*   Transport and Telecommunication Institute - Riga, Latvia                */
+/*                       https://tsi.lv                                      */
+/*****************************************************************************/
+
 use crate::model::Session;
 use anyhow::Result;
 use directories::UserDirs;

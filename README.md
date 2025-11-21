@@ -412,48 +412,6 @@ export PKG_CONFIG_PATH=/usr/lib/pkgconfig
 - Check file permissions in the sessions directory
 - Try loading with a backup copy if corruption is suspected
 
-## Development Roadmap
-
-PT Journal is actively being developed with a comprehensive 16-week plan. Current status:
-
-### ✅ Completed (v0.1.0)
-- **Core Application**: Full GTK4 desktop app with session management
-- **Tutorial System**: 9 phases of pentesting methodology (45+ steps)
-- **Quiz System**: Security+, PenTest+, CEH assessment tools
-- **Security Tools**: Nmap & Gobuster integrations with 188 tests (100% pass rate)
-- **Evidence Collection**: Images, tool outputs, clipboard support
-
-### 🚧 In Progress (Phase 1: Weeks 1-4)
-- **Additional Tool Integrations**: Nikto, SQLMap, FFUF, Nuclei, Burp Suite, Metasploit
-- **Advanced UI Features**: Real-time output streaming, tool configuration
-- **Evidence Management 2.0**: Smart categorization and annotation
-
-### 📅 Upcoming (Phases 2-4: Weeks 5-16)
-- **Workflow Automation**: Tool chains, templates, parallel execution
-- **Platform Integration**: Cloud storage, team collaboration, enterprise features
-- **Advanced Features**: AI-powered analysis, mobile apps, plugin ecosystem
-
-📖 **See [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) for the complete roadmap**
-
-## Contributing
-
-We welcome contributions! Please see our development priorities:
-
-### High Priority Areas
-1. **Tool Integrations** - Add new security tools following our trait-based pattern
-2. **UI Enhancements** - Improve user experience and workflow automation
-3. **Documentation** - Help us improve guides and API documentation
-4. **Testing** - Expand test coverage and add integration tests
-
-### Development Guidelines
-1. Code passes `cargo fmt` and `cargo clippy`
-2. Tests pass: `cargo test --lib`
-3. New features include corresponding tests (TDD methodology)
-4. Documentation is updated
-5. Follow established patterns in `src/tools/integrations/`
-
-📖 **See [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) for detailed contribution guidelines**
-
 ## License
 
 This project is provided as-is for educational and professional use in penetration testing and security research.

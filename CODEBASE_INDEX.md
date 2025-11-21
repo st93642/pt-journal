@@ -117,6 +117,7 @@ pt-journal/
 **Purpose**: Core domain models for penetration testing sessions.
 
 **Key Types**:
+
 - `Session` - Top-level engagement container (id, name, created_at, notes_global, phases)
 - `Phase` - Methodology stage (Reconnaissance, Exploitation, etc.)
 - `Step` - Individual action or quiz (with StepContent enum)
@@ -128,6 +129,7 @@ pt-journal/
 - `QuestionProgress` - User's answer history
 
 **Critical Patterns**:
+
 - Uses `Uuid` for all IDs (global uniqueness)
 - Uses `DateTime<Utc>` for all timestamps
 - `StepContent` enum abstracts Tutorial vs Quiz steps
@@ -135,6 +137,7 @@ pt-journal/
 - Legacy fields skipped during serialization
 
 **Factory Methods**:
+
 - `Session::default()` - Creates session with 9 tutorial phases
 - `Step::new_tutorial()` - Creates tutorial step
 - `Step::new_quiz()` - Creates quiz step
@@ -144,11 +147,13 @@ pt-journal/
 **Purpose**: Session persistence with folder structure.
 
 **Key Functions**:
+
 - `save_session(path, session)` - Saves to JSON with evidence folder
 - `load_session(path)` - Loads from session.json
 - `default_sessions_dir()` - Returns ~/Downloads/pt-journal-sessions/
 
 **Storage Structure**:
+
 ```
 ~/Downloads/pt-journal-sessions/
 └── session-name/
@@ -159,6 +164,7 @@ pt-journal/
 ```
 
 **Features**:
+
 - Accepts folder path OR file path (auto-detects)
 - Creates evidence/ subdirectory automatically
 - Preserves timestamps and UUIDs exactly
@@ -171,6 +177,7 @@ pt-journal/
 **Purpose**: Security tool integration and execution framework.
 
 **Architecture**:
+
 ```
 tools/
 ├── traits.rs       # Core SecurityTool trait (6 methods)
@@ -183,6 +190,7 @@ tools/
 ```
 
 **Core Trait** (`SecurityTool`):
+
 ```rust
 pub trait SecurityTool: Send + Sync {
     fn name(&self) -> &str;
@@ -195,6 +203,7 @@ pub trait SecurityTool: Send + Sync {
 ```
 
 **Configuration Pattern**:
+
 ```rust
 let config = ToolConfig::builder()
     .target("10.10.10.1")
@@ -204,6 +213,7 @@ let config = ToolConfig::builder()
 ```
 
 **Integrated Tools**:
+
 1. **Nmap** - Network scanner (8 scan types)
 2. **Gobuster** - Directory/DNS/vhost enumeration (3 modes)
 
@@ -212,6 +222,7 @@ let config = ToolConfig::builder()
 **Purpose**: GTK4/libadwaita user interface.
 
 **Component Architecture**:
+
 - `main.rs` - Window assembly, 3-pane layout
 - `state.rs` - AppModel (session, current_path, selected_phase/step)
 - `handlers.rs` - Signal handlers (phase/step selection, tool execution)
@@ -226,6 +237,7 @@ let config = ToolConfig::builder()
 - `canvas_utils.rs` - Canvas geometry helpers
 
 **State Management Pattern**:
+
 ```rust
 let model = Rc<RefCell<AppModel>>::default();
 let model_clone = model.clone();
@@ -235,6 +247,7 @@ button.connect_clicked(move |_| {
 ```
 
 **Critical UI Patterns**:
+
 - All widgets created once at startup
 - Signal handlers modify `AppModel` state
 - UI updates deferred to `glib::idle_add_local_once`
@@ -247,12 +260,14 @@ button.connect_clicked(move |_| {
 **Purpose**: Event-driven communication between modules.
 
 **Message Types**:
+
 - `SessionLoaded { session }`
 - `StepCompleted { step_id }`
 - `EvidenceAdded { evidence }`
 - `ToolExecuted { result }`
 
 **Usage Pattern**:
+
 ```rust
 let mut dispatcher = Dispatcher::new();
 dispatcher.register_handler("session_loaded", Box::new(|msg| {
@@ -268,6 +283,7 @@ dispatcher.dispatch(Message::SessionLoaded { session });
 **Purpose**: Pentesting methodology content.
 
 **Phases** (loaded by `load_tutorial_phases()`):
+
 1. **Reconnaissance** (16 steps) - reconnaissance.rs
 2. **Vulnerability Analysis** (5 steps) - vulnerability_analysis.rs
 3. **Exploitation** (4 steps) - exploitation.rs
@@ -279,6 +295,7 @@ dispatcher.dispatch(Message::SessionLoaded { session });
 9. **CEH** (quiz-based) - ceh.rs
 
 **Content Structure**:
+
 ```
 OBJECTIVE: What you're trying to achieve
 STEP-BY-STEP PROCESS: Commands and procedures
@@ -292,11 +309,13 @@ DOCUMENTATION REQUIREMENTS: Evidence to capture
 **Purpose**: Quiz question parsing and validation.
 
 **Format**: Pipe-delimited string (9 fields)
+
 ```
 question|optionA|optionB|optionC|optionD|correct_idx|explanation|domain|subdomain
 ```
 
 **Example**:
+
 ```
 What is the CIA triad?|Confidentiality, Integrity, Availability|...|...|...|0|The CIA triad stands for...|1.0 General Security Concepts|1.1 Security Controls
 ```
@@ -393,7 +412,9 @@ cargo test
 ## 🎨 Design Patterns
 
 ### 1. Builder Pattern
+
 Used for tool configuration:
+
 ```rust
 let config = ToolConfig::builder()
     .target("10.10.10.1")
@@ -403,14 +424,18 @@ let config = ToolConfig::builder()
 ```
 
 ### 2. Observer Pattern
+
 Event dispatcher for decoupled modules:
+
 ```rust
 dispatcher.register_handler("event_type", handler);
 dispatcher.dispatch(Message::EventOccurred { data });
 ```
 
 ### 3. Registry Pattern
+
 Tool discovery and registration:
+
 ```rust
 let mut registry = ToolRegistry::new();
 registry.register(Box::new(NmapTool::default()))?;
@@ -418,7 +443,9 @@ let tool = registry.get_tool("nmap")?;
 ```
 
 ### 4. State Pattern
+
 Step content abstraction:
+
 ```rust
 pub enum StepContent {
     Tutorial { description, notes, evidence, ... },
@@ -427,14 +454,18 @@ pub enum StepContent {
 ```
 
 ### 5. Factory Pattern
+
 Session and step creation:
+
 ```rust
 let session = Session::default(); // 9 phases pre-loaded
 let step = Step::new_tutorial(id, title, description, tags);
 ```
 
 ### 6. Strategy Pattern
+
 Tool execution strategies (different scan types):
+
 ```rust
 pub enum NmapScanType {
     TcpSyn, TcpConnect, Udp, ScriptScan, VersionDetection, ...
@@ -447,6 +478,7 @@ pub enum NmapScanType {
 
 1. **Create tool file**: `src/tools/integrations/mytool.rs`
 2. **Implement SecurityTool trait**:
+
    ```rust
    pub struct MyTool { config: MyConfig }
    
@@ -459,6 +491,7 @@ pub enum NmapScanType {
        fn validate_prerequisites(&self, config: &ToolConfig) -> Result<()> { /* ... */ }
    }
    ```
+
 3. **Write comprehensive tests** (20+ tests covering all methods)
 4. **Register in mod.rs**: `pub use mytool::MyTool;`
 5. **Add UI integration** in `src/ui/tool_execution.rs`
@@ -467,6 +500,7 @@ pub enum NmapScanType {
 
 1. **Create phase file**: `src/tutorials/my_phase.rs`
 2. **Define steps**:
+
    ```rust
    pub fn create_my_phase() -> Phase {
        let mut phase = Phase::new(Uuid::new_v4(), "My Phase".to_string());
@@ -479,18 +513,22 @@ pub enum NmapScanType {
        phase
    }
    ```
+
 3. **Export from mod.rs**: Add to `load_tutorial_phases()`
 4. **Write validation tests**
 
 ### Adding a New Message Type
 
 1. **Extend Message enum** in `src/dispatcher.rs`:
+
    ```rust
    pub enum Message {
        CustomEvent { data: String },
    }
    ```
+
 2. **Register handler** where needed:
+
    ```rust
    dispatcher.register_handler("custom_event", handler);
    ```
@@ -629,6 +667,7 @@ cargo test --test integration_tests
 ## 🗺️ Roadmap
 
 ### Phase 1: Tool Integration Expansion (Weeks 1-4)
+
 - Nikto - Web vulnerability scanner
 - SQLMap - SQL injection tool
 - FFUF - Fast web fuzzer
@@ -639,17 +678,20 @@ cargo test --test integration_tests
 - Dirb - Directory brute-forcer
 
 ### Phase 2: Advanced UI Features (Weeks 5-8)
+
 - Real-time output streaming
 - Evidence management 2.0
 - Workflow automation
 - Tool configuration templates
 
 ### Phase 3: Platform Integration (Weeks 9-12)
+
 - Cloud storage sync
 - Team collaboration features
 - Enterprise features
 
 ### Phase 4: Advanced Features (Weeks 13-16)
+
 - AI-powered analysis
 - Mobile apps
 - Plugin ecosystem

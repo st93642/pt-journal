@@ -204,10 +204,6 @@ impl ToolExecutionPanel {
 
     /// Rebuild inline instructions whenever the selected tool changes
     fn render_inline_instructions(&self) {
-        if let Some(child) = self.instructions_scroll.child() {
-            child.unparent();
-        }
-
         let tool_id = self
             .get_selected_tool()
             .unwrap_or_else(|| "nmap".to_string());

@@ -1,7 +1,9 @@
 /// Tool execution engine
 use super::traits::*;
 use anyhow::Result;
-use std::time::{Duration, Instant};
+use std::time::Instant;
+#[cfg(test)]
+use std::time::Duration;
 
 /// Default executor implementation
 pub struct DefaultExecutor {

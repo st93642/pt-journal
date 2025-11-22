@@ -17837,5 +17837,2345 @@
         "description": "Naabu fast port scanner documentation"
       }
     ]
+  },
+  {
+    "id": "bugbounty_scope_recon",
+    "name": "Bug Bounty - Scope Reconnaissance",
+    "summary": "Comprehensive scope reconnaissance workflow for bug bounty programs, including asset discovery, scope validation, attack surface mapping, and compliance verification.",
+    "details": "This workflow provides a systematic approach to bug bounty scope reconnaissance, ensuring thorough coverage of all in-scope assets while avoiding out-of-scope testing. It combines automated discovery with manual validation to create a complete attack surface map with evidence suitable for bounty program documentation.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install reconnaissance tools and dependencies",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y git python3 python3-pip",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y amass sublist3rtheharvester dnsrecon nmap",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install subfinder assetfinder httpx-tools nuclei",
+            "copyable": true
+          },
+          {
+            "detail": "go install -v github.com/projectdiscovery/httpx@latest",
+            "copyable": true
+          },
+          {
+            "detail": "go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install with Kali repositories and additional tools",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y amass sublist3r theharvester dnsrecon",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y ffuf gobuster nuclei nmap masscan",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/projectdiscovery/subfinder ~/tools/subfinder",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/projectdiscovery/httpx ~/tools/httpx",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Containerized",
+        "summary": "Ready-to-use reconnaissance container stack",
+        "steps": [
+          {
+            "detail": "docker pull projectdiscovery/subfinder",
+            "copyable": true
+          },
+          {
+            "detail": "docker pull projectdiscovery/httpx",
+            "copyable": true
+          },
+          {
+            "detail": "docker pull projectdiscovery/nuclei",
+            "copyable": true
+          },
+          {
+            "detail": "docker pull caffix/amass",
+            "copyable": true
+          },
+          {
+            "detail": "mkdir -p ~/bugbounty/{scope,recon,evidence,reports}",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Quick scope validation",
+        "command": "echo \"*.example.com\" | httpx -title -status-code -o scope_check.txt",
+        "notes": [
+          "Verify which domains are active and in scope"
+        ]
+      },
+      {
+        "description": "Subdomain discovery pipeline",
+        "command": "subfinder -d example.com -silent | httpx -title -tech-detect -o active_subdomains.txt",
+        "notes": [
+          "Find and validate active subdomains"
+        ]
+      },
+      {
+        "description": "Asset correlation check",
+        "command": "amass enum -d example.com -passive | grep -E \"(cloudfront|aws|azure|gcp)\" > cloud_assets.txt",
+        "notes": [
+          "Identify cloud-hosted assets for additional testing"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Phase 1: Scope Definition & Validation",
+        "steps": [
+          {
+            "title": "Program Rules Analysis",
+            "details": "Read and understand bug bounty program scope, rules, and exclusions",
+            "command": "# Document scope: domains, IP ranges, mobile apps, APIs, out-of-scope items"
+          },
+          {
+            "title": "Scope Asset Inventory",
+            "details": "Create initial list of all in-scope assets from program description",
+            "command": "echo -e \"*.example.com\\napi.example.com\\nmobile.example.com\" > scope_assets.txt"
+          },
+          {
+            "title": "Wildcard Scope Expansion",
+            "details": "Identify wildcard domains and potential subdomain scope",
+            "command": "echo \"*.example.com\" | subfinder -silent | sort -u > potential_scope.txt"
+          },
+          {
+            "title": "Scope Compliance Check",
+            "details": "Verify all discovered assets against program rules",
+            "command": "# Cross-reference findings with program policy and restrictions"
+          }
+        ]
+      },
+      {
+        "title": "Phase 2: Passive Asset Discovery",
+        "steps": [
+          {
+            "title": "Subdomain Enumeration",
+            "details": "Discover subdomains using multiple passive sources",
+            "command": "subfinder -d example.com -all -silent | sort -u > subdomains_passive.txt"
+          },
+          {
+            "title": "Certificate Transparency Mining",
+            "details": "Extract subdomains from certificate transparency logs",
+            "command": "crt.sh -%.example.com | grep -E \"\\.example.com\" | sort -u > ct_subdomains.txt"
+          },
+          {
+            "title": "DNS Record Discovery",
+            "details": "Map DNS infrastructure and related assets",
+            "command": "dnsrecon -d example.com -t axfr -o dns_records.txt"
+          },
+          {
+            "title": "Cloud Asset Discovery",
+            "details": "Identify cloud-hosted infrastructure and services",
+            "command": "amass intel -org \"Example Company\" -active | grep -E \"(aws|azure|gcp)\" > cloud_assets.txt"
+          }
+        ]
+      },
+      {
+        "title": "Phase 3: Active Asset Validation",
+        "steps": [
+          {
+            "title": "HTTP/HTTPS Service Discovery",
+            "details": "Identify active web services on discovered assets",
+            "command": "cat subdomains_passive.txt | httpx -title -status-code -tech-detect -o active_web_assets.txt"
+          },
+          {
+            "title": "Port Service Mapping",
+            "details": "Map open ports and services on in-scope IP ranges",
+            "command": "nmap -sS -sV -oA port_scan_$(date +%Y%m%d) target_range"
+          },
+          {
+            "title": "Asset Technology Profiling",
+            "details": "Identify technologies, frameworks, and potential vulnerabilities",
+            "command": "whatweb -a3 -log-verbose=tech_profile.txt active_web_assets.txt"
+          },
+          {
+            "title": "Asset Ownership Verification",
+            "details": "Confirm asset ownership and scope compliance",
+            "command": "# Whois lookups, DNS ownership, certificate validation"
+          }
+        ]
+      },
+      {
+        "title": "Phase 4: Attack Surface Analysis",
+        "steps": [
+          {
+            "title": "Web Application Mapping",
+            "details": "Map web application structure and functionality",
+            "command": "gobuster dir -u https://target.example.com -w common_dirs.txt -o web_structure.txt"
+          },
+          {
+            "title": "API Endpoint Discovery",
+            "details": "Identify API endpoints and documentation",
+            "command": "curl -s https://target.example.com/ | grep -E \"(api|endpoint|rest|graphql)\" > api_endpoints.txt"
+          },
+          {
+            "title": "Mobile App Analysis",
+            "details": "Analyze mobile applications for in-app endpoints",
+            "command": "# Extract APK/IPA, analyze network traffic, identify API calls"
+          },
+          {
+            "title": "Third-Party Service Mapping",
+            "details": "Identify third-party services and dependencies",
+            "command": "# Check for CDNs, analytics, payment processors, auth providers"
+          }
+        ]
+      },
+      {
+        "title": "Phase 5: Evidence Collection & Documentation",
+        "steps": [
+          {
+            "title": "Asset Inventory Creation",
+            "details": "Create comprehensive asset inventory with metadata",
+            "command": "# Spreadsheet with domains, IPs, technologies, owners, scope status"
+          },
+          {
+            "title": "Attack Surface Visualization",
+            "details": "Create visual map of attack surface and relationships",
+            "command": "# Use diagrams, mind maps, or attack surface tools"
+          },
+          {
+            "title": "Scope Compliance Report",
+            "details": "Document scope compliance and potential edge cases",
+            "command": "# Report on in-scope assets, out-of-scope items, gray areas"
+          },
+          {
+            "title": "Testing Prioritization",
+            "details": "Prioritize assets based on criticality and vulnerability potential",
+            "command": "# Rank assets by business impact, technology stack, exposure"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Comprehensive Bug Bounty Recon Pipeline",
+        "stages": [
+          {
+            "label": "Setup & Configuration",
+            "description": "Configure tools, create directory structure, define scope",
+            "command": "mkdir -p ~/bugbounty/{scope,recon,evidence,reports} && echo \"*.example.com\" > scope/domains.txt"
+          },
+          {
+            "label": "Passive Discovery",
+            "description": "Gather intelligence without touching target infrastructure",
+            "command": "subfinder -d example.com -all -silent | sort -u > recon/subdomains.txt && amass enum -d example.com -passive >> recon/subdomains.txt"
+          },
+          {
+            "label": "Active Validation",
+            "description": "Verify discovered assets and map attack surface",
+            "command": "cat recon/subdomains.txt | httpx -title -status-code -tech-detect -o recon/active_assets.txt"
+          },
+          {
+            "label": "Technology Profiling",
+            "description": "Identify technologies and potential vulnerability vectors",
+            "command": "whatweb -a3 -log-verbose=recon/tech_profile.txt recon/active_assets.txt && nuclei -l recon/active_assets.txt -o recon/initial_scan.txt"
+          },
+          {
+            "label": "Scope Verification",
+            "description": "Final scope validation and compliance check",
+            "command": "# Review all findings against program policy, create final scope report"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Rate limiting detected",
+        "meaning": "Target has defensive measures, adjust timing and use async scanning",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Wildcard certificate found",
+        "meaning": "Large potential attack surface, prioritize subdomain enumeration",
+        "severity": "High"
+      },
+      {
+        "indicator": "Cloud infrastructure detected",
+        "meaning": "Additional attack vectors via cloud misconfigurations",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Out-of-scope assets responding",
+        "meaning": "Document but do not test, report to program if ambiguous",
+        "severity": "Info"
+      },
+      {
+        "indicator": "Third-party services in scope",
+        "meaning": "Include in testing but respect third-party policies",
+        "severity": "Low"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom Subdomain Wordlist Generation",
+        "scenario": "Generate targeted wordlists based on discovered patterns",
+        "command": "cat recon/subdomains.txt | sed 's/.*\\.//' | sort -u > base_domains.txt && cat base_domains.txt | crunch 4 8 -f recon/patterns.txt > custom_wordlist.txt",
+        "notes": [
+          "Create patterns from existing subdomains for more effective brute forcing"
+        ]
+      },
+      {
+        "title": "Permutation-Based Discovery",
+        "scenario": "Generate subdomain permutations for comprehensive coverage",
+        "command": "gobuster dns -d example.com -w recon/active_assets.txt -t 50 -o recon/permutations.txt",
+        "notes": [
+          "Use discovered subdomains as seeds for permutation attacks"
+        ]
+      },
+      {
+        "title": "Asset Correlation Analysis",
+        "scenario": "Correlate assets across multiple programs and organizations",
+        "command": "# Cross-reference assets across programs, identify shared infrastructure",
+        "notes": [
+          "Use for multi-program reconnaissance and shared vulnerability impact"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Bug Bounty Reconnaissance Tools Comparison",
+      "columns": ["Tool", "Speed", "Stealth", "Coverage", "Automation", "Best For"],
+      "rows": [
+        ["Subfinder", "Fast", "High", "Good", "Excellent", "Passive discovery"],
+        ["Amass", "Medium", "Medium", "Excellent", "Good", "Comprehensive mapping"],
+        ["Assetfinder", "Fast", "High", "Medium", "Good", "Quick discovery"],
+        ["HTTPx", "Very Fast", "High", "Good", "Excellent", "Service validation"],
+        ["Nuclei", "Fast", "Medium", "Good", "Excellent", "Vulnerability scanning"]
+      ]
+    },
+    "resources": [
+      {
+        "label": "OWASP Testing Guide",
+        "url": "https://owasp.org/www-project-web-security-testing-guide/",
+        "description": "Comprehensive web application testing methodology"
+      },
+      {
+        "label": "Bug Hunter's Methodology",
+        "url": "https://github.com/projectdiscovery/bugbounty",
+        "description": "ProjectDiscovery bug bounty methodology and tools"
+      },
+      {
+        "label": "HackerOne Hacktivity",
+        "url": "https://hackerone.com/hacktivity",
+        "description": "Recent disclosures and bounty trends for scope analysis"
+      },
+      {
+        "label": "Bugcrowd University",
+        "url": "https://www.bugcrowd.com/hackers/bugcrowd-university/",
+        "description": "Educational resources for bug bounty methodologies"
+      }
+    ]
+  },
+  {
+    "id": "bugbounty_web_app_testing",
+    "name": "Bug Bounty - Web Application Testing",
+    "summary": "Systematic web application security testing workflow for bug bounty programs, covering reconnaissance, vulnerability assessment, exploitation, and responsible disclosure.",
+    "details": "This workflow provides a comprehensive approach to web application testing in bug bounty programs. It combines automated scanning with manual testing techniques to identify vulnerabilities across the OWASP Top 10 and beyond, with emphasis on high-impact findings and proper evidence collection for bounty submissions.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install web application testing tools and dependencies",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y git python3 python3-pip curl wget",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y burpsuite owasp-zap nikto gobuster ffuf sqlmap",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install requests beautifulsoup4 selenium paramiko",
+            "copyable": true
+          },
+          {
+            "detail": "go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest",
+            "copyable": true
+          },
+          {
+            "detail": "go install -v github.com/ffuf/ffuf/v2@latest",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install with Kali's comprehensive tool repositories",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y burpsuite owasp-zap nikto gobuster",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y sqlmap nmap ffuf wpscan joomscan nuclei",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/danielmiessler/SecLists ~/wordlists",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/sqlmapproject/sqlmap ~/tools/sqlmap",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Containerized",
+        "summary": "Complete web testing environment in containers",
+        "steps": [
+          {
+            "detail": "docker pull projectdiscovery/nuclei",
+            "copyable": true
+          },
+          {
+            "detail": "docker pull owasp/zap2docker-stable",
+            "copyable": true
+          },
+          {
+            "detail": "docker pull securing/docker-sqlmap",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -p 8080:8080 owasp/zap2docker-stable zap.sh -daemon -host 0.0.0.0 -port 8080",
+            "copyable": true
+          },
+          {
+            "detail": "mkdir -p ~/bugbounty/{targets,scans,evidence,reports}",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Quick vulnerability scan",
+        "command": "nuclei -l targets.txt -severity critical,high -o critical_findings.txt",
+        "notes": [
+          "Focus on high-severity vulnerabilities first"
+        ]
+      },
+      {
+        "description": "Directory fuzzing with common patterns",
+        "command": "ffuf -w ~/wordlists/common.txt -u https://target.example.com/FUZZ -mc 200,301,302",
+        "notes": [
+          "Find hidden directories and files"
+        ]
+      },
+      {
+        "description": "SQL injection quick test",
+        "command": "sqlmap -u \"https://target.example.com/page?id=1\" --batch --level=1 --risk=1",
+        "notes": [
+          "Basic SQL injection testing with safe parameters"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Phase 1: Target Profiling & Reconnaissance",
+        "steps": [
+          {
+            "title": "Application Technology Stack",
+            "details": "Identify web server, frameworks, languages, and databases",
+            "command": "whatweb --log-verbose=tech_stack.txt https://target.example.com && wappalyzer https://target.example.com"
+          },
+          {
+            "title": "Application Functionality Mapping",
+            "details": "Map application features, user flows, and attack surface",
+            "command": "# Manual browsing, spidering, and functionality documentation"
+          },
+          {
+            "title": "API Endpoint Discovery",
+            "details": "Identify REST, GraphQL, and other API endpoints",
+            "command": "curl -s https://target.example.com/ | grep -E \"(api|rest|graphql|endpoint)\" > api_endpoints.txt"
+          },
+          {
+            "title": "Security Headers Analysis",
+            "details": "Check for missing or misconfigured security headers",
+            "command": "curl -I https://target.example.com | grep -E \"(X-Frame|X-XSS|X-Content|CSP|HSTS)\""
+          }
+        ]
+      },
+      {
+        "title": "Phase 2: Automated Vulnerability Scanning",
+        "steps": [
+          {
+            "title": "Nuclei Template Scanning",
+            "details": "Run comprehensive template-based vulnerability scanning",
+            "command": "nuclei -l targets.txt -t ~/nuclei-templates/ -o nuclei_scan.txt -severity critical,high,medium"
+          },
+          {
+            "title": "Nikto Web Vulnerability Scan",
+            "details": "Identify known vulnerabilities and misconfigurations",
+            "command": "nikto -h https://target.example.com -o nikko_results.txt -Format txt"
+          },
+          {
+            "title": "Directory & File Discovery",
+            "details": "Find hidden directories, files, and backup files",
+            "command": "gobuster dir -u https://target.example.com -w ~/wordlists/directory-list-2.3-medium.txt -o dirs_found.txt"
+          },
+          {
+            "title": "Parameter Discovery",
+            "details": "Discover hidden parameters and attack points",
+            "command": "ffuf -w ~/wordlists/params.txt -u \"https://target.example.com/page?FUZZ=value\" -mc 200"
+          }
+        ]
+      },
+      {
+        "title": "Phase 3: Manual Security Testing",
+        "steps": [
+          {
+            "title": "Authentication & Authorization",
+            "details": "Test authentication bypass, privilege escalation, and access control",
+            "command": "# Test login bypass, session management, role-based access, JWT manipulation"
+          },
+          {
+            "title": "Injection Vulnerabilities",
+            "details": "Test for SQL, NoSQL, command, and template injection",
+            "command": "sqlmap -u \"https://target.example.com/search?q=test\" --batch --level=2 --risk=2"
+          },
+          {
+            "title": "Cross-Site Scripting (XSS)",
+            "details": "Test for reflected, stored, and DOM-based XSS",
+            "command": "# Use Burp Suite scanner and manual payload testing"
+          },
+          {
+            "title": "File Upload & Path Traversal",
+            "details": "Test file upload restrictions and path traversal vulnerabilities",
+            "command": "# Test various file types, double extensions, directory traversal patterns"
+          }
+        ]
+      },
+      {
+        "title": "Phase 4: Advanced Vulnerability Assessment",
+        "steps": [
+          {
+            "title": "Business Logic Flaws",
+            "details": "Identify business logic vulnerabilities and race conditions",
+            "command": "# Test multi-step workflows, price manipulation, authorization bypasses"
+          },
+          {
+            "title": "Client-Side Security",
+            "details": "Test for client-side vulnerabilities and data exposure",
+            "command": "# Analyze JavaScript, DOM manipulation, local storage, CSRF tokens"
+          },
+          {
+            "title": "Server-Side Request Forgery (SSRF)",
+            "details": "Test for SSRF vulnerabilities in file imports, webhooks, redirects",
+            "command": "# Test with internal IP addresses, DNS rebinding, cloud metadata endpoints"
+          },
+          {
+            "title": "Insecure Direct Object References (IDOR)",
+            "details": "Test for IDOR vulnerabilities in API endpoints and URLs",
+            "command": "# Manipulate IDs, UUIDs, and object references in requests"
+          }
+        ]
+      },
+      {
+        "title": "Phase 5: Exploitation & Evidence Collection",
+        "steps": [
+          {
+            "title": "Vulnerability Validation",
+            "details": "Validate and document each finding with proof of concept",
+            "command": "# Create PoC exploits, screenshots, and detailed evidence"
+          },
+          {
+            "title": "Impact Assessment",
+            "details": "Assess business impact and potential exploit chains",
+            "command": "# Document data exposure, privilege escalation, system compromise potential"
+          },
+          {
+            "title": "Evidence Organization",
+            "details": "Organize evidence for bounty submission with clear documentation",
+            "command": "mkdir -p evidence/{vuln_type}/screenshots,pocs,logs"
+          },
+          {
+            "title": "Responsible Disclosure",
+            "details": "Prepare responsible disclosure report with remediation guidance",
+            "command": "# Write detailed vulnerability report with steps to reproduce and fix"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Bug Bounty Web Application Testing Timeline",
+        "stages": [
+          {
+            "label": "Day 1: Reconnaissance & Profiling",
+            "description": "Complete application profiling, technology identification, and attack surface mapping",
+            "command": "whatweb -a3 https://target.example.com && gobuster dir -u https://target.example.com -w common.txt -o day1_recon.txt"
+          },
+          {
+            "label": "Day 2: Automated Scanning",
+            "description": "Run comprehensive automated scans to identify obvious vulnerabilities",
+            "command": "nuclei -l targets.txt -severity critical,high -o day2_critical.txt && nikto -h https://target.example.com -o day2_nikko.txt"
+          },
+          {
+            "label": "Day 3: Manual Testing - Authentication",
+            "description": "Focus on authentication bypass, session management, and authorization flaws",
+            "command": "# Configure Burp Suite, test authentication mechanisms, analyze tokens"
+          },
+          {
+            "label": "Day 4: Manual Testing - Injection",
+            "description": "Test for injection vulnerabilities including SQL, XSS, and command injection",
+            "command": "sqlmap -u \"https://target.example.com/vulnerable\" --batch && manual XSS testing"
+          },
+          {
+            "label": "Day 5: Advanced Testing & Reporting",
+            "description": "Test business logic, prepare findings, and generate bounty submission",
+            "command": "# Test edge cases, validate findings, prepare evidence, write report"
+          }
+        ]
+      },
+      {
+        "name": "Rapid Triage Workflow",
+        "stages": [
+          {
+            "label": "Critical Vulnerability Hunt",
+            "description": "Focus on high-impact vulnerabilities first",
+            "command": "nuclei -l targets.txt -severity critical -t cves/ -o triage_critical.txt"
+          },
+          {
+            "label": "Authentication Bypass Testing",
+            "description": "Quick test for common authentication flaws",
+            "command": "# Test default credentials, SQL injection in login, JWT manipulation"
+          },
+          {
+            "label": "Injection Vector Discovery",
+            "description": "Identify and test injection points",
+            "command": "ffuf -w params.txt -u \"https://target.example.com/search?FUZZ=test\" -mc 200"
+          },
+          {
+            "label": "Business Logic Testing",
+            "description": "Test for logic flaws in core functionality",
+            "command": "# Test price manipulation, race conditions, workflow bypasses"
+          },
+          {
+            "label": "Evidence Collection",
+            "description": "Document and validate findings for submission",
+            "command": "# Create PoC, screenshots, and detailed vulnerability report"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "SQL injection error message",
+        "meaning": "Critical vulnerability with potential data breach impact",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "Reflected XSS payload executed",
+        "meaning": "Client-side vulnerability with phishing potential",
+        "severity": "High"
+      },
+      {
+        "indicator": "Authentication bypass successful",
+        "meaning": "Complete account compromise possible",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "File upload of web shell",
+        "meaning": "Remote code execution on server",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "SSRF to internal services",
+        "meaning": "Internal network access and data exfiltration",
+        "severity": "High"
+      },
+      {
+        "indicator": "Rate limiting bypass found",
+        "meaning": "Brute force attacks possible",
+        "severity": "Medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom Nuclei Template Development",
+        "scenario": "Create custom templates for application-specific vulnerabilities",
+        "command": "# Create YAML templates for business logic flaws and custom endpoints",
+        "notes": [
+          "Develop targeted templates for unique application functionality"
+        ]
+      },
+      {
+        "title": "Burp Suite Intruder Automation",
+        "scenario": "Automate parameter fuzzing and attack payloads",
+        "command": "# Use Intruder with custom payloads for comprehensive testing",
+        "notes": [
+          "Create custom payload lists based on application context"
+        ]
+      },
+      {
+        "title": "Race Condition Testing",
+        "scenario": "Test for race conditions in critical workflows",
+        "command": "# Use threading tools to send concurrent requests",
+        "notes": [
+          "Focus on payment processing, password reset, and registration flows"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Web Application Testing Tools Comparison",
+      "columns": ["Tool", "Automation", "Manual Testing", "Coverage", "Learning Curve", "Best For"],
+      "rows": [
+        ["Burp Suite", "Good", "Excellent", "Excellent", "Medium", "Comprehensive testing"],
+        ["OWASP ZAP", "Good", "Good", "Good", "Easy", "Free alternative"],
+        ["Nuclei", "Excellent", "Limited", "Good", "Easy", "Template scanning"],
+        ["SQLMap", "Excellent", "Good", "Limited", "Easy", "SQL injection"],
+        ["FFuf", "Excellent", "Good", "Limited", "Easy", "Fuzzing"]
+      ]
+    },
+    "resources": [
+      {
+        "label": "OWASP Top 10",
+        "url": "https://owasp.org/www-project-top-ten/",
+        "description": "Most critical web application security risks"
+      },
+      {
+        "label": "PortSwigger Web Security Academy",
+        "url": "https://portswigger.net/web-security",
+        "description": "Free web security training and labs"
+      },
+      {
+        "label": "HackerOne Hacktivity",
+        "url": "https://hackerone.com/hacktivity",
+        "description": "Recent disclosures and bounty trends"
+      },
+      {
+        "label": "Bug Bounty Cheat Sheet",
+        "url": "https://github.com/djadmin/awesome-bug-bounty",
+        "description": "Comprehensive bug bounty resources and methodologies"
+      }
+    ]
+  },
+  {
+    "id": "bugbounty_mobile_app_testing",
+    "name": "Bug Bounty - Mobile Application Testing",
+    "summary": "Comprehensive mobile application security testing workflow for bug bounty programs, covering iOS, Android, and hybrid applications with static analysis, dynamic testing, and API security.",
+    "details": "This workflow provides a systematic approach to mobile application security testing in bug bounty programs. It covers static analysis of application binaries, dynamic testing of running applications, network traffic analysis, and backend API testing, with emphasis on mobile-specific vulnerabilities and proper evidence collection.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install mobile testing tools and Android SDK",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y git python3 python3-pip default-jdk",
+            "copyable": true
+          },
+          {
+            "detail": "wget https://dl.google.com/android/android-sdk_r24.4.1-linux.tgz",
+            "copyable": true
+          },
+          {
+            "detail": "tar -xzf android-sdk_r24.4.1-linux.tgz && export ANDROID_HOME=$PWD/android-sdk-linux",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install frida-tools objection mobsec dllib",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/sensepost/objection ~/tools/objection",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install with Kali's mobile security tools",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y android-tools-adb android-tools-fastboot",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y gdb radare2 apktool jadx drozer",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install frida-tools objection mobsec",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/NVISO-BE/MobSF ~/tools/MobSF",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Containerized",
+        "summary": "Mobile Security Framework (MobSF) and analysis tools",
+        "steps": [
+          {
+            "detail": "docker pull opensecurity/mobile-security-framework-mobsf",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -it -p 8000:8000 opensecurity/mobile-security-framework-mobsf:latest",
+            "copyable": true
+          },
+          {
+            "detail": "docker pull frida/frida",
+            "copyable": true
+          },
+          {
+            "detail": "mkdir -p ~/mobile/{apps,analysis,evidence,reports}",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/dweiss/flare ~/tools/flare",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Quick APK static analysis",
+        "command": "jadx -d decompiled app.apk && grep -r \"password\" decompiled/",
+        "notes": [
+          "Extract hardcoded secrets and sensitive data"
+        ]
+      },
+      {
+        "description": "Network traffic analysis",
+        "command": "frida-trace -U -f com.example.app -i \"*SSL*\" -i \"*HTTP*\"",
+        "notes": [
+          "Monitor network traffic and SSL configurations"
+        ]
+      },
+      {
+        "description": "Basic Frida hooking",
+        "command": "objection -g com.example.app explore android sslpinning disable",
+        "notes": [
+          "Bypass SSL pinning for traffic interception"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Phase 1: Application Setup & Environment",
+        "steps": [
+          {
+            "title": "Application Acquisition",
+            "details": "Obtain mobile application from app stores or direct download",
+            "command": "# Download APK/IPA, note version, release date, and changelog"
+          },
+          {
+            "title": "Emulator/Device Setup",
+            "details": "Configure Android emulator or physical device for testing",
+            "command": "emulator -avd test_device -no-snapshot-load || adb devices"
+          },
+          {
+            "title": "Tool Installation",
+            "details": "Install and configure mobile testing tools and frameworks",
+            "command": "pip3 install frida-tools objection && adb shell settings put global airplane_mode_on 0"
+          },
+          {
+            "title": "Proxy Configuration",
+            "details": "Configure network proxy for traffic interception",
+            "command": "# Set up Burp Suite/ZAP mobile proxy and install CA certificate"
+          }
+        ]
+      },
+      {
+        "title": "Phase 2: Static Analysis",
+        "steps": [
+          {
+            "title": "Binary Analysis",
+            "details": "Analyze application binary for embedded secrets and configurations",
+            "command": "jadx -d static_analysis app.apk && grep -r -i \"password\\|api_key\\|secret\" static_analysis/"
+          },
+          {
+            "title": "Manifest Analysis",
+            "details": "Analyze AndroidManifest.xml for security misconfigurations",
+            "command": "aapt dump badging app.apk > manifest_analysis.txt && apktool d app.apk"
+          },
+          {
+            "title": "Code Review",
+            "details": "Review decompiled code for security vulnerabilities",
+            "command": "# Look for hardcoded credentials, weak cryptography, insecure storage"
+          },
+          {
+            "title": "MobSF Automated Analysis",
+            "details": "Run comprehensive automated static analysis",
+            "command": "# Upload APK to MobSF for detailed security assessment"
+          }
+        ]
+      },
+      {
+        "title": "Phase 3: Dynamic Analysis - Local",
+        "steps": [
+          {
+            "title": "Runtime Hooking",
+            "details": "Use Frida to hook and monitor application behavior",
+            "command": "objection -g com.example.app explore android heap search instances string"
+          },
+          {
+            "title": "Filesystem Analysis",
+            "details": "Examine application storage and data handling",
+            "command": "objection -g com.example.app explore android ls /data/data/com.example.app"
+          },
+          {
+            "title": "Keychain/Keystore Analysis",
+            "details": "Analyze secure storage mechanisms and key management",
+            "command": "# Test keychain access, encrypted data storage, certificate pinning"
+          },
+          {
+            "title": "Biometric Authentication Testing",
+            "details": "Test biometric authentication bypasses and fallback mechanisms",
+            "command": "# Test face ID/fingerprint bypass and alternative authentication methods"
+          }
+        ]
+      },
+      {
+        "title": "Phase 4: Dynamic Analysis - Network",
+        "steps": [
+          {
+            "title": "SSL/TLS Configuration",
+            "details": "Test SSL/TLS implementation and certificate validation",
+            "command": "objection -g com.example.app explore android sslpinning disable"
+          },
+          {
+            "title": "API Endpoint Discovery",
+            "details": "Identify and analyze backend API endpoints",
+            "command": "frida-trace -U -f com.example.app -i \"*HTTP*\" -o api_calls.txt"
+          },
+          {
+            "title": "Network Traffic Analysis",
+            "details": "Intercept and analyze network traffic for vulnerabilities",
+            "command": "# Use Burp Suite/ZAP to analyze API calls, headers, and data"
+          },
+          {
+            "title": "Authentication Token Analysis",
+            "details": "Analyze authentication tokens and session management",
+            "command": "# Examine JWT tokens, session cookies, and API key handling"
+          }
+        ]
+      },
+      {
+        "title": "Phase 5: Backend API Testing",
+        "steps": [
+          {
+            "title": "API Security Testing",
+            "details": "Test backend APIs for common vulnerabilities",
+            "command": "# Test injection, broken authentication, excessive data exposure"
+          },
+          {
+            "title": "Rate Limiting Testing",
+            "details": "Test API rate limiting and abuse prevention",
+            "command": "# Test with automated tools for rate limit bypass"
+          },
+          {
+            "title": "Business Logic Testing",
+            "details": "Test mobile-specific business logic vulnerabilities",
+            "command": "# Test in-app purchases, user actions, workflow bypasses"
+          },
+          {
+            "title": "Cross-Platform Consistency",
+            "details": "Verify security controls across iOS and Android platforms",
+            "command": "# Compare API implementations and security controls"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Mobile Application Testing Timeline",
+        "stages": [
+          {
+            "label": "Day 1: Setup & Static Analysis",
+            "description": "Environment setup, application acquisition, and static code analysis",
+            "command": "jadx -d day1_decompiled app.apk && mobsf-static-analysis app.apk"
+          },
+          {
+            "label": "Day 2: Dynamic Local Testing",
+            "description": "Runtime analysis, filesystem examination, and local storage testing",
+            "command": "objection -g com.example.app explore android heap search instances password"
+          },
+          {
+            "label": "Day 3: Network Analysis",
+            "description": "SSL bypass, traffic interception, and API endpoint discovery",
+            "command": "objection -g com.example.app explore android sslpinning disable && frida-trace -U -f com.example.app -i \"*HTTP*\""
+          },
+          {
+            "label": "Day 4: Backend API Testing",
+            "description": "Comprehensive API security testing and business logic analysis",
+            "command": "# Test discovered API endpoints for injection, auth bypass, and data exposure"
+          },
+          {
+            "label": "Day 5: Cross-Platform & Reporting",
+            "description": "Cross-platform testing and vulnerability report preparation",
+            "command": "# Test iOS equivalent, document findings, prepare bounty submission"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Hardcoded API keys in binary",
+        "meaning": "Backend API access possible, potential data breach",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "SSL pinning bypass successful",
+        "meaning": "Network traffic can be intercepted and modified",
+        "severity": "High"
+      },
+      {
+        "indicator": "Insecure data storage",
+        "meaning": "Sensitive data accessible to other apps or root users",
+        "severity": "High"
+      },
+      {
+        "indicator": "Weak authentication implementation",
+        "meaning": "Account takeover and unauthorized access possible",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "Biometric bypass successful",
+        "meaning": "Authentication mechanisms can be circumvented",
+        "severity": "High"
+      },
+      {
+        "indicator": "Debug symbols present",
+        "meaning": "Code analysis easier, may expose internal logic",
+        "severity": "Medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom Frida Scripts",
+        "scenario": "Develop custom Frida scripts for application-specific testing",
+        "command": "# Create JavaScript hooks for custom encryption and protocols",
+        "notes": [
+          "Target proprietary protocols and custom security implementations"
+        ]
+      },
+      {
+        "title": "LLVM Pass Analysis",
+        "scenario": "Use LLVM passes for advanced static analysis",
+        "command": "# Compile with LLVM instrumentation for data flow analysis",
+        "notes": [
+          "Advanced static analysis for complex applications"
+        ]
+      },
+      {
+        "title": "Emulator Detection Bypass",
+        "scenario": "Bypass emulator detection for dynamic analysis",
+        "command": "# Modify system properties and hook detection methods",
+        "notes": [
+          "Enable testing on emulated environments"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Mobile Testing Tools Comparison",
+      "columns": ["Tool", "Static Analysis", "Dynamic Analysis", "Platform", "Learning Curve", "Best For"],
+      "rows": [
+        ["MobSF", "Excellent", "Good", "Both", "Easy", "Comprehensive analysis"],
+        ["Frida", "Limited", "Excellent", "Both", "Hard", "Runtime hooking"],
+        ["Objection", "Limited", "Excellent", "Both", "Medium", "Runtime exploration"],
+        ["Jadx", "Excellent", "None", "Android", "Easy", "Decompilation"],
+        ["Drozer", "Limited", "Good", "Android", "Medium", "Attack surface"]
+      ]
+    },
+    "resources": [
+      {
+        "label": "OWASP Mobile Security Testing Guide",
+        "url": "https://github.com/OWASP/owasp-mstg",
+        "description": "Comprehensive mobile application security testing methodology"
+      },
+      {
+        "label": "MobSF Documentation",
+        "url": "https://github.com/MobSF/Mobile-Security-Framework-MobSF",
+        "description": "Mobile Security Framework documentation and usage"
+      },
+      {
+        "label": "Frida Documentation",
+        "url": "https://frida.re/docs/home/",
+        "description": "Dynamic instrumentation toolkit documentation"
+      },
+      {
+        "label": "Mobile App Hacker's Toolkit",
+        "url": "https://github.com/d-a-n/mobile-app-pentest-tools",
+        "description": "Collection of mobile security testing tools"
+      }
+    ]
+  },
+  {
+    "id": "bugbounty_api_testing",
+    "name": "Bug Bounty - API Testing",
+    "summary": "Comprehensive API security testing workflow for bug bounty programs, covering REST, GraphQL, and SOAP APIs with authentication, authorization, and business logic vulnerability assessment.",
+    "details": "This workflow provides a systematic approach to API security testing in bug bounty programs. It covers API discovery, authentication testing, authorization bypass, injection vulnerabilities, business logic flaws, and API-specific attacks, with emphasis on proper evidence collection and responsible disclosure.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install API testing tools and frameworks",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y git python3 python3-pip curl jq",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install requests httpie postman-api-apikey",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install graphql-api gql",
+            "copyable": true
+          },
+          {
+            "detail": "go install -v github.com/projectdiscovery/httpx@latest",
+            "copyable": true
+          },
+          {
+            "detail": "npm install -g @apiary/apijsonschema",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install with Kali's API testing tools",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y burpsuite owasp-zap postman",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y sqlmap nikto gobuster nuclei",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install requests httpie graphql-client",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/API-Security/API-Checklist ~/tools/api-checklist",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Containerized",
+        "summary": "API testing environment with specialized tools",
+        "steps": [
+          {
+            "detail": "docker pull postman/newman",
+            "copyable": true
+          },
+          {
+            "detail": "docker pull owasp/zap2docker-stable",
+            "copyable": true
+          },
+          {
+            "detail": "docker pull api-security/api-security-checklist",
+            "copyable": true
+          },
+          {
+            "detail": "mkdir -p ~/api/{endpoints,auth,tests,evidence,reports}",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/assetnote/kiterunner ~/tools/kiterunner",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Quick API endpoint discovery",
+        "command": "curl -s https://target.example.com/ | jq -r '.links[].href' 2>/dev/null || grep -E \"(api|v1|v2)\" response.txt",
+        "notes": [
+          "Extract API endpoints from HTML and JavaScript responses"
+        ]
+      },
+      {
+        "description": "Authentication testing",
+        "command": "curl -X POST -H \"Content-Type: application/json\" -d '{\"email\":\"admin@test.com\",\"password\":\"admin\"}' https://api.target.com/auth/login",
+        "notes": [
+          "Test authentication endpoints with various credentials"
+        ]
+      },
+      {
+        "description": "GraphQL introspection",
+        "command": "curl -X POST -H \"Content-Type: application/json\" -d '{\"query\":\"{__schema{types{name}}}\"}' https://api.target.com/graphql",
+        "notes": [
+          "Extract GraphQL schema for endpoint discovery"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Phase 1: API Discovery & Mapping",
+        "steps": [
+          {
+            "title": "Endpoint Discovery",
+            "details": "Discover API endpoints from documentation, source code, and crawling",
+            "command": "curl -s https://target.example.com/ | grep -E \"(api|v1|v2|rest|graphql)\" > api_endpoints.txt"
+          },
+          {
+            "title": "API Documentation Analysis",
+            "details": "Analyze available API documentation and specifications",
+            "command": "# Review Swagger/OpenAPI docs, Postman collections, API gateways"
+          },
+          {
+            "title": "JavaScript Analysis",
+            "details": "Extract API calls from frontend JavaScript code",
+            "command": "# Analyze bundled JS files, network calls, and API configurations"
+          },
+          {
+            "title": "Mobile App API Analysis",
+            "details": "Extract API endpoints from mobile applications",
+            "command": "# Decompile mobile apps, analyze network traffic, extract API calls"
+          }
+        ]
+      },
+      {
+        "title": "Phase 2: Authentication & Authorization Testing",
+        "steps": [
+          {
+            "title": "Authentication Mechanism Analysis",
+            "details": "Identify and test authentication mechanisms",
+            "command": "curl -X POST -H \"Content-Type: application/json\" -d '{\"username\":\"test\",\"password\":\"test\"}' https://api.target.com/auth/login"
+          },
+          {
+            "title": "Token Analysis",
+            "details": "Analyze JWT tokens, API keys, and session management",
+            "command": "# Decode JWT tokens, test token manipulation, analyze token expiration"
+          },
+          {
+            "title": "Authorization Bypass Testing",
+            "details": "Test for authorization bypass and privilege escalation",
+            "command": "# Test with different user roles, manipulate user IDs, test admin endpoints"
+          },
+          {
+            "title": "OAuth/OpenID Testing",
+            "details": "Test OAuth/OpenID implementations for vulnerabilities",
+            "command": "# Test redirect URIs, scope manipulation, token leakage"
+          }
+        ]
+      },
+      {
+        "title": "Phase 3: Input Validation & Injection Testing",
+        "steps": [
+          {
+            "title": "SQL Injection Testing",
+            "details": "Test for SQL injection in API parameters and body",
+            "command": "curl -X POST -H \"Content-Type: application/json\" -d '{\"id\":\"1\\' OR 1=1--\"}' https://api.target.com/users"
+          },
+          {
+            "title": "NoSQL Injection Testing",
+            "details": "Test for NoSQL injection in MongoDB and other NoSQL databases",
+            "command": "curl -X POST -H \"Content-Type: application/json\" -d '{\"username\":{\"$ne\":\"\"},\"password\":{\"$ne\":\"\"}}' https://api.target.com/auth/login"
+          },
+          {
+            "title": "Command Injection Testing",
+            "details": "Test for command injection in API parameters",
+            "command": "curl -X POST -H \"Content-Type: application/json\" -d '{\"file\":\"test.txt; whoami\"}' https://api.target.com/files"
+          },
+          {
+            "title": "XXE & XML Injection",
+            "details": "Test for XXE and XML injection in XML-based APIs",
+            "command": "# Test with malicious XML payloads, external entity injection"
+          }
+        ]
+      },
+      {
+        "title": "Phase 4: Business Logic & Functionality Testing",
+        "steps": [
+          {
+            "title": "Rate Limiting Testing",
+            "details": "Test API rate limiting and abuse prevention",
+            "command": "# Test with automated requests, parallel threads, timing attacks"
+          },
+          {
+            "title": "Business Logic Flaws",
+            "details": "Test for business logic vulnerabilities in API workflows",
+            "command": "# Test price manipulation, race conditions, workflow bypasses"
+          },
+          {
+            "title": "Mass Assignment Testing",
+            "details": "Test for mass assignment vulnerabilities in object creation",
+            "command": "# Test with additional parameters, role assignment, status changes"
+          },
+          {
+            "title": "Resource Enumeration",
+            "details": "Test for insecure direct object references and enumeration",
+            "command": "# Test sequential IDs, UUID enumeration, resource guessing"
+          }
+        ]
+      },
+      {
+        "title": "Phase 5: GraphQL & Specialized API Testing",
+        "steps": [
+          {
+            "title": "GraphQL Introspection",
+            "details": "Extract and analyze GraphQL schema and queries",
+            "command": "curl -X POST -H \"Content-Type: application/json\" -d '{\"query\":\"{__schema{queryType{fields{name}}}}\"}' https://api.target.com/graphql"
+          },
+          {
+            "title": "GraphQL Injection Testing",
+            "details": "Test for GraphQL-specific injection vulnerabilities",
+            "command": "# Test malicious queries, introspection abuse, field duplication"
+          },
+          {
+            "title": "SOAP API Testing",
+            "details": "Test SOAP APIs for XML-based vulnerabilities",
+            "command": "# Test XXE, XML injection, WSDL analysis"
+          },
+          {
+            "title": "WebSocket API Testing",
+            "details": "Test WebSocket endpoints for authentication and injection",
+            "command": "# Test WebSocket authentication, message injection, DoS"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "API Security Testing Timeline",
+        "stages": [
+          {
+            "label": "Day 1: Discovery & Mapping",
+            "description": "Complete API endpoint discovery and documentation analysis",
+            "command": "curl -s https://target.example.com/ | jq -r '.links[].href' > day1_endpoints.txt"
+          },
+          {
+            "label": "Day 2: Authentication Testing",
+            "description": "Test authentication mechanisms and token security",
+            "command": "# Test login endpoints, token manipulation, OAuth flows"
+          },
+          {
+            "label": "Day 3: Injection Testing",
+            "description": "Comprehensive injection testing across all endpoints",
+            "command": "# SQL injection, NoSQL injection, command injection testing"
+          },
+          {
+            "label": "Day 4: Business Logic Testing",
+            "description": "Test business logic flaws and API-specific vulnerabilities",
+            "command": "# Rate limiting, mass assignment, enumeration testing"
+          },
+          {
+            "label": "Day 5: Specialized APIs & Reporting",
+            "description": "Test GraphQL/SOAP APIs and prepare vulnerability report",
+            "command": "# GraphQL introspection, schema analysis, report preparation"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "SQL injection successful",
+        "meaning": "Database access and potential data breach",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "Authentication bypass via token manipulation",
+        "meaning": "Complete account compromise possible",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "Unauthorized data access",
+        "meaning": "Sensitive data exposure and privacy violation",
+        "severity": "High"
+      },
+      {
+        "indicator": "Rate limiting bypass",
+        "meaning": "Brute force attacks and abuse possible",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "GraphQL schema exposed",
+        "meaning": "Complete API structure and endpoints exposed",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Mass assignment vulnerability",
+        "meaning": "Privilege escalation and data manipulation possible",
+        "severity": "High"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom API Fuzzing",
+        "scenario": "Develop custom fuzzing payloads for API-specific testing",
+        "command": "# Create custom payloads based on API specifications and business logic",
+        "notes": [
+          "Target application-specific data formats and validation rules"
+        ]
+      },
+      {
+        "title": "API Security Automation",
+        "scenario": "Automate API testing with custom scripts and frameworks",
+        "command": "# Create automated testing pipelines with continuous scanning",
+        "notes": [
+          "Integrate with CI/CD for ongoing API security assessment"
+        ]
+      },
+      {
+        "title": "GraphQL Query Optimization",
+        "scenario": "Optimize GraphQL queries for maximum data extraction",
+        "command": "# Use query batching, aliases, and fragments for efficient testing",
+        "notes": [
+          "Maximize GraphQL testing efficiency and coverage"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "API Testing Tools Comparison",
+      "columns": ["Tool", "REST", "GraphQL", "SOAP", "Automation", "Best For"],
+      "rows": [
+        ["Burp Suite", "Excellent", "Good", "Good", "Good", "Comprehensive testing"],
+        ["Postman", "Excellent", "Good", "Limited", "Excellent", "API development"],
+        ["OWASP ZAP", "Good", "Limited", "Limited", "Good", "Automated scanning"],
+        ["Insomnia", "Excellent", "Excellent", "Limited", "Good", "GraphQL testing"],
+        ["Curl/JQ", "Good", "Good", "Limited", "Excellent", "Scripting"]
+      ]
+    },
+    "resources": [
+      {
+        "label": "OWASP API Security Top 10",
+        "url": "https://owasp.org/www-project-api-security/",
+        "description": "Most critical API security risks"
+      },
+      {
+        "label": "API Security Checklist",
+        "url": "https://github.com/API-Security/api-security-checklist",
+        "description": "Comprehensive API security testing checklist"
+      },
+      {
+        "label": "Postman API Security",
+        "url": "https://learning.postman.com/docs/postman/api-postman-api/",
+        "description": "Postman API security documentation and best practices"
+      },
+      {
+        "label": "GraphQL Security",
+        "url": "https://graphql.org/learn/security/",
+        "description": "GraphQL security best practices and vulnerabilities"
+      }
+    ]
+  },
+  {
+    "id": "bugbounty_owasp_top10",
+    "name": "Bug Bounty - OWASP Top 10 Sweep",
+    "summary": "Systematic OWASP Top 10 vulnerability assessment workflow for bug bounty programs, providing comprehensive coverage of the most critical web application security risks with targeted testing and evidence collection.",
+    "details": "This workflow provides a structured approach to testing for OWASP Top 10 vulnerabilities in bug bounty programs. It covers the 2021 OWASP Top 10 categories with specific testing methodologies, automated tools, and manual testing techniques to identify high-impact vulnerabilities commonly found in web applications.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install OWASP Top 10 testing tools and dependencies",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y git python3 python3-pip curl jq",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y burpsuite owasp-zap nikto sqlmap nuclei",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install requests beautifulsoup4 selenium",
+            "copyable": true
+          },
+          {
+            "detail": "go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/OWASP/OWASP-testing-guide ~/tools/owasp-guide",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install with Kali's comprehensive security tools",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y burpsuite owasp-zap nikto sqlmap",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y gobuster ffuf wpscan nuclei testssl",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install requests selenium webdriver-manager",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/danielmiessler/SecLists ~/wordlists",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Containerized",
+        "summary": "OWASP Top 10 testing environment with specialized tools",
+        "steps": [
+          {
+            "detail": "docker pull owasp/zap2docker-stable",
+            "copyable": true
+          },
+          {
+            "detail": "docker pull projectdiscovery/nuclei",
+            "copyable": true
+          },
+          {
+            "detail": "docker pull securing/docker-sqlmap",
+            "copyable": true
+          },
+          {
+            "detail": "mkdir -p ~/owasp10/{a01,a02,a03,a04,a05,a06,a07,a08,a09,a10,evidence,reports}",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/projectdiscovery/nuclei-templates ~/nuclei-templates",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "A01 - Broken Access Control test",
+        "command": "curl -H \"Authorization: Bearer INVALID_TOKEN\" https://api.target.com/admin/users",
+        "notes": [
+          "Test for authorization bypass with invalid tokens"
+        ]
+      },
+      {
+        "description": "A03 - Injection quick test",
+        "command": "sqlmap -u \"https://target.com/search?q=test\" --batch --level=1 --risk=1",
+        "notes": [
+          "Quick SQL injection test with safe parameters"
+        ]
+      },
+      {
+        "description": "A05 - Security Misconfiguration scan",
+        "command": "nuclei -l targets.txt -t misconfig/ -severity critical,high -o misconfigs.txt",
+        "notes": [
+          "Scan for common security misconfigurations"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "A01: Broken Access Control",
+        "steps": [
+          {
+            "title": "Authorization Bypass Testing",
+            "details": "Test for authorization bypass in sensitive endpoints",
+            "command": "# Test admin endpoints with regular user tokens, manipulate user IDs"
+          },
+          {
+            "title": "Privilege Escalation",
+            "details": "Test for privilege escalation vulnerabilities",
+            "command": "# Test role manipulation, parameter pollution, metadata tampering"
+          },
+          {
+            "title": "Insecure Direct Object References",
+            "details": "Test for IDOR vulnerabilities in API endpoints",
+            "command": "# Manipulate IDs, UUIDs, and object references in URLs and parameters"
+          },
+          {
+            "title": "Bypassing Business Logic",
+            "details": "Test for business logic bypasses in authorization checks",
+            "command": "# Test workflow bypasses, race conditions, state manipulation"
+          }
+        ]
+      },
+      {
+        "title": "A02: Cryptographic Failures",
+        "steps": [
+          {
+            "title": "Weak Encryption Testing",
+            "details": "Test for weak cryptographic implementations",
+            "command": "# Test for weak ciphers, improper key management, hardcoded keys"
+          },
+          {
+            "title": "Sensitive Data Exposure",
+            "details": "Test for sensitive data in transit and at rest",
+            "command": "# Check for passwords, tokens, PII in responses, logs, storage"
+          },
+          {
+            "title": "TLS/SSL Configuration",
+            "details": "Test for weak TLS/SSL configurations",
+            "command": "testssl.sh https://target.example.com | grep -E \"(weak|vulnerable)\""
+          },
+          {
+            "title": "Hash Implementation",
+            "details": "Test for weak hashing algorithms and salt usage",
+            "command": "# Test password storage, hash cracking, rainbow table attacks"
+          }
+        ]
+      },
+      {
+        "title": "A03: Injection",
+        "steps": [
+          {
+            "title": "SQL Injection Testing",
+            "details": "Comprehensive SQL injection testing across all parameters",
+            "command": "sqlmap -u \"https://target.com/search?q=test\" --batch --level=3 --risk=2"
+          },
+          {
+            "title": "NoSQL Injection Testing",
+            "details": "Test NoSQL injection in MongoDB and other NoSQL databases",
+            "command": "# Test JSON-based injection, operator injection, blind NoSQL injection"
+          },
+          {
+            "title": "Command Injection Testing",
+            "details": "Test for OS command injection vulnerabilities",
+            "command": "# Test semicolon injection, pipe injection, backtick injection"
+          },
+          {
+            "title": "Template Injection Testing",
+            "details": "Test for server-side template injection vulnerabilities",
+            "command": "# Test Jinja2, Twig, Handlebars template injection payloads"
+          }
+        ]
+      },
+      {
+        "title": "A04: Insecure Design",
+        "steps": [
+          {
+            "title": "Business Logic Flaws",
+            "details": "Test for business logic vulnerabilities in application design",
+            "command": "# Test race conditions, workflow bypasses, logic flaw exploitation"
+          },
+          {
+            "title": "Missing Authorization",
+            "details": "Test for missing authorization in critical operations",
+            "command": "# Test password reset, email change, account deletion without auth"
+          },
+          {
+            "title": "Unsafe Resource Consumption",
+            "details": "Test for resource exhaustion and DoS vulnerabilities",
+            "command": "# Test file upload limits, request size limits, CPU/memory exhaustion"
+          },
+          {
+            "title": "Insecure Workflows",
+            "details": "Test for insecure multi-step workflows and transactions",
+            "command": "# Test payment processing, user registration, data import workflows"
+          }
+        ]
+      },
+      {
+        "title": "A05: Security Misconfiguration",
+        "steps": [
+          {
+            "title": "Default Credentials Testing",
+            "details": "Test for default credentials and configuration files",
+            "command": "# Test admin/admin, default passwords, config file exposure"
+          },
+          {
+            "title": "Directory Listing",
+            "details": "Test for directory listing and file exposure",
+            "command": "curl -I https://target.com/uploads/ | grep -E \"(200|Index of)\""
+          },
+          {
+            "title": "Security Headers Analysis",
+            "details": "Test for missing or misconfigured security headers",
+            "command": "curl -I https://target.com | grep -E \"(X-Frame|X-XSS|CSP|HSTS)\""
+          },
+          {
+            "title": "Cloud Misconfigurations",
+            "details": "Test for cloud service misconfigurations",
+            "command": "# Test S3 buckets, cloud storage, metadata endpoints"
+          }
+        ]
+      },
+      {
+        "title": "A06: Vulnerable and Outdated Components",
+        "steps": [
+          {
+            "title": "Software Version Detection",
+            "details": "Identify outdated software and vulnerable versions",
+            "command": "whatweb --log-verbose=versions.txt https://target.com && nuclei -l targets.txt -t cves/"
+          },
+          {
+            "title": "Dependency Analysis",
+            "details": "Analyze JavaScript dependencies for known vulnerabilities",
+            "command": "# Test package.json, npm audit, dependency confusion"
+          },
+          {
+            "title": "Component Exploitation",
+            "details": "Test for exploitable vulnerabilities in components",
+            "command": "# Test CVE exploits, public exploits, proof-of-concept attacks"
+          },
+          {
+            "title": "Supply Chain Security",
+            "details": "Test for supply chain vulnerabilities in third-party components",
+            "command": "# Test dependency confusion, malicious packages, typosquatting"
+          }
+        ]
+      },
+      {
+        "title": "A07: Identification and Authentication Failures",
+        "steps": [
+          {
+            "title": "Authentication Bypass",
+            "details": "Test for authentication mechanism bypasses",
+            "command": "# Test SQL injection in login, JWT manipulation, session fixation"
+          },
+          {
+            "title": "Weak Password Policies",
+            "details": "Test for weak password policies and recovery mechanisms",
+            "command": "# Test password complexity, reset tokens, recovery bypasses"
+          },
+          {
+            "title": "Session Management",
+            "details": "Test for insecure session management",
+            "command": "# Test session fixation, hijacking, prediction, invalidation"
+          },
+          {
+            "title": "Multi-Factor Authentication",
+            "details": "Test MFA implementation for bypasses and weaknesses",
+            "command": "# Test MFA bypass, backup codes, social engineering resistance"
+          }
+        ]
+      },
+      {
+        "title": "A08: Software and Data Integrity Failures",
+        "steps": [
+          {
+            "title": "Insecure Deserialization",
+            "details": "Test for insecure deserialization vulnerabilities",
+            "command": "# Test JSON, XML, binary deserialization attacks"
+          },
+          {
+            "title": "Code Injection",
+            "details": "Test for code injection vulnerabilities",
+            "command": "# Test eval injection, template injection, expression language injection"
+          },
+          {
+            "title": "Software Supply Chain",
+            "details": "Test for software supply chain integrity issues",
+            "command": "# Test CI/CD pipeline security, code signing, update mechanisms"
+          },
+          {
+            "title": "CORS Misconfiguration",
+            "details": "Test for CORS misconfiguration vulnerabilities",
+            "command": "# Test wildcard origins, credential leakage, preflight cache poisoning"
+          }
+        ]
+      },
+      {
+        "title": "A09: Security Logging and Monitoring Failures",
+        "steps": [
+          {
+            "title": "Logging Deficiencies",
+            "details": "Test for inadequate logging and monitoring",
+            "command": "# Test log injection, log deletion, log tampering"
+          },
+          {
+            "title": "Event Monitoring",
+            "details": "Test for insufficient event monitoring and alerting",
+            "command": "# Test attack detection, anomaly detection, incident response"
+          },
+          {
+            "title": "Audit Trail Gaps",
+            "details": "Test for missing or incomplete audit trails",
+            "command": "# Test user action logging, data access logging, change tracking"
+          },
+          {
+            "title": "Alerting Mechanisms",
+            "details": "Test for inadequate alerting and notification systems",
+            "command": "# Test alert fatigue, false positives, missed attacks"
+          }
+        ]
+      },
+      {
+        "title": "A10: Server-Side Request Forgery (SSRF)",
+        "steps": [
+          {
+            "title": "SSRF Discovery",
+            "details": "Identify potential SSRF vulnerabilities",
+            "command": "# Test file imports, webhooks, redirects, URL parameters"
+          },
+          {
+            "title": "Internal Network Access",
+            "details": "Test for internal network access via SSRF",
+            "command": "# Test localhost access, internal IP ranges, cloud metadata"
+          },
+          {
+            "title": "Cloud Metadata Access",
+            "details": "Test for cloud metadata service access",
+            "command": "# Test AWS metadata, GCP metadata, Azure metadata endpoints"
+          },
+          {
+            "title": "Blind SSRF",
+            "details": "Test for blind SSRF vulnerabilities",
+            "command": "# Test out-of-band techniques, DNS exfiltration, time delays"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "OWASP Top 10 Comprehensive Assessment",
+        "stages": [
+          {
+            "label": "Day 1: A01-A02 Critical Testing",
+            "description": "Focus on Broken Access Control and Cryptographic Failures",
+            "command": "# Test authorization bypass, privilege escalation, crypto failures"
+          },
+          {
+            "label": "Day 2: A03-A04 Injection & Design",
+            "description": "Comprehensive injection testing and insecure design analysis",
+            "command": "sqlmap -u \"https://target.com/search?q=test\" --batch && business_logic_testing"
+          },
+          {
+            "label": "Day 3: A05-A06 Configuration & Components",
+            "description": "Security misconfigurations and vulnerable components assessment",
+            "command": "nuclei -l targets.txt -t misconfig/ && nuclei -l targets.txt -t cves/"
+          },
+          {
+            "label": "Day 4: A07-A08 Authentication & Integrity",
+            "description": "Authentication failures and software integrity testing",
+            "command": "# Test auth bypass, session management, deserialization attacks"
+          },
+          {
+            "label": "Day 5: A09-A10 Monitoring & SSRF",
+            "description": "Logging failures and SSRF vulnerability testing",
+            "command": "# Test logging gaps, monitoring issues, SSRF exploitation"
+          }
+        ]
+      },
+      {
+        "name": "Rapid OWASP Top 10 Triage",
+        "stages": [
+          {
+            "label": "Critical Vulnerability Hunt",
+            "description": "Quick scan for critical OWASP Top 10 vulnerabilities",
+            "command": "nuclei -l targets.txt -severity critical -t owasp/ -o critical_owasp.txt"
+          },
+          {
+            "label": "Authentication & Authorization",
+            "description": "Test A01 and A07 vulnerabilities",
+            "command": "# Test auth bypass, privilege escalation, session management"
+          },
+          {
+            "label": "Injection Testing",
+            "description": "Test A03 injection vulnerabilities",
+            "command": "sqlmap -u \"https://target.com/search?q=test\" --batch --level=2"
+          },
+          {
+            "label": "Configuration & SSRF",
+            "description": "Test A05 and A10 vulnerabilities",
+            "command": "# Test misconfigurations, SSRF, internal access"
+          },
+          {
+            "label": "Evidence Collection",
+            "description": "Document findings and prepare bounty submission",
+            "command": "# Organize evidence, create PoC, write detailed report"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "A01 - Admin access with regular user token",
+        "meaning": "Complete system compromise possible via authorization bypass",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "A02 - Sensitive data in plaintext",
+        "meaning": "Data breach and privacy violation risk",
+        "severity": "High"
+      },
+      {
+        "indicator": "A03 - SQL injection successful",
+        "meaning": "Database access and data extraction possible",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "A04 - Race condition exploited",
+        "meaning": "Business logic bypass and financial impact",
+        "severity": "High"
+      },
+      {
+        "indicator": "A05 - Default credentials working",
+        "meaning": "Unauthorized system access",
+        "severity": "High"
+      },
+      {
+        "indicator": "A10 - SSRF to internal services",
+        "meaning": "Internal network access and data exfiltration",
+        "severity": "High"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom OWASP Top 10 Templates",
+        "scenario": "Develop custom Nuclei templates for application-specific OWASP Top 10 vulnerabilities",
+        "command": "# Create targeted templates for custom business logic and proprietary implementations",
+        "notes": [
+          "Target application-specific implementations of OWASP Top 10 categories"
+        ]
+      },
+      {
+        "title": "Automated OWASP Top 10 Pipeline",
+        "scenario": "Create automated testing pipeline for continuous OWASP Top 10 assessment",
+        "command": "# Integrate multiple tools with custom scripts for comprehensive coverage",
+        "notes": [
+          "Build continuous testing pipeline for ongoing security assessment"
+        ]
+      },
+      {
+        "title": "OWASP Top 10 Exploit Chaining",
+        "scenario": "Chain multiple OWASP Top 10 vulnerabilities for maximum impact",
+        "command": "# Combine A01 + A03 + A10 for complete system compromise",
+        "notes": [
+          "Demonstrate real-world impact through vulnerability chaining"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "OWASP Top 10 Testing Tools Comparison",
+      "columns": ["Category", "Primary Tool", "Secondary Tool", "Automation", "Manual Testing"],
+      "rows": [
+        ["A01 Access Control", "Burp Suite", "Postman", "Limited", "Excellent"],
+        ["A02 Crypto", "TestSSL", "CryptCheck", "Good", "Good"],
+        ["A03 Injection", "SQLMap", "Burp Suite", "Excellent", "Good"],
+        ["A04 Insecure Design", "Manual", "Custom Scripts", "Limited", "Excellent"],
+        ["A05 Misconfig", "Nuclei", "Nikto", "Excellent", "Good"],
+        ["A06 Components", "Nuclei", "Snyk", "Excellent", "Limited"],
+        ["A07 Auth Failures", "Burp Suite", "OWASP ZAP", "Good", "Excellent"],
+        ["A08 Integrity", "Burp Suite", "Custom", "Limited", "Excellent"],
+        ["A09 Logging", "Manual", "Custom", "Limited", "Good"],
+        ["A10 SSRF", "Nuclei", "Manual", "Good", "Excellent"]
+      ]
+    },
+    "resources": [
+      {
+        "label": "OWASP Top 10 2021",
+        "url": "https://owasp.org/www-project-top-ten/",
+        "description": "Official OWASP Top 10 documentation and examples"
+      },
+      {
+        "label": "OWASP Testing Guide",
+        "url": "https://owasp.org/www-project-web-security-testing-guide/",
+        "description": "Comprehensive web application testing methodology"
+      },
+      {
+        "label": "OWASP Cheat Sheet Series",
+        "url": "https://cheatsheetseries.owasp.org/",
+        "description": "Developer guidance for preventing OWASP Top 10 vulnerabilities"
+      },
+      {
+        "label": "PortSwigger Web Security Academy",
+        "url": "https://portswigger.net/web-security",
+        "description": "Free hands-on training for OWASP Top 10 vulnerabilities"
+      }
+    ]
+  },
+  {
+    "id": "bugbounty_reporting_cvss",
+    "name": "Bug Bounty - Reporting & CVSS",
+    "summary": "Comprehensive vulnerability reporting and CVSS scoring workflow for bug bounty programs, covering evidence collection, impact assessment, risk scoring, and professional report generation.",
+    "details": "This workflow provides a systematic approach to vulnerability reporting in bug bounty programs. It covers evidence collection, CVSS scoring, impact assessment, professional report writing, and communication strategies to ensure successful bounty submissions and effective remediation guidance.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install reporting tools and CVSS calculators",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y git python3 python3-pip markdown",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install jinja2 markdown2 pillow requests",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install cvss",
+            "copyable": true
+          },
+          {
+            "detail": "npm install -g markdown-cli",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/CVEProject/cvss-calculator ~/tools/cvss-calculator",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install with Kali's reporting and documentation tools",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y dradis faraday markdown",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y imagemagick screenshot-tools",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install jinja2 markdown2 cvss",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/bugbountywriting/VulnerabilityReportTemplate ~/tools/report-templates",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Containerized",
+        "summary": "Reporting environment with templates and tools",
+        "steps": [
+          {
+            "detail": "docker pull pandoc/core",
+            "copyable": true
+          },
+          {
+            "detail": "docker pull python:3.9-slim",
+            "copyable": true
+          },
+          {
+            "detail": "mkdir -p ~/bugbounty/{reports,templates,evidence,cvss}",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/CVEProject/cvss-calculator ~/tools/cvss",
+            "copyable": true
+          },
+          {
+            "detail": "wget https://first.org/cvss/calculator/cvss-calculator.html",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Quick CVSS v3.1 calculation",
+        "command": "python3 -c \"import cvss; print(cvss.CVSS3('CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H').score())\"",
+        "notes": [
+          "Calculate CVSS score for vulnerability assessment"
+        ]
+      },
+      {
+        "description": "Generate vulnerability report",
+        "command": "python3 generate_report.py --template bugbounty --vulnerability sql_injection --evidence evidence/",
+        "notes": [
+          "Generate professional vulnerability report"
+        ]
+      },
+      {
+        "description": "Evidence organization",
+        "command": "mkdir -p evidence/{screenshots,pocs,logs,traffic} && find . -name \"*.png\" -exec cp {} evidence/screenshots/ \\;",
+        "notes": [
+          "Organize evidence for professional reporting"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Phase 1: Evidence Collection & Organization",
+        "steps": [
+          {
+            "title": "Screenshot Capture",
+            "details": "Capture comprehensive screenshots of vulnerability and impact",
+            "command": "# Take screenshots of vulnerability, PoC, impact, and remediation"
+          },
+          {
+            "title": "Traffic Capture",
+            "details": "Capture network traffic showing vulnerability exploitation",
+            "command": "# Save HTTP requests/responses, modify headers, show exploitation"
+          },
+          {
+            "title": "Log Collection",
+            "details": "Collect relevant logs and system evidence",
+            "command": "# Save application logs, error messages, system responses"
+          },
+          {
+            "title": "Evidence Organization",
+            "details": "Organize evidence in structured directory format",
+            "command": "mkdir -p evidence/{vulnerability,poc,impact,remediation,screenshots,logs}"
+          }
+        ]
+      },
+      {
+        "title": "Phase 2: Vulnerability Analysis & CVSS Scoring",
+        "steps": [
+          {
+            "title": "Attack Vector Analysis",
+            "details": "Analyze attack vector and complexity for CVSS scoring",
+            "command": "# Determine AV (Network, Local, Physical), AC (Low, High)"
+          },
+          {
+            "title": "Privilege Requirements",
+            "details": "Assess privilege requirements and user interaction needed",
+            "command": "# Determine PR (None, Low, High), UI (None, Required)"
+          },
+          {
+            "title": "Impact Assessment",
+            "details": "Assess confidentiality, integrity, and availability impact",
+            "command": "# Determine C, I, A impact levels (None, Low, High)"
+          },
+          {
+            "title": "CVSS Score Calculation",
+            "details": "Calculate CVSS v3.1 base score and temporal/environmental modifiers",
+            "command": "python3 -c \"import cvss; print(cvss.CVSS3('CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H').score())\""
+          }
+        ]
+      },
+      {
+        "title": "Phase 3: Business Impact Assessment",
+        "steps": [
+          {
+            "title": "Data Sensitivity Analysis",
+            "details": "Assess sensitivity of exposed or compromised data",
+            "command": "# Analyze PII, financial data, credentials, intellectual property"
+          },
+          {
+            "title": "Business Context Evaluation",
+            "details": "Evaluate business impact and potential consequences",
+            "command": "# Assess financial impact, reputational damage, compliance violations"
+          },
+          {
+            "title": "Exploitability Assessment",
+            "details": "Assess ease of exploitation and attacker motivation",
+            "command": "# Evaluate technical skill required, attack complexity, attacker resources"
+          },
+          {
+            "title": "Risk Quantification",
+            "details": "Quantify risk in business terms and likelihood",
+            "command": "# Estimate probability of exploitation, potential damage frequency"
+          }
+        ]
+      },
+      {
+        "title": "Phase 4: Professional Report Generation",
+        "steps": [
+          {
+            "title": "Executive Summary",
+            "details": "Write clear executive summary for non-technical stakeholders",
+            "command": "# Summarize vulnerability, impact, and remediation in business terms"
+          },
+          {
+            "title": "Technical Details",
+            "details": "Document comprehensive technical details and reproduction steps",
+            "command": "# Include URLs, parameters, payloads, and step-by-step reproduction"
+          },
+          {
+            "title": "Remediation Guidance",
+            "details": "Provide detailed remediation recommendations and best practices",
+            "command": "# Suggest specific code changes, configuration updates, security controls"
+          },
+          {
+            "title": "Evidence Integration",
+            "details": "Integrate evidence and screenshots into report",
+            "command": "# Embed screenshots, logs, and supporting documentation"
+          }
+        ]
+      },
+      {
+        "title": "Phase 5: Bounty Submission & Communication",
+        "steps": [
+          {
+            "title": "Platform Formatting",
+            "details": "Format report according to platform requirements",
+            "command": "# Follow HackerOne, Bugcrowd, or program-specific formatting guidelines"
+          },
+          {
+            "title": "Responsible Disclosure",
+            "details": "Ensure responsible disclosure practices and ethical considerations",
+            "command": "# Verify scope compliance, avoid data exfiltration, follow disclosure rules"
+          },
+          {
+            "title": "Professional Communication",
+            "details": "Maintain professional communication with program managers",
+            "command": "# Be responsive, provide additional information, maintain professionalism"
+          },
+          {
+            "title": "Follow-up & Validation",
+            "details": "Follow up on remediation and validate fixes",
+            "command": "# Test remediation, confirm fix, provide feedback on implementation"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Bug Bounty Reporting Timeline",
+        "stages": [
+          {
+            "label": "Discovery Documentation",
+            "description": "Document vulnerability discovery immediately with initial evidence",
+            "command": "# Take initial screenshots, save PoC, note reproduction steps"
+          },
+          {
+            "label": "Evidence Collection",
+            "description": "Collect comprehensive evidence for vulnerability validation",
+            "command": "# Capture traffic, logs, screenshots, and impact demonstration"
+          },
+          {
+            "label": "CVSS Scoring",
+            "description": "Calculate CVSS score and assess business impact",
+            "command": "# Use CVSS calculator, assess impact, document risk assessment"
+          },
+          {
+            "label": "Report Writing",
+            "description": "Write comprehensive vulnerability report with remediation guidance",
+            "command": "# Create executive summary, technical details, and remediation steps"
+          },
+          {
+            "label": "Bounty Submission",
+            "description": "Submit professional report to bug bounty program",
+            "command": "# Format report, check scope compliance, submit professionally"
+          }
+        ]
+      },
+      {
+        "name": "Rapid Vulnerability Reporting",
+        "stages": [
+          {
+            "label": "Quick Evidence Capture",
+            "description": "Quick capture of essential evidence for rapid reporting",
+            "command": "# Screenshot vulnerability, save PoC, note reproduction steps"
+          },
+          {
+            "label": "Impact Assessment",
+            "description": "Rapid assessment of vulnerability impact and CVSS scoring",
+            "command": "# Quick CVSS calculation, business impact assessment"
+          },
+          {
+            "label": "Template-based Reporting",
+            "description": "Use templates for rapid professional report generation",
+            "command": "# Apply bug bounty template, customize for specific vulnerability"
+          },
+          {
+            "label": "Professional Submission",
+            "description": "Submit professional report with proper communication",
+            "command": "# Format report, check scope compliance, submit with professionalism"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "CVSS score 9.0+ (Critical)",
+        "meaning": "Critical vulnerability requiring immediate attention",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "PII data exposure confirmed",
+        "meaning": "Privacy violation and regulatory compliance issues",
+        "severity": "High"
+      },
+      {
+        "indicator": "Financial impact demonstrated",
+        "meaning": "Direct financial loss or fraud potential",
+        "severity": "High"
+      },
+      {
+        "indicator": "Complete system compromise",
+        "meaning": "Full system control and data access possible",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "Limited user impact",
+        "meaning": "Affects limited users or has minimal business impact",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Information disclosure only",
+        "meaning": "Limited information disclosure with no direct exploitation",
+        "severity": "Low"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom Report Templates",
+        "scenario": "Develop custom report templates for specific vulnerability types",
+        "command": "# Create Jinja2 templates for automated report generation",
+        "notes": [
+          "Standardize reporting quality and efficiency"
+        ]
+      },
+      {
+        "title": "Automated CVSS Scoring",
+        "scenario": "Automate CVSS scoring based on vulnerability characteristics",
+        "command": "# Create scripts to auto-calculate CVSS scores from vulnerability data",
+        "notes": [
+          "Ensure consistent and accurate CVSS scoring"
+        ]
+      },
+      {
+        "title": "Evidence Automation",
+        "scenario": "Automate evidence collection and organization",
+        "command": "# Create scripts to automatically organize evidence and generate reports",
+        "notes": [
+          "Streamline evidence management and reporting workflow"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Bug Bounty Reporting Tools Comparison",
+      "columns": ["Tool", "Templates", "CVSS", "Evidence Management", "Collaboration", "Best For"],
+      "rows": [
+        ["Dradis", "Excellent", "Good", "Excellent", "Excellent", "Team reporting"],
+        ["Faraday", "Good", "Limited", "Good", "Excellent", "Collaborative testing"],
+        ["Custom Scripts", "Good", "Excellent", "Good", "Limited", "Automation"],
+        ["Manual", "Limited", "Good", "Limited", "Limited", "Simple reports"],
+        ["Markdown", "Good", "Limited", "Limited", "Good", "Documentation"]
+      ]
+    },
+    "resources": [
+      {
+        "label": "CVSS Calculator",
+        "url": "https://www.first.org/cvss/calculator/3.1",
+        "description": "Official CVSS v3.1 calculator for vulnerability scoring"
+      },
+      {
+        "label": "HackerOne Disclosure Guidelines",
+        "url": "https://hackerone.com/security",
+        "description": "HackerOne vulnerability disclosure guidelines and best practices"
+      },
+      {
+        "label": "Bugcrowd Vulnerability Rating Classification",
+        "url": "https://www.bugcrowd.com/vulnerability-rating-taxonomy/",
+        "description": "Bugcrowd vulnerability classification and rating system"
+      },
+      {
+        "label": "OWASP Vulnerability Reporting Guide",
+        "url": "https://owasp.org/www-project-vulnerability-reporting-/",
+        "description": "OWASP guide to responsible vulnerability disclosure"
+      }
+    ]
   }
 ]

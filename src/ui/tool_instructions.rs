@@ -297,6 +297,36 @@ mod tests {
         registry()
     }
 
+    fn assert_instruction_has_required_sections(doc: &ToolInstructions, id: &str) {
+        assert!(
+            doc.installation_guides.len() >= 3,
+            "expected at least three installation guides for {id}"
+        );
+        for guide in &doc.installation_guides {
+            assert!(
+                !guide.steps.is_empty(),
+                "installation guide '{}' for {id} must include steps",
+                guide.platform
+            );
+        }
+        assert!(
+            !doc.step_sequences.is_empty(),
+            "step sequences missing for {id}"
+        );
+        assert!(
+            !doc.workflow_guides.is_empty(),
+            "workflow guides missing for {id}"
+        );
+        assert!(
+            !doc.output_notes.is_empty(),
+            "output notes missing for {id}"
+        );
+        assert!(
+            !doc.advanced_usage.is_empty(),
+            "advanced usage missing for {id}"
+        );
+    }
+
     #[test]
     fn manifest_matches_instruction_documents() {
         let registry = load_registry().expect("instructions should load");
@@ -362,33 +392,74 @@ mod tests {
                 .instructions
                 .get(id)
                 .unwrap_or_else(|| panic!("missing instructions for {id}"));
-            assert!(
-                doc.installation_guides.len() >= 3,
-                "expected at least three installation guides for {id}"
-            );
-            for guide in &doc.installation_guides {
-                assert!(
-                    !guide.steps.is_empty(),
-                    "installation guide '{}' for {id} must include steps",
-                    guide.platform
-                );
-            }
-            assert!(
-                !doc.step_sequences.is_empty(),
-                "step sequences missing for {id}"
-            );
-            assert!(
-                !doc.workflow_guides.is_empty(),
-                "workflow guides missing for {id}"
-            );
-            assert!(
-                !doc.output_notes.is_empty(),
-                "output notes missing for {id}"
-            );
-            assert!(
-                !doc.advanced_usage.is_empty(),
-                "advanced usage missing for {id}"
-            );
+            assert_instruction_has_required_sections(doc, id);
+        }
+    }
+
+    #[test]
+    fn exploitation_and_credential_tools_have_populated_sections() {
+        let registry = load_registry().expect("instructions should load");
+        let tools = [
+            "sqlmap",
+            "metasploit",
+            "searchsploit",
+            "commix",
+            "weevely",
+            "hydra",
+            "medusa",
+            "ncrack",
+            "patator",
+            "john",
+            "hashcat",
+            "fcrackzip",
+            "pdfcrack",
+            "crunch",
+            "cewl",
+            "hashid",
+        ];
+
+        for id in tools {
+            let doc = registry
+                .instructions
+                .get(id)
+                .unwrap_or_else(|| panic!("missing instructions for {id}"));
+            assert_instruction_has_required_sections(doc, id);
+        }
+    }
+
+    #[test]
+    fn post_ex_priv_esc_and_wireless_tools_have_populated_sections() {
+        let registry = load_registry().expect("instructions should load");
+        let tools = [
+            "mimikatz",
+            "pspy",
+            "chisel",
+            "ligolo-ng",
+            "pwncat",
+            "evil-winrm",
+            "bloodhound-python",
+            "impacket-scripts",
+            "powersploit",
+            "empire",
+            "linpeas",
+            "winpeas",
+            "linux-smart-enumeration",
+            "linux-exploit-suggester",
+            "windows-exploit-suggester",
+            "aircrack-ng",
+            "kismet",
+            "reaver",
+            "bully",
+            "wifite",
+            "mdk4",
+        ];
+
+        for id in tools {
+            let doc = registry
+                .instructions
+                .get(id)
+                .unwrap_or_else(|| panic!("missing instructions for {id}"));
+            assert_instruction_has_required_sections(doc, id);
         }
     }
 }

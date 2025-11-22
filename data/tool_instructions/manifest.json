@@ -510,6 +510,36 @@
     "category": "Workflow Guides"
   },
   {
+    "id": "bugbounty_scope_recon",
+    "label": "Bug Bounty - Scope Reconnaissance",
+    "category": "Bug Bounty Workflows"
+  },
+  {
+    "id": "bugbounty_web_app_testing",
+    "label": "Bug Bounty - Web Application Testing",
+    "category": "Bug Bounty Workflows"
+  },
+  {
+    "id": "bugbounty_mobile_app_testing",
+    "label": "Bug Bounty - Mobile Application Testing",
+    "category": "Bug Bounty Workflows"
+  },
+  {
+    "id": "bugbounty_api_testing",
+    "label": "Bug Bounty - API Testing",
+    "category": "Bug Bounty Workflows"
+  },
+  {
+    "id": "bugbounty_owasp_top10",
+    "label": "Bug Bounty - OWASP Top 10 Sweep",
+    "category": "Bug Bounty Workflows"
+  },
+  {
+    "id": "bugbounty_reporting_cvss",
+    "label": "Bug Bounty - Reporting & CVSS",
+    "category": "Bug Bounty Workflows"
+  },
+  {
     "id": "comparison_directory_fuzzers",
     "label": "Directory Fuzzing Tools Comparison",
     "category": "Tool Comparisons"

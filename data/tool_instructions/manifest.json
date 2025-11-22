@@ -493,5 +493,40 @@
     "id": "urh",
     "label": "Universal Radio Hacker",
     "category": "Hardware Hacking"
+  },
+  {
+    "id": "workflow_web_app_pentest",
+    "label": "Web Application Pentesting Workflow",
+    "category": "Workflow Guides"
+  },
+  {
+    "id": "workflow_infra_pentest",
+    "label": "Infrastructure Pentesting Workflow",
+    "category": "Workflow Guides"
+  },
+  {
+    "id": "workflow_wireless_audit",
+    "label": "Wireless Security Audit Workflow",
+    "category": "Workflow Guides"
+  },
+  {
+    "id": "comparison_directory_fuzzers",
+    "label": "Directory Fuzzing Tools Comparison",
+    "category": "Tool Comparisons"
+  },
+  {
+    "id": "comparison_sql_testing",
+    "label": "SQL Testing Tools Comparison",
+    "category": "Tool Comparisons"
+  },
+  {
+    "id": "comparison_web_proxies",
+    "label": "Web Proxy Tools Comparison",
+    "category": "Tool Comparisons"
+  },
+  {
+    "id": "comparison_port_scanners",
+    "label": "Port Scanner Tools Comparison",
+    "category": "Tool Comparisons"
   }
 ]

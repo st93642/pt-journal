@@ -16056,5 +16056,1786 @@
     "advanced_usage": [],
     "comparison_table": null,
     "resources": []
+  },
+  {
+    "id": "workflow_web_app_pentest",
+    "name": "Web Application Pentesting Workflow",
+    "summary": "Comprehensive methodology for web application security testing from reconnaissance to reporting, covering OWASP Top 10 vulnerabilities and modern attack techniques.",
+    "details": "This workflow provides a systematic approach to web application penetration testing. It follows industry-standard methodologies including OWASP Testing Guide and PTES, ensuring thorough coverage of all attack vectors. The workflow is divided into distinct phases with clear decision points and evidence collection requirements.",
+    "installation_guides": [
+      {
+        "platform": "Prerequisites",
+        "summary": "Required tools and environment setup",
+        "steps": [
+          {
+            "detail": "Install base reconnaissance tools: amass, sublist3r, theHarvester, dnsrecon",
+            "copyable": false
+          },
+          {
+            "detail": "Set up web scanning tools: nmap, nikto, gobuster, ffuf, nuclei",
+            "copyable": false
+          },
+          {
+            "detail": "Configure web proxies: burpsuite or owasp-zap",
+            "copyable": false
+          },
+          {
+            "detail": "Prepare exploitation tools: sqlmap, metasploit, searchsploit",
+            "copyable": false
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Quick reconnaissance scan",
+        "command": "amass enum -d example.com -o amass_results.txt",
+        "notes": [
+          "Start with passive reconnaissance to avoid detection"
+        ]
+      },
+      {
+        "description": "Web technology identification",
+        "command": "whatweb --log-verbose=vuln_scan.txt https://target.example.com",
+        "notes": [
+          "Identifies technologies, frameworks, and potential vulnerabilities"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Phase 1: Reconnaissance & Information Gathering",
+        "steps": [
+          {
+            "title": "Subdomain Enumeration",
+            "details": "Discover all subdomains and attack surface using multiple tools",
+            "command": "amass enum -d example.com -o amass_results.txt && sublist3r -d example.com -o sublist3r_results.txt"
+          },
+          {
+            "title": "OSINT Gathering",
+            "details": "Collect publicly available information about the target",
+            "command": "theHarvester -d example.com -l 500 -b google,linkedin -h"
+          },
+          {
+            "title": "DNS Reconnaissance",
+            "details": "Map DNS infrastructure and identify potential entry points",
+            "command": "dnsrecon -d example.com -t std -o dns_results.txt"
+          },
+          {
+            "title": "Technology Identification",
+            "details": "Identify web technologies, frameworks, and versions",
+            "command": "whatweb --log-verbose=tech_ident.txt https://target.example.com"
+          }
+        ]
+      },
+      {
+        "title": "Phase 2: Scanning & Enumeration",
+        "steps": [
+          {
+            "title": "Port Scanning",
+            "details": "Identify open ports and services on target infrastructure",
+            "command": "nmap -sS -sV -oN nmap_scan.txt -p- target.example.com"
+          },
+          {
+            "title": "Web Vulnerability Scanning",
+            "details": "Automated scanning for common web vulnerabilities",
+            "command": "nikto -h https://target.example.com -o nikko_results.txt"
+          },
+          {
+            "title": "Directory Brute Forcing",
+            "details": "Discover hidden directories and files",
+            "command": "gobuster dir -u https://target.example.com -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -o gobuster_results.txt"
+          },
+          {
+            "title": "Nuclei Template Scanning",
+            "details": "Template-based vulnerability scanning",
+            "command": "nuclei -l targets.txt -o nuclei_results.txt"
+          }
+        ]
+      },
+      {
+        "title": "Phase 3: Manual Testing & Vulnerability Analysis",
+        "steps": [
+          {
+            "title": "Web Proxy Configuration",
+            "details": "Set up Burp Suite or OWASP ZAP for intercepting traffic",
+            "command": "# Configure browser proxy to 127.0.0.1:8080 for Burp Suite"
+          },
+          {
+            "title": "SQL Injection Testing",
+            "details": "Test for SQL injection vulnerabilities using sqlmap",
+            "command": "sqlmap -u \"https://target.example.com/page?id=1\" --batch --sql-shell"
+          },
+          {
+            "title": "XSS Testing",
+            "details": "Test for reflected and stored XSS vulnerabilities",
+            "command": "# Use Burp Suite scanner and manual testing with XSS payloads"
+          },
+          {
+            "title": "Authentication Bypass",
+            "details": "Test authentication mechanisms for bypasses",
+            "command": "# Test default credentials, SQL injection in login forms, JWT manipulation"
+          }
+        ]
+      },
+      {
+        "title": "Phase 4: Exploitation & Post-Exploitation",
+        "steps": [
+          {
+            "title": "Exploit Research",
+            "details": "Find exploits for identified vulnerabilities",
+            "command": "searchsploit apache 2.4.49"
+          },
+          {
+            "title": "Metasploit Exploitation",
+            "details": "Use Metasploit framework for exploitation",
+            "command": "msfconsole -x \"use exploit/multi/http/apache_mod_cgi_bash_env_exec; set RHOSTS target.example.com; exploit\""
+          },
+          {
+            "title": "Shell Stabilization",
+            "details": "Upgrade basic shell to fully interactive session",
+            "command": "# Use pwncat or python -c 'import pty; pty.spawn(\"/bin/bash\")'"
+          },
+          {
+            "title": "Privilege Escalation",
+            "details": "Escalate privileges within the compromised system",
+            "command": "linpeas.sh | tee linpeas_results.txt"
+          }
+        ]
+      },
+      {
+        "title": "Phase 5: Reporting & Evidence Collection",
+        "steps": [
+          {
+            "title": "Evidence Documentation",
+            "details": "Collect and organize all evidence and screenshots",
+            "command": "# Create evidence folder structure: mkdir -p evidence/{recon,scan,exploit,report}"
+          },
+          {
+            "title": "Vulnerability Documentation",
+            "details": "Document each finding with screenshots and proof",
+            "command": "# Use Dradis or Faraday for collaborative reporting"
+          },
+          {
+            "title": "Risk Assessment",
+            "details": "Assess risk levels and business impact",
+            "command": "# Use CVSS calculator for scoring vulnerabilities"
+          },
+          {
+            "title": "Final Report Generation",
+            "details": "Generate comprehensive penetration testing report",
+            "command": "# Compile findings, recommendations, and remediation steps"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Complete Web Application Pentesting Timeline",
+        "stages": [
+          {
+            "label": "Day 1: Reconnaissance",
+            "description": "Passive and active reconnaissance, subdomain enumeration, technology identification",
+            "command": "amass enum -d example.com -o amass_results.txt && sublist3r -d example.com -o sublist3r.txt"
+          },
+          {
+            "label": "Day 2: Scanning",
+            "description": "Port scanning, vulnerability scanning, directory enumeration",
+            "command": "nmap -sS -sV -oN nmap_scan.txt target.example.com && nikto -h https://target.example.com -o nikko.txt"
+          },
+          {
+            "label": "Day 3: Manual Testing",
+            "description": "Configure web proxy, test for OWASP Top 10 vulnerabilities",
+            "command": "# Start Burp Suite, configure browser proxy, begin manual testing"
+          },
+          {
+            "label": "Day 4: Exploitation",
+            "description": "Exploit validated vulnerabilities, establish persistence",
+            "command": "msfconsole -r exploit.rc"
+          },
+          {
+            "label": "Day 5: Reporting",
+            "description": "Document findings, generate report, provide remediation",
+            "command": "# Compile evidence, write executive summary, create technical report"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Subdomain discovered: admin.example.com",
+        "meaning": "Administrative interface potentially exposed",
+        "severity": "High"
+      },
+      {
+        "indicator": "Port 80/443 open with Apache/2.4.49",
+        "meaning": "Web server running vulnerable Apache version",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "SQL injection vulnerability confirmed",
+        "meaning": "Database can be accessed and potentially dumped",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "Directory listing enabled",
+        "meaning": "Sensitive files may be exposed",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Weak authentication mechanism",
+        "meaning": "Accounts can be bypassed or brute-forced",
+        "severity": "High"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom Nuclei Templates",
+        "scenario": "Create custom templates for target-specific vulnerabilities",
+        "command": "nuclei -t custom-templates/ -l targets.txt -o custom_results.txt",
+        "notes": [
+          "Write YAML templates for application-specific vulnerabilities"
+        ]
+      },
+      {
+        "title": "Burp Suite Intruder Automation",
+        "scenario": "Automate parameter fuzzing with custom payloads",
+        "command": "# Use Intruder with custom wordlists and payload markers",
+        "notes": [
+          "Create targeted payload lists for specific parameter types"
+        ]
+      },
+      {
+        "title": "Metasploit Resource Scripts",
+        "scenario": "Automate exploitation chain with resource scripts",
+        "command": "msfconsole -r automated_exploit.rc",
+        "notes": [
+          "Resource scripts can chain multiple exploits automatically"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Web Application Testing Methodologies Comparison",
+      "columns": ["Aspect", "OWASP Testing Guide", "PTES", "NIST SP 800-115", "OSSTMM"],
+      "rows": [
+        ["Scope", "Web apps & APIs", "All pentesting", "Technical testing", "Security testing"],
+        ["Structure", "Phase-based", "Phase-based", "Step-by-step", "Scope-based"],
+        ["Coverage", "OWASP Top 10 focus", "Comprehensive", "Technical depth", "Operational security"],
+        ["Documentation", "Detailed guides", "Framework", "Formal standard", "Methodology"],
+        ["Best for", "Web app testing", "General pentesting", "Compliance", "Comprehensive audits"]
+      ]
+    },
+    "resources": [
+      {
+        "label": "OWASP Testing Guide",
+        "url": "https://owasp.org/www-project-web-security-testing-guide/",
+        "description": "Comprehensive web application testing methodology"
+      },
+      {
+        "label": "PTES Framework",
+        "url": "https://www.pentest-standard.org/",
+        "description": "Penetration Testing Execution Standard"
+      },
+      {
+        "label": "Burp Suite Documentation",
+        "url": "https://portswigger.net/burp/documentation",
+        "description": "Complete guide to Burp Suite features and techniques"
+      }
+    ]
+  },
+  {
+    "id": "workflow_infra_pentest",
+    "name": "Infrastructure Pentesting Workflow",
+    "summary": "Systematic methodology for infrastructure penetration testing covering network reconnaissance, service enumeration, vulnerability assessment, and system compromise.",
+    "details": "This workflow provides a structured approach to testing network infrastructure including servers, network devices, and cloud environments. It follows industry best practices for infrastructure security testing with emphasis on stealth, thoroughness, and proper evidence collection.",
+    "installation_guides": [
+      {
+        "platform": "Prerequisites",
+        "summary": "Required tools for infrastructure testing",
+        "steps": [
+          {
+            "detail": "Install network scanning tools: nmap, masscan, naabu",
+            "copyable": false
+          },
+          {
+            "detail": "Set up enumeration tools: enum4linux, smbmap, snmpwalk",
+            "copyable": false
+          },
+          {
+            "detail": "Prepare exploitation framework: metasploit, searchsploit",
+            "copyable": false
+          },
+          {
+            "detail": "Configure post-exploitation tools: mimikatz, bloodhound-python",
+            "copyable": false
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Fast port discovery",
+        "command": "masscan -p1-65535 target.example.com --rate=1000 -o masscan.txt",
+        "notes": [
+          "Quick discovery of all open ports"
+        ]
+      },
+      {
+        "description": "Service enumeration",
+        "command": "nmap -sV -sC -oA detailed_scan target.example.com",
+        "notes": [
+          "Detailed service version and script scanning"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Phase 1: Network Reconnaissance",
+        "steps": [
+          {
+            "title": "Port Discovery",
+            "details": "Identify all open ports using fast scanning techniques",
+            "command": "masscan -p1-65535 target.example.com --rate=1000 -o masscan_results.txt"
+          },
+          {
+            "title": "Service Version Detection",
+            "details": "Identify running services and their versions",
+            "command": "nmap -sV -oN service_versions.txt -p $(cat masscan_results.txt | grep -oP '\\d+ | tr '\\n' ',' | sed 's/,$//') target.example.com"
+          },
+          {
+            "title": "OS Detection",
+            "details": "Identify operating systems of target hosts",
+            "command": "nmap -O -oN os_detection.txt target.example.com"
+          },
+          {
+            "title": "Network Topology Mapping",
+            "details": "Map network structure and relationships",
+            "command": "nmap -sL -oN network_map.txt target.example.com/24"
+          }
+        ]
+      },
+      {
+        "title": "Phase 2: Service Enumeration",
+        "steps": [
+          {
+            "title": "SMB Enumeration",
+            "details": "Enumerate SMB shares and permissions",
+            "command": "enum4linux -a target.example.com > enum4linux_results.txt"
+          },
+          {
+            "title": "SNMP Enumeration",
+            "details": "Gather information via SNMP community strings",
+            "command": "snmpwalk -c public -v1 target.example.com > snmpwalk_results.txt"
+          },
+          {
+            "title": "SMTP Enumeration",
+            "details": "Enumerate SMTP users and configuration",
+            "command": "smtp-user-enum -M VRFY -U users.txt -t target.example.com"
+          },
+          {
+            "title": "DNS Zone Transfer",
+            "details": "Attempt DNS zone transfer for domain enumeration",
+            "command": "dig axfr @ns1.example.com example.com > zone_transfer.txt"
+          }
+        ]
+      },
+      {
+        "title": "Phase 3: Vulnerability Assessment",
+        "steps": [
+          {
+            "title": "Nmap Script Scanning",
+            "details": "Run comprehensive NSE scripts for vulnerability detection",
+            "command": "nmap -sC --script vuln -oN vuln_scan.txt target.example.com"
+          },
+          {
+            "title": "Nuclei Scanning",
+            "details": "Template-based vulnerability scanning",
+            "command": "nuclei -target target.example.com -o nuclei_results.txt"
+          },
+          {
+            "title": "Service-Specific Testing",
+            "details": "Test specific services for known vulnerabilities",
+            "command": "# Test web servers, databases, and other services individually"
+          },
+          {
+            "title": "Configuration Review",
+            "details": "Review service configurations for security issues",
+            "command": "# Analyze service banners, default credentials, misconfigurations"
+          }
+        ]
+      },
+      {
+        "title": "Phase 4: Exploitation",
+        "steps": [
+          {
+            "title": "Exploit Research",
+            "details": "Research exploits for identified vulnerabilities",
+            "command": "searchsploit service_name version_number"
+          },
+          {
+            "title": "Metasploit Exploitation",
+            "details": "Use Metasploit for automated exploitation",
+            "command": "msfconsole -x \"use exploit/multi/samba/usermap_script; set RHOSTS target.example.com; exploit\""
+          },
+          {
+            "title": "Manual Exploitation",
+            "details": "Manually exploit vulnerabilities when automated tools fail",
+            "command": "# Use custom payloads and manual techniques"
+          },
+          {
+            "title": "Privilege Escalation",
+            "details": "Escalate privileges on compromised systems",
+            "command": "linpeas.sh | tee priv_esc_results.txt"
+          }
+        ]
+      },
+      {
+        "title": "Phase 5: Post-Exploitation",
+        "steps": [
+          {
+            "title": "Persistence Mechanisms",
+            "details": "Establish persistent access to compromised systems",
+            "command": "# Create backdoors, scheduled tasks, or services"
+          },
+          {
+            "title": "Lateral Movement",
+            "details": "Move laterally through the network",
+            "command": "# Use stolen credentials, pass-the-hash, or other techniques"
+          },
+          {
+            "title": "Data Exfiltration",
+            "details": "Extract sensitive data from compromised systems",
+            "command": "# Collect and exfiltrate valuable data"
+          },
+          {
+            "title": "Covering Tracks",
+            "details": "Clean up evidence of intrusion",
+            "command": "# Clear logs, remove tools, hide backdoors"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Infrastructure Pentesting Timeline",
+        "stages": [
+          {
+            "label": "Day 1: Network Mapping",
+            "description": "Complete network reconnaissance and service identification",
+            "command": "masscan -p1-65535 target.example.com --rate=1000 -o masscan.txt && nmap -sV -oN services.txt target.example.com"
+          },
+          {
+            "label": "Day 2: Service Enumeration",
+            "description": "Deep dive into discovered services and configurations",
+            "command": "enum4linux -a target.example.com && snmpwalk -c public -v1 target.example.com"
+          },
+          {
+            "label": "Day 3: Vulnerability Testing",
+            "description": "Comprehensive vulnerability assessment and exploitation",
+            "command": "nmap -sC --script vuln target.example.com && nuclei -target target.example.com"
+          },
+          {
+            "label": "Day 4: System Compromise",
+            "description": "Exploit vulnerabilities and establish access",
+            "command": "msfconsole -r exploit.rc"
+          },
+          {
+            "label": "Day 5: Post-Exploitation",
+            "description": "Lateral movement, data collection, and persistence",
+            "command": "# Establish persistence, move laterally, collect data"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Open SMB shares with write permissions",
+        "meaning": "Potential for remote code execution and data exfiltration",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "Default SNMP community string",
+        "meaning": "Extensive network information disclosure",
+        "severity": "High"
+      },
+      {
+        "indicator": "Outdated service versions",
+        "meaning": "Known vulnerabilities likely exploitable",
+        "severity": "High"
+      },
+      {
+        "indicator": "Weak authentication mechanisms",
+        "meaning": "Brute force or credential stuffing possible",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Misconfigured network services",
+        "meaning": "Potential for unauthorized access",
+        "severity": "Medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom Nmap Scripts",
+        "scenario": "Create custom NSE scripts for target-specific testing",
+        "command": "nmap --script custom.nse target.example.com",
+        "notes": [
+          "Write Lua scripts for custom vulnerability detection"
+        ]
+      },
+      {
+        "title": "Metasploit Automation",
+        "scenario": "Automate large-scale exploitation with resource scripts",
+        "command": "msfconsole -r automated_campaign.rc",
+        "notes": [
+          "Resource scripts can handle multiple targets automatically"
+        ]
+      },
+      {
+        "title": "Custom Exploit Development",
+        "scenario": "Develop custom exploits for 0-day vulnerabilities",
+        "command": "# Use Python, Metasploit, or custom C/C++ exploits",
+        "notes": [
+          "Custom exploits when public ones are not available"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Infrastructure Testing Approaches",
+      "columns": ["Method", "Stealth", "Speed", "Coverage", "Detection Risk"],
+      "rows": [
+        ["Passive Recon", "Low", "Slow", "Limited", "Very Low"],
+        ["Active Scanning", "Medium", "Fast", "Comprehensive", "High"],
+        ["Manual Testing", "High", "Slow", "Targeted", "Medium"],
+        ["Automated Exploitation", "Low", "Fast", "Broad", "Very High"]
+      ]
+    },
+    "resources": [
+      {
+        "label": "Network Security Assessment",
+        "url": "https://www.amazon.com/Network-Security-Assessment-Know-Your/dp/1449370163",
+        "description": "Comprehensive guide to network security testing"
+      },
+      {
+        "label": "Metasploit Unleashed",
+        "url": "https://www.offensive-security.com/metasploit-unleashed/",
+        "description": "Free Metasploit training course"
+      }
+    ]
+  },
+  {
+    "id": "workflow_wireless_audit",
+    "name": "Wireless Security Audit Workflow",
+    "summary": "Complete methodology for wireless security testing covering WiFi networks, Bluetooth devices, and RF spectrum analysis.",
+    "details": "This workflow provides a systematic approach to wireless security testing including WiFi network auditing, rogue access point detection, and RF spectrum analysis. It covers both infrastructure and client-side attacks with emphasis on stealth and proper evidence collection.",
+    "installation_guides": [
+      {
+        "platform": "Wireless Adapter Setup",
+        "summary": "Configure wireless adapter for monitor mode",
+        "steps": [
+          {
+            "detail": "iwconfig # Identify wireless interface",
+            "copyable": true
+          },
+          {
+            "detail": "sudo airmon-ng start wlan0 # Enable monitor mode",
+            "copyable": true
+          },
+          {
+            "detail": "sudo iwconfig # Verify monitor mode is active",
+            "copyable": true
+          },
+          {
+            "detail": "airodump-ng wlan0mon # Test packet capture",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Required Tools",
+        "summary": "Install wireless security testing tools",
+        "steps": [
+          {
+            "detail": "sudo apt install -y aircrack-ng kismet wifite reaver bully",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y mdk4 wireshark tshark",
+            "copyable": true
+          },
+          {
+            "detail": "pip install scapy # For packet crafting",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Quick WiFi network discovery",
+        "command": "airodump-ng wlan0mon --write scan_results",
+        "notes": [
+          "Discover all nearby WiFi networks"
+        ]
+      },
+      {
+        "description": "WPS PIN attack",
+        "command": "reaver -i wlan0mon -b AA:BB:CC:DD:EE:FF -vv",
+        "notes": [
+          "Test WPS vulnerability for PIN recovery"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Phase 1: Wireless Network Discovery",
+        "steps": [
+          {
+            "title": "Monitor Mode Setup",
+            "details": "Configure wireless adapter for monitor mode",
+            "command": "sudo airmon-ng start wlan0 && sudo iwconfig"
+          },
+          {
+            "title": "Network Scanning",
+            "details": "Discover all wireless networks in range",
+            "command": "airodump-ng wlan0mon --write wireless_scan"
+          },
+          {
+            "title": "Channel Analysis",
+            "details": "Analyze channel usage and interference",
+            "command": "airodump-ng wlan0mon --write channel_analysis -c 1-14"
+          },
+          {
+            "title": "Signal Strength Mapping",
+            "details": "Map signal strength and coverage areas",
+            "command": "# Move around area while scanning to map coverage"
+          }
+        ]
+      },
+      {
+        "title": "Phase 2: Target Analysis",
+        "steps": [
+          {
+            "title": "Target Network Selection",
+            "details": "Select target network for detailed analysis",
+            "command": "airodump-ng -c 6 --bssid AA:BB:CC:DD:EE:FF -w target wlan0mon"
+          },
+          {
+            "title": "Client Identification",
+            "details": "Identify connected clients and devices",
+            "command": "# Monitor connected clients in airodump-ng output"
+          },
+          {
+            "title": "Encryption Analysis",
+            "details": "Analyze encryption type and security configuration",
+            "command": "# Review WPA/WPA2/WPA3 and WPS configuration"
+          },
+          {
+            "title": "Traffic Capture",
+            "details": "Capture packets for offline analysis",
+            "command": "airodump-ng -w capture --bssid AA:BB:CC:DD:EE:FF wlan0mon"
+          }
+        ]
+      },
+      {
+        "title": "Phase 3: Vulnerability Assessment",
+        "steps": [
+          {
+            "title": "WPS Testing",
+            "details": "Test WPS for PIN recovery vulnerabilities",
+            "command": "reaver -i wlan0mon -b AA:BB:CC:DD:EE:FF -vv -o wps_results.txt"
+          },
+          {
+            "title": "Deauthentication Attack",
+            "details": "Test network stability and client behavior",
+            "command": "aireplay-ng -0 5 -a AA:BB:CC:DD:EE:FF wlan0mon"
+          },
+          {
+            "title": "Evil Twin Testing",
+            "details": "Test for rogue access point susceptibility",
+            "command": "# Create fake AP with same SSID using airbase-ng"
+          },
+          {
+            "title": "Karma Attack Testing",
+            "details": "Test for automatic connection vulnerabilities",
+            "command": "# Use airbase-ng with karma mode for testing"
+          }
+        ]
+      },
+      {
+        "title": "Phase 4: Password Cracking",
+        "steps": [
+          {
+            "title": "Handshake Capture",
+            "details": "Capture WPA/WPA2 handshake for cracking",
+            "command": "aireplay-ng -0 10 -a AA:BB:CC:DD:EE:FF -c 11:22:33:44:55:66 wlan0mon"
+          },
+          {
+            "title": "Dictionary Attack",
+            "details": "Attempt password cracking with wordlists",
+            "command": "aircrack-ng -w /usr/share/wordlists/rockyou.txt capture-01.cap"
+          },
+          {
+            "title": "Brute Force Attack",
+            "details": "Brute force WPA/WPA2 passwords",
+            "command": "# Use hashcat or john the ripper for GPU acceleration"
+          },
+          {
+            "title": "PMKID Attack",
+            "details": "Attack WPA2 without clients using PMKID",
+            "command": "# Capture PMKID and crack with hashcat"
+          }
+        ]
+      },
+      {
+        "title": "Phase 5: Advanced Attacks",
+        "steps": [
+          {
+            "title": "Packet Injection Testing",
+            "details": "Test for packet injection vulnerabilities",
+            "command": "aireplay-ng -3 -b AA:BB:CC:DD:EE:FF wlan0mon"
+          },
+          {
+            "title": "Client-Side Attacks",
+            "details": "Test connected clients for vulnerabilities",
+            "command": "# Use various client-side attack techniques"
+          },
+          {
+            "title": "RF Spectrum Analysis",
+            "details": "Analyze RF spectrum for interference and anomalies",
+            "command": "kismet -c kismet.conf -o spectrum_analysis"
+          },
+          {
+            "title": "Bluetooth Testing",
+            "details": "Test Bluetooth devices for security issues",
+            "command": "# Use btscanner and other Bluetooth tools"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Wireless Security Audit Timeline",
+        "stages": [
+          {
+            "label": "Day 1: Discovery & Reconnaissance",
+            "description": "Complete wireless network discovery and initial analysis",
+            "command": "airmon-ng start wlan0 && airodump-ng wlan0mon --write day1_scan"
+          },
+          {
+            "label": "Day 2: Target Analysis",
+            "description": "Detailed analysis of target networks and clients",
+            "command": "airodump-ng -c 6 --bssid AA:BB:CC:DD:EE:FF -w target_analysis wlan0mon"
+          },
+          {
+            "label": "Day 3: Vulnerability Testing",
+            "description": "Test WPS, encryption, and configuration vulnerabilities",
+            "command": "reaver -i wlan0mon -b AA:BB:CC:DD:EE:FF -vv && aireplay-ng -0 5 -a AA:BB:CC:DD:EE:FF wlan0mon"
+          },
+          {
+            "label": "Day 4: Password Cracking",
+            "description": "Capture handshakes and attempt password recovery",
+            "command": "aireplay-ng -0 10 -a AA:BB:CC:DD:EE:FF wlan0mon && aircrack-ng -w rockyou.txt capture.cap"
+          },
+          {
+            "label": "Day 5: Advanced Testing",
+            "description": "RF analysis, Bluetooth testing, and report generation",
+            "command": "kismet -o rf_analysis && # Compile findings into report"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "WPS PIN vulnerable to brute force",
+        "meaning": "Network can be compromised regardless of password strength",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "WEP encryption detected",
+        "meaning": "Network can be compromised in minutes",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "Weak passphrase detected",
+        "meaning": "Dictionary attack likely successful",
+        "severity": "High"
+      },
+      {
+        "indicator": "Open WiFi network detected",
+        "meaning": "No authentication required for access",
+        "severity": "High"
+      },
+      {
+        "indicator": "Rogue access point detected",
+        "meaning": "Potential evil twin attack in progress",
+        "severity": "High"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom RF Analysis",
+        "scenario": "Use SDR tools for advanced RF spectrum analysis",
+        "command": "hackrf_transfer -r data.bin -f 2.4G -s 10M",
+        "notes": [
+          "Requires HackRF or other SDR hardware"
+        ]
+      },
+      {
+        "title": "Automated WiFi Auditing",
+        "scenario": "Automate comprehensive WiFi security testing",
+        "command": "wifite -i wlan0mon --all --dict /path/to/wordlist.txt",
+        "notes": [
+          "Automated tool for complete WiFi security testing"
+        ]
+      },
+      {
+        "title": "Bluetooth Low Energy Testing",
+        "scenario": "Test BLE devices for security vulnerabilities",
+        "command": "# Use gattacker and other BLE-specific tools",
+        "notes": [
+          "Specialized testing for IoT and BLE devices"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Wireless Attack Methods Comparison",
+      "columns": ["Attack Type", "Success Rate", "Detection Risk", "Time Required", "Equipment"],
+      "rows": [
+        ["WPS Attack", "High", "Low", "Hours", "Standard"],
+        ["Handshake Crack", "Medium", "Low", "Days", "Standard"],
+        ["Evil Twin", "Very High", "High", "Minutes", "Standard"],
+        ["Deauth Flood", "Low", "Very High", "Minutes", "Standard"],
+        ["RF Jamming", "Low", "Very High", "Minutes", "Advanced"]
+      ]
+    },
+    "resources": [
+      {
+        "label": "Kali Wireless Tools",
+        "url": "https://www.kali.org/tools/wireless-attacks/",
+        "description": "Complete list of wireless security tools in Kali"
+      },
+      {
+        "label": "WiFi Security Testing Guide",
+        "url": "https://www.wirelesshack.org/wifi-security-testing-guide.html",
+        "description": "Comprehensive guide to WiFi security testing"
+      }
+    ]
+  },
+  {
+    "id": "comparison_directory_fuzzers",
+    "name": "Directory Fuzzing Tools Comparison",
+    "summary": "Comprehensive comparison of directory and web content fuzzing tools including FFuf, Gobuster, DirBuster, and Wfuzz with their strengths, weaknesses, and best use cases.",
+    "details": "Directory fuzzing is a critical phase of web application testing for discovering hidden content, directories, and files. This comparison helps security professionals choose the right tool for their specific needs based on performance, features, and target characteristics.",
+    "installation_guides": [
+      {
+        "platform": "FFuf Installation",
+        "summary": "Install FFuf fast web fuzzer",
+        "steps": [
+          {
+            "detail": "go install github.com/ffuf/ffuf@latest",
+            "copyable": true
+          },
+          {
+            "detail": "ffuf -V # Verify installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Gobuster Installation",
+        "summary": "Install Gobuster directory scanner",
+        "steps": [
+          {
+            "detail": "sudo apt install -y gobuster",
+            "copyable": true
+          },
+          {
+            "detail": "gobuster version # Verify installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Wfuzz Installation",
+        "summary": "Install Wfuzz web fuzzer",
+        "steps": [
+          {
+            "detail": "sudo apt install -y wfuzz",
+            "copyable": true
+          },
+          {
+            "detail": "wfuzz -h # Verify installation",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "FFuf basic directory scan",
+        "command": "ffuf -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -u https://target.example.com/FUZZ",
+        "notes": [
+          "Fast, concurrent directory fuzzing"
+        ]
+      },
+      {
+        "description": "Gobuster directory enumeration",
+        "command": "gobuster dir -u https://target.example.com -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt",
+        "notes": [
+          "Reliable, feature-rich directory scanning"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Tool Selection Criteria",
+        "steps": [
+          {
+            "title": "Performance Requirements",
+            "details": "Choose based on speed and concurrency needs",
+            "command": "# FFuf for speed, Gobuster for reliability"
+          },
+          {
+            "title": "Feature Requirements",
+            "details": "Consider specific features needed for testing",
+            "command": "# Wfuzz for advanced filtering, DirBuster for GUI"
+          },
+          {
+            "title": "Target Compatibility",
+            "details": "Ensure tool compatibility with target technology",
+            "command": "# Test different tools against target stack"
+          },
+          {
+            "title": "Wordlist Optimization",
+            "details": "Select appropriate wordlists for each tool",
+            "command": "# Use tool-specific optimized wordlists"
+          }
+        ]
+      },
+      {
+        "title": "Comparative Testing Process",
+        "steps": [
+          {
+            "title": "Baseline Testing",
+            "details": "Run all tools against known test target",
+            "command": "ffuf -w small.txt -u https://test.com/FUZZ && gobuster dir -u https://test.com -w small.txt"
+          },
+          {
+            "title": "Performance Comparison",
+            "details": "Compare speed and resource usage",
+            "command": "# Time each tool and monitor resource consumption"
+          },
+          {
+            "title": "Results Analysis",
+            "details": "Compare results and identify unique findings",
+            "command": "# Analyze overlap and unique discoveries"
+          },
+          {
+            "title": "Tool Selection",
+            "details": "Select best tool for specific engagement",
+            "command": "# Choose based on test requirements and results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Directory Fuzzing Tool Selection Workflow",
+        "stages": [
+          {
+            "label": "Assessment Phase",
+            "description": "Evaluate requirements and target characteristics",
+            "command": "# Analyze target stack, time constraints, and resources"
+          },
+          {
+            "label": "Tool Testing",
+            "description": "Test multiple tools against target",
+            "command": "ffuf -w test.txt -u https://target.com/FUZZ -o ffuf_results.txt"
+          },
+          {
+            "label": "Comparison Analysis",
+            "description": "Compare performance and results",
+            "command": "# Analyze speed, accuracy, and resource usage"
+          },
+          {
+            "label": "Final Selection",
+            "description": "Choose optimal tool for engagement",
+            "command": "# Select based on requirements and test results"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "FFuf shows higher requests/second",
+        "meaning": "Better performance for large-scale scans",
+        "severity": "Info"
+      },
+      {
+        "indicator": "Gobuster finds unique directories",
+        "meaning": "Different algorithms may find different results",
+        "severity": "Info"
+      },
+      {
+        "indicator": "Wfuzz provides more filtering options",
+        "meaning": "Better for targeted, refined searches",
+        "severity": "Info"
+      },
+      {
+        "indicator": "Tool A misses directory found by Tool B",
+        "meaning": "Use multiple tools for comprehensive coverage",
+        "severity": "Medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom FFuf Filters",
+        "scenario": "Create advanced filtering rules for FFuf",
+        "command": "ffuf -w wordlist.txt -u https://target.com/FUZZ -mc 200,301,302 -fl 10-20",
+        "notes": [
+          "Fine-tune results with custom filters"
+        ]
+      },
+      {
+        "title": "Gobuster Recursion",
+        "scenario": "Configure recursive directory discovery",
+        "command": "gobuster dir -u https://target.com -w wordlist.txt -r -e",
+        "notes": [
+          "Automatically discover nested directories"
+        ]
+      },
+      {
+        "title": "Wfuzz Post-processing",
+        "scenario": "Use Wfuzz with custom post-processing scripts",
+        "command": "wfuzz -w wordlist.txt --script=custom.py https://target.com/FUZZ",
+        "notes": [
+          "Extend functionality with custom scripts"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Directory Fuzzing Tools Feature Comparison",
+      "columns": ["Feature", "FFuf", "Gobuster", "DirBuster", "Wfuzz"],
+      "rows": [
+        ["Speed", "Very Fast", "Fast", "Slow", "Medium"],
+        ["Concurrency", "Excellent", "Good", "Limited", "Good"],
+        ["Filtering", "Advanced", "Basic", "Basic", "Advanced"],
+        ["Recursion", "Limited", "Built-in", "Good", "Manual"],
+        ["Extensions", "Built-in", "Built-in", "Manual", "Manual"],
+        ["GUI", "No", "No", "Yes", "No"],
+        ["Memory Usage", "Low", "Medium", "High", "Medium"],
+        ["Learning Curve", "Easy", "Easy", "Easy", "Medium"],
+        ["Customization", "High", "Medium", "Low", "Very High"],
+        ["Best For", "Speed", "Reliability", "Beginners", "Advanced"]
+      ]
+    },
+    "resources": [
+      {
+        "label": "FFuf GitHub",
+        "url": "https://github.com/ffuf/ffuf",
+        "description": "Official FFuf repository and documentation"
+      },
+      {
+        "label": "Gobuster Documentation",
+        "url": "https://github.com/OJ/gobuster",
+        "description": "Complete Gobuster documentation and examples"
+      },
+      {
+        "label": "SecLists Wordlists",
+        "url": "https://github.com/danielmiessler/SecLists",
+        "description": "Comprehensive collection of wordlists for fuzzing"
+      }
+    ]
+  },
+  {
+    "id": "comparison_sql_testing",
+    "name": "SQL Testing Tools Comparison",
+    "summary": "Detailed comparison of SQL injection testing tools including sqlmap, Burp Suite, OWASP ZAP, and manual testing approaches with their effectiveness, stealth, and use cases.",
+    "details": "SQL injection remains one of the most critical web application vulnerabilities. This comparison helps security professionals choose the most appropriate tools and techniques for SQL injection testing based on target characteristics, time constraints, and detection avoidance requirements.",
+    "installation_guides": [
+      {
+        "platform": "SQLMap Installation",
+        "summary": "Install SQLMap automatic SQL injection tool",
+        "steps": [
+          {
+            "detail": "sudo apt install -y sqlmap",
+            "copyable": true
+          },
+          {
+            "detail": "git clone --depth=1 https://github.com/sqlmapproject/sqlmap.git sqlmap-dev",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Burp Suite Setup",
+        "summary": "Configure Burp Suite for SQL injection testing",
+        "steps": [
+          {
+            "detail": "Download Burp Suite Community or Professional",
+            "copyable": false
+          },
+          {
+            "detail": "Configure browser proxy to 127.0.0.1:8080",
+            "copyable": false
+          },
+          {
+            "detail": "Enable SQL injection scanner in Intruder tab",
+            "copyable": false
+          }
+        ]
+      },
+      {
+        "platform": "OWASP ZAP Setup",
+        "summary": "Set up OWASP ZAP for automated SQL testing",
+        "steps": [
+          {
+            "detail": "sudo apt install -y zaproxy",
+            "copyable": true
+          },
+          {
+            "detail": "Configure browser proxy to 127.0.0.1:8080",
+            "copyable": false
+          },
+          {
+            "detail": "Enable Active Scan with SQL injection rules",
+            "copyable": false
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "SQLMap automatic testing",
+        "command": "sqlmap -u \"https://target.com/page?id=1\" --batch --dbs",
+        "notes": [
+          "Automated SQL injection detection and exploitation"
+        ]
+      },
+      {
+        "description": "Manual SQL injection test",
+        "command": "https://target.com/page?id=1' OR '1'='1",
+        "notes": [
+          "Basic manual SQL injection test"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "SQL Injection Testing Methodology",
+        "steps": [
+          {
+            "title": "Initial Detection",
+            "details": "Test for basic SQL injection vulnerabilities",
+            "command": "# Test with single quotes, AND 1=1, OR 1=1"
+          },
+          {
+            "title": "Error Analysis",
+            "details": "Analyze database errors for information disclosure",
+            "command": "# Trigger errors to extract database information"
+          },
+          {
+            "title": "Automated Scanning",
+            "details": "Use automated tools for comprehensive testing",
+            "command": "sqlmap -u \"https://target.com/page?id=1\" --batch"
+          },
+          {
+            "title": "Manual Verification",
+            "details": "Manually verify automated findings",
+            "command": "# Create custom payloads for verification"
+          }
+        ]
+      },
+      {
+        "title": "Advanced SQL Injection Techniques",
+        "steps": [
+          {
+            "title": "Blind SQL Injection",
+            "details": "Test for blind SQL injection vulnerabilities",
+            "command": "# Use time-based and boolean-based techniques"
+          },
+          {
+            "title": "Second-Order Injection",
+            "details": "Test for stored SQL injection vulnerabilities",
+            "command": "# Test input storage and later use points"
+          },
+          {
+            "title": "WAF Bypass",
+            "details": "Bypass web application firewalls",
+            "command": "# Use encoding, fragmentation, and obfuscation"
+          },
+          {
+            "title": "NoSQL Injection",
+            "details": "Test NoSQL databases for injection vulnerabilities",
+            "command": "# Test MongoDB, CouchDB, and other NoSQL databases"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "SQL Injection Testing Strategy",
+        "stages": [
+          {
+            "label": "Reconnaissance Phase",
+            "description": "Identify potential injection points and database type",
+            "command": "# Analyze application behavior and error messages"
+          },
+          {
+            "label": "Automated Testing",
+            "description": "Run automated SQL injection scans",
+            "command": "sqlmap -u \"https://target.com/page?id=1\" --batch --level=5 --risk=3"
+          },
+          {
+            "label": "Manual Testing",
+            "description": "Manual verification and advanced testing",
+            "command": "# Create custom payloads and test edge cases"
+          },
+          {
+            "label": "Exploitation",
+            "description": "Exploit confirmed vulnerabilities",
+            "command": "sqlmap -u \"https://target.com/page?id=1\" --batch --dbs --dump"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "MySQL error message displayed",
+        "meaning": "MySQL database with error-based injection possible",
+        "severity": "High"
+      },
+      {
+        "indicator": "Time delay observed",
+        "meaning": "Blind SQL injection vulnerability confirmed",
+        "severity": "High"
+      },
+      {
+        "indicator": "WAF blocking detected",
+        "meaning": "Web Application Firewall present, requires bypass techniques",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Parameterized queries detected",
+        "meaning": "SQL injection likely mitigated, move to other tests",
+        "severity": "Info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "SQLMap Advanced Options",
+        "scenario": "Use advanced SQLMap features for complex targets",
+        "command": "sqlmap -u \"https://target.com/page?id=1\" --batch --tamper=space2comment --level=5 --risk=3",
+        "notes": [
+          "Use tamper scripts for WAF bypass"
+        ]
+      },
+      {
+        "title": "Burp Suite Intruder",
+        "scenario": "Create custom SQL injection payloads in Burp",
+        "command": "# Use Intruder with custom payload lists",
+        "notes": [
+          "Customize payloads for specific database types"
+        ]
+      },
+      {
+        "title": "Custom Python Scripts",
+        "scenario": "Create custom SQL injection testing scripts",
+        "command": "# Use requests library for custom automation",
+        "notes": [
+          "Full control over requests and responses"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "SQL Testing Tools Comparison",
+      "columns": ["Aspect", "SQLMap", "Burp Suite", "OWASP ZAP", "Manual Testing"],
+      "rows": [
+        ["Automation", "Full", "Partial", "Good", "None"],
+        ["Speed", "Fast", "Medium", "Medium", "Slow"],
+        ["Stealth", "Low", "Medium", "Medium", "High"],
+        ["Coverage", "Comprehensive", "Good", "Good", "Limited"],
+        ["Customization", "High", "High", "Medium", "Very High"],
+        ["Learning Curve", "Easy", "Medium", "Easy", "Hard"],
+        ["False Positives", "Low", "Low", "Medium", "None"],
+        ["WAF Bypass", "Good", "Good", "Limited", "Excellent"],
+        ["Database Support", "Excellent", "Good", "Good", "Excellent"],
+        ["Best For", "Automation", "Professional", "Free Testing", "Stealth"]
+      ]
+    },
+    "resources": [
+      {
+        "label": "SQLMap Documentation",
+        "url": "http://sqlmap.org/",
+        "description": "Official SQLMap documentation and user guide"
+      },
+      {
+        "label": "Burp Suite SQL Injection Guide",
+        "url": "https://portswigger.net/burp/documentation/desktop/testing/scanning/sql-injection",
+        "description": "Comprehensive SQL injection testing guide"
+      },
+      {
+        "label": "OWASP SQL Injection Prevention",
+        "url": "https://owasp.org/www-community/attacks/SQL_Injection",
+        "description": "SQL injection prevention and testing techniques"
+      }
+    ]
+  },
+  {
+    "id": "comparison_web_proxies",
+    "name": "Web Proxy Tools Comparison",
+    "summary": "Comprehensive comparison of web application security proxies including Burp Suite, OWASP ZAP, mitmproxy, and others with their features, licensing, and use cases.",
+    "details": "Web proxies are essential tools for web application security testing, providing interception, modification, and analysis capabilities. This comparison helps security professionals choose to right proxy based on their requirements, budget, and technical expertise.",
+    "installation_guides": [
+      {
+        "platform": "Burp Suite Installation",
+        "summary": "Install Burp Suite Professional or Community",
+        "steps": [
+          {
+            "detail": "Download from https://portswigger.net/burp",
+            "copyable": false
+          },
+          {
+            "detail": "java -jar burpsuite_pro.jar # For Professional",
+            "copyable": false
+          },
+          {
+            "detail": "Configure browser proxy to 127.0.0.1:8080",
+            "copyable": false
+          }
+        ]
+      },
+      {
+        "platform": "OWASP ZAP Installation",
+        "summary": "Install OWASP ZAP security proxy",
+        "steps": [
+          {
+            "detail": "sudo apt install -y zaproxy",
+            "copyable": true
+          },
+          {
+            "detail": "zaproxy -port 8080 # Start ZAP proxy",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "mitmproxy Installation",
+        "summary": "Install mitmproxy for command-line proxy",
+        "steps": [
+          {
+            "detail": "sudo apt install -y mitmproxy",
+            "copyable": true
+          },
+          {
+            "detail": "mitmproxy --port 8080 # Start mitmproxy",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Burp Suite interception",
+        "command": "# Configure browser proxy to 127.0.0.1:8080 and start Burp",
+        "notes": [
+          "Full-featured web application testing proxy"
+        ]
+      },
+      {
+        "description": "OWASP ZAP automated scan",
+        "command": "zaproxy -port 8080 -quickurl https://target.com",
+        "notes": [
+          "Automated scanning with active and passive modes"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Web Proxy Selection Process",
+        "steps": [
+          {
+            "title": "Requirement Analysis",
+            "details": "Identify specific testing requirements",
+            "command": "# Analyze need for automation, scripting, or advanced features"
+          },
+          {
+            "title": "Budget Consideration",
+            "details": "Consider licensing costs and budget constraints",
+            "command": "# Burp Pro vs Community vs ZAP vs mitmproxy"
+          },
+          {
+            "title": "Technical Assessment",
+            "details": "Evaluate technical expertise and learning curve",
+            "command": "# Consider team skill level and training requirements"
+          },
+          {
+            "title": "Tool Evaluation",
+            "details": "Test tools against target applications",
+            "command": "# Test proxy with target technology stack"
+          }
+        ]
+      },
+      {
+        "title": "Proxy Configuration Workflow",
+        "steps": [
+          {
+            "title": "Browser Configuration",
+            "details": "Configure browser to use proxy",
+            "command": "# Set browser proxy to 127.0.0.1:8080"
+          },
+          {
+            "title": "SSL Certificate",
+            "details": "Install proxy SSL certificate",
+            "command": "# Import proxy CA certificate into browser"
+          },
+          {
+            "title": "Target Configuration",
+            "details": "Configure target scope and rules",
+            "command": "# Define target scope in proxy configuration"
+          },
+          {
+            "title": "Testing Validation",
+            "details": "Validate proxy is intercepting traffic",
+            "command": "# Browse target and verify traffic capture"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Web Proxy Implementation Strategy",
+        "stages": [
+          {
+            "label": "Planning Phase",
+            "description": "Define proxy requirements and selection criteria",
+            "command": "# Analyze testing scope, budget, and team skills"
+          },
+          {
+            "label": "Setup Phase",
+            "description": "Install and configure selected proxy tool",
+            "command": "# Install proxy, configure browser, import certificates"
+          },
+          {
+            "label": "Testing Phase",
+            "description": "Validate proxy configuration and functionality",
+            "command": "# Test interception, modification, and scanning features"
+          },
+          {
+            "label": "Production Phase",
+            "description": "Use proxy in actual security testing",
+            "command": "# Conduct comprehensive web application testing"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "HTTPS traffic not decrypted",
+        "meaning": "SSL certificate not properly installed",
+        "severity": "High"
+      },
+      {
+        "indicator": "Proxy not intercepting traffic",
+        "meaning": "Browser proxy configuration incorrect",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Scanner missing vulnerabilities",
+        "meaning": "Scope configuration or tool limitation",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Performance issues with large scans",
+        "meaning": "Resource limitations or tool constraints",
+        "severity": "Low"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Burp Suite Extender",
+        "scenario": "Extend Burp Suite with custom extensions",
+        "command": "# Install BApp Store extensions or custom BApps",
+        "notes": [
+          "Add custom functionality and automation"
+        ]
+      },
+      {
+        "title": "ZAP Scripting",
+        "scenario": "Create custom ZAP scripts for automation",
+        "command": "# Use ZAP scripting in Python, JavaScript, or Ruby",
+        "notes": [
+          "Customize scanning and testing workflows"
+        ]
+      },
+      {
+        "title": "mitmproxy API",
+        "scenario": "Use mitmproxy Python API for custom workflows",
+        "command": "# Write custom addons and scripts",
+        "notes": [
+          "Full programmatic control over proxy functionality"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Web Proxy Tools Feature Comparison",
+      "columns": ["Feature", "Burp Suite Pro", "Burp Suite Community", "OWASP ZAP", "mitmproxy"],
+      "rows": [
+        ["Cost", "$449/year", "Free", "Free", "Free"],
+        ["Scanner", "Advanced", "Limited", "Good", "None"],
+        ["Intruder", "Advanced", "Basic", "Fuzzer", "None"],
+        ["Repeater", "Advanced", "Basic", "Request/Response", "None"],
+        ["Extensibility", "Excellent", "Good", "Excellent", "Good"],
+        ["Automation", "Excellent", "Limited", "Good", "Excellent"],
+        ["Mobile Support", "Excellent", "Good", "Good", "Good"],
+        ["API Access", "Good", "Limited", "Excellent", "Excellent"],
+        ["Learning Curve", "Medium", "Medium", "Easy", "Hard"],
+        ["Best For", "Professionals", "Learning", "Free Testing", "Automation"]
+      ]
+    },
+    "resources": [
+      {
+        "label": "Burp Suite Documentation",
+        "url": "https://portswigger.net/burp/documentation",
+        "description": "Complete Burp Suite documentation and tutorials"
+      },
+      {
+        "label": "OWASP ZAP User Guide",
+        "url": "https://www.zaproxy.org/docs/",
+        "description": "Comprehensive ZAP documentation and guides"
+      },
+      {
+        "label": "mitmproxy Documentation",
+        "url": "https://docs.mitmproxy.org/",
+        "description": "Complete mitmproxy documentation and scripting guide"
+      }
+    ]
+  },
+  {
+    "id": "comparison_port_scanners",
+    "name": "Port Scanner Tools Comparison",
+    "summary": "Detailed comparison of port scanning tools including Nmap, Masscan, Naabu, and others with their speed, stealth, features, and optimal use cases.",
+    "details": "Port scanning is a fundamental phase of network reconnaissance and vulnerability assessment. This comparison helps security professionals choose the most appropriate scanner based on their requirements for speed, stealth, features, and target environment.",
+    "installation_guides": [
+      {
+        "platform": "Nmap Installation",
+        "summary": "Install Nmap network scanner",
+        "steps": [
+          {
+            "detail": "sudo apt install -y nmap",
+            "copyable": true
+          },
+          {
+            "detail": "nmap --version # Verify installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Masscan Installation",
+        "summary": "Install Masscan high-speed scanner",
+        "steps": [
+          {
+            "detail": "sudo apt install -y masscan",
+            "copyable": true
+          },
+          {
+            "detail": "masscan --version # Verify installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Naabu Installation",
+        "summary": "Install Naabu fast port scanner",
+        "steps": [
+          {
+            "detail": "go install -v github.com/projectdiscovery/naabu/v2/cmd/naabu@latest",
+            "copyable": true
+          },
+          {
+            "detail": "naabu -version # Verify installation",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Nmap comprehensive scan",
+        "command": "nmap -sS -sV -oN scan.txt target.example.com",
+        "notes": [
+          "Full-featured scan with service detection"
+        ]
+      },
+      {
+        "description": "Masscan fast discovery",
+        "command": "masscan -p1-65535 target.example.com --rate=1000",
+        "notes": [
+          "Ultra-fast port discovery"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Port Scanner Selection Process",
+        "steps": [
+          {
+            "title": "Speed Requirements",
+            "details": "Determine required scanning speed",
+            "command": "# Masscan for speed, Nmap for features"
+          },
+          {
+            "title": "Stealth Requirements",
+            "details": "Consider detection avoidance needs",
+            "command": "# Nmap for stealth options, Masscan for speed"
+          },
+          {
+            "title": "Feature Requirements",
+            "details": "Identify required features and capabilities",
+            "command": "# Service detection, script scanning, OS detection"
+          },
+          {
+            "title": "Target Environment",
+            "details": "Consider target network characteristics",
+            "command": "# Network size, firewalls, IDS/IPS presence"
+          }
+        ]
+      },
+      {
+        "title": "Multi-Tool Scanning Strategy",
+        "steps": [
+          {
+            "title": "Initial Discovery",
+            "details": "Use fast scanner for initial port discovery",
+            "command": "masscan -p1-65535 target.example.com --rate=1000 -o masscan.txt"
+          },
+          {
+            "title": "Detailed Scanning",
+            "details": "Use feature-rich scanner for detailed analysis",
+            "command": "nmap -sV -sC -p $(cat masscan.txt) target.example.com"
+          },
+          {
+            "title": "Results Correlation",
+            "details": "Combine and analyze results from multiple tools",
+            "command": "# Correlate findings and identify discrepancies"
+          },
+          {
+            "title": "Verification",
+            "details": "Verify critical findings with alternative tools",
+            "command": "# Use additional tools to verify important discoveries"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Port Scanning Optimization Strategy",
+        "stages": [
+          {
+            "label": "Assessment Phase",
+            "description": "Evaluate scanning requirements and constraints",
+            "command": "# Analyze time constraints, stealth needs, target size"
+          },
+          {
+            "label": "Tool Selection",
+            "description": "Select optimal scanner for requirements",
+            "command": "# Choose based on speed, stealth, and feature needs"
+          },
+          {
+            "label": "Execution Phase",
+            "description": "Execute scanning with selected tools",
+            "command": "# Run scans with appropriate timing and options"
+          },
+          {
+            "label": "Analysis Phase",
+            "description": "Analyze results and plan next steps",
+            "command": "# Correlate findings and identify service vulnerabilities"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Port 80 open with HTTP service",
+        "meaning": "Web server accessible, requires web application testing",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Port 22 open with SSH service",
+        "meaning": "Remote access available, test for weak credentials",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Port 3389 open with RDP service",
+        "meaning": "Remote desktop access, test for authentication bypasses",
+        "severity": "High"
+      },
+      {
+        "indicator": "Filtered ports detected",
+        "meaning": "Firewall present, may require alternative scanning",
+        "severity": "Info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Nmap Scripting Engine",
+        "scenario": "Use NSE for advanced vulnerability detection",
+        "command": "nmap -sC --script vuln target.example.com",
+        "notes": [
+          "Extensive script library for various services"
+        ]
+      },
+      {
+        "title": "Masscan Output Processing",
+        "scenario": "Process Masscan output for further analysis",
+        "command": "masscan -p1-65535 target --rate=1000 -oL - | grep open",
+        "notes": [
+          "Parse and filter results for specific needs"
+        ]
+      },
+      {
+        "title": "Custom Scanner Scripts",
+        "scenario": "Create custom scanning scripts with multiple tools",
+        "command": "# Combine multiple scanners in custom automation",
+        "notes": [
+          "Tailor scanning methodology to specific requirements"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Port Scanner Tools Comparison",
+      "columns": ["Feature", "Nmap", "Masscan", "Naabu", "ZMap"],
+      "rows": [
+        ["Speed", "Medium", "Very Fast", "Fast", "Very Fast"],
+        ["Stealth", "Excellent", "Limited", "Good", "Limited"],
+        ["Service Detection", "Excellent", "None", "None", "None"],
+        ["Script Scanning", "Excellent", "None", "None", "None"],
+        ["OS Detection", "Excellent", "None", "None", "None"],
+        ["Concurrency", "Good", "Excellent", "Excellent", "Excellent"],
+        ["Memory Usage", "Medium", "Low", "Low", "Low"],
+        ["Learning Curve", "Medium", "Easy", "Easy", "Medium"],
+        ["Customization", "Excellent", "Good", "Good", "Good"],
+        ["Best For", "Comprehensive", "Speed", "Discovery", "Internet-scale"]
+      ]
+    },
+    "resources": [
+      {
+        "label": "Nmap Official Guide",
+        "url": "https://nmap.org/book/",
+        "description": "Complete Nmap documentation and reference guide"
+      },
+      {
+        "label": "Masscan GitHub",
+        "url": "https://github.com/robertdavidgraham/masscan",
+        "description": "Masscan source code and documentation"
+      },
+      {
+        "label": "ProjectDiscovery Naabu",
+        "url": "https://github.com/projectdiscovery/naabu",
+        "description": "Naabu fast port scanner documentation"
+      }
+    ]
   }
 ]

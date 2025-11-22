@@ -23052,5 +23052,4587 @@
         "description": "Latest research in cloud persistence techniques"
       }
     ]
+  },
+  {
+    "id": "postman",
+    "name": "Postman",
+    "summary": "Postman is a comprehensive API development and testing platform that enables teams to design, test, document, and monitor APIs through a graphical interface with powerful automation capabilities.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via Snap or download AppImage",
+        "steps": [
+          {
+            "detail": "sudo snap install postman",
+            "copyable": true
+          },
+          {
+            "detail": "# Alternative: Download AppImage",
+            "copyable": false
+          },
+          {
+            "detail": "wget https://dl.pstmn.io/download/latest/linux64 -O postman-linux-x64.tar.gz",
+            "copyable": true
+          },
+          {
+            "detail": "sudo tar -xzf postman-linux-x64.tar.gz -C /opt",
+            "copyable": true
+          },
+          {
+            "detail": "ln -s /opt/Postman/Postman /usr/local/bin/postman",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install via package manager or flatpak",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y postman",
+            "copyable": true
+          },
+          {
+            "detail": "# Alternative via flatpak",
+            "copyable": false
+          },
+          {
+            "detail": "flatpak install flathub com.getpostman.Postman",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Use Postman CLI (newman) in container or web version",
+        "steps": [
+          {
+            "detail": "# Use Newman CLI in container",
+            "copyable": false
+          },
+          {
+            "detail": "docker pull postman/newman",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v $PWD:/etc/newman postman/newman run collection.json",
+            "copyable": true
+          },
+          {
+            "detail": "# Web version: https://web.postman.co",
+            "copyable": false
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Create API request",
+        "command": "POST /api/users\n{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\"\n}",
+        "notes": ["Use Postman GUI to build and send requests"]
+      },
+      {
+        "description": "Environment variable usage",
+        "command": "{{base_url}}/api/users/{{user_id}}",
+        "notes": ["Variables enable dynamic requests across environments"]
+      },
+      {
+        "description": "Test script example",
+        "command": "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});",
+        "notes": ["JavaScript test scripts validate responses"]
+      },
+      {
+        "description": "Collection runner",
+        "command": "Run entire collection with data files",
+        "notes": ["Automate testing workflows with multiple iterations"]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "Environment Variables",
+        "description": "{{variable_name}} syntax for dynamic values"
+      },
+      {
+        "flag": "Pre-request Script",
+        "description": "JavaScript executed before request"
+      },
+      {
+        "flag": "Tests Script",
+        "description": "JavaScript executed after response"
+      },
+      {
+        "flag": "Collection Runner",
+        "description": "Execute multiple requests sequentially"
+      },
+      {
+        "flag": "Monitor",
+        "description": "Schedule automated API testing"
+      }
+    ],
+    "operational_tips": [
+      "Use environments to separate development, staging, and production configurations.",
+      "Implement test scripts to automatically validate API responses and schemas.",
+      "Leverage collection variables to share authentication tokens across requests.",
+      "Use data files (CSV/JSON) for parameterized testing with large datasets.",
+      "Configure global certificates for testing APIs with custom CA certificates."
+    ],
+    "step_sequences": [
+      {
+        "title": "API Testing Workflow",
+        "steps": [
+          {
+            "title": "Create environment",
+            "details": "Set up environment variables for base URL, credentials, and endpoints.",
+            "command": "Environment: base_url = https://api.example.com"
+          },
+          {
+            "title": "Authentication setup",
+            "details": "Configure OAuth2, API key, or Bearer token authentication.",
+            "command": "Authorization: Bearer {{access_token}}"
+          },
+          {
+            "title": "Build requests",
+            "details": "Create requests with proper headers, body, and test scripts.",
+            "command": "POST {{base_url}}/auth/login"
+          },
+          {
+            "title": "Write tests",
+            "details": "Add JavaScript tests to validate responses and schemas.",
+            "command": "pm.test(\"Response has user data\", () => pm.expect(pm.response.json()).to.have.property('user'));"
+          },
+          {
+            "title": "Run collection",
+            "details": "Execute entire collection with different environments and data.",
+            "command": "Collection Runner → Select collection → Run"
+          }
+        ]
+      },
+      {
+        "title": "API Documentation Generation",
+        "steps": [
+          {
+            "title": "Document requests",
+            "details": "Add descriptions and example responses for each endpoint.",
+            "command": "Request description: Creates a new user account"
+          },
+          {
+            "title": "Generate documentation",
+            "details": "Export collection as HTML or publish to Postman workspace.",
+            "command": "Export → Collection Documentation → HTML"
+          },
+          {
+            "title": "Share with team",
+            "details": "Publish to team workspace for collaborative documentation.",
+            "command": "Share → Generate embed link → Copy to documentation"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "API Discovery → Testing → Documentation",
+        "stages": [
+          {
+            "label": "Import OpenAPI/Swagger",
+            "description": "Import existing API specification to generate collection.",
+            "command": "Import → Raw text → Paste OpenAPI JSON"
+          },
+          {
+            "label": "Environment Configuration",
+            "description": "Set up environments for different API deployment stages.",
+            "command": "Environment → Add variable → base_url = https://dev-api.example.com"
+          },
+          {
+            "label": "Authentication Setup",
+            "description": "Configure OAuth2 flow or API key authentication.",
+            "command": "Authorization → OAuth 2.0 → Configure flow"
+          },
+          {
+            "label": "Test Implementation",
+            "description": "Add comprehensive test scripts for each endpoint.",
+            "command": "Tests → pm.test(\"Schema validation\", () => {...});"
+          },
+          {
+            "label": "Automated Execution",
+            "description": "Run collections with Newman for CI/CD integration.",
+            "command": "newman run collection.json -e environment.json"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "200 OK",
+        "meaning": "Request successful, response body contains expected data",
+        "severity": "info"
+      },
+      {
+        "indicator": "401 Unauthorized",
+        "meaning": "Authentication failed, check token or credentials",
+        "severity": "warning"
+      },
+      {
+        "indicator": "429 Too Many Requests",
+        "meaning": "Rate limit exceeded, implement throttling in tests",
+        "severity": "warning"
+      },
+      {
+        "indicator": "Test Results: 5/10 passed",
+        "meaning": "Half of assertions failed, review test logic and API changes",
+        "severity": "error"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Dynamic authentication with OAuth2",
+        "command": "pm.sendRequest({\n  url: 'https://auth.example.com/oauth/token',\n  method: 'POST',\n  body: {\n    mode: 'urlencoded',\n    urlencoded: [\n      {key: 'grant_type', value: 'client_credentials'},\n      {key: 'client_id', value: pm.variables.get('client_id')},\n      {key: 'client_secret', value: pm.variables.get('client_secret')}\n    ]\n  }\n}, (err, res) => {\n  if (res) {\n    pm.variables.set('access_token', res.json().access_token);\n  }\n});",
+        "scenario": "Automatically refresh OAuth tokens before requests",
+        "notes": ["Store tokens in environment variables for subsequent requests"]
+      },
+      {
+        "title": "Schema validation with JSON Schema",
+        "command": "const schema = {\n  \"type\": \"object\",\n  \"properties\": {\n    \"id\": {\"type\": \"number\"},\n    \"name\": {\"type\": \"string\"},\n    \"email\": {\"type\": \"string\", \"format\": \"email\"}\n  },\n  \"required\": [\"id\", \"name\", \"email\"]\n};\n\npm.test(\"Schema validation\", function() {\n  const responseJson = pm.response.json();\n  pm.expect(tv4.validate(responseJson, schema)).to.be.true;\n});",
+        "scenario": "Validate API responses against JSON Schema",
+        "notes": ["Ensure API contract compliance and data integrity"]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Postman Learning Center",
+        "url": "https://learning.postman.com/",
+        "description": "Official documentation and tutorials"
+      },
+      {
+        "label": "Postman API Network",
+        "url": "https://www.postman.com/api-network/",
+        "description": "Public API collections and documentation"
+      },
+      {
+        "label": "Newman CLI Documentation",
+        "url": "https://github.com/postmanlabs/newman",
+        "description": "Command-line tool for automated collection execution"
+      }
+    ]
+  },
+  {
+    "id": "newman",
+    "name": "Newman",
+    "summary": "Newman is Postman's command-line Collection Runner that enables automated API testing, continuous integration, and performance testing from the terminal or CI/CD pipelines.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via npm or Node.js package manager",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y nodejs npm",
+            "copyable": true
+          },
+          {
+            "detail": "npm install -g newman",
+            "copyable": true
+          },
+          {
+            "detail": "newman --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install via npm or use pre-installed Node.js",
+        "steps": [
+          {
+            "detail": "sudo npm install -g newman",
+            "copyable": true
+          },
+          {
+            "detail": "# Install additional reporters",
+            "copyable": false
+          },
+          {
+            "detail": "npm install -g newman-reporter-html",
+            "copyable": true
+          },
+          {
+            "detail": "npm install -g newman-reporter-junit",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Official Docker image for containerized execution",
+        "steps": [
+          {
+            "detail": "docker pull postman/newman",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v $PWD:/etc/newman postman/newman run collection.json",
+            "copyable": true
+          },
+          {
+            "detail": "# With custom reporters",
+            "copyable": false
+          },
+          {
+            "detail": "docker run --rm -v $PWD:/etc/newman postman/newman run collection.json -r html,junit",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Run collection with environment",
+        "command": "newman run collection.json -e environment.json",
+        "notes": ["Basic collection execution with environment variables"]
+      },
+      {
+        "description": "Run with data file",
+        "command": "newman run collection.json -d data.csv",
+        "notes": ["Parameterized testing with CSV/JSON data files"]
+      },
+      {
+        "description": "Generate HTML report",
+        "command": "newman run collection.json -r html",
+        "notes": ["Create detailed HTML reports for test results"]
+      },
+      {
+        "description": "CI/CD integration",
+        "command": "newman run collection.json --bail",
+        "notes": ["Stop on first failure for CI pipelines"]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-e, --environment",
+        "description": "Specify environment file"
+      },
+      {
+        "flag": "-d, --iteration-data",
+        "description": "Specify data file for iterations"
+      },
+      {
+        "flag": "-n, --iteration-count",
+        "description": "Number of iterations to run"
+      },
+      {
+        "flag": "-r, --reporters",
+        "description": "Specify output reporters (cli, json, html, junit)"
+      },
+      {
+        "flag": "--bail",
+        "description": "Stop on first test failure"
+      },
+      {
+        "flag": "--timeout-request",
+        "description": "Request timeout in milliseconds"
+      },
+      {
+        "flag": "--delay-request",
+        "description": "Delay between requests in milliseconds"
+      }
+    ],
+    "operational_tips": [
+      "Use --bail flag in CI/CD pipelines to fail fast on test failures.",
+      "Install additional reporters (html, junit, allure) for better test reporting.",
+      "Use environment variables to secure sensitive data like API keys and passwords.",
+      "Combine with Newman Docker for consistent execution across environments.",
+      "Use iteration data files for comprehensive parameterized testing scenarios."
+    ],
+    "step_sequences": [
+      {
+        "title": "CI/CD Pipeline Integration",
+        "steps": [
+          {
+            "title": "Export collection",
+            "details": "Export Postman collection and environment from GUI.",
+            "command": "Postman → Export → Collection → Save as collection.json"
+          },
+          {
+            "title": "Install Newman",
+            "details": "Install Newman and required reporters in CI environment.",
+            "command": "npm install -g newman newman-reporter-junit newman-reporter-html"
+          },
+          {
+            "title": "Configure environment",
+            "details": "Set up environment variables for different deployment stages.",
+            "command": "export API_BASE_URL=https://api.staging.example.com"
+          },
+          {
+            "title": "Run tests",
+            "details": "Execute collection with appropriate reporters for CI integration.",
+            "command": "newman run collection.json -e staging.json -r junit --bail"
+          },
+          {
+            "title": "Parse results",
+            "details": "Process test results and generate reports for team visibility.",
+            "command": "newman run collection.json -r html --reporter-html-export report.html"
+          }
+        ]
+      },
+      {
+        "title": "Performance Testing Setup",
+        "steps": [
+          {
+            "title": "Configure load testing",
+            "details": "Set up multiple iterations and delays for load simulation.",
+            "command": "newman run collection.json -n 100 --delay-request 100"
+          },
+          {
+            "title": "Monitor resources",
+            "details": "Track response times and system resource utilization.",
+            "command": "newman run collection.json --reporter-cli-no-success-assertions"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review performance metrics and identify bottlenecks.",
+            "command": "cat newman-report.json | jq '.run.executions[].response.responseTime'"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "API Testing → CI Integration → Reporting",
+        "stages": [
+          {
+            "label": "Local Development",
+            "description": "Test APIs locally with Postman GUI",
+            "command": "Postman Desktop → Create and validate requests"
+          },
+          {
+            "label": "Collection Export",
+            "description": "Export validated collection for automation",
+            "command": "Export Collection → Save as API-Tests.json"
+          },
+          {
+            "label": "Environment Setup",
+            "description": "Create environment files for each deployment stage",
+            "command": "Environment Variables → Export → staging.json, prod.json"
+          },
+          {
+            "label": "CI Pipeline",
+            "description": "Integrate Newman in GitHub Actions/Jenkins",
+            "command": "newman run API-Tests.json -e $ENVIRONMENT.json -r junit --bail"
+          },
+          {
+            "label": "Report Generation",
+            "description": "Generate comprehensive test reports",
+            "command": "newman run API-Tests.json -r html --reporter-html-export test-report.html"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "✓ GET /api/users (200 OK)",
+        "meaning": "Request successful, all tests passed",
+        "severity": "info"
+      },
+      {
+        "indicator": "✗ POST /api/users (401 Unauthorized)",
+        "meaning": "Authentication failed, check credentials or token",
+        "severity": "error"
+      },
+      {
+        "indicator": "┌─┬─┬─┬─┬─┬─┬─┬─┐",
+        "meaning": "Progress indicator showing test execution",
+        "severity": "info"
+      },
+      {
+        "indicator": "Test Results: 15/20 passed",
+        "meaning": "Some tests failed, review assertions and API changes",
+        "severity": "warning"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "GitHub Actions Integration",
+        "command": "name: API Tests\non: [push, pull_request]\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v2\n      - name: Setup Node.js\n        uses: actions/setup-node@v2\n        with:\n          node-version: '16'\n      - name: Install Newman\n        run: npm install -g newman newman-reporter-html\n      - name: Run API Tests\n        run: newman run collection.json -e environment.json -r html --bail",
+        "scenario": "Automated API testing in CI/CD pipeline",
+        "notes": ["Fail fast on test failures, generate HTML reports"]
+      },
+      {
+        "title": "Custom Reporter Configuration",
+        "command": "newman run collection.json -r custom --reporter-custom-output custom-report.json",
+        "scenario": "Create custom test reports for specific team requirements",
+        "notes": ["Develop custom reporters for specialized reporting needs"]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Newman Documentation",
+        "url": "https://github.com/postmanlabs/newman",
+        "description": "Official Newman CLI documentation"
+      },
+      {
+        "label": "Newman Reporters",
+        "url": "https://github.com/postmanlabs/newman#reporters",
+        "description": "Available reporters for different output formats"
+      },
+      {
+        "label": "CI/CD Integration Guide",
+        "url": "https://learning.postman.com/docs/collection-runs/automating-runs/",
+        "description": "Guide for integrating Newman in CI/CD pipelines"
+      }
+    ]
+  },
+  {
+    "id": "inql",
+    "name": "InQL",
+    "summary": "InQL is a GraphQL security testing tool that automates the process of GraphQL schema discovery, introspection, and security analysis for identifying vulnerabilities in GraphQL APIs.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via Python pip and Git",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y python3 python3-pip git",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/doyensec/inql.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd inql",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install -r requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "python3 inql.py --help",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install as Python package or from source",
+        "steps": [
+          {
+            "detail": "sudo apt install -y python3-pip",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install inql",
+            "copyable": true
+          },
+          {
+            "detail": "# Alternative: Install from source",
+            "copyable": false
+          },
+          {
+            "detail": "git clone https://github.com/doyensec/inql.git && cd inql && pip3 install -r requirements.txt",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Use pre-built Docker image for containerized execution",
+        "steps": [
+          {
+            "detail": "docker pull doyensec/inql",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v $PWD:/data doyensec/inql -t https://api.example.com/graphql",
+            "copyable": true
+          },
+          {
+            "detail": "# Build from source",
+            "copyable": false
+          },
+          {
+            "detail": "git clone https://github.com/doyensec/inql.git && cd inql && docker build -t inql .",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "GraphQL schema introspection",
+        "command": "inql -t https://api.example.com/graphql",
+        "notes": ["Extract complete GraphQL schema from endpoint"]
+      },
+      {
+        "description": "Generate queries from schema",
+        "command": "inql -s schema.graphql -o queries/",
+        "notes": ["Generate test queries based on discovered schema"]
+      },
+      {
+        "description": "Burp Suite integration",
+        "command": "java -jar inql-burp.jar",
+        "notes": ["Launch InQL as Burp Suite extension"]
+      },
+      {
+        "description": "Analyze GraphQL endpoint",
+        "command": "inql -a -t https://api.example.com/graphql",
+        "notes": ["Perform security analysis on GraphQL API"]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-t, --target",
+        "description": "Target GraphQL endpoint URL"
+      },
+      {
+        "flag": "-s, --schema",
+        "description": "Path to GraphQL schema file"
+      },
+      {
+        "flag": "-o, --output",
+        "description": "Output directory for generated files"
+      },
+      {
+        "flag": "-a, --analyze",
+        "description": "Perform security analysis"
+      },
+      {
+        "flag": "-p, --proxy",
+        "description": "Proxy settings for HTTP requests"
+      },
+      {
+        "flag": "-H, --header",
+        "description": "Custom HTTP headers"
+      }
+    ],
+    "operational_tips": [
+      "Use introspection queries to discover hidden GraphQL endpoints.",
+      "Generate custom queries from schema for comprehensive testing.",
+      "Integrate with Burp Suite for interactive testing workflows.",
+      "Analyze mutation operations for privilege escalation vulnerabilities.",
+      "Check for excessive data exposure in query responses."
+    ],
+    "step_sequences": [
+      {
+        "title": "GraphQL Security Assessment",
+        "steps": [
+          {
+            "title": "Schema discovery",
+            "details": "Extract GraphQL schema using introspection queries.",
+            "command": "inql -t https://api.example.com/graphql -o schema_output/"
+          },
+          {
+            "title": "Query generation",
+            "details": "Generate test queries from discovered schema.",
+            "command": "inql -s schema_output/schema.graphql -o test_queries/"
+          },
+          {
+            "title": "Security analysis",
+            "details": "Perform automated security analysis on GraphQL API.",
+            "command": "inql -a -t https://api.example.com/graphql"
+          },
+          {
+            "title": "Manual testing",
+            "details": "Use generated queries for manual security testing.",
+            "command": "curl -X POST -d @test_queries/query_1.graphql https://api.example.com/graphql"
+          },
+          {
+            "title": "Vulnerability validation",
+            "details": "Validate findings and prepare detailed reports.",
+            "command": "Review generated HTML reports and findings"
+          }
+        ]
+      },
+      {
+        "title": "Burp Suite Integration",
+        "steps": [
+          {
+            "title": "Install extension",
+            "details": "Load InQL as Burp Suite extension.",
+            "command": "Extender → Extensions → Add → inql-burp.jar"
+          },
+          {
+            "title": "Configure target",
+            "details": "Set target GraphQL endpoint in InQL tab.",
+            "command": "InQL tab → Target → https://api.example.com/graphql"
+          },
+          {
+            "title": "Extract schema",
+            "details": "Use InQL to extract and analyze GraphQL schema.",
+            "command": "Introspection → Extract Schema"
+          },
+          {
+            "title": "Generate queries",
+            "details": "Generate test queries for security testing.",
+            "command": "Query Generator → Select operations → Generate"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Schema Discovery → Query Generation → Security Testing",
+        "stages": [
+          {
+            "label": "Endpoint Discovery",
+            "description": "Identify GraphQL endpoints through reconnaissance",
+            "command": "ffuf -w wordlist.txt -u https://example.com/FUZZ/graphql -mc 200"
+          },
+          {
+            "label": "Schema Extraction",
+            "description": "Extract complete GraphQL schema using introspection",
+            "command": "inql -t https://api.example.com/graphql -o schema/"
+          },
+          {
+            "label": "Query Generation",
+            "description": "Generate comprehensive test queries from schema",
+            "command": "inql -s schema/schema.graphql -o queries/"
+          },
+          {
+            "label": "Security Analysis",
+            "description": "Perform automated vulnerability scanning",
+            "command": "inql -a -t https://api.example.com/graphql"
+          },
+          {
+            "label": "Manual Validation",
+            "description": "Manually test generated queries for vulnerabilities",
+            "command": "curl -X POST -d @queries/mutation.graphql -H 'Content-Type: application/json' https://api.example.com/graphql"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Schema extracted: 15 queries, 8 mutations, 3 subscriptions",
+        "meaning": "Successfully extracted complete GraphQL schema",
+        "severity": "info"
+      },
+      {
+        "indicator": "Vulnerability: Exposed sensitive information",
+        "meaning": "GraphQL API exposes sensitive data through queries",
+        "severity": "warning"
+      },
+      {
+        "indicator": "Generated 42 test queries",
+        "meaning": "Created comprehensive test coverage for schema",
+        "severity": "info"
+      },
+      {
+        "indicator": "Introspection disabled",
+        "meaning": "GraphQL endpoint has introspection disabled, try alternative methods",
+        "severity": "warning"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom Introspection Queries",
+        "command": "inql -t https://api.example.com/graphql -H 'Authorization: Bearer $TOKEN' -p http://127.0.0.1:8080",
+        "scenario": "Introspect authenticated GraphQL APIs through proxy",
+        "notes": ["Use custom headers for authentication and proxy for traffic analysis"]
+      },
+      {
+        "title": "Batch Query Generation",
+        "command": "for endpoint in $(cat endpoints.txt); do\n  inql -t $endpoint -o output/$(basename $endpoint)\ndone",
+        "scenario": "Automate schema extraction for multiple GraphQL endpoints",
+        "notes": ["Scale analysis across multiple targets efficiently"]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "InQL GitHub Repository",
+        "url": "https://github.com/doyensec/inql",
+        "description": "Official InQL source code and documentation"
+      },
+      {
+        "label": "GraphQL Security Testing Guide",
+        "url": "https://github.com/doyensec/inql/blob/master/docs/GraphQL-Security.md",
+        "description": "Comprehensive GraphQL security testing methodology"
+      },
+      {
+        "label": "Burp Suite Extension",
+        "url": "https://portswigger.net/bappstore/8a2a7b687a5a4f8a8d2f7f5e8a3b7a5e",
+        "description": "InQL Burp Suite extension for interactive testing"
+      }
+    ]
+  },
+  {
+    "id": "grpcurl",
+    "name": "grpcurl",
+    "summary": "grpcurl is a command-line tool that lets you interact with gRPC servers, similar to how curl interacts with HTTP/REST servers. It supports reflection, service discovery, and message inspection.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via Go or download binary",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "# Option 1: Go install",
+            "copyable": false
+          },
+          {
+            "detail": "go install github.com/fullstorydev/grpcurl/cmd/grpcurl@latest",
+            "copyable": true
+          },
+          {
+            "detail": "# Option 2: Download binary",
+            "copyable": false
+          },
+          {
+            "detail": "wget https://github.com/fullstorydev/grpcurl/releases/latest/download/grpcurl_1.8.9_linux_x86_64.tar.gz",
+            "copyable": true
+          },
+          {
+            "detail": "tar -xzf grpcurl_1.8.9_linux_x86_64.tar.gz && sudo mv grpcurl /usr/local/bin/",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install via Go or package manager",
+        "steps": [
+          {
+            "detail": "sudo apt install -y golang",
+            "copyable": true
+          },
+          {
+            "detail": "go install github.com/fullstorydev/grpcurl/cmd/grpcurl@latest",
+            "copyable": true
+          },
+          {
+            "detail": "echo 'export PATH=$PATH:~/go/bin' >> ~/.bashrc",
+            "copyable": true
+          },
+          {
+            "detail": "source ~/.bashrc",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Use Docker container for isolated execution",
+        "steps": [
+          {
+            "detail": "docker run --rm -v $PWD:/data fullstorydev/grpcurl -help",
+            "copyable": true
+          },
+          {
+            "detail": "# Build from source",
+            "copyable": false
+          },
+          {
+            "detail": "git clone https://github.com/fullstorydev/grpcurl.git && cd grpcurl && go build ./cmd/grpcurl",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "List services",
+        "command": "grpcurl localhost:50051 list",
+        "notes": ["List all available gRPC services"]
+      },
+      {
+        "description": "Describe service",
+        "command": "grpcurl localhost:50051 describe myservice.MyService",
+        "notes": ["Get detailed service definition"]
+      },
+      {
+        "description": "Call RPC method",
+        "command": "grpcurl -d '{\"name\": \"test\"}' localhost:50051 myservice.MyService/GetUser",
+        "notes": ["Invoke gRPC method with JSON data"]
+      },
+      {
+        "description": "Use reflection",
+        "command": "grpcurl -plaintext localhost:50051 describe",
+        "notes": ["Use server reflection to discover services"]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-d, -data",
+        "description": "JSON data for request body"
+      },
+      {
+        "flag": "-plaintext",
+        "description": "Use insecure connection (no TLS)"
+      },
+      {
+        "flag": "-insecure",
+        "description": "Skip server certificate validation"
+      },
+      {
+        "flag": "-proto",
+        "description": "Path to proto file"
+      },
+      {
+        "flag": "-import-path",
+        "description": "Path to proto import directories"
+      },
+      {
+        "flag": "-emit-defaults",
+        "description": "Emit default values in responses"
+      }
+    ],
+    "operational_tips": [
+      "Use server reflection to discover services without proto files.",
+      "Combine with protoc for generating proto definitions from reflection.",
+      "Use -plaintext for local development without TLS setup.",
+      "Pipe JSON output to jq for complex data manipulation.",
+      "Use -emit-defaults to see complete message structure."
+    ],
+    "step_sequences": [
+      {
+        "title": "gRPC Service Discovery",
+        "steps": [
+          {
+            "title": "Connect to server",
+            "details": "Establish connection to gRPC server.",
+            "command": "grpcurl -plaintext localhost:50051 list"
+          },
+          {
+            "title": "List services",
+            "details": "Discover all available services on server.",
+            "command": "grpcurl -plaintext localhost:50051 describe"
+          },
+          {
+            "title": "Examine service",
+            "details": "Get detailed service method definitions.",
+            "command": "grpcurl -plaintext localhost:50051 describe myservice.MyService"
+          },
+          {
+            "title": "Test method",
+            "details": "Call specific RPC method with test data.",
+            "command": "grpcurl -plaintext -d '{}' localhost:50051 myservice.MyService/ListUsers"
+          }
+        ]
+      },
+      {
+        "title": "Proto File Analysis",
+        "steps": [
+          {
+            "title": "Load proto files",
+            "details": "Load proto files for service definitions.",
+            "command": "grpcurl -proto service.proto -import-path ."
+          },
+          {
+            "title": "Describe message",
+            "details": "Examine message structure.",
+            "command": "grpcurl -proto service.proto describe .myservice.User"
+          },
+          {
+            "title": "Call with proto",
+            "details": "Invoke method using proto definitions.",
+            "command": "grpcurl -proto service.proto -d '{\"id\": 123}' localhost:50051 myservice.MyService/GetUser"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Discovery → Analysis → Testing → Documentation",
+        "stages": [
+          {
+            "label": "Service Discovery",
+            "description": "Discover available gRPC services",
+            "command": "grpcurl -plaintext target:50051 list"
+          },
+          {
+            "label": "Method Analysis",
+            "description": "Analyze service methods and messages",
+            "command": "grpcurl -plaintext target:50051 describe myservice.MyService"
+          },
+          {
+            "label": "Functional Testing",
+            "description": "Test each RPC method with various inputs",
+            "command": "grpcurl -plaintext -d @test.json target:50051 myservice.MyService/CreateUser"
+          },
+          {
+            "label": "Security Testing",
+            "description": "Test authentication and authorization",
+            "command": "grpcurl -insecure -cacert ca.crt -cert client.crt -key client.key target:443 myservice.MyService/SecureMethod"
+          },
+          {
+            "label": "Documentation",
+            "description": "Generate API documentation",
+            "command": "grpcurl -plaintext target:50051 describe > api-docs.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "myservice.MyService",
+        "meaning": "Available gRPC service on server",
+        "severity": "info"
+      },
+      {
+        "indicator": "rpc GetUser (myservice.UserRequest) returns (myservice.User)",
+        "meaning": "RPC method definition with input/output types",
+        "severity": "info"
+      },
+      {
+        "indicator": "ERROR: Code: Unauthenticated",
+        "meaning": "Authentication required for this method",
+        "severity": "warning"
+      },
+      {
+        "indicator": "ERROR: Code: Unimplemented",
+        "meaning": "Method not implemented or not available",
+        "severity": "error"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "TLS with Mutual Authentication",
+        "command": "grpcurl -insecure \\\n  -cacert ca.crt \\\n  -cert client.crt \\\n  -key client.key \\\n  server.example.com:443 \\\n  myservice.MyService/SecureMethod",
+        "scenario": "Connect to secure gRPC service with client certificates",
+        "notes": ["Ensure proper certificate chain and key formats"]
+      },
+      {
+        "title": "Stream Processing",
+        "command": "grpcurl -plaintext -d @stream-input.json localhost:50051 myservice.MyService/StreamData",
+        "scenario": "Test streaming gRPC methods",
+        "notes": ["Use file input for complex streaming data"]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "grpcurl Documentation",
+        "url": "https://github.com/fullstorydev/grpcurl",
+        "description": "Official grpcurl repository and documentation"
+      },
+      {
+        "label": "gRPC Tools Comparison",
+        "url": "https://grpc.io/docs/guides/tools/",
+        "description": "Overview of gRPC development and testing tools"
+      },
+      {
+        "label": "Protocol Buffers Guide",
+        "url": "https://developers.google.com/protocol-buffers",
+        "description": "Protocol Buffers documentation and tutorials"
+      }
+    ]
+  },
+  {
+    "id": "ffuf-api",
+    "name": "ffuf API Mode",
+    "summary": "ffuf's API mode provides specialized fuzzing capabilities for REST APIs, endpoints, and parameters with enhanced filtering and response analysis for API security testing.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via Go or download binary",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "go install github.com/ffuf/ffuf/v2@latest",
+            "copyable": true
+          },
+          {
+            "detail": "ffuf -version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Pre-installed or install via package manager",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y ffuf",
+            "copyable": true
+          },
+          {
+            "detail": "# Alternative: Go install",
+            "copyable": false
+          },
+          {
+            "detail": "go install github.com/ffuf/ffuf/v2@latest",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Use Docker container for isolated execution",
+        "steps": [
+          {
+            "detail": "docker pull ffuf/ffuf",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v $PWD:/data ffuf/ffuf -w /data/wordlist.txt -u https://api.example.com/FUZZ",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "API endpoint discovery",
+        "command": "ffuf -w endpoints.txt -u https://api.example.com/FUZZ",
+        "notes": ["Discover hidden API endpoints"]
+      },
+      {
+        "description": "Parameter fuzzing",
+        "command": "ffuf -w params.txt -u https://api.example.com/users?FUZZ=value",
+        "notes": ["Find hidden parameters"]
+      },
+      {
+        "description": "Header enumeration",
+        "command": "ffuf -w headers.txt -H FUZZ: test -u https://api.example.com/users",
+        "notes": ["Test custom headers"]
+      },
+      {
+        "description": "HTTP method fuzzing",
+        "command": "ffuf -w methods.txt -X FUZZ -u https://api.example.com/users",
+        "notes": ["Test different HTTP methods"]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-w, --wordlist",
+        "description": "Wordlist file for fuzzing"
+      },
+      {
+        "flag": "-u, --url",
+        "description": "Target URL with FUZZ keyword"
+      },
+      {
+        "flag": "-X, --request",
+        "description": "HTTP method to use"
+      },
+      {
+        "flag": "-H, --header",
+        "description": "Custom HTTP headers"
+      },
+      {
+        "flag": "-d, --data",
+        "description": "POST data with FUZZ keyword"
+      },
+      {
+        "flag": "-mc, --match-code",
+        "description": "Match HTTP status codes"
+      },
+      {
+        "flag": "-fc, --filter-code",
+        "description": "Filter out HTTP status codes"
+      }
+    ],
+    "operational_tips": [
+      "Use -mc to focus on successful responses (200, 201, 202).",
+      "Combine with -fc to filter out common error responses.",
+      "Use multiple FUZZ keywords for complex payload testing.",
+      "Save results with -o for later analysis.",
+      "Use rate limiting (-rate) to avoid triggering security controls."
+    ],
+    "step_sequences": [
+      {
+        "title": "API Security Testing",
+        "steps": [
+          {
+            "title": "Endpoint discovery",
+            "details": "Discover hidden API endpoints.",
+            "command": "ffuf -w api-endpoints.txt -u https://api.example.com/v1/FUZZ -mc 200,201,202"
+          },
+          {
+            "title": "Parameter fuzzing",
+            "details": "Find hidden parameters on discovered endpoints.",
+            "command": "ffuf -w parameters.txt -u https://api.example.com/v1/users?FUZZ=test -mc 200"
+          },
+          {
+            "title": "Method enumeration",
+            "details": "Test allowed HTTP methods.",
+            "command": "ffuf -w methods.txt -X FUZZ -u https://api.example.com/v1/users -mc 200,405"
+          },
+          {
+            "title": "Authentication testing",
+            "details": "Test authentication bypasses.",
+            "command": "ffuf -w auth-bypass.txt -H Authorization: FUZZ -u https://api.example.com/v1/admin"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Discovery → Enumeration → Testing → Validation",
+        "stages": [
+          {
+            "label": "API Discovery",
+            "description": "Find API endpoints and documentation",
+            "command": "ffuf -w common-apis.txt -u https://target.com/FUZZ -mc 200"
+          },
+          {
+            "label": "Parameter Fuzzing",
+            "description": "Discover hidden parameters",
+            "command": "ffuf -w parameters.txt -u https://target.com/api/users?FUZZ=value -mc 200"
+          },
+          {
+            "label": "Method Testing",
+            "description": "Test allowed HTTP methods",
+            "command": "ffuf -w methods.txt -X FUZZ -u https://target.com/api/users"
+          },
+          {
+            "label": "Authentication Bypass",
+            "description": "Test for authentication flaws",
+            "command": "ffuf -w auth-tokens.txt -H Authorization: Bearer FUZZ -u https://target.com/api/admin"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Status: 200 [Size: 1234] [Words: 45]",
+        "meaning": "Successful response with content length",
+        "severity": "info"
+      },
+      {
+        "indicator": "Status: 401 [Size: 87] [Words: 12]",
+        "meaning": "Authentication required for this endpoint",
+        "severity": "warning"
+      },
+      {
+        "indicator": "Status: 405 [Size: 156]",
+        "meaning": "HTTP method not allowed",
+        "severity": "info"
+      },
+      {
+        "indicator": "Progress: 1234/5000 [24%]",
+        "meaning": "Fuzzing progress indicator",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Multi-threaded API Testing",
+        "command": "ffuf -w endpoints.txt -u https://api.example.com/FUZZ -t 50 -rate 100 -mc 200,201,202 -o results.json",
+        "scenario": "High-performance API endpoint discovery",
+        "notes": ["Adjust threads and rate based on target response"]
+      },
+      {
+        "title": "Recursive API Fuzzing",
+        "command": "ffuf -w endpoints.txt -u https://api.example.com/FUZZ -recursion -recursion-depth 3",
+        "scenario": "Discover nested API endpoints",
+        "notes": ["Use with caution to avoid infinite recursion"]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "ffuf GitHub Repository",
+        "url": "https://github.com/ffuf/ffuf",
+        "description": "Official ffuf documentation and examples"
+      },
+      {
+        "label": "API Fuzzing Wordlists",
+        "url": "https://github.com/danielmiessler/SecLists",
+        "description": "Comprehensive wordlists for API testing"
+      },
+      {
+        "label": "ffuf Usage Guide",
+        "url": "https://github.com/ffuf/ffuf#usage",
+        "description": "Detailed usage examples and tutorials"
+      }
+    ]
+  },
+  {
+    "id": "semgrep",
+    "name": "Semgrep",
+    "summary": "Semgrep is a fast, open-source static analysis tool that finds bugs, security vulnerabilities, and enforcement errors in code by matching patterns across multiple programming languages.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via pip or download binary",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y python3 python3-pip",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install semgrep",
+            "copyable": true
+          },
+          {
+            "detail": "semgrep --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install via pip or pre-compiled binary",
+        "steps": [
+          {
+            "detail": "sudo pip3 install semgrep",
+            "copyable": true
+          },
+          {
+            "detail": "# Alternative: Download binary",
+            "copyable": false
+          },
+          {
+            "detail": "wget https://github.com/returntocorp/semgrep/releases/latest/download/semgrep-linux-x64.gz",
+            "copyable": true
+          },
+          {
+            "detail": "gunzip semgrep-linux-x64.gz && chmod +x semgrep-linux-x64",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Official Docker image for containerized scanning",
+        "steps": [
+          {
+            "detail": "docker pull returntocorp/semgrep",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v \"$PWD:/src\" returntocorp/semgrep --config=auto /src",
+            "copyable": true
+          },
+          {
+            "detail": "# With custom rules",
+            "copyable": false
+          },
+          {
+            "detail": "docker run --rm -v \"$PWD:/src\" -v \"$PWD/custom-rules:/rules\" returntocorp/semgrep --config=/rules /src",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Auto-configured scan",
+        "command": "semgrep --config=auto .",
+        "notes": ["Automatically detect languages and run appropriate rules"]
+      },
+      {
+        "description": "Security rules scan",
+        "command": "semgrep --config=p/security-audit .",
+        "notes": ["Run OWASP security rules"]
+      },
+      {
+        "description": "Custom rules directory",
+        "command": "semgrep --config=rules/ .",
+        "notes": ["Use custom Semgrep rules"]
+      },
+      {
+        "description": "SARIF output",
+        "command": "semgrep --config=auto --sarif .",
+        "notes": ["Generate SARIF format for CI/CD integration"]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--config",
+        "description": "Rules configuration (auto, p/, path/, URL)"
+      },
+      {
+        "flag": "--severity",
+        "description": "Filter by severity (INFO, WARNING, ERROR)"
+      },
+      {
+        "flag": "--json",
+        "description": "Output results in JSON format"
+      },
+      {
+        "flag": "--sarif",
+        "description": "Output results in SARIF format"
+      },
+      {
+        "flag": "--exclude",
+        "description": "Exclude files or directories"
+      },
+      {
+        "flag": "--max-lines-per-find",
+        "description": "Maximum lines to display per finding"
+      }
+    ],
+    "operational_tips": [
+      "Use --config=auto for automatic language detection and rule selection.",
+      "Create custom rules for application-specific security patterns.",
+      "Integrate with CI/CD pipelines using SARIF output format.",
+      "Use --exclude to avoid scanning test files and dependencies.",
+      "Combine multiple rule configurations for comprehensive coverage."
+    ],
+    "step_sequences": [
+      {
+        "title": "CI/CD Integration Setup",
+        "steps": [
+          {
+            "title": "Install Semgrep",
+            "details": "Install Semgrep in CI environment.",
+            "command": "pip3 install semgrep"
+          },
+          {
+            "title": "Configure scan",
+            "details": "Set up auto-configuration for repository.",
+            "command": "semgrep --config=auto --baseline baseline.sarif ."
+          },
+          {
+            "title": "Run scan",
+            "details": "Execute scan and generate results.",
+            "command": "semgrep --config=auto --sarif --output=results.sarif ."
+          },
+          {
+            "title": "Upload results",
+            "details": "Upload results to Semgrep Cloud Platform.",
+            "command": "semgrep upload --sarif results.sarif"
+          }
+        ]
+      },
+      {
+        "title": "Custom Rule Development",
+        "steps": [
+          {
+            "title": "Write rule",
+            "details": "Create custom Semgrep rule YAML.",
+            "command": "rules/custon-rule.yaml"
+          },
+          {
+            "title": "Test rule",
+            "details": "Test rule against sample code.",
+            "command": "semgrep --config=rules/custom-rule.yaml test_files/"
+          },
+          {
+            "title": "Validate rule",
+            "details": "Validate rule syntax and effectiveness.",
+            "command": "semgrep --validate --config=rules/"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Code Analysis → Rule Tuning → CI Integration",
+        "stages": [
+          {
+            "label": "Initial Scan",
+            "description": "Run comprehensive scan with auto-configuration",
+            "command": "semgrep --config=auto --json > initial_results.json"
+          },
+          {
+            "label": "Results Analysis",
+            "description": "Review findings and identify false positives",
+            "command": "cat initial_results.json | jq '.results[] | {rule_id: .rule_id, message: .message, file: .path}'"
+          },
+          {
+            "label": "Rule Customization",
+            "description": "Create or modify rules for application context",
+            "command": "Write custom rules in .semgrep/rules/"
+          },
+          {
+            "label": "Baseline Creation",
+            "description": "Establish baseline for future comparisons",
+            "command": "semgrep --config=auto --baseline baseline.sarif ."
+          },
+          {
+            "label": "CI Pipeline",
+            "description": "Integrate with GitHub Actions for automated scanning",
+            "command": "uses: returntocorp/semgrep-action@v1 with: config: auto"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "ERROR: Hard-coded credential found",
+        "meaning": "Security vulnerability requiring immediate attention",
+        "severity": "error"
+      },
+      {
+        "indicator": "WARNING: Use of unsafe function",
+        "meaning": "Potential security risk, review usage context",
+        "severity": "warning"
+      },
+      {
+        "indicator": "INFO: Code style violation",
+        "meaning": "Code quality issue, consider refactoring",
+        "severity": "info"
+      },
+      {
+        "indicator": "Files scanned: 125, Findings: 8",
+        "meaning": "Scan completed with identified issues",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom Rule for API Key Exposure",
+        "command": "rules:\n  - id: api-key-exposure\n    pattern: |\n      $X = \"$API_KEY\"\n    message: Hard-coded API key detected\n    severity: ERROR\n    languages: [python, javascript]",
+        "scenario": "Detect hard-coded API keys in source code",
+        "notes": ["Extend pattern to match various API key formats"]
+      },
+      {
+        "title": "CI/CD with Baseline",
+        "command": "semgrep --config=auto --baseline baseline.sarif --json --output=results.json .",
+        "scenario": "Only report new findings since baseline",
+        "notes": ["Useful for incremental security improvements"]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Semgrep Documentation",
+        "url": "https://semgrep.dev/docs/",
+        "description": "Official Semgrep documentation and guides"
+      },
+      {
+        "label": "Semgrep Rules Registry",
+        "url": "https://semgrep.dev/r/",
+        "description": "Community-contributed rules repository"
+      },
+      {
+        "label": "Writing Rules",
+        "url": "https://semgrep.dev/docs/writing-rules/",
+        "description": "Guide for writing custom Semgrep rules"
+      }
+    ]
+  },
+  {
+    "id": "sonarqube",
+    "name": "SonarQube",
+    "summary": "SonarQube is an open-source platform for continuous code quality and security inspection that provides detailed reports on code bugs, vulnerabilities, and code smells across multiple programming languages.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via Docker or download binary package",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y docker.io",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -d --name sonarqube -p 9000:9000 sonarqube:community",
+            "copyable": true
+          },
+          {
+            "detail": "# Alternative: Download binary",
+            "copyable": false
+          },
+          {
+            "detail": "wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-9.9.0.65466.zip",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Docker installation recommended for Kali",
+        "steps": [
+          {
+            "detail": "systemctl start docker",
+            "copyable": true
+          },
+          {
+            "detail": "docker volume create sonarqube_data",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -d --name sonarqube -p 9000:9000 -v sonarqube_data:/opt/sonarqube/data sonarqube:community",
+            "copyable": true
+          },
+          {
+            "detail": "# Access at http://localhost:9000 (admin/admin)",
+            "copyable": false
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Docker Compose for full stack deployment",
+        "steps": [
+          {
+            "detail": "cat > docker-compose.yml << EOF\nversion: '3.8'\nservices:\n  sonarqube:\n    image: sonarqube:community\n    ports:\n      - \"9000:9000\"\n    environment:\n      - SONAR_JDBC_URL=jdbc:postgresql://db:5432/sonar\n      - SONAR_JDBC_USERNAME=sonar\n      - SONAR_JDBC_PASSWORD=sonar\n    depends_on:\n      - db\n  db:\n    image: postgres:13\n    environment:\n      - POSTGRES_USER=sonar\n      - POSTGRES_PASSWORD=sonar\n      - POSTGRES_DB=sonar\nEOF",
+            "copyable": true
+          },
+          {
+            "detail": "docker-compose up -d",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Maven project scan",
+        "command": "mvn sonar:sonar -Dsonar.host.url=http://localhost:9000",
+        "notes": ["Maven integration for Java projects"]
+      },
+      {
+        "description": "Gradle project scan",
+        "command": "./gradlew sonarqube -Dsonar.host.url=http://localhost:9000",
+        "notes": ["Gradle integration for Java/Kotlin projects"]
+      },
+      {
+        "description": "CLI scanner",
+        "command": "sonar-scanner -Dsonar.projectKey=myproject -Dsonar.sources=. -Dsonar.host.url=http://localhost:9000",
+        "notes": ["Standalone scanner for any project type"]
+      },
+      {
+        "description": "Docker scan",
+        "command": "docker run --rm -v \"$PWD:/usr/src\" sonarsource/sonar-scanner-cli",
+        "notes": ["Containerized scanning"]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-Dsonar.projectKey",
+        "description": "Unique project identifier"
+      },
+      {
+        "flag": "-Dsonar.sources",
+        "description": "Source code directory"
+      },
+      {
+        "flag": "-Dsonar.host.url",
+        "description": "SonarQube server URL"
+      },
+      {
+        "flag": "-Dsonar.login",
+        "description": "Authentication token"
+      },
+      {
+        "flag": "-Dsonar.exclusions",
+        "description": "Exclude files from analysis"
+      }
+    ],
+    "operational_tips": [
+      "Use quality gates to enforce code quality standards in CI/CD.",
+      "Configure branch analysis for pull request quality checks.",
+      "Set up portfolio management for multi-project oversight.",
+      "Use custom rules for organization-specific coding standards.",
+      "Integrate with issue trackers for automatic bug tracking."
+    ],
+    "step_sequences": [
+      {
+        "title": "Project Setup and Analysis",
+        "steps": [
+          {
+            "title": "Install SonarQube",
+            "details": "Deploy SonarQube server using Docker Compose.",
+            "command": "docker-compose up -d sonarqube db"
+          },
+          {
+            "title": "Create project",
+            "details": "Create new project in SonarQube web interface.",
+            "command": "Web UI → Projects → Create project"
+          },
+          {
+            "title": "Generate token",
+            "details": "Create authentication token for project.",
+            "command": "My Account → Security → Generate token"
+          },
+          {
+            "title": "Configure scanner",
+            "details": "Set up sonar-project.properties file.",
+            "command": "echo 'sonar.projectKey=myproject\nsonar.sources=.' > sonar-project.properties"
+          },
+          {
+            "title": "Run analysis",
+            "details": "Execute code analysis and upload results.",
+            "command": "sonar-scanner -Dsonar.login=your_token"
+          }
+        ]
+      },
+      {
+        "title": "CI/CD Integration",
+        "steps": [
+          {
+            "title": "Quality Gate Setup",
+            "details": "Configure quality gates for project standards.",
+            "command": "Quality Gates → Create new gate → Set conditions"
+          },
+          {
+            "title": "GitHub Actions",
+            "details": "Add SonarQube scan to GitHub workflow.",
+            "command": "uses: sonarsource/sonarqube-scan-action@master"
+          },
+          {
+            "title": "Pull Request Decoration",
+            "details": "Enable PR analysis for automated code review.",
+            "command": "Project Settings → Pull Request Decoration → Enable"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Local Development → CI Integration → Quality Gates",
+        "stages": [
+          {
+            "label": "IDE Integration",
+            "description": "Install SonarLint for real-time code analysis",
+            "command": "IDE Extensions → Install SonarLint"
+          },
+          {
+            "label": "Local Scanning",
+            "description": "Run local analysis before commits",
+            "command": "sonar-scanner -Dsonar.host.url=http://localhost:9000"
+          },
+          {
+            "label": "CI Pipeline",
+            "description": "Automated analysis in CI/CD",
+            "command": "GitHub Actions → sonarqube-scan-action"
+          },
+          {
+            "label": "Quality Gate",
+            "description": "Enforce quality standards",
+            "command": "Quality Gate: New Code < 5% issues"
+          },
+          {
+            "label": "Portfolio Management",
+            "description": "Track quality across organization",
+            "command": "Portfolio → Create portfolio → Add projects"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Coverage: 85.2% (New: 92.1%)",
+        "meaning": "Test coverage metrics for codebase",
+        "severity": "info"
+      },
+      {
+        "indicator": "Bugs: 3 (New: 1)",
+        "meaning": "Critical issues requiring immediate attention",
+        "severity": "error"
+      },
+      {
+        "indicator": "Vulnerabilities: 7 (New: 2)",
+        "meaning": "Security vulnerabilities found in code",
+        "severity": "error"
+      },
+      {
+        "indicator": "Code Smells: 45 (New: 8)",
+        "meaning": "Maintainability issues, should be addressed",
+        "severity": "warning"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom Quality Profile",
+        "command": "sonar.profile=my-custom-profile\nsonar.profile.my-custom-profile.rule.java:S1123=true\nsonar.profile.my-custom-profile.rule.java:S1172=false",
+        "scenario": "Create organization-specific quality standards",
+        "notes": ["Fine-tune rules for project requirements"]
+      },
+      {
+        "title": "Multi-language Project",
+        "command": "sonar.projectKey=mixed-project\nsonar.sources=src/\nsonar.java.binaries=build/classes/\nsonar.javascript.lcov.reportPaths=coverage/lcov.info\nsonar.python.coverage.reportPaths=coverage/coverage.xml",
+        "scenario": "Analyze polyglot codebase with language-specific settings",
+        "notes": ["Configure each language appropriately"]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "SonarQube Documentation",
+        "url": "https://docs.sonarqube.org/",
+        "description": "Official SonarQube documentation"
+      },
+      {
+        "label": "SonarScanner CLI",
+        "url": "https://docs.sonarqube.org/latest/analysis/scan/sonarscanner/",
+        "description": "Standalone scanner documentation"
+      },
+      {
+        "label": "Quality Gates",
+        "url": "https://docs.sonarqube.org/latest/user-guide/quality-gates/",
+        "description": "Setting up quality gates"
+      }
+    ]
+  },
+  {
+    "id": "snyk",
+    "name": "Snyk",
+    "summary": "Snyk is a developer-first security scanning tool that finds and fixes vulnerabilities in dependencies, container images, and infrastructure as code throughout the development lifecycle.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via npm, snap, or download binary",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "# Option 1: npm install",
+            "copyable": false
+          },
+          {
+            "detail": "sudo npm install -g snyk",
+            "copyable": true
+          },
+          {
+            "detail": "# Option 2: snap install",
+            "copyable": false
+          },
+          {
+            "detail": "sudo snap install snyk",
+            "copyable": true
+          },
+          {
+            "detail": "snyk --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install via npm or download binary",
+        "steps": [
+          {
+            "detail": "sudo npm install -g snyk",
+            "copyable": true
+          },
+          {
+            "detail": "# Alternative: Download binary",
+            "copyable": false
+          },
+          {
+            "detail": "wget https://static.snyk.io/cli/latest/snyk-linux",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x snyk-linux && sudo mv snyk-linux /usr/local/bin/snyk",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Use Snyk Docker image for containerized scanning",
+        "steps": [
+          {
+            "detail": "docker pull snyk/snyk-cli",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v \"$PWD:/project\" snyk/snyk-cli test",
+            "copyable": true
+          },
+          {
+            "detail": "# With authentication",
+            "copyable": false
+          },
+          {
+            "detail": "docker run --rm -v \"$PWD:/project\" -v \"$HOME/.config/snyk:/root/.config/snyk\" snyk/snyk-cli test",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Dependency scan",
+        "command": "snyk test",
+        "notes": ["Scan project dependencies for vulnerabilities"]
+      },
+      {
+        "description": "Container scan",
+        "command": "snyk container test node:16-alpine",
+        "notes": ["Scan Docker images for vulnerabilities"]
+      },
+      {
+        "description": "IaC scan",
+        "command": "snyk iac test .",
+        "notes": ["Scan Terraform/CloudFormation for security issues"]
+      },
+      {
+        "description": "Monitor for new vulnerabilities",
+        "command": "snyk monitor",
+        "notes": ["Continuously monitor for newly disclosed vulnerabilities"]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--severity",
+        "description": "Filter by severity (low, medium, high, critical)"
+      },
+      {
+        "flag": "--json",
+        "description": "Output results in JSON format"
+      },
+      {
+        "flag": "--sarif",
+        "description": "Output results in SARIF format"
+      },
+      {
+        "flag": "--all-projects",
+        "description": "Scan all subdirectories as projects"
+      },
+      {
+        "flag": "--fail-on",
+        "description": "Exit with error on specified severity"
+      }
+    ],
+    "operational_tips": [
+      "Authenticate with 'snyk auth' to enable all features and monitoring.",
+      "Use 'snyk wizard' to integrate with git hooks and CI/CD pipelines.",
+      "Set up Snyk-to-GitHub integration for automatic PR comments.",
+      "Use 'snyk ignore' to temporarily suppress false positives.",
+      "Configure license policies to comply with organizational requirements."
+    ],
+    "step_sequences": [
+      {
+        "title": "Project Setup and Monitoring",
+        "steps": [
+          {
+            "title": "Authenticate",
+            "details": "Authenticate with Snyk account.",
+            "command": "snyk auth"
+          },
+          {
+            "title": "Initial scan",
+            "details": "Perform initial vulnerability scan.",
+            "command": "snyk test --json > initial-scan.json"
+          },
+          {
+            "title": "Review results",
+            "details": "Analyze vulnerabilities and their impact.",
+            "command": "cat initial-scan.json | jq '.vulnerabilities[] | {packageName: .packageName, severity: .severity, version: .version}'"
+          },
+          {
+            "title": "Set up monitoring",
+            "details": "Enable continuous monitoring for new vulnerabilities.",
+            "command": "snyk monitor"
+          },
+          {
+            "title": "CI integration",
+            "details": "Integrate with CI/CD pipeline for automated scanning.",
+            "command": "Add snyk test to CI configuration"
+          }
+        ]
+      },
+      {
+        "title": "Container Security Scanning",
+        "steps": [
+          {
+            "title": "Build image",
+            "details": "Build Docker image for testing.",
+            "command": "docker build -t myapp:latest ."
+          },
+          {
+            "title": "Scan image",
+            "details": "Scan Docker image for vulnerabilities.",
+            "command": "snyk container test myapp:latest --json > container-scan.json"
+          },
+          {
+            "title": "Monitor image",
+            "details": "Monitor image for future vulnerabilities.",
+            "command": "snyk container monitor myapp:latest"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Development → Testing → Monitoring → Remediation",
+        "stages": [
+          {
+            "label": "IDE Integration",
+            "description": "Install Snyk plugin for real-time vulnerability detection",
+            "command": "VS Code → Extensions → Install Snyk"
+          },
+          {
+            "label": "Pre-commit Hook",
+            "description": "Add Snyk test to pre-commit hooks",
+            "command": "echo 'snyk test' > .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit"
+          },
+          {
+            "label": "CI Pipeline",
+            "description": "Integrate Snyk scanning in CI/CD",
+            "command": "GitHub Actions → uses: snyk/actions/node@master"
+          },
+          {
+            "label": "PR Comments",
+            "description": "Enable Snyk PR comments for vulnerability discussion",
+            "command": "Snyk → Integrations → GitHub → Enable PR comments"
+          },
+          {
+            "label": "Continuous Monitoring",
+            "description": "Monitor production dependencies for new vulnerabilities",
+            "command": "snyk monitor --org=your-org"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "✗ High severity vulnerability found in lodash < 4.17.21",
+        "meaning": "Critical dependency vulnerability requiring immediate update",
+        "severity": "error"
+      },
+      {
+        "indicator": "✓ Tested 256 dependencies",
+        "meaning": "Successfully scanned all project dependencies",
+        "severity": "info"
+      },
+      {
+        "indicator": "No vulnerabilities found",
+        "meaning": "All dependencies are free of known vulnerabilities",
+        "severity": "info"
+      },
+      {
+        "indicator": "License: MIT (Compliant)",
+        "meaning": "Dependency license meets policy requirements",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom Policy Configuration",
+        "command": "snyk policy set ignore --id=SNYK-JS-LODASH-567746 --reason='False positive - not exploitable in our context'",
+        "scenario": "Manage vulnerability policies and ignore false positives",
+        "notes": ["Document reasons for ignoring vulnerabilities"]
+      },
+      {
+        "title": "Multi-project Scanning",
+        "command": "find . -name package.json -exec dirname {} \\; | xargs -I {} snyk test {} --json > results/{}.json",
+        "scenario": "Scan multiple projects in monorepo",
+        "notes": ["Automate vulnerability management across large codebases"]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Snyk Documentation",
+        "url": "https://support.snyk.io/",
+        "description": "Official Snyk documentation and guides"
+      },
+      {
+        "label": "Snyk Open Source",
+        "url": "https://snyk.io/open-source/",
+        "description": "Open source vulnerability database"
+      },
+      {
+        "label": "Snyk CLI Reference",
+        "url": "https://support.snyk.io/hc/en-us/articles/360003822537-CLI-Reference",
+        "description": "Complete CLI command reference"
+      }
+    ]
+  },
+  {
+    "id": "dependency-check",
+    "name": "OWASP Dependency-Check",
+    "summary": "OWASP Dependency-Check is a software composition analysis tool that identifies project dependencies and checks for known vulnerabilities using the NVD (National Vulnerability Database).",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via package manager or download binary",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y dependency-check",
+            "copyable": true
+          },
+          {
+            "detail": "# Alternative: Download binary",
+            "copyable": false
+          },
+          {
+            "detail": "wget https://github.com/jeremylong/DependencyCheck/releases/latest/download/dependency-check-8.4.0-release.zip",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Available in Kali repositories",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y dependency-check",
+            "copyable": true
+          },
+          {
+            "detail": "dependency-check --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Official Docker image for containerized scanning",
+        "steps": [
+          {
+            "detail": "docker pull owasp/dependency-check",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v \"$PWD:/src\" owasp/dependency-check --scan /src",
+            "copyable": true
+          },
+          {
+            "detail": "# With custom output directory",
+            "copyable": false
+          },
+          {
+            "detail": "docker run --rm -v \"$PWD:/src\" -v \"$PWD/reports:/report\" owasp/dependency-check --scan /src --out /report",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic scan",
+        "command": "dependency-check --project \"My Project\" --scan .",
+        "notes": ["Scan current directory for vulnerable dependencies"]
+      },
+      {
+        "description": "Maven project",
+        "command": "dependency-check --project \"My Maven Project\" --scan ./pom.xml",
+        "notes": ["Scan Maven pom.xml file"]
+      },
+      {
+        "description": "Generate HTML report",
+        "command": "dependency-check --project \"My Project\" --scan . --format HTML",
+        "notes": ["Generate detailed HTML vulnerability report"]
+      },
+      {
+        "description": "Skip certain updates",
+        "command": "dependency-check --project \"My Project\" --scan . --skipUpdate --skipConfig",
+        "notes": ["Faster scan for offline scenarios"]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--project",
+        "description": "Project name for reports"
+      },
+      {
+        "flag": "--scan",
+        "description": "Path to scan (directory or file)"
+      },
+      {
+        "flag": "--format",
+        "description": "Report format (HTML, XML, CSV, JSON)"
+      },
+      {
+        "flag": "--out",
+        "description": "Output directory for reports"
+      },
+      {
+        "flag": "--suppression",
+        "description": "File to suppress false positives"
+      },
+      {
+        "flag": "--skipUpdate",
+        "description": "Skip updating vulnerability database"
+      }
+    ],
+    "operational_tips": [
+      "Use --skipUpdate for faster scans when database is current.",
+      "Create suppression files to manage false positives effectively.",
+      "Schedule regular database updates for comprehensive coverage.",
+      "Integrate with build tools (Maven, Gradle) for automated scanning.",
+      "Use multiple report formats for different stakeholder needs."
+    ],
+    "step_sequences": [
+      {
+        "title": "Project Vulnerability Assessment",
+        "steps": [
+          {
+            "title": "Update database",
+            "details": "Update vulnerability database with latest CVEs.",
+            "command": "dependency-check --updateonly"
+          },
+          {
+            "title": "Scan project",
+            "details": "Perform comprehensive dependency scan.",
+            "command": "dependency-check --project \"MyApp\" --scan . --format HTML,XML"
+          },
+          {
+            "title": "Review report",
+            "details": "Analyze HTML report for identified vulnerabilities.",
+            "command": "Open reports/dependency-check-report.html"
+          },
+          {
+            "title": "Create suppressions",
+            "details": "Create suppression file for false positives.",
+            "command": "dependency-check --createSuppression suppressions.xml"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Database Update → Project Scan → Report Analysis",
+        "stages": [
+          {
+            "label": "Database Update",
+            "description": "Update vulnerability database with latest CVEs",
+            "command": "dependency-check --updateonly --data /path/to/data"
+          },
+          {
+            "label": "Project Configuration",
+            "description": "Configure project settings and suppressions",
+            "command": "dependency-check --project \"Production App\" --scan . --suppression suppressions.xml"
+          },
+          {
+            "label": "Comprehensive Scan",
+            "description": "Execute full vulnerability analysis",
+            "command": "dependency-check --scan . --format HTML,XML,CSV --out reports/"
+          },
+          {
+            "label": "CI Integration",
+            "description": "Integrate with CI/CD pipeline",
+            "command": "Maven: mvn org.owasp:dependency-check-maven:check"
+          },
+          {
+            "label": "Report Distribution",
+            "description": "Share reports with security team and developers",
+            "command": "Email reports/dependency-check-report.html to security@company.com"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Vulnerabilities Found: 15 (Critical: 3, High: 7)",
+        "meaning": "Multiple vulnerabilities requiring immediate attention",
+        "severity": "error"
+      },
+      {
+        "indicator": "Dependencies Analyzed: 234",
+        "meaning": "Successfully analyzed all project dependencies",
+        "severity": "info"
+      },
+      {
+        "indicator": "CVE-2021-44228 (Critical)",
+        "meaning": "Log4j vulnerability requiring immediate patching",
+        "severity": "error"
+      },
+      {
+        "indicator": "Suppressed: 2 false positives",
+        "meaning": "False positives successfully suppressed",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Maven Integration",
+        "command": "<plugin>\n  <groupId>org.owasp</groupId>\n  <artifactId>dependency-check-maven</artifactId>\n  <version>8.4.0</version>\n  <executions>\n    <execution>\n      <goals><goal>check</goal></goals>\n    </execution>\n  </executions>\n</plugin>",
+        "scenario": "Integrate with Maven build lifecycle",
+        "notes": ["Automated scanning during build process"]
+      },
+      {
+        "title": "Custom Suppression Rules",
+        "command": "<suppressions xmlns=\"https://jeremylong.github.io/DependencyCheck/suppressions.1.2.xsd\">\n  <suppress>\n    <notes><![CDATA[False positive - not used in production]]></notes>\n    <cve>CVE-2021-12345</cve>\n  </suppress>\n</suppressions>",
+        "scenario": "Suppress specific vulnerabilities with documented reasons",
+        "notes": ["Maintain audit trail for suppression decisions"]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "OWASP Dependency-Check",
+        "url": "https://owasp.org/www-project-dependency-check/",
+        "description": "Official project documentation"
+      },
+      {
+        "label": "GitHub Repository",
+        "url": "https://github.com/jeremylong/DependencyCheck",
+        "description": "Source code and issue tracking"
+      },
+      {
+        "label": "Configuration Guide",
+        "url": "https://jeremylong.github.io/DependencyCheck/general/configuration.html",
+        "description": "Comprehensive configuration options"
+      }
+    ]
+  },
+  {
+    "id": "trufflehog",
+    "name": "TruffleHog",
+    "summary": "TruffleHog is a secret scanning tool that searches through git repositories for high-entropy strings and patterns that may indicate exposed credentials, API keys, and other sensitive information.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via Go or download binary",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "# Option 1: Go install",
+            "copyable": false
+          },
+          {
+            "detail": "go install github.com/trufflesecurity/trufflehog/v3/cmd/trufflehog@latest",
+            "copyable": true
+          },
+          {
+            "detail": "# Option 2: Download binary",
+            "copyable": false
+          },
+          {
+            "detail": "wget https://github.com/trufflesecurity/trufflehog/releases/latest/download/trufflehog_Linux_x64_64.tar.gz",
+            "copyable": true
+          },
+          {
+            "detail": "tar -xzf trufflehog_Linux_x64_64.tar.gz && sudo mv trufflehog /usr/local/bin/",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install via Go or package manager",
+        "steps": [
+          {
+            "detail": "sudo apt install -y golang",
+            "copyable": true
+          },
+          {
+            "detail": "go install github.com/trufflesecurity/trufflehog/v3/cmd/trufflehog@latest",
+            "copyable": true
+          },
+          {
+            "detail": "echo 'export PATH=$PATH:~/go/bin' >> ~/.bashrc",
+            "copyable": true
+          },
+          {
+            "detail": "trufflehog version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Official Docker image for containerized scanning",
+        "steps": [
+          {
+            "detail": "docker pull trufflesecurity/trufflehog",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v \"$PWD:/src\" trufflesecurity/trufflehog filesystem /src",
+            "copyable": true
+          },
+          {
+            "detail": "# Git repository scan",
+            "copyable": false
+          },
+          {
+            "detail": "docker run --rm -v \"$PWD:/src\" trufflesecurity/trufflehog git --repo /src",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Filesystem scan",
+        "command": "trufflehog filesystem .",
+        "notes": ["Scan current directory for secrets"]
+      },
+      {
+        "description": "Git repository scan",
+        "command": "trufflehog git https://github.com/user/repo.git",
+        "notes": ["Scan remote git repository"]
+      },
+      {
+        "description": "GitHub repository scan",
+        "command": "trufflehog github --org=orgname --repo=reponame",
+        "notes": ["Scan GitHub repository with authentication"]
+      },
+      {
+        "description": "JSON output",
+        "command": "trufflehog filesystem . --json",
+        "notes": ["Output results in JSON format for CI/CD"]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--json",
+        "description": "Output results in JSON format"
+      },
+      {
+        "flag": "--rules",
+        "description": "Path to custom rules file"
+      },
+      {
+        "flag": "--exclude",
+        "description": "Exclude files/directories from scanning"
+      },
+      {
+        "flag": "--max-depth",
+        "description": "Maximum depth for filesystem scanning"
+      },
+      {
+        "flag": "--entropy-threshold",
+        "description": "Custom entropy threshold for detection"
+      }
+    ],
+    "operational_tips": [
+      "Use custom rules to detect organization-specific secret patterns.",
+      "Exclude common false positives like package-lock.json files.",
+      "Integrate with pre-commit hooks to prevent secrets from being committed.",
+      "Use GitHub token for authenticated repository scanning.",
+      "Combine with CI/CD for automated secret detection in pipelines."
+    ],
+    "step_sequences": [
+      {
+        "title": "Repository Secret Audit",
+        "steps": [
+          {
+            "title": "Scan repository",
+            "details": "Scan git repository for exposed secrets.",
+            "command": "trufflehog git https://github.com/company/repo.git --json > secrets.json"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review identified secrets and their locations.",
+            "command": "cat secrets.json | jq '.[] | {detector: .DetectorName, source: .SourceMetadata}'"
+          },
+          {
+            "title": "Verify findings",
+            "details": "Verify if secrets are still valid or need rotation.",
+            "command": "Test each identified secret against target services"
+          },
+          {
+            "title": "Remediate findings",
+            "details": "Rotate or invalidate exposed credentials.",
+            "command": "Update all exposed secrets in affected systems"
+          }
+        ]
+      },
+      {
+        "title": "CI/CD Integration",
+        "steps": [
+          {
+            "title": "Pre-commit setup",
+            "details": "Add TruffleHog to pre-commit hooks.",
+            "command": "echo 'trufflehog filesystem .' > .git/hooks/pre-commit"
+          },
+          {
+            "title": "GitHub Actions",
+            "details": "Add secret scanning to CI pipeline.",
+            "command": "uses: trufflesecurity/trufflehog@main with: args: --json --fail"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Discovery → Verification → Remediation → Prevention",
+        "stages": [
+          {
+            "label": "Comprehensive Scan",
+            "description": "Scan entire codebase for exposed secrets",
+            "command": "trufflehog filesystem . --json --exclude=node_modules"
+          },
+          {
+            "label": "Historical Analysis",
+            "description": "Check git history for previously exposed secrets",
+            "command": "trufflehog git . --since-commit=initial-commit"
+          },
+          {
+            "label": "Custom Rules",
+            "description": "Add organization-specific secret patterns",
+            "command": "trufflehog filesystem . --rules custom-rules.yml"
+          },
+          {
+            "label": "Automated Monitoring",
+            "description": "Set up continuous monitoring for new secrets",
+            "command": "GitHub Actions → trufflesecurity/trufflehog@main"
+          },
+          {
+            "label": "Secret Management",
+            "description": "Implement proper secret management practices",
+            "command": "Use environment variables and secret management tools"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Found AWS Access Key ID",
+        "meaning": "AWS credential exposed, requires immediate rotation",
+        "severity": "error"
+      },
+      {
+        "indicator": "High entropy string detected",
+        "meaning": "Potential secret or API key found",
+        "severity": "warning"
+      },
+      {
+        "indicator": "GitHub token detected",
+        "meaning": "GitHub personal access token exposed",
+        "severity": "error"
+      },
+      {
+        "indicator": "No secrets found",
+        "meaning": "No exposed secrets detected in scanned files",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom Detector Rules",
+        "command": "detectors:\n  - name: CustomAPIKey\n    patterns:\n      - pattern: \"API_KEY_[A-Z0-9]{32}\"\n        keywords: [\"api_key\"]\n        verify: [\"https://api.example.com/verify\"]",
+        "scenario": "Create custom detectors for organization-specific secrets",
+        "notes": ["Extend detection capabilities beyond default patterns"]
+      },
+      {
+        "title": "Enterprise GitHub Scanning",
+        "command": "trufflehog github --org=company --token=$GITHUB_TOKEN --all-organizations --json > enterprise-secrets.json",
+        "scenario": "Scan entire GitHub organization for exposed secrets",
+        "notes": ["Comprehensive enterprise secret detection"]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "TruffleHog Documentation",
+        "url": "https://trufflesecurity.com/trufflehog/",
+        "description": "Official documentation and guides"
+      },
+      {
+        "label": "GitHub Repository",
+        "url": "https://github.com/trufflesecurity/trufflehog",
+        "description": "Source code and community support"
+      },
+      {
+        "label": "Custom Detectors",
+        "url": "https://trufflesecurity.com/documentation/trufflehog/custom-detectors/",
+        "description": "Guide for creating custom detection rules"
+      }
+    ]
+  },
+  {
+    "id": "graphql-introspector",
+    "name": "GraphQL Introspector",
+    "summary": "GraphQL Introspector is a specialized tool for extracting and analyzing GraphQL schemas through introspection queries, enabling comprehensive API discovery and security assessment.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via npm or download binary",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y nodejs npm",
+            "copyable": true
+          },
+          {
+            "detail": "npm install -g graphql-introspector",
+            "copyable": true
+          },
+          {
+            "detail": "graphql-introspector --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install via npm or use pre-installed Node.js",
+        "steps": [
+          {
+            "detail": "sudo npm install -g graphql-introspector",
+            "copyable": true
+          },
+          {
+            "detail": "# Alternative: Clone and build",
+            "copyable": false
+          },
+          {
+            "detail": "git clone https://github.com/APIs-guru/graphql-introspector.git",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Use Node.js container for execution",
+        "steps": [
+          {
+            "detail": "docker pull node:16-alpine",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v $PWD:/app -w /app node:16-alpine npx graphql-introspector",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Schema introspection",
+        "command": "graphql-introspector https://api.example.com/graphql",
+        "notes": ["Extract complete GraphQL schema"]
+      },
+      {
+        "description": "Output to file",
+        "command": "graphql-introspector https://api.example.com/graphql -o schema.json",
+        "notes": ["Save schema to JSON file"]
+      },
+      {
+        "description": "With headers",
+        "command": "graphql-introspector -H 'Authorization: Bearer $TOKEN' https://api.example.com/graphql",
+        "notes": ["Introspect authenticated endpoints"]
+      },
+      {
+        "description": "Validate schema",
+        "command": "graphql-introspector --validate schema.json",
+        "notes": ["Validate GraphQL schema syntax"]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-o, --output",
+        "description": "Output file for schema"
+      },
+      {
+        "flag": "-H, --header",
+        "description": "Custom HTTP headers"
+      },
+      {
+        "flag": "--validate",
+        "description": "Validate schema syntax"
+      },
+      {
+        "flag": "--pretty",
+        "description": "Format JSON output"
+      },
+      {
+        "flag": "--timeout",
+        "description": "Request timeout in milliseconds"
+      }
+    ],
+    "operational_tips": [
+      "Use custom headers for authenticated GraphQL endpoints.",
+      "Save schemas to files for version control and comparison.",
+      "Combine with other GraphQL tools for comprehensive testing.",
+      "Use timeout flags for slow-responding endpoints.",
+      "Validate schemas before using them for testing."
+    ],
+    "step_sequences": [
+      {
+        "title": "GraphQL Schema Discovery",
+        "steps": [
+          {
+            "title": "Discover endpoint",
+            "details": "Find GraphQL endpoint through reconnaissance.",
+            "command": "ffuf -w graphql-paths.txt -u https://example.com/FUZZ/graphql -mc 200"
+          },
+          {
+            "title": "Extract schema",
+            "details": "Extract complete GraphQL schema.",
+            "command": "graphql-introspector https://api.example.com/graphql -o schema.json"
+          },
+          {
+            "title": "Analyze schema",
+            "details": "Review schema for available queries and mutations.",
+            "command": "cat schema.json | jq '.data.__schema.types[] | select(.kind == \"OBJECT\") | .name'"
+          },
+          {
+            "title": "Validate schema",
+            "details": "Ensure schema is valid GraphQL.",
+            "command": "graphql-introspector --validate schema.json"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Discovery → Extraction → Analysis → Validation",
+        "stages": [
+          {
+            "label": "Endpoint Discovery",
+            "description": "Identify GraphQL endpoints",
+            "command": "Directory enumeration + common GraphQL paths"
+          },
+          {
+            "label": "Schema Extraction",
+            "description": "Extract complete schema via introspection",
+            "command": "graphql-introspector https://api.example.com/graphql -o schema.json"
+          },
+          {
+            "label": "Schema Analysis",
+            "description": "Analyze schema structure and capabilities",
+            "command": "Review queries, mutations, and subscriptions"
+          },
+          {
+            "label": "Security Assessment",
+            "description": "Identify potential security issues",
+            "command": "Check for excessive data exposure and authorization bypasses"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Schema extracted successfully",
+        "meaning": "GraphQL introspection completed successfully",
+        "severity": "info"
+      },
+      {
+        "indicator": "Query types: 25, Mutation types: 8",
+        "meaning": "Schema contains 33 total operations",
+        "severity": "info"
+      },
+      {
+        "indicator": "Introspection disabled",
+        "meaning": "GraphQL endpoint has introspection disabled",
+        "severity": "warning"
+      },
+      {
+        "indicator": "Authentication required",
+        "meaning": "Endpoint requires authentication for introspection",
+        "severity": "warning"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Authenticated Schema Extraction",
+        "command": "graphql-introspector -H 'Authorization: Bearer $TOKEN' -H 'X-API-Key: $KEY' https://api.example.com/graphql",
+        "scenario": "Extract schema from authenticated GraphQL APIs",
+        "notes": ["Use multiple headers for complex authentication"]
+      },
+      {
+        "title": "Batch Schema Processing",
+        "command": "for endpoint in $(cat endpoints.txt); do\n  graphql-introspector $endpoint -o schemas/$(basename $endpoint).json\ndone",
+        "scenario": "Extract schemas from multiple GraphQL endpoints",
+        "notes": ["Automate schema collection for large assessments"]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "GraphQL Introspector GitHub",
+        "url": "https://github.com/APIs-guru/graphql-introspector",
+        "description": "Official tool repository and documentation"
+      },
+      {
+        "label": "GraphQL Specification",
+        "url": "https://graphql.org/learn/",
+        "description": "Official GraphQL documentation and specification"
+      },
+      {
+        "label": "GraphQL Security Testing",
+        "url": "https://graphql.org/learn/security/",
+        "description": "GraphQL security best practices and testing methods"
+      }
+    ]
+  },
+  {
+    "id": "bloomrpc",
+    "name": "BloomRPC",
+    "summary": "BloomRPC is a GUI-based gRPC client that provides an intuitive interface for testing gRPC services with schema introspection and request/response management.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via snap or download AppImage",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo snap install bloomrpc",
+            "copyable": true
+          },
+          {
+            "detail": "# Alternative: Download AppImage",
+            "copyable": false
+          },
+          {
+            "detail": "wget https://github.com/uw-labs/bloomrpc/releases/latest/download/BloomRPC-2.0.0.AppImage",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x BloomRPC-2.0.0.AppImage && ./BloomRPC-2.0.0.AppImage",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install via snap or download binary",
+        "steps": [
+          {
+            "detail": "sudo snap install bloomrpc --classic",
+            "copyable": true
+          },
+          {
+            "detail": "# Alternative: Download from releases",
+            "copyable": false
+          },
+          {
+            "detail": "wget https://github.com/uw-labs/bloomrpc/releases/latest/download/bloomrpc-linux-amd64.tar.gz",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Use Docker for isolated execution",
+        "steps": [
+          {
+            "detail": "docker pull ghcr.io/uw-labs/bloomrpc:latest",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -p 3000:3000 ghcr.io/uw-labs/bloomrpc:latest",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Launch BloomRPC",
+        "command": "bloomrpc",
+        "notes": ["Start the GUI application"]
+      },
+      {
+        "description": "Import proto file",
+        "command": "File → Import Proto → Select service.proto",
+        "notes": ["Load gRPC service definition"]
+      },
+      {
+        "description": "Connect to server",
+        "command": "Add Server → localhost:50051 → Connect",
+        "notes": ["Connect to gRPC server endpoint"]
+      },
+      {
+        "description": "Make request",
+        "command": "Select method → Enter JSON data → Call",
+        "notes": ["Execute gRPC method call"]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "Server URL",
+        "description": "gRPC server endpoint address"
+      },
+      {
+        "flag": "Proto Import",
+        "description": "Import .proto file for service definition"
+      },
+      {
+        "flag": "TLS Settings",
+        "description": "Configure SSL/TLS connection"
+      },
+      {
+        "flag": "Metadata",
+        "description": "Custom request metadata/headers"
+      },
+      {
+        "flag": "Request History",
+        "description": "Save and replay previous requests"
+      }
+    ],
+    "operational_tips": [
+      "Import proto files to automatically generate method interfaces.",
+      "Use request history to replay and modify previous calls.",
+      "Configure TLS certificates for secure gRPC connections.",
+      "Save request collections for regression testing.",
+      "Use metadata injection for authentication and tracing."
+    ],
+    "step_sequences": [
+      {
+        "title": "gRPC Service Testing",
+        "steps": [
+          {
+            "title": "Import proto",
+            "details": "Import service definition file.",
+            "command": "File → Import → service.proto"
+          },
+          {
+            "title": "Configure server",
+            "details": "Set up gRPC server connection.",
+            "command": "Add Server → localhost:50051 → Test Connection"
+          },
+          {
+            "title": "Test methods",
+            "details": "Execute various gRPC methods.",
+            "command": "Select method → Enter parameters → Call"
+          },
+          {
+            "title": "Save requests",
+            "details": "Save successful requests for later use.",
+            "command": "File → Save Collection → grpc-tests.json"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Discovery → Configuration → Testing → Documentation",
+        "stages": [
+          {
+            "label": "Service Discovery",
+            "description": "Find gRPC endpoints and proto files",
+            "command": "Use grpcurl or documentation to find services"
+          },
+          {
+            "label": "Proto Analysis",
+            "description": "Import and analyze proto definitions",
+            "command": "BloomRPC → Import Proto → Analyze methods"
+          },
+          {
+            "label": "Interactive Testing",
+            "description": "Test methods with GUI interface",
+            "command": "Configure calls → Execute → Analyze responses"
+          },
+          {
+            "label": "Collection Management",
+            "description": "Save and organize test cases",
+            "command": "Create collections for different scenarios"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Connected to server successfully",
+        "meaning": "gRPC connection established",
+        "severity": "info"
+      },
+      {
+        "indicator": "Method executed successfully",
+        "meaning": "gRPC call completed without errors",
+        "severity": "info"
+      },
+      {
+        "indicator": "Response: {\"id\": 123, \"name\": \"test\"}",
+        "meaning": "Successful gRPC response with data",
+        "severity": "info"
+      },
+      {
+        "indicator": "Connection refused",
+        "meaning": "gRPC server unavailable or wrong port",
+        "severity": "error"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "TLS Client Authentication",
+        "command": "Configure client certificates in server settings",
+        "scenario": "Connect to secure gRPC services with mutual TLS",
+        "notes": ["Import client.crt and client.key for authentication"]
+      },
+      {
+        "title": "Request Collection Export",
+        "command": "File → Export Collection → grpc-tests.postman_collection.json",
+        "scenario": "Export test cases for automation",
+        "notes": ["Compatible with Postman for automated testing"]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "BloomRPC GitHub",
+        "url": "https://github.com/uw-labs/bloomrpc",
+        "description": "Official BloomRPC repository and releases"
+      },
+      {
+        "label": "gRPC Documentation",
+        "url": "https://grpc.io/docs/",
+        "description": "Official gRPC documentation and guides"
+      },
+      {
+        "label": "Protocol Buffers",
+        "url": "https://developers.google.com/protocol-buffers",
+        "description": "Protocol Buffers specification and tools"
+      }
+    ]
+  },
+  {
+    "id": "boofuzz",
+    "name": "Boofuzz",
+    "summary": "Boofuzz is a network protocol fuzzer designed for finding security vulnerabilities in network services and APIs through intelligent fuzzing and monitoring.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via pip or download from source",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y python3 python3-pip",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install boofuzz",
+            "copyable": true
+          },
+          {
+            "detail": "boofuzz --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install via pip or use pre-installed Python",
+        "steps": [
+          {
+            "detail": "sudo pip3 install boofuzz",
+            "copyable": true
+          },
+          {
+            "detail": "# Alternative: Install from source",
+            "copyable": false
+          },
+          {
+            "detail": "git clone https://github.com/jtpereyda/boofuzz.git && cd boofuzz && pip3 install -e .",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Use Docker for isolated fuzzing environment",
+        "steps": [
+          {
+            "detail": "docker pull jtpereyda/boofuzz",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v $PWD:/data jtpereyda/boofuzz -h",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic network fuzzer",
+        "command": "boofuzz -f http://example.com:80 -t 5000",
+        "notes": ["Fuzz HTTP service on port 80"]
+      },
+      {
+        "description": "TCP service fuzzer",
+        "command": "boofuzz -f tcp://example.com:21 -t 1000",
+        "notes": ["Fuzz FTP service"]
+      },
+      {
+        "description": "Script-based fuzzing",
+        "command": "boofuzz -s scripts/my_fuzz.py -f tcp://target:443",
+        "notes": ["Use custom Python fuzzing script"]
+      },
+      {
+        "description": "Web API fuzzing",
+        "command": "boofuzz -f http://api.example.com -s scripts/api_fuzz.py",
+        "notes": ["Fuzz REST API endpoints"]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-f, --target",
+        "description": "Target URL or service"
+      },
+      {
+        "flag": "-t, --tests",
+        "description": "Number of tests to run"
+      },
+      {
+        "flag": "-s, --script",
+        "description": "Custom fuzzing script"
+      },
+      {
+        "flag": "-d, --data",
+        "description": "Data file for fuzzing"
+      },
+      {
+        "flag": "-l, --log",
+        "description": "Log file for results"
+      },
+      {
+        "flag": "-x, --restart",
+        "description": "Restart interval for services"
+      }
+    ],
+    "operational_tips": [
+      "Use script-based fuzzing for complex protocol testing.",
+      "Monitor target services during fuzzing for crashes.",
+      "Set appropriate test limits to avoid service overload.",
+      "Use logging to capture detailed fuzzing results.",
+      "Combine with network monitoring for comprehensive analysis."
+    ],
+    "step_sequences": [
+      {
+        "title": "Network Service Fuzzing",
+        "steps": [
+          {
+            "title": "Service reconnaissance",
+            "details": "Identify target services and ports.",
+            "command": "nmap -sV target.example.com"
+          },
+          {
+            "title": "Configure fuzzer",
+            "details": "Set up boofuzz for target service.",
+            "command": "boofuzz -f http://target.example.com:80 -t 10000"
+          },
+          {
+            "title": "Monitor for crashes",
+            "details": "Watch for service crashes during fuzzing.",
+            "command": "Monitor service logs and system resources"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review fuzzing logs for vulnerabilities.",
+            "command": "cat boofuzz.log | grep -i crash"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Reconnaissance → Configuration → Fuzzing → Analysis",
+        "stages": [
+          {
+            "label": "Service Discovery",
+            "description": "Identify target services and protocols",
+            "command": "Port scanning + service enumeration"
+          },
+          {
+            "label": "Fuzzer Setup",
+            "description": "Configure boofuzz for specific service",
+            "command": "Create custom scripts or use defaults"
+          },
+          {
+            "label": "Fuzzing Execution",
+            "description": "Run controlled fuzzing campaigns",
+            "command": "Execute with monitoring and logging"
+          },
+          {
+            "label": "Crash Analysis",
+            "description": "Analyze service crashes and vulnerabilities",
+            "command": "Review logs + debug crashes"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Test 1234/10000 completed",
+        "meaning": "Fuzzing test case executed",
+        "severity": "info"
+      },
+      {
+        "indicator": "Service crash detected",
+        "meaning": "Target service crashed during fuzzing",
+        "severity": "error"
+      },
+      {
+        "indicator": "Anomaly found in response",
+        "meaning": "Unexpected response pattern detected",
+        "severity": "warning"
+      },
+      {
+        "indicator": "Fuzzing completed successfully",
+        "meaning": "All tests completed without crashes",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom Protocol Fuzzing",
+        "command": "boofuzz -s custom_protocol_fuzzer.py -f tcp://target:9999 -t 50000",
+        "scenario": "Fuzz custom protocol with Python script",
+        "notes": ["Extend boofuzz for proprietary protocols"]
+      },
+      {
+        "title": "Distributed Fuzzing",
+        "command": "boofuzz --cluster -f tcp://target:80 -t 100000 --nodes 5",
+        "scenario": "Run distributed fuzzing across multiple machines",
+        "notes": ["Scale fuzzing efforts for large targets"]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Boofuzz GitHub",
+        "url": "https://github.com/jtpereyda/boofuzz",
+        "description": "Official boofuzz repository and documentation"
+      },
+      {
+        "label": "Network Fuzzing Guide",
+        "url": "https://github.com/jtpereyda/boofuzz/wiki",
+        "description": "Comprehensive fuzzing tutorials and examples"
+      },
+      {
+        "label": "Protocol Fuzzing Techniques",
+        "url": "https://www.fuzzing.org/",
+        "description": "Network protocol fuzzing methodologies"
+      }
+    ]
+  },
+  {
+    "id": "bandit",
+    "name": "Bandit",
+    "summary": "Bandit is a Python security linter designed to find common security issues in Python code through static analysis and pattern matching.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via pip or package manager",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y python3 python3-pip",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install bandit",
+            "copyable": true
+          },
+          {
+            "detail": "bandit --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Available in Kali repositories",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y bandit",
+            "copyable": true
+          },
+          {
+            "detail": "bandit --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Use Docker for isolated scanning",
+        "steps": [
+          {
+            "detail": "docker pull pyupio/bandit",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v $PWD:/src pyupio/bandit -r /src",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic scan",
+        "command": "bandit -r .",
+        "notes": ["Scan current directory recursively"]
+      },
+      {
+        "description": "Output to JSON",
+        "command": "bandit -f json -r .",
+        "notes": ["Generate JSON format results"]
+      },
+      {
+        "description": "Specific severity",
+        "command": "bandit -ll -r .",
+        "notes": ["Only show low severity and above"]
+      },
+      {
+        "description": "Configuration file",
+        "command": "bandit -c bandit.yaml -r .",
+        "notes": ["Use custom configuration"]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-r, --recursive",
+        "description": "Scan directories recursively"
+      },
+      {
+        "flag": "-f, --format",
+        "description": "Output format (text, json, yaml, csv)"
+      },
+      {
+        "flag": "-ll, --level",
+        "description": "Minimum severity level (low, medium, high)"
+      },
+      {
+        "flag": "-c, --configfile",
+        "description": "Configuration file path"
+      },
+      {
+        "flag": "-o, --output",
+        "description": "Output file for results"
+      },
+      {
+        "flag": "-x, --exclude",
+        "description": "Exclude files/directories"
+      }
+    ],
+    "operational_tips": [
+      "Use configuration files to customize detection rules.",
+      "Exclude test files and third-party libraries from scans.",
+      "Combine with CI/CD for automated security checks.",
+      "Use JSON output for integration with other tools.",
+      "Regularly update Bandit for latest security rules."
+    ],
+    "step_sequences": [
+      {
+        "title": "Python Security Analysis",
+        "steps": [
+          {
+            "title": "Configure scan",
+            "details": "Set up Bandit configuration.",
+            "command": "bandit -c security-config.yaml -r ."
+          },
+          {
+            "title": "Run analysis",
+            "details": "Execute security scan on Python code.",
+            "command": "bandit -f json -r . > bandit-results.json"
+          },
+          {
+            "title": "Review findings",
+            "details": "Analyze security issues found.",
+            "command": "cat bandit-results.json | jq '.results[] | {test_name: .test_name, issue_severity: .issue_severity}'"
+          },
+          {
+            "title": "Generate report",
+            "details": "Create detailed security report.",
+            "command": "bandit -f html -r . -o security-report.html"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Configuration → Scanning → Analysis → Reporting",
+        "stages": [
+          {
+            "label": "Setup Configuration",
+            "description": "Configure Bandit for project needs",
+            "command": "Create bandit.yaml with custom rules"
+          },
+          {
+            "label": "Code Analysis",
+            "description": "Run comprehensive security scan",
+            "command": "bandit -r . --format json"
+          },
+          {
+            "label": "Results Processing",
+            "description": "Process and filter findings",
+            "command": "Filter by severity and impact"
+          },
+          {
+            "label": "Report Generation",
+            "description": "Create actionable security reports",
+            "command": "Generate HTML/PDF reports for stakeholders"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Issue: B101: assert_used",
+        "meaning": "Use of assert statement detected",
+        "severity": "low"
+      },
+      {
+        "indicator": "Issue: B301: pickle",
+        "meaning": "Use of insecure pickle module",
+        "severity": "medium"
+      },
+      {
+        "indicator": "Issue: B601: shell_injection",
+        "meaning": "Possible shell injection vulnerability",
+        "severity": "high"
+      },
+      {
+        "indicator": "Code rated: 8.5/10",
+        "meaning": "Overall security score for codebase",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom Test Plugins",
+        "command": "class CustomTest(bandit.plugins.Plugin):\n    def test_function(self, context, func):\n        # Custom security test logic\n        pass",
+        "scenario": "Create custom security tests for Bandit",
+        "notes": ["Extend Bandit with organization-specific rules"]
+      },
+      {
+        "title": "CI/CD Integration",
+        "command": "bandit -r . -f json -o bandit-report.json\nexit_code=$(jq -r '.results | length' bandit-report.json)\nif [ $exit_code -gt 0 ]; then exit 1; fi",
+        "scenario": "Integrate Bandit in CI pipelines with fail-fast",
+        "notes": ["Fail build on high-severity security issues"]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Bandit Documentation",
+        "url": "https://bandit.readthedocs.io/",
+        "description": "Official Bandit documentation and configuration"
+      },
+      {
+        "label": "PyPI Package",
+        "url": "https://pypi.org/project/bandit/",
+        "description": "Bandit package information and releases"
+      },
+      {
+        "label": "Test Plugin Development",
+        "url": "https://bandit.readthedocs.io/en/latest/plugins/",
+        "description": "Guide for developing custom Bandit plugins"
+      }
+    ]
+  },
+  {
+    "id": "brakeman",
+    "name": "Brakeman",
+    "summary": "Brakeman is a static analysis security scanner for Ruby on Rails applications that detects security vulnerabilities in Rails code through comprehensive pattern matching.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via gem or package manager",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y ruby ruby-dev",
+            "copyable": true
+          },
+          {
+            "detail": "gem install brakeman",
+            "copyable": true
+          },
+          {
+            "detail": "brakeman --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Available in Kali repositories",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y brakeman",
+            "copyable": true
+          },
+          {
+            "detail": "brakeman --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Use Docker for isolated scanning",
+        "steps": [
+          {
+            "detail": "docker pull stelligent/security-brakeman",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v $PWD:/code stelligent/security-brakeman /code",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic scan",
+        "command": "brakeman .",
+        "notes": ["Scan current Rails application"]
+      },
+      {
+        "description": "Output to JSON",
+        "command": "brakeman -f json .",
+        "notes": ["Generate JSON format results"]
+      },
+      {
+        "description": "HTML report",
+        "command": "brakeman -o report.html .",
+        "notes": ["Generate HTML security report"]
+      },
+      {
+        "description": "Specific checks",
+        "command": "brakeman --only CheckCrossSiteScripting .",
+        "notes": ["Run only XSS checks"]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-f, --format",
+        "description": "Output format (text, json, html, csv, markdown)"
+      },
+      {
+        "flag": "-o, --output",
+        "description": "Output file for results"
+      },
+      {
+        "flag": "--only",
+        "description": "Run specific security checks"
+      },
+      {
+        "flag": "--except",
+        "description": "Exclude specific security checks"
+      },
+      {
+        "flag": "-q, --quiet",
+        "description": "Suppress informational output"
+      },
+      {
+        "flag": "-z, --exit-on-warn",
+        "description": "Exit with error on warnings"
+      }
+    ],
+    "operational_tips": [
+      "Use specific checks to focus on particular vulnerability types.",
+      "Generate HTML reports for stakeholder communication.",
+      "Exclude test files and vendor directories from scans.",
+      "Combine with CI/CD for automated Rails security testing.",
+      "Regularly update Brakeman for latest Rails vulnerability patterns."
+    ],
+    "step_sequences": [
+      {
+        "title": "Rails Security Assessment",
+        "steps": [
+          {
+            "title": "Configure scan",
+            "details": "Set up Brakeman options.",
+            "command": "brakeman --skip-libs -f json ."
+          },
+          {
+            "title": "Run analysis",
+            "details": "Execute security scan on Rails app.",
+            "command": "brakeman -f json . > brakeman-results.json"
+          },
+          {
+            "title": "Review findings",
+            "details": "Analyze security vulnerabilities found.",
+            "command": "cat brakeman-results.json | jq '.warnings[] | {warning_type: .warning_type, message: .message}'"
+          },
+          {
+            "title": "Generate report",
+            "details": "Create detailed security report.",
+            "command": "brakeman -f html -o security-report.html ."
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Configuration → Scanning → Analysis → Reporting",
+        "stages": [
+          {
+            "label": "Rails Application Setup",
+            "description": "Prepare Rails application for scanning",
+            "command": "Ensure app is ready for static analysis"
+          },
+          {
+            "label": "Security Scanning",
+            "description": "Run comprehensive Brakeman analysis",
+            "command": "brakeman --all-checks -f json"
+          },
+          {
+            "label": "Findings Analysis",
+            "description": "Review and categorize security issues",
+            "command": "Filter by severity and Rails-specific categories"
+          },
+          {
+            "label": "Report Distribution",
+            "description": "Share security findings with team",
+            "command": "Generate reports and create remediation tickets"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Warning: Cross Site Scripting",
+        "meaning": "Potential XSS vulnerability found",
+        "severity": "high"
+      },
+      {
+        "indicator": "Warning: SQL Injection",
+        "meaning": "SQL injection vulnerability detected",
+        "severity": "high"
+      },
+      {
+        "indicator": "Warning: Mass Assignment",
+        "meaning": "Rails mass assignment vulnerability",
+        "severity": "medium"
+      },
+      {
+        "indicator": "Scanned 125 files, 15 warnings",
+        "meaning": "Analysis completed with findings",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom Check Development",
+        "command": "class CustomCheck < Brakeman::BaseCheck\n  def run_check\n    # Custom security check logic\n  end\nend",
+        "scenario": "Create custom Rails security checks",
+        "notes": ["Extend Brakeman for application-specific vulnerabilities"]
+      },
+      {
+        "title": "CI/CD Pipeline Integration",
+        "command": "brakeman -f json -z .\nwarnings=$(jq -r '.warnings | length' brakeman-report.json)\nif [ $warnings -gt 0 ]; then exit 1; fi",
+        "scenario": "Fail CI builds on security warnings",
+        "notes": ["Integrate with GitHub Actions for automated testing"]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Brakeman Documentation",
+        "url": "https://brakemanscanner.org/",
+        "description": "Official Brakeman documentation and guides"
+      },
+      {
+        "label": "RubyGems",
+        "url": "https://rubygems.org/gems/brakeman",
+        "description": "Brakeman gem information and updates"
+      },
+      {
+        "label": "Rails Security Guide",
+        "url": "https://guides.rubyonrails.org/security.html",
+        "description": "Official Rails security documentation"
+      }
+    ]
+  },
+  {
+    "id": "swagger-codegen",
+    "name": "Swagger Codegen",
+    "summary": "Swagger Codegen is a tool for generating server stubs, client SDKs, and API documentation from OpenAPI/Swagger specifications across multiple programming languages.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via npm or download binary",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y default-jre",
+            "copyable": true
+          },
+          {
+            "detail": "wget https://repo1.maven.org/maven2/io/swagger/swagger-codegen-cli/2.4.19/swagger-codegen-cli-2.4.19.jar",
+            "copyable": true
+          },
+          {
+            "detail": "java -jar swagger-codegen-cli-2.4.19.jar --help",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install via npm or use pre-installed Java",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y default-jre wget",
+            "copyable": true
+          },
+          {
+            "detail": "wget https://repo1.maven.org/maven2/io/swagger/swagger-codegen-cli/2.4.19/swagger-codegen-cli-2.4.19.jar",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x swagger-codegen-cli-2.4.19.jar",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Use Docker for isolated execution",
+        "steps": [
+          {
+            "detail": "docker pull swaggerapi/swagger-codegen",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v $PWD:/local swaggerapi/swagger-codegen generate -i /local/swagger.json -l python",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Generate Python client",
+        "command": "java -jar swagger-codegen-cli.jar generate -i swagger.json -l python",
+        "notes": ["Generate Python SDK from Swagger spec"]
+      },
+      {
+        "description": "Generate server stubs",
+        "command": "java -jar swagger-codegen-cli.jar generate -i swagger.json -l nodejs-server -o ./server",
+        "notes": ["Generate Node.js server stubs"]
+      },
+      {
+        "description": "Multiple languages",
+        "command": "java -jar swagger-codegen-cli.jar generate -i swagger.json -l python,java,typescript",
+        "notes": ["Generate clients for multiple languages"]
+      },
+      {
+        "description": "With configuration",
+        "command": "java -jar swagger-codegen-cli.jar generate -c config.json -i swagger.json",
+        "notes": ["Use configuration file for complex generation"]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-i, --input-spec",
+        "description": "Swagger/OpenAPI specification file"
+      },
+      {
+        "flag": "-l, --lang",
+        "description": "Target programming language"
+      },
+      {
+        "flag": "-o, --output",
+        "description": "Output directory for generated code"
+      },
+      {
+        "flag": "-c, --config",
+        "description": "Configuration file path"
+      },
+      {
+        "flag": "--additional-properties",
+        "description": "Additional generation properties"
+      }
+    ],
+    "operational_tips": [
+      "Use configuration files for complex generation requirements.",
+      "Generate multiple language clients from single specification.",
+      "Combine with CI/CD for automated client generation.",
+      "Customize templates for organization-specific code patterns.",
+      "Use Docker for consistent generation environments."
+    ],
+    "step_sequences": [
+      {
+        "title": "API Client Generation",
+        "steps": [
+          {
+            "title": "Prepare specification",
+            "details": "Ensure OpenAPI/Swagger specification is ready.",
+            "command": "Validate swagger.json syntax"
+          },
+          {
+            "title": "Generate client",
+            "details": "Generate client SDK for target language.",
+            "command": "java -jar swagger-codegen-cli.jar generate -i swagger.json -l python -o ./client"
+          },
+          {
+            "title": "Configure build",
+            "details": "Set up build process for generated client.",
+            "command": "cd client && pip install -r requirements.txt"
+          },
+          {
+            "title": "Test client",
+            "details": "Verify generated client functionality.",
+            "command": "python -m pytest tests/"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Specification → Generation → Build → Integration",
+        "stages": [
+          {
+            "label": "API Specification",
+            "description": "Create or validate OpenAPI/Swagger spec",
+            "command": "Design API with Swagger Editor or export from existing service"
+          },
+          {
+            "label": "Code Generation",
+            "description": "Generate clients and servers from specification",
+            "command": "swagger-codegen -i api.yaml -l python,java,typescript"
+          },
+          {
+            "label": "Build Process",
+            "description": "Build generated code for target platforms",
+            "command": "Compile and package generated clients"
+          },
+          {
+            "label": "Integration Testing",
+            "description": "Test generated clients against API",
+            "command": "Run integration tests and validate functionality"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Successfully generated Python client",
+        "meaning": "Client SDK generated without errors",
+        "severity": "info"
+      },
+      {
+        "indicator": "Generated 5 language clients",
+        "meaning": "Multiple client SDKs created successfully",
+        "severity": "info"
+      },
+      {
+        "indicator": "Validation warnings found",
+        "meaning": "Specification has validation issues",
+        "severity": "warning"
+      },
+      {
+        "indicator": "Build completed successfully",
+        "meaning": "Generated code compiled without errors",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom Template Generation",
+        "command": "java -jar swagger-codegen-cli.jar generate -i swagger.json -l python --template-dir custom-templates/",
+        "scenario": "Use custom templates for code generation",
+        "notes": ["Customize generated code structure and style"]
+      },
+      {
+        "title": "Batch API Generation",
+        "command": "for spec in apis/*.json; do\n  java -jar swagger-codegen-cli.jar generate -i $spec -l python -o clients/$(basename $spec .json)\ndone",
+        "scenario": "Generate clients for multiple API specifications",
+        "notes": ["Automate client generation for API portfolios"]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Swagger Codegen GitHub",
+        "url": "https://github.com/swagger-api/swagger-codegen",
+        "description": "Official repository and documentation"
+      },
+      {
+        "label": "OpenAPI Specification",
+        "url": "https://swagger.io/specification/",
+        "description": "OpenAPI/Swagger specification documentation"
+      },
+      {
+        "label": "Code Generation Guide",
+        "url": "https://swagger.io/tools/swagger-codegen/",
+        "description": "Comprehensive code generation guide"
+      }
+    ]
+  },
+  {
+    "id": "openapi-scanner",
+    "name": "OpenAPI Scanner",
+    "summary": "OpenAPI Scanner is a security testing tool that analyzes REST APIs defined by OpenAPI/Swagger specifications to identify security vulnerabilities and misconfigurations.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via npm or download binary",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y nodejs npm",
+            "copyable": true
+          },
+          {
+            "detail": "npm install -g @apidevtools/swagger-parser",
+            "copyable": true
+          },
+          {
+            "detail": "npm install -g @apidevtools/openapi-scanner",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install via npm or use pre-installed Node.js",
+        "steps": [
+          {
+            "detail": "sudo npm install -g @apidevtools/openapi-scanner",
+            "copyable": true
+          },
+          {
+            "detail": "# Alternative: Clone and build",
+            "copyable": false
+          },
+          {
+            "detail": "git clone https://github.com/APIDevTools/openapi-scanner.git",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Use Node.js container for execution",
+        "steps": [
+          {
+            "detail": "docker pull node:16-alpine",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v $PWD:/app -w /app node:16-alpine npx @apidevtools/openapi-scanner",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic API scan",
+        "command": "openapi-scanner -s swagger.json -o report.json",
+        "notes": ["Scan API specification for security issues"]
+      },
+      {
+        "description": "With authentication",
+        "command": "openapi-scanner -s swagger.json -a 'Bearer: $TOKEN' -o report.json",
+        "notes": ["Test authenticated endpoints"]
+      },
+      {
+        "description": "HTML report",
+        "command": "openapi-scanner -s swagger.json -f html -o report.html",
+        "notes": ["Generate HTML security report"]
+      },
+      {
+        "description": "Specific checks",
+        "command": "openapi-scanner -s swagger.json --only security,auth",
+        "notes": ["Run only security and authentication checks"]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-s, --spec",
+        "description": "OpenAPI/Swagger specification file"
+      },
+      {
+        "flag": "-o, --output",
+        "description": "Output file for results"
+      },
+      {
+        "flag": "-f, --format",
+        "description": "Output format (json, html, markdown)"
+      },
+      {
+        "flag": "-a, --auth",
+        "description": "Authentication credentials"
+      },
+      {
+        "flag": "--only",
+        "description": "Run specific security checks"
+      },
+      {
+        "flag": "--severity",
+        "description": "Filter by severity level"
+      }
+    ],
+    "operational_tips": [
+      "Use authentication flags for testing protected APIs.",
+      "Generate HTML reports for stakeholder communication.",
+      "Focus on specific check types for targeted testing.",
+      "Combine with dynamic testing for comprehensive security assessment.",
+      "Use CI/CD integration for automated API security scanning."
+    ],
+    "step_sequences": [
+      {
+        "title": "OpenAPI Security Assessment",
+        "steps": [
+          {
+            "title": "Parse specification",
+            "details": "Parse OpenAPI specification for analysis.",
+            "command": "openapi-scanner -s swagger.json --validate"
+          },
+          {
+            "title": "Security analysis",
+            "details": "Run comprehensive security checks.",
+            "command": "openapi-scanner -s swagger.json -o security-report.json"
+          },
+          {
+            "title": "Review findings",
+            "details": "Analyze security vulnerabilities found.",
+            "command": "cat security-report.json | jq '.results[] | {check: .check, severity: .severity}'"
+          },
+          {
+            "title": "Generate report",
+            "details": "Create detailed security report.",
+            "command": "openapi-scanner -s swagger.json -f html -o security-report.html"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Specification Analysis → Security Testing → Reporting",
+        "stages": [
+          {
+            "label": "API Specification",
+            "description": "Obtain and validate OpenAPI specification",
+            "command": "Download from API documentation or export from running service"
+          },
+          {
+            "label": "Static Analysis",
+            "description": "Analyze specification for security issues",
+            "command": "Run comprehensive security checks on specification"
+          },
+          {
+            "label": "Dynamic Testing",
+            "description": "Combine with dynamic API testing tools",
+            "command": "Use findings to guide dynamic testing with Postman/ffuf"
+          },
+          {
+            "label": "Report Generation",
+            "description": "Create actionable security reports",
+            "command": "Generate reports for development and security teams"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Critical: Broken Object Reference",
+        "meaning": "Critical security vulnerability in API specification",
+        "severity": "error"
+      },
+      {
+        "indicator": "Warning: Missing Rate Limiting",
+        "meaning": "API lacks rate limiting controls",
+        "severity": "warning"
+      },
+      {
+        "indicator": "Info: Inconsistent Authentication",
+        "meaning": "Authentication patterns vary across endpoints",
+        "severity": "info"
+      },
+      {
+        "indicator": "Scan completed: 25 endpoints analyzed",
+        "meaning": "Security analysis completed successfully",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom Security Checks",
+        "command": "openapi-scanner --custom-checks custom-checks.js -s swagger.json",
+        "scenario": "Add custom security checks for API specifications",
+        "notes": ["Extend scanner with organization-specific security rules"]
+      },
+      {
+        "title": "CI/CD Integration",
+        "command": "openapi-scanner -s api.yaml -f json --severity high,critical\nif [ $(jq '.results | length' report.json) -gt 0 ]; then exit 1; fi",
+        "scenario": "Fail CI builds on high-severity API issues",
+        "notes": ["Integrate with GitHub Actions for automated API security"]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "OpenAPI Scanner GitHub",
+        "url": "https://github.com/APIDevTools/openapi-scanner",
+        "description": "Official repository and documentation"
+      },
+      {
+        "label": "OpenAPI Security Testing",
+        "url": "https://github.com/ARPSyndicate/awesome-openapi-security",
+        "description": "Comprehensive OpenAPI security testing resources"
+      },
+      {
+        "label": "API Security Guide",
+        "url": "https://owasp.org/www-project-api-security/",
+        "description": "OWASP API Security guidelines and testing"
+      }
+    ]
+  },
+  {
+    "id": "eslint-security",
+    "name": "ESLint Security Plugins",
+    "summary": "ESLint security plugins extend ESLint with rules specifically designed to detect security vulnerabilities, anti-patterns, and code quality issues in JavaScript applications.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via npm or package manager",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y nodejs npm",
+            "copyable": true
+          },
+          {
+            "detail": "npm install -g eslint eslint-plugin-security",
+            "copyable": true
+          },
+          {
+            "detail": "npm install -g eslint-plugin-import eslint-plugin-node",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install via npm or use pre-installed Node.js",
+        "steps": [
+          {
+            "detail": "sudo npm install -g eslint eslint-plugin-security",
+            "copyable": true
+          },
+          {
+            "detail": "# Alternative: Yarn installation",
+            "copyable": false
+          },
+          {
+            "detail": "yarn global add eslint eslint-plugin-security",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Use Docker for isolated execution",
+        "steps": [
+          {
+            "detail": "docker pull node:16-alpine",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v $PWD:/app -w /app node:16-alpine npm install eslint eslint-plugin-security",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic security scan",
+        "command": "eslint --plugin security src/",
+        "notes": ["Run security-focused ESLint rules"]
+      },
+      {
+        "description": "With configuration",
+        "command": "eslint -c .eslintrc.js --plugin security src/",
+        "notes": ["Use custom ESLint configuration"]
+      },
+      {
+        "description": "Multiple plugins",
+        "command": "eslint --plugin security,import,node src/",
+        "notes": ["Run multiple security and quality plugins"]
+      },
+      {
+        "description": "Fix issues",
+        "command": "eslint --plugin security --fix src/",
+        "notes": ["Auto-fix some security issues"]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--plugin",
+        "description": "Specify ESLint plugins to use"
+      },
+      {
+        "flag": "--config",
+        "description": "Configuration file path"
+      },
+      {
+        "flag": "--ext",
+        "description": "File extensions to lint"
+      },
+      {
+        "flag": "--fix",
+        "description": "Automatically fix fixable issues"
+      },
+      {
+        "flag": "--max-warnings",
+        "description": "Maximum number of warnings before error"
+      }
+    ],
+    "operational_tips": [
+      "Configure .eslintrc.js for project-specific security rules.",
+      "Use multiple security plugins for comprehensive coverage.",
+      "Integrate with pre-commit hooks for early detection.",
+      "Combine with IDE plugins for real-time feedback.",
+      "Use --fix flag for automatic issue resolution."
+    ],
+    "step_sequences": [
+      {
+        "title": "JavaScript Security Analysis",
+        "steps": [
+          {
+            "title": "Configure ESLint",
+            "details": "Set up security-focused ESLint configuration.",
+            "command": "Create .eslintrc.js with security rules"
+          },
+          {
+            "title": "Install plugins",
+            "details": "Install security and quality plugins.",
+            "command": "npm install --save-dev eslint-plugin-security eslint-plugin-import"
+          },
+          {
+            "title": "Run analysis",
+            "details": "Execute security linting on JavaScript code.",
+            "command": "eslint --plugin security,import src/ --format json > eslint-report.json"
+          },
+          {
+            "title": "Review findings",
+            "details": "Analyze security issues found.",
+            "command": "cat eslint-report.json | jq '.[] | {ruleId: .ruleId, severity: .severity}'"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Configuration → Analysis → Fixing → Validation",
+        "stages": [
+          {
+            "label": "ESLint Setup",
+            "description": "Configure ESLint for security analysis",
+            "command": "Create .eslintrc.js with security plugins and rules"
+          },
+          {
+            "label": "Security Scanning",
+            "description": "Run comprehensive security analysis",
+            "command": "ESLint with security plugins on all source files"
+          },
+          {
+            "label": "Issue Resolution",
+            "description": "Fix security issues automatically or manually",
+            "command": "Use --fix flag and review remaining issues"
+          },
+          {
+            "label": "CI Integration",
+            "description": "Integrate with CI/CD for automated security checks",
+            "command": "Add ESLint step to GitHub Actions or Jenkins pipeline"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "error: no-eval (Security)",
+        "meaning": "Use of eval() function detected",
+        "severity": "error"
+      },
+      {
+        "indicator": "warning: process-exit (Security)",
+        "meaning": "Direct process.exit() call found",
+        "severity": "warning"
+      },
+      {
+        "indicator": "warning: detect-new-buffer (Security)",
+        "meaning": "Potential buffer overflow vulnerability",
+        "severity": "warning"
+      },
+      {
+        "indicator": "0 errors, 3 warnings",
+        "meaning": "Analysis completed with security issues found",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom Security Rules",
+        "command": "module.exports = {\n  rules: {\n    'no-dangerous-js': 'error',\n    'no-eval': 'error',\n    'custom-security-rule': 'warn'\n  }\n};",
+        "scenario": "Create custom security rules for ESLint",
+        "notes": ["Define organization-specific security policies"]
+      },
+      {
+        "title": "CI/CD Pipeline Integration",
+        "command": "eslint --plugin security --format json --output-file eslint-results.json src/\nerrors=$(jq -r '.[] | select(.severity == \"error\") | length' eslint-results.json)\nif [ $errors -gt 0 ]; then exit 1; fi",
+        "scenario": "Fail CI builds on security errors",
+        "notes": ["Integrate with GitHub Actions for automated security enforcement"]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "ESLint Security Plugin",
+        "url": "https://github.com/nodesecurity/eslint-plugin-security",
+        "description": "Official security plugin repository"
+      },
+      {
+        "label": "ESLint Documentation",
+        "url": "https://eslint.org/docs/",
+        "description": "Official ESLint documentation and configuration"
+      },
+      {
+        "label": "JavaScript Security Guide",
+        "url": "https://github.com/nodesecurity/eslint-plugin-security/blob/master/docs/rules.md",
+        "description": "Security rules documentation and examples"
+      }
+    ]
+  },
+  {
+    "id": "retire-js",
+    "name": "Retire.js",
+    "summary": "Retire.js is a scanner for detecting known vulnerabilities in JavaScript dependencies and libraries, helping to identify and replace outdated packages.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via npm or download binary",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y nodejs npm",
+            "copyable": true
+          },
+          {
+            "detail": "npm install -g retire",
+            "copyable": true
+          },
+          {
+            "detail": "retire --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install via npm or use pre-installed Node.js",
+        "steps": [
+          {
+            "detail": "sudo npm install -g retire",
+            "copyable": true
+          },
+          {
+            "detail": "# Alternative: Yarn installation",
+            "copyable": false
+          },
+          {
+            "detail": "yarn global add retire",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Use Docker for isolated execution",
+        "steps": [
+          {
+            "detail": "docker pull node:16-alpine",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v $PWD:/app -w /app node:16-alpine npx retire",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic dependency scan",
+        "command": "retire",
+        "notes": ["Scan current directory for vulnerable dependencies"]
+      },
+      {
+        "description": "JSON output",
+        "command": "retire --outputformat json",
+        "notes": ["Generate JSON format results"]
+      },
+      {
+        "description": "With exit code",
+        "command": "retire --exitwith 2",
+        "notes": ["Exit with specific code for vulnerabilities found"]
+      },
+      {
+        "description": "Output file",
+        "command": "retire --outputpath vulnerability-report.json",
+        "notes": ["Save results to specific file"]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--outputformat",
+        "description": "Output format (json, jsonwithdeps, text)"
+      },
+      {
+        "flag": "--outputpath",
+        "description": "Output file path for results"
+      },
+      {
+        "flag": "--exitwith",
+        "description": "Exit code for vulnerabilities found"
+      },
+      {
+        "flag": "--colors",
+        "description": "Enable colored output"
+      },
+      {
+        "flag": "--nocache",
+        "description": "Disable caching of vulnerability database"
+      }
+    ],
+    "operational_tips": [
+      "Use JSON output for integration with CI/CD pipelines.",
+      "Set appropriate exit codes for automated vulnerability management.",
+      "Combine with package managers for automated dependency updates.",
+      "Use --nocache flag to ensure latest vulnerability database.",
+      "Integrate with build processes for continuous security monitoring."
+    ],
+    "step_sequences": [
+      {
+        "title": "JavaScript Dependency Security",
+        "steps": [
+          {
+            "title": "Update database",
+            "details": "Update vulnerability database.",
+            "command": "retire --nocache"
+          },
+          {
+            "title": "Scan project",
+            "details": "Scan for vulnerable dependencies.",
+            "command": "retire --outputformat json > retire-results.json"
+          },
+          {
+            "title": "Review findings",
+            "details": "Analyze vulnerable dependencies found.",
+            "command": "cat retire-results.json | jq '.data[] | {component: .component, version: .version, vulnerability: .vulnerabilities[]}'"
+          },
+          {
+            "title": "Generate report",
+            "details": "Create vulnerability report.",
+            "command": "retire --outputformat text --outputpath vulnerability-report.txt"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Database Update → Scanning → Analysis → Remediation",
+        "stages": [
+          {
+            "label": "Vulnerability Database",
+            "description": "Ensure latest vulnerability database",
+            "command": "retire --nocache to refresh vulnerability data"
+          },
+          {
+            "label": "Dependency Analysis",
+            "description": "Scan JavaScript dependencies for vulnerabilities",
+            "command": "retire --outputformat json on all package.json files"
+          },
+          {
+            "label": "Risk Assessment",
+            "description": "Analyze vulnerability impact and severity",
+            "command": "Filter results by severity and CVSS scores"
+          },
+          {
+            "label": "Remediation Planning",
+            "description": "Plan dependency updates and patches",
+            "command": "Create upgrade tickets and update package.json files"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "lodash 4.17.15 has 1 known vulnerability",
+        "meaning": "Outdated dependency with security issue found",
+        "severity": "error"
+      },
+      {
+        "indicator": "jquery 3.6.0 has 2 known vulnerabilities",
+        "meaning": "Multiple vulnerabilities in jQuery library",
+        "severity": "error"
+      },
+      {
+        "indicator": "No known vulnerabilities found",
+        "meaning": "All dependencies are up to date",
+        "severity": "info"
+      },
+      {
+        "indicator": "Scanned 156 dependencies",
+        "meaning": "Analysis completed on all dependencies",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom Vulnerability Database",
+        "command": "retire --customrepo https://company-vulns.example.com/db.json",
+        "scenario": "Use custom vulnerability database",
+        "notes": ["Extend with organization-specific vulnerability data"]
+      },
+      {
+        "title": "CI/CD Integration",
+        "command": "retire --outputformat json --exitwith 1\nif [ $(jq -r '.data | length' retire-report.json) -gt 0 ]; then exit 1; fi",
+        "scenario": "Fail CI builds on vulnerable dependencies",
+        "notes": ["Integrate with GitHub Actions for automated dependency security"]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Retire.js GitHub",
+        "url": "https://github.com/RetireJS/retire.js",
+        "description": "Official Retire.js repository and documentation"
+      },
+      {
+        "label": "Vulnerability Database",
+        "url": "https://retirejs.github.io/retire.js/repository/",
+        "description": "JavaScript vulnerability database"
+      },
+      {
+        "label": "Dependency Security Guide",
+        "url": "https://nodesecurity.io/",
+        "description": "JavaScript security best practices and tools"
+      }
+    ]
   }
 ]

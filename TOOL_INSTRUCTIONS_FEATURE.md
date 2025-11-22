@@ -2,6 +2,8 @@
 
 The security tool reference inside PT Journal is now powered by structured data files instead of hard-coded Rust match statements. This document explains how the system is organized, how the UI consumes the data, and how to author new instructional content.
 
+The instruction catalog now includes comprehensive coverage of specialized platforms and collaboration tools including Burp Suite (Community/Professional), OWASP ZAP, Metasploit Framework (with advanced module workflows), Dradis (collaboration and reporting), Faraday (integrated pentesting environment), and Social Engineer Toolkit (phishing and social engineering campaigns).
+
 ## Architecture Overview
 
 ```text

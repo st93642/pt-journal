@@ -345,6 +345,16 @@
     "category": "Web Application"
   },
   {
+    "id": "burpsuite",
+    "label": "Burp Suite - Web Application Security Testing Platform",
+    "category": "Web Application"
+  },
+  {
+    "id": "owasp-zap",
+    "label": "OWASP ZAP - Web Application Security Scanner",
+    "category": "Web Application"
+  },
+  {
     "id": "wireshark",
     "label": "Wireshark - Network Analyzer",
     "category": "Network Sniffing & Spoofing"

@@ -50,6 +50,16 @@ A GTK4 desktop application for structured penetration testing documentation and 
 - Phase selector dropdown with step list navigation
 - Integrated quiz viewer with MCQ rendering and statistics
 
+### 🛠️ Security Tool Instructions & Integration
+
+- Comprehensive instruction catalog for 80+ pentesting tools organized by category
+- Specialized coverage for Burp Suite (Community/Pro), OWASP ZAP, Metasploit Framework
+- Collaboration platform guides (Dradis, Faraday) for team reporting workflows
+- Social engineering campaign playbooks (Social Engineer Toolkit)
+- Rich documentation including installation guides, step sequences, workflow guides, and output interpretation
+- Tool execution panel with VTE terminal for running security tools directly
+- Data-driven instruction system (JSON-based) for easy content updates without code changes
+
 ## System Requirements
 
 ### Linux (Ubuntu/Debian)

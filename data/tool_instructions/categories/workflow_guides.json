@@ -1,0 +1,3481 @@
+[
+  {
+    "id": "workflow_web_app_pentest",
+    "name": "Web Application Pentesting Workflow",
+    "summary": "Comprehensive methodology for web application security testing from reconnaissance to reporting, covering OWASP Top 10 vulnerabilities and modern attack techniques.",
+    "details": "This workflow provides a systematic approach to web application penetration testing. It follows industry-standard methodologies including OWASP Testing Guide and PTES, ensuring thorough coverage of all attack vectors. The workflow is divided into distinct phases with clear decision points and evidence collection requirements.",
+    "installation_guides": [
+      {
+        "platform": "Prerequisites",
+        "summary": "Required tools and environment setup",
+        "steps": [
+          {
+            "detail": "Install base reconnaissance tools: amass, sublist3r, theHarvester, dnsrecon",
+            "copyable": false
+          },
+          {
+            "detail": "Set up web scanning tools: nmap, nikto, gobuster, ffuf, nuclei",
+            "copyable": false
+          },
+          {
+            "detail": "Configure web proxies: burpsuite or owasp-zap",
+            "copyable": false
+          },
+          {
+            "detail": "Prepare exploitation tools: sqlmap, metasploit, searchsploit",
+            "copyable": false
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Quick reconnaissance scan",
+        "command": "amass enum -d example.com -o amass_results.txt",
+        "notes": [
+          "Start with passive reconnaissance to avoid detection"
+        ]
+      },
+      {
+        "description": "Web technology identification",
+        "command": "whatweb --log-verbose=vuln_scan.txt https://target.example.com",
+        "notes": [
+          "Identifies technologies, frameworks, and potential vulnerabilities"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Phase 1: Reconnaissance & Information Gathering",
+        "steps": [
+          {
+            "title": "Subdomain Enumeration",
+            "details": "Discover all subdomains and attack surface using multiple tools",
+            "command": "amass enum -d example.com -o amass_results.txt && sublist3r -d example.com -o sublist3r_results.txt"
+          },
+          {
+            "title": "OSINT Gathering",
+            "details": "Collect publicly available information about the target",
+            "command": "theHarvester -d example.com -l 500 -b google,linkedin -h"
+          },
+          {
+            "title": "DNS Reconnaissance",
+            "details": "Map DNS infrastructure and identify potential entry points",
+            "command": "dnsrecon -d example.com -t std -o dns_results.txt"
+          },
+          {
+            "title": "Technology Identification",
+            "details": "Identify web technologies, frameworks, and versions",
+            "command": "whatweb --log-verbose=tech_ident.txt https://target.example.com"
+          }
+        ]
+      },
+      {
+        "title": "Phase 2: Scanning & Enumeration",
+        "steps": [
+          {
+            "title": "Port Scanning",
+            "details": "Identify open ports and services on target infrastructure",
+            "command": "nmap -sS -sV -oN nmap_scan.txt -p- target.example.com"
+          },
+          {
+            "title": "Web Vulnerability Scanning",
+            "details": "Automated scanning for common web vulnerabilities",
+            "command": "nikto -h https://target.example.com -o nikko_results.txt"
+          },
+          {
+            "title": "Directory Brute Forcing",
+            "details": "Discover hidden directories and files",
+            "command": "gobuster dir -u https://target.example.com -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -o gobuster_results.txt"
+          },
+          {
+            "title": "Nuclei Template Scanning",
+            "details": "Template-based vulnerability scanning",
+            "command": "nuclei -l targets.txt -o nuclei_results.txt"
+          }
+        ]
+      },
+      {
+        "title": "Phase 3: Manual Testing & Vulnerability Analysis",
+        "steps": [
+          {
+            "title": "Web Proxy Configuration",
+            "details": "Set up Burp Suite or OWASP ZAP for intercepting traffic",
+            "command": "# Configure browser proxy to 127.0.0.1:8080 for Burp Suite"
+          },
+          {
+            "title": "SQL Injection Testing",
+            "details": "Test for SQL injection vulnerabilities using sqlmap",
+            "command": "sqlmap -u \"https://target.example.com/page?id=1\" --batch --sql-shell"
+          },
+          {
+            "title": "XSS Testing",
+            "details": "Test for reflected and stored XSS vulnerabilities",
+            "command": "# Use Burp Suite scanner and manual testing with XSS payloads"
+          },
+          {
+            "title": "Authentication Bypass",
+            "details": "Test authentication mechanisms for bypasses",
+            "command": "# Test default credentials, SQL injection in login forms, JWT manipulation"
+          }
+        ]
+      },
+      {
+        "title": "Phase 4: Exploitation & Post-Exploitation",
+        "steps": [
+          {
+            "title": "Exploit Research",
+            "details": "Find exploits for identified vulnerabilities",
+            "command": "searchsploit apache 2.4.49"
+          },
+          {
+            "title": "Metasploit Exploitation",
+            "details": "Use Metasploit framework for exploitation",
+            "command": "msfconsole -x \"use exploit/multi/http/apache_mod_cgi_bash_env_exec; set RHOSTS target.example.com; exploit\""
+          },
+          {
+            "title": "Shell Stabilization",
+            "details": "Upgrade basic shell to fully interactive session",
+            "command": "# Use pwncat or python -c 'import pty; pty.spawn(\"/bin/bash\")'"
+          },
+          {
+            "title": "Privilege Escalation",
+            "details": "Escalate privileges within the compromised system",
+            "command": "linpeas.sh | tee linpeas_results.txt"
+          }
+        ]
+      },
+      {
+        "title": "Phase 5: Reporting & Evidence Collection",
+        "steps": [
+          {
+            "title": "Evidence Documentation",
+            "details": "Collect and organize all evidence and screenshots",
+            "command": "# Create evidence folder structure: mkdir -p evidence/{recon,scan,exploit,report}"
+          },
+          {
+            "title": "Vulnerability Documentation",
+            "details": "Document each finding with screenshots and proof",
+            "command": "# Use Dradis or Faraday for collaborative reporting"
+          },
+          {
+            "title": "Risk Assessment",
+            "details": "Assess risk levels and business impact",
+            "command": "# Use CVSS calculator for scoring vulnerabilities"
+          },
+          {
+            "title": "Final Report Generation",
+            "details": "Generate comprehensive penetration testing report",
+            "command": "# Compile findings, recommendations, and remediation steps"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Complete Web Application Pentesting Timeline",
+        "stages": [
+          {
+            "label": "Day 1: Reconnaissance",
+            "description": "Passive and active reconnaissance, subdomain enumeration, technology identification",
+            "command": "amass enum -d example.com -o amass_results.txt && sublist3r -d example.com -o sublist3r.txt"
+          },
+          {
+            "label": "Day 2: Scanning",
+            "description": "Port scanning, vulnerability scanning, directory enumeration",
+            "command": "nmap -sS -sV -oN nmap_scan.txt target.example.com && nikto -h https://target.example.com -o nikko.txt"
+          },
+          {
+            "label": "Day 3: Manual Testing",
+            "description": "Configure web proxy, test for OWASP Top 10 vulnerabilities",
+            "command": "# Start Burp Suite, configure browser proxy, begin manual testing"
+          },
+          {
+            "label": "Day 4: Exploitation",
+            "description": "Exploit validated vulnerabilities, establish persistence",
+            "command": "msfconsole -r exploit.rc"
+          },
+          {
+            "label": "Day 5: Reporting",
+            "description": "Document findings, generate report, provide remediation",
+            "command": "# Compile evidence, write executive summary, create technical report"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Subdomain discovered: admin.example.com",
+        "meaning": "Administrative interface potentially exposed",
+        "severity": "High"
+      },
+      {
+        "indicator": "Port 80/443 open with Apache/2.4.49",
+        "meaning": "Web server running vulnerable Apache version",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "SQL injection vulnerability confirmed",
+        "meaning": "Database can be accessed and potentially dumped",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "Directory listing enabled",
+        "meaning": "Sensitive files may be exposed",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Weak authentication mechanism",
+        "meaning": "Accounts can be bypassed or brute-forced",
+        "severity": "High"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom Nuclei Templates",
+        "scenario": "Create custom templates for target-specific vulnerabilities",
+        "command": "nuclei -t custom-templates/ -l targets.txt -o custom_results.txt",
+        "notes": [
+          "Write YAML templates for application-specific vulnerabilities"
+        ]
+      },
+      {
+        "title": "Burp Suite Intruder Automation",
+        "scenario": "Automate parameter fuzzing with custom payloads",
+        "command": "# Use Intruder with custom wordlists and payload markers",
+        "notes": [
+          "Create targeted payload lists for specific parameter types"
+        ]
+      },
+      {
+        "title": "Metasploit Resource Scripts",
+        "scenario": "Automate exploitation chain with resource scripts",
+        "command": "msfconsole -r automated_exploit.rc",
+        "notes": [
+          "Resource scripts can chain multiple exploits automatically"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Web Application Testing Methodologies Comparison",
+      "columns": [
+        "Aspect",
+        "OWASP Testing Guide",
+        "PTES",
+        "NIST SP 800-115",
+        "OSSTMM"
+      ],
+      "rows": [
+        [
+          "Scope",
+          "Web apps & APIs",
+          "All pentesting",
+          "Technical testing",
+          "Security testing"
+        ],
+        [
+          "Structure",
+          "Phase-based",
+          "Phase-based",
+          "Step-by-step",
+          "Scope-based"
+        ],
+        [
+          "Coverage",
+          "OWASP Top 10 focus",
+          "Comprehensive",
+          "Technical depth",
+          "Operational security"
+        ],
+        [
+          "Documentation",
+          "Detailed guides",
+          "Framework",
+          "Formal standard",
+          "Methodology"
+        ],
+        [
+          "Best for",
+          "Web app testing",
+          "General pentesting",
+          "Compliance",
+          "Comprehensive audits"
+        ]
+      ]
+    },
+    "resources": [
+      {
+        "label": "OWASP Testing Guide",
+        "url": "https://owasp.org/www-project-web-security-testing-guide/",
+        "description": "Comprehensive web application testing methodology"
+      },
+      {
+        "label": "PTES Framework",
+        "url": "https://www.pentest-standard.org/",
+        "description": "Penetration Testing Execution Standard"
+      },
+      {
+        "label": "Burp Suite Documentation",
+        "url": "https://portswigger.net/burp/documentation",
+        "description": "Complete guide to Burp Suite features and techniques"
+      }
+    ]
+  },
+  {
+    "id": "workflow_infra_pentest",
+    "name": "Infrastructure Pentesting Workflow",
+    "summary": "Systematic methodology for infrastructure penetration testing covering network reconnaissance, service enumeration, vulnerability assessment, and system compromise.",
+    "details": "This workflow provides a structured approach to testing network infrastructure including servers, network devices, and cloud environments. It follows industry best practices for infrastructure security testing with emphasis on stealth, thoroughness, and proper evidence collection.",
+    "installation_guides": [
+      {
+        "platform": "Prerequisites",
+        "summary": "Required tools for infrastructure testing",
+        "steps": [
+          {
+            "detail": "Install network scanning tools: nmap, masscan, naabu",
+            "copyable": false
+          },
+          {
+            "detail": "Set up enumeration tools: enum4linux, smbmap, snmpwalk",
+            "copyable": false
+          },
+          {
+            "detail": "Prepare exploitation framework: metasploit, searchsploit",
+            "copyable": false
+          },
+          {
+            "detail": "Configure post-exploitation tools: mimikatz, bloodhound-python",
+            "copyable": false
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Fast port discovery",
+        "command": "masscan -p1-65535 target.example.com --rate=1000 -o masscan.txt",
+        "notes": [
+          "Quick discovery of all open ports"
+        ]
+      },
+      {
+        "description": "Service enumeration",
+        "command": "nmap -sV -sC -oA detailed_scan target.example.com",
+        "notes": [
+          "Detailed service version and script scanning"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Phase 1: Network Reconnaissance",
+        "steps": [
+          {
+            "title": "Port Discovery",
+            "details": "Identify all open ports using fast scanning techniques",
+            "command": "masscan -p1-65535 target.example.com --rate=1000 -o masscan_results.txt"
+          },
+          {
+            "title": "Service Version Detection",
+            "details": "Identify running services and their versions",
+            "command": "nmap -sV -oN service_versions.txt -p $(cat masscan_results.txt | grep -oP '\\d+ | tr '\\n' ',' | sed 's/,$//') target.example.com"
+          },
+          {
+            "title": "OS Detection",
+            "details": "Identify operating systems of target hosts",
+            "command": "nmap -O -oN os_detection.txt target.example.com"
+          },
+          {
+            "title": "Network Topology Mapping",
+            "details": "Map network structure and relationships",
+            "command": "nmap -sL -oN network_map.txt target.example.com/24"
+          }
+        ]
+      },
+      {
+        "title": "Phase 2: Service Enumeration",
+        "steps": [
+          {
+            "title": "SMB Enumeration",
+            "details": "Enumerate SMB shares and permissions",
+            "command": "enum4linux -a target.example.com > enum4linux_results.txt"
+          },
+          {
+            "title": "SNMP Enumeration",
+            "details": "Gather information via SNMP community strings",
+            "command": "snmpwalk -c public -v1 target.example.com > snmpwalk_results.txt"
+          },
+          {
+            "title": "SMTP Enumeration",
+            "details": "Enumerate SMTP users and configuration",
+            "command": "smtp-user-enum -M VRFY -U users.txt -t target.example.com"
+          },
+          {
+            "title": "DNS Zone Transfer",
+            "details": "Attempt DNS zone transfer for domain enumeration",
+            "command": "dig axfr @ns1.example.com example.com > zone_transfer.txt"
+          }
+        ]
+      },
+      {
+        "title": "Phase 3: Vulnerability Assessment",
+        "steps": [
+          {
+            "title": "Nmap Script Scanning",
+            "details": "Run comprehensive NSE scripts for vulnerability detection",
+            "command": "nmap -sC --script vuln -oN vuln_scan.txt target.example.com"
+          },
+          {
+            "title": "Nuclei Scanning",
+            "details": "Template-based vulnerability scanning",
+            "command": "nuclei -target target.example.com -o nuclei_results.txt"
+          },
+          {
+            "title": "Service-Specific Testing",
+            "details": "Test specific services for known vulnerabilities",
+            "command": "# Test web servers, databases, and other services individually"
+          },
+          {
+            "title": "Configuration Review",
+            "details": "Review service configurations for security issues",
+            "command": "# Analyze service banners, default credentials, misconfigurations"
+          }
+        ]
+      },
+      {
+        "title": "Phase 4: Exploitation",
+        "steps": [
+          {
+            "title": "Exploit Research",
+            "details": "Research exploits for identified vulnerabilities",
+            "command": "searchsploit service_name version_number"
+          },
+          {
+            "title": "Metasploit Exploitation",
+            "details": "Use Metasploit for automated exploitation",
+            "command": "msfconsole -x \"use exploit/multi/samba/usermap_script; set RHOSTS target.example.com; exploit\""
+          },
+          {
+            "title": "Manual Exploitation",
+            "details": "Manually exploit vulnerabilities when automated tools fail",
+            "command": "# Use custom payloads and manual techniques"
+          },
+          {
+            "title": "Privilege Escalation",
+            "details": "Escalate privileges on compromised systems",
+            "command": "linpeas.sh | tee priv_esc_results.txt"
+          }
+        ]
+      },
+      {
+        "title": "Phase 5: Post-Exploitation",
+        "steps": [
+          {
+            "title": "Persistence Mechanisms",
+            "details": "Establish persistent access to compromised systems",
+            "command": "# Create backdoors, scheduled tasks, or services"
+          },
+          {
+            "title": "Lateral Movement",
+            "details": "Move laterally through the network",
+            "command": "# Use stolen credentials, pass-the-hash, or other techniques"
+          },
+          {
+            "title": "Data Exfiltration",
+            "details": "Extract sensitive data from compromised systems",
+            "command": "# Collect and exfiltrate valuable data"
+          },
+          {
+            "title": "Covering Tracks",
+            "details": "Clean up evidence of intrusion",
+            "command": "# Clear logs, remove tools, hide backdoors"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Infrastructure Pentesting Timeline",
+        "stages": [
+          {
+            "label": "Day 1: Network Mapping",
+            "description": "Complete network reconnaissance and service identification",
+            "command": "masscan -p1-65535 target.example.com --rate=1000 -o masscan.txt && nmap -sV -oN services.txt target.example.com"
+          },
+          {
+            "label": "Day 2: Service Enumeration",
+            "description": "Deep dive into discovered services and configurations",
+            "command": "enum4linux -a target.example.com && snmpwalk -c public -v1 target.example.com"
+          },
+          {
+            "label": "Day 3: Vulnerability Testing",
+            "description": "Comprehensive vulnerability assessment and exploitation",
+            "command": "nmap -sC --script vuln target.example.com && nuclei -target target.example.com"
+          },
+          {
+            "label": "Day 4: System Compromise",
+            "description": "Exploit vulnerabilities and establish access",
+            "command": "msfconsole -r exploit.rc"
+          },
+          {
+            "label": "Day 5: Post-Exploitation",
+            "description": "Lateral movement, data collection, and persistence",
+            "command": "# Establish persistence, move laterally, collect data"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Open SMB shares with write permissions",
+        "meaning": "Potential for remote code execution and data exfiltration",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "Default SNMP community string",
+        "meaning": "Extensive network information disclosure",
+        "severity": "High"
+      },
+      {
+        "indicator": "Outdated service versions",
+        "meaning": "Known vulnerabilities likely exploitable",
+        "severity": "High"
+      },
+      {
+        "indicator": "Weak authentication mechanisms",
+        "meaning": "Brute force or credential stuffing possible",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Misconfigured network services",
+        "meaning": "Potential for unauthorized access",
+        "severity": "Medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom Nmap Scripts",
+        "scenario": "Create custom NSE scripts for target-specific testing",
+        "command": "nmap --script custom.nse target.example.com",
+        "notes": [
+          "Write Lua scripts for custom vulnerability detection"
+        ]
+      },
+      {
+        "title": "Metasploit Automation",
+        "scenario": "Automate large-scale exploitation with resource scripts",
+        "command": "msfconsole -r automated_campaign.rc",
+        "notes": [
+          "Resource scripts can handle multiple targets automatically"
+        ]
+      },
+      {
+        "title": "Custom Exploit Development",
+        "scenario": "Develop custom exploits for 0-day vulnerabilities",
+        "command": "# Use Python, Metasploit, or custom C/C++ exploits",
+        "notes": [
+          "Custom exploits when public ones are not available"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Infrastructure Testing Approaches",
+      "columns": [
+        "Method",
+        "Stealth",
+        "Speed",
+        "Coverage",
+        "Detection Risk"
+      ],
+      "rows": [
+        [
+          "Passive Recon",
+          "Low",
+          "Slow",
+          "Limited",
+          "Very Low"
+        ],
+        [
+          "Active Scanning",
+          "Medium",
+          "Fast",
+          "Comprehensive",
+          "High"
+        ],
+        [
+          "Manual Testing",
+          "High",
+          "Slow",
+          "Targeted",
+          "Medium"
+        ],
+        [
+          "Automated Exploitation",
+          "Low",
+          "Fast",
+          "Broad",
+          "Very High"
+        ]
+      ]
+    },
+    "resources": [
+      {
+        "label": "Network Security Assessment",
+        "url": "https://www.amazon.com/Network-Security-Assessment-Know-Your/dp/1449370163",
+        "description": "Comprehensive guide to network security testing"
+      },
+      {
+        "label": "Metasploit Unleashed",
+        "url": "https://www.offensive-security.com/metasploit-unleashed/",
+        "description": "Free Metasploit training course"
+      }
+    ]
+  },
+  {
+    "id": "workflow_wireless_audit",
+    "name": "Wireless Security Audit Workflow",
+    "summary": "Complete methodology for wireless security testing covering WiFi networks, Bluetooth devices, and RF spectrum analysis.",
+    "details": "This workflow provides a systematic approach to wireless security testing including WiFi network auditing, rogue access point detection, and RF spectrum analysis. It covers both infrastructure and client-side attacks with emphasis on stealth and proper evidence collection.",
+    "installation_guides": [
+      {
+        "platform": "Wireless Adapter Setup",
+        "summary": "Configure wireless adapter for monitor mode",
+        "steps": [
+          {
+            "detail": "iwconfig # Identify wireless interface",
+            "copyable": true
+          },
+          {
+            "detail": "sudo airmon-ng start wlan0 # Enable monitor mode",
+            "copyable": true
+          },
+          {
+            "detail": "sudo iwconfig # Verify monitor mode is active",
+            "copyable": true
+          },
+          {
+            "detail": "airodump-ng wlan0mon # Test packet capture",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Required Tools",
+        "summary": "Install wireless security testing tools",
+        "steps": [
+          {
+            "detail": "sudo apt install -y aircrack-ng kismet wifite reaver bully",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y mdk4 wireshark tshark",
+            "copyable": true
+          },
+          {
+            "detail": "pip install scapy # For packet crafting",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Quick WiFi network discovery",
+        "command": "airodump-ng wlan0mon --write scan_results",
+        "notes": [
+          "Discover all nearby WiFi networks"
+        ]
+      },
+      {
+        "description": "WPS PIN attack",
+        "command": "reaver -i wlan0mon -b AA:BB:CC:DD:EE:FF -vv",
+        "notes": [
+          "Test WPS vulnerability for PIN recovery"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Phase 1: Wireless Network Discovery",
+        "steps": [
+          {
+            "title": "Monitor Mode Setup",
+            "details": "Configure wireless adapter for monitor mode",
+            "command": "sudo airmon-ng start wlan0 && sudo iwconfig"
+          },
+          {
+            "title": "Network Scanning",
+            "details": "Discover all wireless networks in range",
+            "command": "airodump-ng wlan0mon --write wireless_scan"
+          },
+          {
+            "title": "Channel Analysis",
+            "details": "Analyze channel usage and interference",
+            "command": "airodump-ng wlan0mon --write channel_analysis -c 1-14"
+          },
+          {
+            "title": "Signal Strength Mapping",
+            "details": "Map signal strength and coverage areas",
+            "command": "# Move around area while scanning to map coverage"
+          }
+        ]
+      },
+      {
+        "title": "Phase 2: Target Analysis",
+        "steps": [
+          {
+            "title": "Target Network Selection",
+            "details": "Select target network for detailed analysis",
+            "command": "airodump-ng -c 6 --bssid AA:BB:CC:DD:EE:FF -w target wlan0mon"
+          },
+          {
+            "title": "Client Identification",
+            "details": "Identify connected clients and devices",
+            "command": "# Monitor connected clients in airodump-ng output"
+          },
+          {
+            "title": "Encryption Analysis",
+            "details": "Analyze encryption type and security configuration",
+            "command": "# Review WPA/WPA2/WPA3 and WPS configuration"
+          },
+          {
+            "title": "Traffic Capture",
+            "details": "Capture packets for offline analysis",
+            "command": "airodump-ng -w capture --bssid AA:BB:CC:DD:EE:FF wlan0mon"
+          }
+        ]
+      },
+      {
+        "title": "Phase 3: Vulnerability Assessment",
+        "steps": [
+          {
+            "title": "WPS Testing",
+            "details": "Test WPS for PIN recovery vulnerabilities",
+            "command": "reaver -i wlan0mon -b AA:BB:CC:DD:EE:FF -vv -o wps_results.txt"
+          },
+          {
+            "title": "Deauthentication Attack",
+            "details": "Test network stability and client behavior",
+            "command": "aireplay-ng -0 5 -a AA:BB:CC:DD:EE:FF wlan0mon"
+          },
+          {
+            "title": "Evil Twin Testing",
+            "details": "Test for rogue access point susceptibility",
+            "command": "# Create fake AP with same SSID using airbase-ng"
+          },
+          {
+            "title": "Karma Attack Testing",
+            "details": "Test for automatic connection vulnerabilities",
+            "command": "# Use airbase-ng with karma mode for testing"
+          }
+        ]
+      },
+      {
+        "title": "Phase 4: Password Cracking",
+        "steps": [
+          {
+            "title": "Handshake Capture",
+            "details": "Capture WPA/WPA2 handshake for cracking",
+            "command": "aireplay-ng -0 10 -a AA:BB:CC:DD:EE:FF -c 11:22:33:44:55:66 wlan0mon"
+          },
+          {
+            "title": "Dictionary Attack",
+            "details": "Attempt password cracking with wordlists",
+            "command": "aircrack-ng -w /usr/share/wordlists/rockyou.txt capture-01.cap"
+          },
+          {
+            "title": "Brute Force Attack",
+            "details": "Brute force WPA/WPA2 passwords",
+            "command": "# Use hashcat or john the ripper for GPU acceleration"
+          },
+          {
+            "title": "PMKID Attack",
+            "details": "Attack WPA2 without clients using PMKID",
+            "command": "# Capture PMKID and crack with hashcat"
+          }
+        ]
+      },
+      {
+        "title": "Phase 5: Advanced Attacks",
+        "steps": [
+          {
+            "title": "Packet Injection Testing",
+            "details": "Test for packet injection vulnerabilities",
+            "command": "aireplay-ng -3 -b AA:BB:CC:DD:EE:FF wlan0mon"
+          },
+          {
+            "title": "Client-Side Attacks",
+            "details": "Test connected clients for vulnerabilities",
+            "command": "# Use various client-side attack techniques"
+          },
+          {
+            "title": "RF Spectrum Analysis",
+            "details": "Analyze RF spectrum for interference and anomalies",
+            "command": "kismet -c kismet.conf -o spectrum_analysis"
+          },
+          {
+            "title": "Bluetooth Testing",
+            "details": "Test Bluetooth devices for security issues",
+            "command": "# Use btscanner and other Bluetooth tools"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Wireless Security Audit Timeline",
+        "stages": [
+          {
+            "label": "Day 1: Discovery & Reconnaissance",
+            "description": "Complete wireless network discovery and initial analysis",
+            "command": "airmon-ng start wlan0 && airodump-ng wlan0mon --write day1_scan"
+          },
+          {
+            "label": "Day 2: Target Analysis",
+            "description": "Detailed analysis of target networks and clients",
+            "command": "airodump-ng -c 6 --bssid AA:BB:CC:DD:EE:FF -w target_analysis wlan0mon"
+          },
+          {
+            "label": "Day 3: Vulnerability Testing",
+            "description": "Test WPS, encryption, and configuration vulnerabilities",
+            "command": "reaver -i wlan0mon -b AA:BB:CC:DD:EE:FF -vv && aireplay-ng -0 5 -a AA:BB:CC:DD:EE:FF wlan0mon"
+          },
+          {
+            "label": "Day 4: Password Cracking",
+            "description": "Capture handshakes and attempt password recovery",
+            "command": "aireplay-ng -0 10 -a AA:BB:CC:DD:EE:FF wlan0mon && aircrack-ng -w rockyou.txt capture.cap"
+          },
+          {
+            "label": "Day 5: Advanced Testing",
+            "description": "RF analysis, Bluetooth testing, and report generation",
+            "command": "kismet -o rf_analysis && # Compile findings into report"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "WPS PIN vulnerable to brute force",
+        "meaning": "Network can be compromised regardless of password strength",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "WEP encryption detected",
+        "meaning": "Network can be compromised in minutes",
+        "severity": "Critical"
+      },
+      {
+        "indicator": "Weak passphrase detected",
+        "meaning": "Dictionary attack likely successful",
+        "severity": "High"
+      },
+      {
+        "indicator": "Open WiFi network detected",
+        "meaning": "No authentication required for access",
+        "severity": "High"
+      },
+      {
+        "indicator": "Rogue access point detected",
+        "meaning": "Potential evil twin attack in progress",
+        "severity": "High"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom RF Analysis",
+        "scenario": "Use SDR tools for advanced RF spectrum analysis",
+        "command": "hackrf_transfer -r data.bin -f 2.4G -s 10M",
+        "notes": [
+          "Requires HackRF or other SDR hardware"
+        ]
+      },
+      {
+        "title": "Automated WiFi Auditing",
+        "scenario": "Automate comprehensive WiFi security testing",
+        "command": "wifite -i wlan0mon --all --dict /path/to/wordlist.txt",
+        "notes": [
+          "Automated tool for complete WiFi security testing"
+        ]
+      },
+      {
+        "title": "Bluetooth Low Energy Testing",
+        "scenario": "Test BLE devices for security vulnerabilities",
+        "command": "# Use gattacker and other BLE-specific tools",
+        "notes": [
+          "Specialized testing for IoT and BLE devices"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Wireless Attack Methods Comparison",
+      "columns": [
+        "Attack Type",
+        "Success Rate",
+        "Detection Risk",
+        "Time Required",
+        "Equipment"
+      ],
+      "rows": [
+        [
+          "WPS Attack",
+          "High",
+          "Low",
+          "Hours",
+          "Standard"
+        ],
+        [
+          "Handshake Crack",
+          "Medium",
+          "Low",
+          "Days",
+          "Standard"
+        ],
+        [
+          "Evil Twin",
+          "Very High",
+          "High",
+          "Minutes",
+          "Standard"
+        ],
+        [
+          "Deauth Flood",
+          "Low",
+          "Very High",
+          "Minutes",
+          "Standard"
+        ],
+        [
+          "RF Jamming",
+          "Low",
+          "Very High",
+          "Minutes",
+          "Advanced"
+        ]
+      ]
+    },
+    "resources": [
+      {
+        "label": "Kali Wireless Tools",
+        "url": "https://www.kali.org/tools/wireless-attacks/",
+        "description": "Complete list of wireless security tools in Kali"
+      },
+      {
+        "label": "WiFi Security Testing Guide",
+        "url": "https://www.wirelesshack.org/wifi-security-testing-guide.html",
+        "description": "Comprehensive guide to WiFi security testing"
+      }
+    ]
+  },
+  {
+    "id": "workflow_cloud_security_assessment",
+    "name": "Cloud Security Assessment Workflow",
+    "summary": "Comprehensive methodology for assessing cloud security posture across multiple providers, covering IAM configurations, misconfigurations, and data exposure risks.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "step_sequences": [
+      {
+        "title": "Cloud Security Assessment Methodology",
+        "steps": [
+          {
+            "title": "Reconnaissance and Discovery",
+            "details": "Identify cloud assets, accounts, and attack surface",
+            "command": "# Use cloud provider consoles and enumeration tools"
+          },
+          {
+            "title": "IAM and Access Control Analysis",
+            "details": "Review permissions, roles, and access patterns",
+            "command": "# Prowler, ScoutSuite for automated IAM analysis"
+          },
+          {
+            "title": "Misconfiguration Assessment",
+            "details": "Check for common security misconfigurations",
+            "command": "# Cloud-specific scanners and compliance checks"
+          },
+          {
+            "title": "Data Exposure Analysis",
+            "details": "Identify potential data leakage points",
+            "command": "# Review storage, databases, and data flows"
+          },
+          {
+            "title": "Network Security Review",
+            "details": "Analyze network configurations and flows",
+            "command": "# VPC, security groups, firewall rules"
+          },
+          {
+            "title": "Logging and Monitoring Assessment",
+            "details": "Evaluate audit capabilities and alerting",
+            "command": "# CloudTrail, Audit Logs, monitoring tools"
+          },
+          {
+            "title": "Container and Orchestration Security",
+            "details": "Assess container and Kubernetes security",
+            "command": "# Trivy, kube-hunter for container scanning"
+          },
+          {
+            "title": "Compliance and Governance Review",
+            "details": "Check compliance with standards and regulations",
+            "command": "# CIS benchmarks, industry standards"
+          },
+          {
+            "title": "Remediation Planning",
+            "details": "Prioritize findings and create remediation plan",
+            "command": "# Risk assessment and remediation roadmap"
+          },
+          {
+            "title": "Reporting and Documentation",
+            "details": "Generate comprehensive security assessment report",
+            "command": "# Executive summary and technical findings"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Multi-Provider Assessment Strategy",
+        "stages": [
+          {
+            "label": "Provider Selection",
+            "description": "Identify all cloud providers in use",
+            "command": "# Inventory AWS, Azure, GCP accounts"
+          },
+          {
+            "label": "Tool Deployment",
+            "description": "Deploy appropriate scanning tools",
+            "command": "# Prowler for AWS, ScoutSuite for multi-cloud"
+          },
+          {
+            "label": "Cross-Provider Analysis",
+            "description": "Identify cross-cloud security issues",
+            "command": "# Review inter-cloud connections and data flows"
+          },
+          {
+            "label": "Unified Reporting",
+            "description": "Consolidate findings across providers",
+            "command": "# Generate unified risk assessment"
+          }
+        ]
+      },
+      {
+        "name": "Continuous Cloud Security Monitoring",
+        "stages": [
+          {
+            "label": "Baseline Establishment",
+            "description": "Create security baseline for each environment",
+            "command": "# Initial comprehensive assessment"
+          },
+          {
+            "label": "Automated Scanning",
+            "description": "Set up regular automated scans",
+            "command": "# Schedule Prowler, ScoutSuite executions"
+          },
+          {
+            "label": "Change Detection",
+            "description": "Monitor for security configuration changes",
+            "command": "# CloudTrail, audit log analysis"
+          },
+          {
+            "label": "Alerting and Response",
+            "description": "Implement security alerting and response",
+            "command": "# SIEM integration, automated responses"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Critical: Public data exposure",
+        "meaning": "Sensitive data accessible from internet",
+        "severity": "critical"
+      },
+      {
+        "indicator": "High: Over-privileged IAM roles",
+        "meaning": "Excessive permissions granted to identities",
+        "severity": "high"
+      },
+      {
+        "indicator": "Medium: Missing encryption",
+        "meaning": "Data not encrypted at rest or in transit",
+        "severity": "medium"
+      },
+      {
+        "indicator": "Low: Inadequate logging",
+        "meaning": "Insufficient audit trail for security events",
+        "severity": "low"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Automated Remediation",
+        "command": "# Use cloud-native automation services",
+        "scenario": "Implement automatic fixes for common issues",
+        "notes": [
+          "AWS Lambda functions for auto-remediation",
+          "Azure Functions for automated responses",
+          "Cloud Functions for GCP automation"
+        ]
+      },
+      {
+        "title": "DevSecOps Integration",
+        "command": "# Integrate security into CI/CD pipelines",
+        "scenario": "Shift-left cloud security testing",
+        "notes": [
+          "Infrastructure as Code security scanning",
+          "Automated compliance checks",
+          "Security gate enforcement"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Cloud Security Assessment Tools Comparison",
+      "columns": [
+        "Tool",
+        "Cloud Providers",
+        "Automation",
+        "Compliance",
+        "Customization"
+      ],
+      "rows": [
+        [
+          "Prowler",
+          "AWS, Azure, GCP",
+          "High",
+          "CIS, NIST, GDPR",
+          "Medium"
+        ],
+        [
+          "ScoutSuite",
+          "AWS, Azure, GCP, Oracle",
+          "Medium",
+          "Custom rules",
+          "High"
+        ],
+        [
+          "CloudMapper",
+          "AWS",
+          "Low",
+          "None",
+          "High"
+        ],
+        [
+          "Pacu",
+          "AWS",
+          "High",
+          "None",
+          "High"
+        ]
+      ]
+    },
+    "resources": [
+      {
+        "label": "Cloud Security Alliance",
+        "url": "https://cloudsecurityalliance.org/",
+        "description": "Cloud security best practices and guidance"
+      },
+      {
+        "label": "CIS Cloud Benchmarks",
+        "url": "https://www.cisecurity.org/cis-benchmarks/",
+        "description": "Center for Internet Security cloud benchmarks"
+      },
+      {
+        "label": "NIST Cloud Security",
+        "url": "https://www.nist.gov/cloud-computing",
+        "description": "NIST cloud security guidelines and standards"
+      }
+    ]
+  },
+  {
+    "id": "workflow_internal_network_ptes",
+    "name": "Internal Network Penetration Testing with AD Focus",
+    "summary": "Structured PTES-compliant workflow for internal corporate networks with Active Directory, covering recon through reporting.",
+    "details": "Use this workflow when performing internal penetration tests where credentials or LAN access are provided. It aligns to PTES phases and emphasizes stealth, lateral movement, and privilege escalation in AD environments.",
+    "installation_guides": [
+      {
+        "platform": "Prerequisites",
+        "summary": "Tools to stage before engagement",
+        "steps": [
+          {
+            "detail": "Install enum4linux, CrackMapExec, BloodHound, and Impacket",
+            "copyable": false
+          },
+          {
+            "detail": "Deploy password spraying lists (Seclists) and configure Kerbrute",
+            "copyable": false
+          },
+          {
+            "detail": "Prepare reporting workspace (Dradis/Faraday/PT Journal templates)",
+            "copyable": false
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Baseline AD recon",
+        "command": "enum4linux -a 10.0.0.5",
+        "notes": []
+      },
+      {
+        "description": "Password spray",
+        "command": "crackmapexec smb 10.0.0.0/24 -u users.txt -p 'Winter2024!' --continue-on-success",
+        "notes": []
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Phase 1: Recon & Enumeration",
+        "steps": [
+          {
+            "title": "Network sweep",
+            "details": "Identify live hosts and critical services.",
+            "command": "nmap -sS -p 445,389,5985 10.0.0.0/24"
+          },
+          {
+            "title": "AD data gathering",
+            "details": "Pull domain info without creds.",
+            "command": "crackmapexec smb 10.0.0.0/24 --shares"
+          },
+          {
+            "title": "BloodHound data",
+            "details": "Collect LDAP data for pathing.",
+            "command": "bloodhound-python -d corp.local -u svc -p Pass123 -gc dc1.corp.local -c All"
+          }
+        ]
+      },
+      {
+        "title": "Phase 2: Credential Access",
+        "steps": [
+          {
+            "title": "Password spraying",
+            "details": "Use safe lists and lockout thresholds.",
+            "command": "kerbrute passwordspray --dc dc1.corp.local -d corp.local users.txt Winter2024!"
+          },
+          {
+            "title": "Kerberoasting",
+            "details": "Request SPN tickets for cracking.",
+            "command": "GetUserSPNs.py corp.local/user:pass -request"
+          },
+          {
+            "title": "Local loot",
+            "details": "Dump creds via LSASS when allowed.",
+            "command": "impacket-secretsdump corp.local/user@host"
+          }
+        ]
+      },
+      {
+        "title": "Phase 3: Lateral Movement & Escalation",
+        "steps": [
+          {
+            "title": "Token reuse",
+            "details": "Leverage admin sessions for PSExec/WinRM.",
+            "command": "crackmapexec winrm targets.txt -H hash"
+          },
+          {
+            "title": "Path of attack",
+            "details": "Use BloodHound queries for privesc.",
+            "command": "MATCH p=shortestPath((u:User {name:'USER'}),(g:Group {name:'DOMAIN ADMINS'})) RETURN p"
+          },
+          {
+            "title": "Persistence",
+            "details": "Document scheduled tasks/backdoors if in scope.",
+            "command": "PowerView Add-ObjectAcl"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Internal PTES timeline",
+        "stages": [
+          {
+            "label": "Day 1",
+            "description": "Recon + host discovery.",
+            "command": "masscan 10.0.0.0/16 -p445"
+          },
+          {
+            "label": "Day 2",
+            "description": "Credential harvesting and spraying.",
+            "command": "kerbrute passwordspray ..."
+          },
+          {
+            "label": "Day 3",
+            "description": "Privilege escalation + lateral movement.",
+            "command": "bloodhound -c All"
+          },
+          {
+            "label": "Day 4",
+            "description": "Persistence testing + data access.",
+            "command": "rubeus asktgt"
+          },
+          {
+            "label": "Day 5",
+            "description": "Reporting + cleanup.",
+            "command": "# PT Journal reporting template"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Kerberos pre-auth not required",
+        "meaning": "AS-REP roast candidate.",
+        "severity": "High"
+      },
+      {
+        "indicator": "AdminCount=1 user",
+        "meaning": "Account protected by AdminSDHolder; requires caution.",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Failed logon storm",
+        "meaning": "Password spray detected\u2014slow down or pause.",
+        "severity": "High"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Automated attack pathing",
+        "command": "bloodhound --auto --skip-collection",
+        "scenario": "Use preloaded datasets to compute attack paths quickly.",
+        "notes": [
+          "Update queries per client scope"
+        ]
+      },
+      {
+        "title": "Delegated credential theft",
+        "command": "Rubeus.exe harvest /interval:30",
+        "scenario": "Monitor for unconstrained delegation tickets.",
+        "notes": [
+          "Log timeline for reporting"
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "PTES",
+        "url": "http://www.pentest-standard.org/",
+        "description": "Methodology reference"
+      },
+      {
+        "label": "SpecterOps AD cheat sheet",
+        "url": "https://posts.specterops.io/",
+        "description": "Modern AD attack primitives"
+      },
+      {
+        "label": "BloodHound docs",
+        "url": "https://bloodhound.readthedocs.io",
+        "description": "Path-finding guidance"
+      }
+    ]
+  },
+  {
+    "id": "workflow_wireless_security_assessment",
+    "name": "Wireless Security Assessment Workflow",
+    "summary": "Methodology for WiFi/Bluetooth assessments covering scoping, discovery, exploitation, and reporting.",
+    "details": "Use this workflow for wireless network and device engagements following PTES. It balances onsite logistics (survey, rogue AP detection) with lab-based cracking and reporting.",
+    "installation_guides": [
+      {
+        "platform": "Prerequisites",
+        "summary": "Equipment & tools",
+        "steps": [
+          {
+            "detail": "Two wireless cards capable of monitor/injection (ath9k/mt76)",
+            "copyable": false
+          },
+          {
+            "detail": "aircrack-ng suite, Bettercap, Kismet",
+            "copyable": false
+          },
+          {
+            "detail": "GPS logger + PT Journal templates for site survey",
+            "copyable": false
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Site survey",
+        "command": "kismet -c wlan0mon",
+        "notes": []
+      },
+      {
+        "description": "Handshake capture",
+        "command": "airodump-ng -c 6 --bssid AA:BB:CC:DD:EE:FF -w corp wlan0mon",
+        "notes": []
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Recon phase",
+        "steps": [
+          {
+            "title": "Passive survey",
+            "details": "Map APs/clients.",
+            "command": "kismet -c wlan0mon"
+          },
+          {
+            "title": "GPS logging",
+            "details": "Record AP coordinates.",
+            "command": "wiglewifi wardrive"
+          },
+          {
+            "title": "Rogue detection",
+            "details": "Scan for unauthorized SSIDs.",
+            "command": "bettercap -caplet wifi.recon"
+          }
+        ]
+      },
+      {
+        "title": "Attack phase",
+        "steps": [
+          {
+            "title": "Handshake capture",
+            "details": "Collect WPA/WPA2 handshakes.",
+            "command": "airodump-ng -w corp wlan0mon"
+          },
+          {
+            "title": "Cracking",
+            "details": "Use GPU or hashcat service.",
+            "command": "hashcat -m 22000 corp.hc22000 rockyou.txt"
+          },
+          {
+            "title": "WPS tests",
+            "details": "Brute PINs when in scope.",
+            "command": "reaver -i wlan0mon -b AA:BB:CC:DD:EE:FF -vv"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Wireless engagement week",
+        "stages": [
+          {
+            "label": "Day 1",
+            "description": "Recon + spectrum logging.",
+            "command": "kismet"
+          },
+          {
+            "label": "Day 2",
+            "description": "Credential capture (handshakes/WPS).",
+            "command": "reaver / aireplay"
+          },
+          {
+            "label": "Day 3",
+            "description": "Client attacks & rogue AP testing.",
+            "command": "bettercap -caplet hstshijack"
+          },
+          {
+            "label": "Day 4",
+            "description": "Password cracking + Bluetooth tests.",
+            "command": "hashcat"
+          },
+          {
+            "label": "Day 5",
+            "description": "Reporting and remediation guidance.",
+            "command": "# PT Journal wireless template"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "WPS locked",
+        "meaning": "Device rate-limited; document and move on.",
+        "severity": "Info"
+      },
+      {
+        "indicator": "Handshake saved",
+        "meaning": "Captured WPA handshake for cracking.",
+        "severity": "High"
+      },
+      {
+        "indicator": "Client auto-connect",
+        "meaning": "Device vulnerable to rogue AP/Evil Twin.",
+        "severity": "High"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Automated wardriving",
+        "command": "kismet --daemonize --log-prefix /tmp/site",
+        "scenario": "Continuous capture while walking site.",
+        "notes": [
+          "Sync logs to PT Journal evidence"
+        ]
+      },
+      {
+        "title": "PMKID harvesting",
+        "command": "hcxdumptool -o pmkid.pcapng -i wlan0mon --enable_status=15",
+        "scenario": "Capture PMKIDs without client interaction.",
+        "notes": [
+          "Use hashcat -m 22000 for cracking"
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "PTES Wireless",
+        "url": "https://www.pentest-standard.org/index.php/PTES_Technical_Guidelines#Wireless",
+        "description": "Methodology"
+      },
+      {
+        "label": "Aircrack-ng docs",
+        "url": "https://www.aircrack-ng.org/doku.php",
+        "description": "Tool usage"
+      },
+      {
+        "label": "Bettercap caplets",
+        "url": "https://github.com/bettercap/caplets",
+        "description": "Automation scripts"
+      }
+    ]
+  },
+  {
+    "id": "workflow_physical_security_malware",
+    "name": "Physical Security & Malware Drop Assessment",
+    "summary": "End-to-end workflow for badge testing, onsite intrusion, and controlled malware drops (USB/CD) aligned with PTES physical phase.",
+    "details": "Use this when assessing physical controls and employee response. Includes pretext planning, onsite execution, payload tracking, and evidence handling.",
+    "installation_guides": [
+      {
+        "platform": "Prerequisites",
+        "summary": "Equipment pack",
+        "steps": [
+          {
+            "detail": "Prepare cloned badges, lock tools, hidden cameras",
+            "copyable": false
+          },
+          {
+            "detail": "Stage payload media with payload delivery tracking (Canarytokens)",
+            "copyable": false
+          },
+          {
+            "detail": "Load PT Journal field template on mobile device",
+            "copyable": false
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Payload prep",
+        "command": "python3 dropper.py --template usb --token canary_id",
+        "notes": []
+      },
+      {
+        "description": "Badge clone test",
+        "command": "proxmark3 rdv4 clone -t HID -f card_dump",
+        "notes": []
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Pretext planning",
+        "steps": [
+          {
+            "title": "Recon",
+            "details": "Collect building maps and shift changes.",
+            "command": "maltego workspace --export facilities"
+          },
+          {
+            "title": "Payload creation",
+            "details": "Generate benign malware demo.",
+            "command": "msfvenom -p windows/x64/messagebox TITLE='Drill' TEXT='Do not run unknown USBs' -f exe > reminder.exe"
+          },
+          {
+            "title": "Authorization",
+            "details": "Ensure ROE letters onsite.",
+            "command": "# Print authorization"
+          }
+        ]
+      },
+      {
+        "title": "Onsite execution",
+        "steps": [
+          {
+            "title": "Entry attempt",
+            "details": "Tailgate or use cloned badge.",
+            "command": "# Document with bodycam"
+          },
+          {
+            "title": "Drop payload",
+            "details": "Leave USB with Canary token at strategic locations.",
+            "command": "python3 dropper.py --deploy"
+          },
+          {
+            "title": "Monitor alerts",
+            "details": "Review Canary token hits and SOC responses.",
+            "command": "curl https://canary/api/events"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Physical engagement timeline",
+        "stages": [
+          {
+            "label": "Day 0",
+            "description": "Recon + logistics.",
+            "command": "# Prep badges"
+          },
+          {
+            "label": "Day 1",
+            "description": "Initial entry attempts.",
+            "command": "# Execute onsite"
+          },
+          {
+            "label": "Day 2",
+            "description": "Payload drop + monitoring.",
+            "command": "# Deploy USB"
+          },
+          {
+            "label": "Day 3",
+            "description": "Interviews + social engineering.",
+            "command": "# Conduct debrief"
+          },
+          {
+            "label": "Day 4",
+            "description": "Reporting + evidence handoff.",
+            "command": "# PT Journal physical report"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Canary fired",
+        "meaning": "Employee interacted with payload.",
+        "severity": "High"
+      },
+      {
+        "indicator": "Badge clone success",
+        "meaning": "Physical access control weakness.",
+        "severity": "High"
+      },
+      {
+        "indicator": "Security challenge logged",
+        "meaning": "Staff followed procedure.",
+        "severity": "Low"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "RF tracking",
+        "command": "espresense-cli log",
+        "scenario": "Track payload location via BLE beacons.",
+        "notes": [
+          "Use when environment allows"
+        ]
+      },
+      {
+        "title": "Malware telemetry",
+        "command": "canarytokens --list",
+        "scenario": "Monitor which host executed dropper for timeline reconstruction.",
+        "notes": [
+          "Share only sanitized metadata"
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "PTES physical guidelines",
+        "url": "https://www.pentest-standard.org/index.php/PTES_Technical_Guidelines#Physical_Security_Testing",
+        "description": "Reference"
+      },
+      {
+        "label": "Canarytokens",
+        "url": "https://canarytokens.org/",
+        "description": "Payload tracking"
+      },
+      {
+        "label": "Proxmark community",
+        "url": "https://proxmark.com/",
+        "description": "Badge cloning tips"
+      }
+    ]
+  },
+  {
+    "id": "workflow_social_engineering_campaign",
+    "name": "Social Engineering Campaign Workflow",
+    "summary": "Covers planning, execution, and reporting for phishing/vishing campaigns with metrics collection and escalation paths.",
+    "details": "Follow this when executing scoped phishing or phone-based social engineering engagements. Includes approval checkpoints and employee awareness feedback loops.",
+    "installation_guides": [
+      {
+        "platform": "Prerequisites",
+        "summary": "Tooling",
+        "steps": [
+          {
+            "detail": "Set up phishing platform (GoPhish/CampaignPhish)",
+            "copyable": false
+          },
+          {
+            "detail": "Provision unique domains + TLS certs",
+            "copyable": false
+          },
+          {
+            "detail": "Create PT Journal campaign template",
+            "copyable": false
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Launch phishing server",
+        "command": "gophish",
+        "notes": []
+      },
+      {
+        "description": "Send SMS phish",
+        "command": "python3 sms_campaign.py --template reset --target targets.csv",
+        "notes": []
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Planning",
+        "steps": [
+          {
+            "title": "Define personas",
+            "details": "Decide pretexts and scopes.",
+            "command": "# PT Journal \u2192 Plan"
+          },
+          {
+            "title": "Draft templates",
+            "details": "Emails, landing pages, call scripts.",
+            "command": "gophish templates --new"
+          },
+          {
+            "title": "Approval",
+            "details": "Client sign-off.",
+            "command": "# Collect approval ticket"
+          }
+        ]
+      },
+      {
+        "title": "Execution",
+        "steps": [
+          {
+            "title": "Send campaigns",
+            "details": "Emails/SMS/vishing.",
+            "command": "gophish send --group employees"
+          },
+          {
+            "title": "Monitor results",
+            "details": "Track opens/credentials.",
+            "command": "gophish results --campaign 5"
+          },
+          {
+            "title": "Escalation",
+            "details": "Notify client of critical hits.",
+            "command": "# Follow ROE"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "SE campaign timeline",
+        "stages": [
+          {
+            "label": "Week 1",
+            "description": "Planning + content.",
+            "command": "# Templates"
+          },
+          {
+            "label": "Week 2",
+            "description": "Pretext validation + pilot.",
+            "command": "gophish test"
+          },
+          {
+            "label": "Week 3",
+            "description": "Full send + monitoring.",
+            "command": "gophish send"
+          },
+          {
+            "label": "Week 4",
+            "description": "Metrics + training recommendations.",
+            "command": "# PT Journal report"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Click rate",
+        "meaning": "Percentage of users clicking link.",
+        "severity": "Info"
+      },
+      {
+        "indicator": "Credential submission",
+        "meaning": "High-risk response requiring immediate notice.",
+        "severity": "High"
+      },
+      {
+        "indicator": "Report to security",
+        "meaning": "Positive behavior to highlight.",
+        "severity": "Low"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Adaptive sending",
+        "command": "gophish api throttle",
+        "scenario": "Adjust pacing to avoid filters.",
+        "notes": [
+          "Use per SMTP guidance"
+        ]
+      },
+      {
+        "title": "Voice call automation",
+        "command": "python3 vish.py --twilio",
+        "scenario": "Blend vishing with email follow-up.",
+        "notes": [
+          "Record consent"
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "PTES social engineering",
+        "url": "https://www.pentest-standard.org/index.php/PTES_Technical_Guidelines#Social_Engineering",
+        "description": "Guidelines"
+      },
+      {
+        "label": "Gophish docs",
+        "url": "https://getgophish.com/documentation/",
+        "description": "Platform help"
+      },
+      {
+        "label": "NIST Phish training",
+        "url": "https://csrc.nist.gov/publications/detail/sp/800-161a/final",
+        "description": "Awareness programs"
+      }
+    ]
+  },
+  {
+    "id": "workflow_incident_response_forensics",
+    "name": "Incident Response & Forensics Workflow",
+    "summary": "Comprehensive workflow for Incident Response & Forensics Workflow",
+    "details": "This workflow guides you through the complete process of Incident Response & Forensics Workflow",
+    "step_sequences": [
+      {
+        "title": "Incident Response Preparation",
+        "steps": [
+          {
+            "title": "Establish IR Team",
+            "details": "Assemble incident response team and define roles",
+            "command": "# Identify team members and assign responsibilities"
+          },
+          {
+            "title": "Gather Intelligence",
+            "details": "Collect information about the incident from various sources",
+            "command": "# Review logs, alerts, and user reports"
+          },
+          {
+            "title": "Contain the Incident",
+            "details": "Implement immediate containment measures",
+            "command": "# Isolate affected systems and stop the attack"
+          }
+        ]
+      },
+      {
+        "title": "Evidence Collection",
+        "steps": [
+          {
+            "title": "Volatile Evidence",
+            "details": "Capture volatile data before it changes",
+            "command": "# Collect memory dumps, network connections, running processes"
+          },
+          {
+            "title": "Persistent Evidence",
+            "details": "Collect files, logs, and system configuration",
+            "command": "# Image drives and collect relevant files"
+          },
+          {
+            "title": "Chain of Custody",
+            "details": "Document evidence handling procedures",
+            "command": "# Maintain detailed evidence logs"
+          }
+        ]
+      },
+      {
+        "title": "Analysis Phase",
+        "steps": [
+          {
+            "title": "Timeline Reconstruction",
+            "details": "Reconstruct the sequence of events",
+            "command": "# Correlate logs and evidence to build timeline"
+          },
+          {
+            "title": "Malware Analysis",
+            "details": "Analyze any malicious code or artifacts",
+            "command": "# Reverse engineer malware in isolated environment"
+          },
+          {
+            "title": "Attack Vector Analysis",
+            "details": "Determine how the attack was initiated",
+            "command": "# Identify entry points and attack methods"
+          }
+        ]
+      },
+      {
+        "title": "Recovery & Remediation",
+        "steps": [
+          {
+            "title": "System Recovery",
+            "details": "Restore affected systems to clean state",
+            "command": "# Rebuild or clean compromised systems"
+          },
+          {
+            "title": "Vulnerability Mitigation",
+            "details": "Address root causes and vulnerabilities",
+            "command": "# Apply patches and security fixes"
+          },
+          {
+            "title": "Monitoring Enhancement",
+            "details": "Improve detection and monitoring capabilities",
+            "command": "# Implement additional security controls"
+          }
+        ]
+      },
+      {
+        "title": "Reporting & Lessons Learned",
+        "steps": [
+          {
+            "title": "Incident Report",
+            "details": "Document the complete incident response process",
+            "command": "# Create detailed incident report"
+          },
+          {
+            "title": "Lessons Learned",
+            "details": "Identify improvements for future incidents",
+            "command": "# Conduct post-incident review and update procedures"
+          },
+          {
+            "title": "Legal/Regulatory Compliance",
+            "details": "Ensure compliance with reporting requirements",
+            "command": "# File required reports and notifications"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Incident Response & Forensics Timeline",
+        "stages": [
+          {
+            "label": "Day 1: Preparation & Scoping",
+            "description": "Set up IR environment, define scope, and prepare tools",
+            "command": "# Prepare IR toolkit and evidence collection procedures"
+          },
+          {
+            "label": "Day 2: Evidence Collection",
+            "description": "Collect volatile and non-volatile evidence from affected systems",
+            "command": "# Execute evidence collection using FTK Imager or similar"
+          },
+          {
+            "label": "Day 3: Timeline Analysis",
+            "description": "Analyze system timelines and correlate events",
+            "command": "# Use log2timeline and timeline analysis tools"
+          },
+          {
+            "label": "Day 4: Artifact Analysis",
+            "description": "Examine malware, logs, and system artifacts",
+            "command": "# Perform forensic analysis of collected evidence"
+          },
+          {
+            "label": "Day 5: Reporting & Lessons Learned",
+            "description": "Document findings and provide remediation recommendations",
+            "command": "# Generate incident report and conduct debrief"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Assessment completed successfully",
+        "meaning": "All phases of the workflow completed without critical issues",
+        "severity": "info"
+      },
+      {
+        "indicator": "Critical findings identified",
+        "meaning": "Critical severity vulnerabilities discovered requiring immediate attention",
+        "severity": "critical"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom workflow adaptation",
+        "scenario": "Adapting workflow for specific client requirements",
+        "command": "# Customize workflow phases",
+        "notes": [
+          "Adapt phases of Incident Response & Forensics Workflow to match client requirements",
+          "Document any deviations from standard workflow"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "MITRE ATT&CK Framework",
+        "url": "https://attack.mitre.org",
+        "description": "Framework for understanding adversary tactics and techniques"
+      },
+      {
+        "label": "OWASP Top 10",
+        "url": "https://owasp.org/Top10/",
+        "description": "Most critical web application security risks"
+      },
+      {
+        "label": "PTES Guidelines",
+        "url": "http://www.pentest-standard.org/",
+        "description": "Penetration Testing Execution Standard"
+      },
+      {
+        "label": "CIS Controls",
+        "url": "https://www.cisecurity.org/cis-controls/",
+        "description": "Center for Internet Security critical controls"
+      }
+    ]
+  },
+  {
+    "id": "workflow_pci_dss_assessment",
+    "name": "PCI-DSS Compliance Assessment",
+    "summary": "Comprehensive workflow for PCI-DSS Compliance Assessment",
+    "details": "This workflow guides you through the complete process of PCI-DSS Compliance Assessment",
+    "step_sequences": [
+      {
+        "title": "Planning & Scoping",
+        "steps": [
+          {
+            "title": "Define Assessment Scope",
+            "details": "Identify cardholder data environment and systems in scope",
+            "command": "# Map CDE boundaries and data flows"
+          },
+          {
+            "title": "Review Requirements",
+            "details": "Understand applicable PCI DSS requirements and testing procedures",
+            "command": "# Review PCI DSS requirements and SAQ type"
+          },
+          {
+            "title": "Obtain Authorization",
+            "details": "Secure written approval and establish rules of engagement",
+            "command": "# Verify assessment authorization and scope approval"
+          }
+        ]
+      },
+      {
+        "title": "Security Requirements Assessment",
+        "steps": [
+          {
+            "title": "Build & Maintain Networks (Req 1-2)",
+            "details": "Assess firewall configurations and system passwords",
+            "command": "# Review firewall rules and password policies"
+          },
+          {
+            "title": "Protect Cardholder Data (Req 3-4)",
+            "details": "Evaluate data encryption and transmission security",
+            "command": "# Test encryption of stored and transmitted data"
+          },
+          {
+            "title": "Maintain Vulnerability Program (Req 5-6)",
+            "details": "Review antivirus and security patch management",
+            "command": "# Assess malware protection and patch management"
+          }
+        ]
+      },
+      {
+        "title": "Access Control & Monitoring",
+        "steps": [
+          {
+            "title": "Restrict Access (Req 7-8)",
+            "details": "Test access control mechanisms and user authentication",
+            "command": "# Review access controls and authentication methods"
+          },
+          {
+            "title": "Monitor & Test Networks (Req 10-11)",
+            "details": "Assess logging and intrusion detection capabilities",
+            "command": "# Test logging mechanisms and IDS/IPS systems"
+          },
+          {
+            "title": "Maintain Security Policy (Req 12)",
+            "details": "Review information security policy and procedures",
+            "command": "# Evaluate security policies and procedures"
+          }
+        ]
+      },
+      {
+        "title": "Vulnerability Testing",
+        "steps": [
+          {
+            "title": "External Vulnerability Scans",
+            "details": "Conduct external network vulnerability scanning",
+            "command": "# Perform quarterly external vulnerability scans"
+          },
+          {
+            "title": "Internal Vulnerability Scans",
+            "details": "Conduct internal network vulnerability scanning",
+            "command": "# Perform quarterly internal vulnerability scans"
+          },
+          {
+            "title": "Penetration Testing",
+            "details": "Execute penetration testing of CDE systems",
+            "command": "# Conduct annual penetration testing"
+          }
+        ]
+      },
+      {
+        "title": "Remediation & Validation",
+        "steps": [
+          {
+            "title": "Address Findings",
+            "details": "Remediate identified security gaps and vulnerabilities",
+            "command": "# Implement corrective actions for findings"
+          },
+          {
+            "title": "Retest Controls",
+            "details": "Validate that remediation efforts are effective",
+            "command": "# Retest remediated controls and vulnerabilities"
+          },
+          {
+            "title": "Document Evidence",
+            "details": "Maintain evidence of compliance activities",
+            "command": "# Collect and organize compliance evidence"
+          }
+        ]
+      },
+      {
+        "title": "Reporting & Compliance",
+        "steps": [
+          {
+            "title": "Compile Assessment Report",
+            "details": "Document all findings, remediation, and compliance status",
+            "command": "# Generate comprehensive PCI DSS assessment report"
+          },
+          {
+            "title": "Attestation of Compliance",
+            "details": "Prepare Attestation of Compliance (AOC) documentation",
+            "command": "# Complete AOC and submit to acquiring bank"
+          },
+          {
+            "title": "Continuous Compliance",
+            "details": "Establish processes for maintaining ongoing compliance",
+            "command": "# Implement continuous monitoring and compliance processes"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "PCI DSS Assessment Timeline",
+        "stages": [
+          {
+            "label": "Week 1: Scoping & Planning",
+            "description": "Define assessment scope, review cardholder data flows",
+            "command": "# Map CDE boundaries and data flows"
+          },
+          {
+            "label": "Week 2: Security Requirements Review",
+            "description": "Assess Requirements 1-6 (network security, access control)",
+            "command": "# Review firewall configs, access controls, and encryption"
+          },
+          {
+            "label": "Week 3: Vulnerability Management",
+            "description": "Test Requirements 6-11 (vulnerability management, monitoring)",
+            "command": "# Scan for vulnerabilities and review monitoring systems"
+          },
+          {
+            "label": "Week 4: Policy & Procedure Review",
+            "description": "Assess Requirements 12-13 (policies, testing procedures)",
+            "command": "# Review security policies and incident response procedures"
+          },
+          {
+            "label": "Week 5: Reporting & Remediation",
+            "description": "Compile findings and provide remediation guidance",
+            "command": "# Generate PCI compliance report with remediation timeline"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Assessment completed successfully",
+        "meaning": "All phases of the workflow completed without critical issues",
+        "severity": "info"
+      },
+      {
+        "indicator": "Critical findings identified",
+        "meaning": "Critical severity vulnerabilities discovered requiring immediate attention",
+        "severity": "critical"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom workflow adaptation",
+        "scenario": "Adapting workflow for specific client requirements",
+        "command": "# Customize workflow phases",
+        "notes": [
+          "Adapt phases of PCI-DSS Compliance Assessment to match client requirements",
+          "Document any deviations from standard workflow"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "MITRE ATT&CK Framework",
+        "url": "https://attack.mitre.org",
+        "description": "Framework for understanding adversary tactics and techniques"
+      },
+      {
+        "label": "OWASP Top 10",
+        "url": "https://owasp.org/Top10/",
+        "description": "Most critical web application security risks"
+      },
+      {
+        "label": "PTES Guidelines",
+        "url": "http://www.pentest-standard.org/",
+        "description": "Penetration Testing Execution Standard"
+      },
+      {
+        "label": "CIS Controls",
+        "url": "https://www.cisecurity.org/cis-controls/",
+        "description": "Center for Internet Security critical controls"
+      }
+    ]
+  },
+  {
+    "id": "workflow_hipaa_compliance",
+    "name": "HIPAA Compliance Assessment",
+    "summary": "Comprehensive workflow for HIPAA Compliance Assessment",
+    "details": "This workflow guides you through the complete process of HIPAA Compliance Assessment",
+    "step_sequences": [
+      {
+        "title": "Planning & Scoping",
+        "steps": [
+          {
+            "title": "Define Assessment Scope",
+            "details": "Identify covered entities, business associates, and protected health information",
+            "command": "# Map HIPAA covered entities and data flows"
+          },
+          {
+            "title": "Review HIPAA Rules",
+            "details": "Understand applicable HIPAA Security, Privacy, and Breach Notification Rules",
+            "command": "# Review HIPAA regulatory requirements"
+          },
+          {
+            "title": "Obtain Authorization",
+            "details": "Secure written approval and establish assessment boundaries",
+            "command": "# Verify HIPAA assessment authorization"
+          }
+        ]
+      },
+      {
+        "title": "Administrative Safeguards",
+        "steps": [
+          {
+            "title": "Security Management (164.308(a)(1))",
+            "details": "Assess security management processes and risk analysis",
+            "command": "# Review security management policies and procedures"
+          },
+          {
+            "title": "Workforce Security (164.308(a)(3))",
+            "details": "Evaluate workforce training and access controls",
+            "command": "# Assess workforce security training and controls"
+          },
+          {
+            "title": "Information Access (164.308(a)(4))",
+            "details": "Review access management and authorization procedures",
+            "command": "# Test access management and authorization controls"
+          }
+        ]
+      },
+      {
+        "title": "Physical Safeguards",
+        "steps": [
+          {
+            "title": "Facility Access (164.310(a)(1))",
+            "details": "Assess physical access controls to facilities",
+            "command": "# Review facility access controls and procedures"
+          },
+          {
+            "title": "Workstation Security (164.310(b))",
+            "details": "Evaluate workstation use and security measures",
+            "command": "# Assess workstation security and usage policies"
+          },
+          {
+            "title": "Device Security (164.310(d))",
+            "details": "Review device and media controls and disposal procedures",
+            "command": "# Test device security and media disposal processes"
+          }
+        ]
+      },
+      {
+        "title": "Technical Safeguards",
+        "steps": [
+          {
+            "title": "Access Control (164.312(a)(1))",
+            "details": "Test access control mechanisms and unique user identification",
+            "command": "# Review access control and user identification systems"
+          },
+          {
+            "title": "Audit Controls (164.312(b))",
+            "details": "Assess audit logging and monitoring capabilities",
+            "command": "# Test audit controls and log review procedures"
+          },
+          {
+            "title": "Integrity & Transmission (164.312(c)(1)-(2))",
+            "details": "Evaluate data integrity and transmission security",
+            "command": "# Assess data integrity and transmission security controls"
+          }
+        ]
+      },
+      {
+        "title": "Risk Analysis & Management",
+        "steps": [
+          {
+            "title": "Risk Assessment",
+            "details": "Conduct comprehensive risk analysis of ePHI systems",
+            "command": "# Perform HIPAA risk assessment and analysis"
+          },
+          {
+            "title": "Breach Response",
+            "details": "Review breach notification procedures and incident response",
+            "command": "# Test breach notification and response procedures"
+          },
+          {
+            "title": "Contingency Planning",
+            "details": "Assess data backup, disaster recovery, and emergency mode",
+            "command": "# Review contingency and disaster recovery plans"
+          }
+        ]
+      },
+      {
+        "title": "Reporting & Compliance",
+        "steps": [
+          {
+            "title": "Document Findings",
+            "details": "Compile assessment findings and compliance gaps",
+            "command": "# Generate HIPAA compliance assessment report"
+          },
+          {
+            "title": "Remediation Planning",
+            "details": "Develop remediation plans for identified deficiencies",
+            "command": "# Create corrective action plans and timelines"
+          },
+          {
+            "title": "Ongoing Compliance",
+            "details": "Establish processes for maintaining HIPAA compliance",
+            "command": "# Implement continuous compliance monitoring"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "HIPAA Compliance Assessment Timeline",
+        "stages": [
+          {
+            "label": "Week 1: Administrative Safeguards",
+            "description": "Assess security management, workforce training, and contingency planning",
+            "command": "# Review HIPAA administrative controls and policies"
+          },
+          {
+            "label": "Week 2: Physical Safeguards",
+            "description": "Evaluate facility access, workstation security, and device safeguards",
+            "command": "# Assess physical security controls for PHI protection"
+          },
+          {
+            "label": "Week 3: Technical Safeguards",
+            "description": "Test access controls, audit controls, and integrity protections",
+            "command": "# Review technical controls for ePHI protection"
+          },
+          {
+            "label": "Week 4: Risk Analysis & Documentation",
+            "description": "Perform risk assessments and review breach notification procedures",
+            "command": "# Analyze HIPAA compliance risks and documentation"
+          },
+          {
+            "label": "Week 5: Reporting & Remediation",
+            "description": "Document findings and provide HIPAA-specific remediation guidance",
+            "command": "# Generate HIPAA compliance report with corrective actions"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Assessment completed successfully",
+        "meaning": "All phases of the workflow completed without critical issues",
+        "severity": "info"
+      },
+      {
+        "indicator": "Critical findings identified",
+        "meaning": "Critical severity vulnerabilities discovered requiring immediate attention",
+        "severity": "critical"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom workflow adaptation",
+        "scenario": "Adapting workflow for specific client requirements",
+        "command": "# Customize workflow phases",
+        "notes": [
+          "Adapt phases of HIPAA Compliance Assessment to match client requirements",
+          "Document any deviations from standard workflow"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "MITRE ATT&CK Framework",
+        "url": "https://attack.mitre.org",
+        "description": "Framework for understanding adversary tactics and techniques"
+      },
+      {
+        "label": "OWASP Top 10",
+        "url": "https://owasp.org/Top10/",
+        "description": "Most critical web application security risks"
+      },
+      {
+        "label": "PTES Guidelines",
+        "url": "http://www.pentest-standard.org/",
+        "description": "Penetration Testing Execution Standard"
+      },
+      {
+        "label": "CIS Controls",
+        "url": "https://www.cisecurity.org/cis-controls/",
+        "description": "Center for Internet Security critical controls"
+      }
+    ]
+  },
+  {
+    "id": "workflow_cloud_iam_assessment",
+    "name": "Cloud IAM Assessment Workflow",
+    "summary": "Comprehensive workflow for Cloud IAM Assessment Workflow",
+    "details": "This workflow guides you through the complete process of Cloud IAM Assessment Workflow",
+    "step_sequences": [
+      {
+        "title": "Account Discovery & Mapping",
+        "steps": [
+          {
+            "title": "Cloud Account Enumeration",
+            "details": "Identify all cloud accounts, subscriptions, and projects",
+            "command": "# Enumerate cloud accounts and organizational structure"
+          },
+          {
+            "title": "Identity Inventory",
+            "details": "Catalog all users, groups, roles, and service accounts",
+            "command": "# Create comprehensive identity inventory"
+          },
+          {
+            "title": "Resource Discovery",
+            "details": "Map cloud resources and their associated permissions",
+            "command": "# Identify cloud resources and access patterns"
+          }
+        ]
+      },
+      {
+        "title": "Permission Analysis",
+        "steps": [
+          {
+            "title": "Policy Review",
+            "details": "Analyze IAM policies for excessive permissions",
+            "command": "# Review IAM policies and permission sets"
+          },
+          {
+            "title": "Role-Based Access Control",
+            "details": "Assess RBAC configurations and role assignments",
+            "command": "# Evaluate role definitions and assignments"
+          },
+          {
+            "title": "Privilege Escalation Paths",
+            "details": "Identify potential privilege escalation vectors",
+            "command": "# Map privilege escalation paths and risks"
+          }
+        ]
+      },
+      {
+        "title": "Authentication & Access Control",
+        "steps": [
+          {
+            "title": "MFA Assessment",
+            "details": "Review multi-factor authentication requirements and implementation",
+            "command": "# Test MFA requirements and bypass attempts"
+          },
+          {
+            "title": "Password Policies",
+            "details": "Evaluate password complexity and lifecycle management",
+            "command": "# Assess password policies and rotation procedures"
+          },
+          {
+            "title": "Access Key Management",
+            "details": "Review API keys, access tokens, and credential management",
+            "command": "# Audit access keys and credential security"
+          }
+        ]
+      },
+      {
+        "title": "Misconfiguration Assessment",
+        "steps": [
+          {
+            "title": "Storage Security",
+            "details": "Assess cloud storage bucket and object permissions",
+            "command": "# Test storage bucket permissions and access controls"
+          },
+          {
+            "title": "Network Security",
+            "details": "Review security groups, firewall rules, and network ACLs",
+            "command": "# Evaluate network security configurations"
+          },
+          {
+            "title": "Logging & Monitoring",
+            "details": "Assess cloud logging and monitoring configurations",
+            "command": "# Review audit logging and monitoring setup"
+          }
+        ]
+      },
+      {
+        "title": "Compliance & Governance",
+        "steps": [
+          {
+            "title": "Compliance Frameworks",
+            "details": "Evaluate alignment with relevant compliance requirements",
+            "command": "# Assess compliance with regulatory frameworks"
+          },
+          {
+            "title": "Governance Controls",
+            "details": "Review organizational policies and governance mechanisms",
+            "command": "# Test governance and policy enforcement"
+          },
+          {
+            "title": "Incident Response",
+            "details": "Assess IAM incident response and recovery procedures",
+            "command": "# Evaluate IAM incident response capabilities"
+          }
+        ]
+      },
+      {
+        "title": "Remediation & Hardening",
+        "steps": [
+          {
+            "title": "Access Optimization",
+            "details": "Implement least privilege and remove excessive permissions",
+            "command": "# Apply least privilege principles and policy hardening"
+          },
+          {
+            "title": "Security Enhancement",
+            "details": "Deploy additional security controls and monitoring",
+            "command": "# Implement advanced security features and monitoring"
+          },
+          {
+            "title": "Documentation & Training",
+            "details": "Document findings and provide security awareness training",
+            "command": "# Generate IAM assessment report and training materials"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Cloud IAM Assessment Timeline",
+        "stages": [
+          {
+            "label": "Day 1: Account Discovery",
+            "description": "Enumerate cloud accounts, users, roles, and permissions",
+            "command": "# Use cloud enumeration tools to map IAM landscape"
+          },
+          {
+            "label": "Day 2: Permission Analysis",
+            "description": "Analyze IAM policies, role assignments, and privilege escalation paths",
+            "command": "# Review IAM policies and identify over-privileged accounts"
+          },
+          {
+            "label": "Day 3: Access Control Testing",
+            "description": "Test MFA requirements, password policies, and access control mechanisms",
+            "command": "# Test authentication and authorization controls"
+          },
+          {
+            "label": "Day 4: Misconfiguration Assessment",
+            "description": "Identify IAM misconfigurations and security gaps",
+            "command": "# Scan for common IAM misconfigurations and weaknesses"
+          },
+          {
+            "label": "Day 5: Reporting & Recommendations",
+            "description": "Document findings and provide IAM hardening recommendations",
+            "command": "# Generate IAM security assessment report"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Assessment completed successfully",
+        "meaning": "All phases of the workflow completed without critical issues",
+        "severity": "info"
+      },
+      {
+        "indicator": "Critical findings identified",
+        "meaning": "Critical severity vulnerabilities discovered requiring immediate attention",
+        "severity": "critical"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom workflow adaptation",
+        "scenario": "Adapting workflow for specific client requirements",
+        "command": "# Customize workflow phases",
+        "notes": [
+          "Adapt phases of Cloud IAM Assessment Workflow to match client requirements",
+          "Document any deviations from standard workflow"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "MITRE ATT&CK Framework",
+        "url": "https://attack.mitre.org",
+        "description": "Framework for understanding adversary tactics and techniques"
+      },
+      {
+        "label": "OWASP Top 10",
+        "url": "https://owasp.org/Top10/",
+        "description": "Most critical web application security risks"
+      },
+      {
+        "label": "PTES Guidelines",
+        "url": "http://www.pentest-standard.org/",
+        "description": "Penetration Testing Execution Standard"
+      },
+      {
+        "label": "CIS Controls",
+        "url": "https://www.cisecurity.org/cis-controls/",
+        "description": "Center for Internet Security critical controls"
+      }
+    ]
+  },
+  {
+    "id": "workflow_supply_chain_security",
+    "name": "Supply Chain Security Assessment",
+    "summary": "Comprehensive workflow for Supply Chain Security Assessment",
+    "details": "This workflow guides you through the complete process of Supply Chain Security Assessment",
+    "step_sequences": [
+      {
+        "title": "Vendor & Dependency Assessment",
+        "steps": [
+          {
+            "title": "Third-Party Vendor Analysis",
+            "details": "Evaluate vendor security practices and risk profiles",
+            "command": "# Assess vendor security posture and risk management"
+          },
+          {
+            "title": "Supply Chain Mapping",
+            "details": "Map complete supply chain relationships and dependencies",
+            "command": "# Create comprehensive supply chain dependency map"
+          },
+          {
+            "title": "Contractual Obligations",
+            "details": "Review vendor contracts and security requirements",
+            "command": "# Analyze vendor contracts and security clauses"
+          }
+        ]
+      },
+      {
+        "title": "Software Bill of Materials",
+        "steps": [
+          {
+            "title": "SBOM Generation",
+            "details": "Create comprehensive software bill of materials",
+            "command": "# Generate SBOM for all software components"
+          },
+          {
+            "title": "Dependency Analysis",
+            "details": "Analyze open source and third-party dependencies",
+            "command": "# Review dependency trees and vulnerability databases"
+          },
+          {
+            "title": "License Compliance",
+            "details": "Assess license compliance and compatibility",
+            "command": "# Audit software licenses and compliance"
+          }
+        ]
+      },
+      {
+        "title": "Build & CI/CD Security",
+        "steps": [
+          {
+            "title": "Build Pipeline Security",
+            "details": "Assess build environment and pipeline security",
+            "command": "# Review build pipeline security controls"
+          },
+          {
+            "title": "Artifact Integrity",
+            "details": "Verify artifact integrity and signing mechanisms",
+            "command": "# Test artifact signing and integrity verification"
+          },
+          {
+            "title": "Automated Security Testing",
+            "details": "Evaluate automated security testing in CI/CD",
+            "command": "# Assess automated security scanning and testing"
+          }
+        ]
+      },
+      {
+        "title": "Runtime Security Assessment",
+        "steps": [
+          {
+            "title": "Container Security",
+            "details": "Assess container images and runtime security",
+            "command": "# Scan container images and runtime configurations"
+          },
+          {
+            "title": "Deployment Security",
+            "details": "Evaluate deployment processes and security controls",
+            "command": "# Review deployment security and access controls"
+          },
+          {
+            "title": "Runtime Monitoring",
+            "details": "Assess runtime security monitoring and detection",
+            "command": "# Test runtime security monitoring capabilities"
+          }
+        ]
+      },
+      {
+        "title": "Vulnerability & Threat Management",
+        "steps": [
+          {
+            "title": "Known Vulnerabilities",
+            "details": "Identify and assess known vulnerabilities in supply chain",
+            "command": "# Scan for known vulnerabilities in dependencies"
+          },
+          {
+            "title": "Zero-Day Assessment",
+            "details": "Evaluate protection against unknown threats",
+            "command": "# Assess zero-day threat protection measures"
+          },
+          {
+            "title": "Threat Intelligence",
+            "details": "Integrate supply chain threat intelligence",
+            "command": "# Review threat intelligence for supply chain risks"
+          }
+        ]
+      },
+      {
+        "title": "Remediation & Compliance",
+        "steps": [
+          {
+            "title": "Risk Mitigation",
+            "details": "Develop strategies to mitigate identified supply chain risks",
+            "command": "# Implement supply chain risk mitigation measures"
+          },
+          {
+            "title": "Compliance Alignment",
+            "details": "Ensure compliance with supply chain security standards",
+            "command": "# Align with relevant security frameworks and standards"
+          },
+          {
+            "title": "Continuous Monitoring",
+            "details": "Establish ongoing supply chain security monitoring",
+            "command": "# Generate supply chain security assessment report"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Supply Chain Security Assessment Timeline",
+        "stages": [
+          {
+            "label": "Week 1: Vendor Assessment",
+            "description": "Evaluate third-party vendors and supply chain dependencies",
+            "command": "# Map supply chain relationships and vendor landscape"
+          },
+          {
+            "label": "Week 2: Software Bill of Materials",
+            "description": "Analyze SBOMs, dependencies, and open source components",
+            "command": "# Review dependency trees and vulnerability databases"
+          },
+          {
+            "label": "Week 3: Build Pipeline Security",
+            "description": "Assess CI/CD pipelines, artifact repositories, and build processes",
+            "command": "# Test build security and supply chain integrity"
+          },
+          {
+            "label": "Week 4: Runtime Security",
+            "description": "Evaluate container security, runtime monitoring, and deployment security",
+            "command": "# Assess runtime security controls and monitoring"
+          },
+          {
+            "label": "Week 5: Remediation & Compliance",
+            "description": "Document findings and provide supply chain hardening recommendations",
+            "command": "# Generate supply chain security assessment report"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Assessment completed successfully",
+        "meaning": "All phases of the workflow completed without critical issues",
+        "severity": "info"
+      },
+      {
+        "indicator": "Critical findings identified",
+        "meaning": "Critical severity vulnerabilities discovered requiring immediate attention",
+        "severity": "critical"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom workflow adaptation",
+        "scenario": "Adapting workflow for specific client requirements",
+        "command": "# Customize workflow phases",
+        "notes": [
+          "Adapt phases of Supply Chain Security Assessment to match client requirements",
+          "Document any deviations from standard workflow"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "MITRE ATT&CK Framework",
+        "url": "https://attack.mitre.org",
+        "description": "Framework for understanding adversary tactics and techniques"
+      },
+      {
+        "label": "OWASP Top 10",
+        "url": "https://owasp.org/Top10/",
+        "description": "Most critical web application security risks"
+      },
+      {
+        "label": "PTES Guidelines",
+        "url": "http://www.pentest-standard.org/",
+        "description": "Penetration Testing Execution Standard"
+      },
+      {
+        "label": "CIS Controls",
+        "url": "https://www.cisecurity.org/cis-controls/",
+        "description": "Center for Internet Security critical controls"
+      }
+    ]
+  },
+  {
+    "id": "workflow_evasion_obfuscation",
+    "name": "Evasion & Obfuscation Techniques",
+    "summary": "Comprehensive workflow for Evasion & Obfuscation Techniques",
+    "details": "This workflow guides you through the complete process of Evasion & Obfuscation Techniques",
+    "step_sequences": [
+      {
+        "title": "Preparation & Setup",
+        "steps": [
+          {
+            "title": "Environment Preparation",
+            "details": "Set up clean testing environments and anti-forensic tools",
+            "command": "# Prepare isolated testing environments and toolkits"
+          },
+          {
+            "title": "Target Analysis",
+            "details": "Analyze target security controls and detection capabilities",
+            "command": "# Map target security stack and detection mechanisms"
+          },
+          {
+            "title": "Baseline Establishment",
+            "details": "Establish normal behavior baselines for comparison",
+            "command": "# Create baseline measurements and monitoring"
+          }
+        ]
+      },
+      {
+        "title": "Payload Development",
+        "steps": [
+          {
+            "title": "Code Obfuscation",
+            "details": "Apply code obfuscation techniques to evade static analysis",
+            "command": "# Implement code obfuscation and encryption"
+          },
+          {
+            "title": "Polymorphic Techniques",
+            "details": "Create polymorphic payloads that change signatures",
+            "command": "# Develop polymorphic malware variants"
+          },
+          {
+            "title": "Packers & Crypters",
+            "details": "Use packers and crypters to hide malicious code",
+            "command": "# Apply packers and encryption to payloads"
+          }
+        ]
+      },
+      {
+        "title": "Network Evasion",
+        "steps": [
+          {
+            "title": "Traffic Obfuscation",
+            "details": "Obfuscate network traffic patterns and signatures",
+            "command": "# Implement traffic obfuscation and encryption"
+          },
+          {
+            "title": "Protocol Manipulation",
+            "details": "Manipulate protocols to evade network detection",
+            "command": "# Use protocol tunneling and manipulation techniques"
+          },
+          {
+            "title": "C2 Channel Hiding",
+            "details": "Hide command and control communications",
+            "command": "# Establish covert C2 channels and communications"
+          }
+        ]
+      },
+      {
+        "title": "Endpoint Evasion",
+        "steps": [
+          {
+            "title": "AV/EDR Bypass",
+            "details": "Bypass antivirus and endpoint detection systems",
+            "command": "# Test and implement AV/EDR evasion techniques"
+          },
+          {
+            "title": "Process Injection",
+            "details": "Use process injection to hide malicious activity",
+            "command": "# Implement process injection and hollowing techniques"
+          },
+          {
+            "title": "Memory Evasion",
+            "details": "Avoid detection in memory forensics",
+            "command": "# Apply memory-based evasion techniques"
+          }
+        ]
+      },
+      {
+        "title": "Testing & Validation",
+        "steps": [
+          {
+            "title": "Detection Testing",
+            "details": "Test evasion techniques against security controls",
+            "command": "# Validate evasion effectiveness against target controls"
+          },
+          {
+            "title": "Forensic Analysis",
+            "details": "Analyze artifacts and detection opportunities",
+            "command": "# Perform forensic analysis of evasion attempts"
+          },
+          {
+            "title": "Effectiveness Measurement",
+            "details": "Measure success rate of evasion techniques",
+            "command": "# Quantify evasion success and detection rates"
+          }
+        ]
+      },
+      {
+        "title": "Documentation & Improvement",
+        "steps": [
+          {
+            "title": "Technique Documentation",
+            "details": "Document successful and failed evasion techniques",
+            "command": "# Document evasion techniques and outcomes"
+          },
+          {
+            "title": "Detection Enhancement",
+            "details": "Recommend improvements to detection capabilities",
+            "command": "# Provide recommendations for detection improvement"
+          },
+          {
+            "title": "Technique Evolution",
+            "details": "Develop new evasion techniques based on findings",
+            "command": "# Generate evasion techniques assessment report"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Evasion & Obfuscation Techniques Timeline",
+        "stages": [
+          {
+            "label": "Day 1: Anti-Forensic Preparation",
+            "description": "Set up clean environments and anti-forensic tools",
+            "command": "# Prepare evasion toolkit and test environments"
+          },
+          {
+            "label": "Day 2: Payload Obfuscation",
+            "description": "Create and test obfuscated payloads and malware",
+            "command": "# Develop and test evasion techniques"
+          },
+          {
+            "label": "Day 3: Network Evasion",
+            "description": "Test traffic obfuscation and C2 channel hiding",
+            "command": "# Implement network-level evasion techniques"
+          },
+          {
+            "label": "Day 4: Detection Avoidance",
+            "description": "Bypass EDR, AV, and monitoring systems",
+            "command": "# Test against security controls and monitoring"
+          },
+          {
+            "label": "Day 5: Cleanup & Analysis",
+            "description": "Document successful techniques and cleanup procedures",
+            "command": "# Analyze evasion effectiveness and document findings"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Assessment completed successfully",
+        "meaning": "All phases of the workflow completed without critical issues",
+        "severity": "info"
+      },
+      {
+        "indicator": "Critical findings identified",
+        "meaning": "Critical severity vulnerabilities discovered requiring immediate attention",
+        "severity": "critical"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom workflow adaptation",
+        "scenario": "Adapting workflow for specific client requirements",
+        "command": "# Customize workflow phases",
+        "notes": [
+          "Adapt phases of Evasion & Obfuscation Techniques to match client requirements",
+          "Document any deviations from standard workflow"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "MITRE ATT&CK Framework",
+        "url": "https://attack.mitre.org",
+        "description": "Framework for understanding adversary tactics and techniques"
+      },
+      {
+        "label": "OWASP Top 10",
+        "url": "https://owasp.org/Top10/",
+        "description": "Most critical web application security risks"
+      },
+      {
+        "label": "PTES Guidelines",
+        "url": "http://www.pentest-standard.org/",
+        "description": "Penetration Testing Execution Standard"
+      },
+      {
+        "label": "CIS Controls",
+        "url": "https://www.cisecurity.org/cis-controls/",
+        "description": "Center for Internet Security critical controls"
+      }
+    ]
+  },
+  {
+    "id": "workflow_osint_assessment",
+    "name": "OSINT-Only Assessment Workflow",
+    "summary": "Comprehensive workflow for OSINT-Only Assessment Workflow",
+    "details": "This workflow guides you through the complete process of OSINT-Only Assessment Workflow",
+    "step_sequences": [
+      {
+        "title": "Planning & Intelligence Gathering",
+        "steps": [
+          {
+            "title": "Define OSINT Objectives",
+            "details": "Establish clear goals for open source intelligence collection",
+            "command": "# Define OSINT collection requirements and scope"
+          },
+          {
+            "title": "Source Identification",
+            "details": "Identify relevant OSINT sources and data repositories",
+            "command": "# Map available OSINT sources and tools"
+          },
+          {
+            "title": "Legal & Ethical Review",
+            "details": "Review legal boundaries and ethical considerations",
+            "command": "# Establish OSINT collection boundaries and guidelines"
+          }
+        ]
+      },
+      {
+        "title": "Passive Reconnaissance",
+        "steps": [
+          {
+            "title": "Domain Intelligence",
+            "details": "Gather domain registration and DNS information",
+            "command": "# Collect domain registration and DNS intelligence"
+          },
+          {
+            "title": "Public Records Search",
+            "details": "Search public records and government databases",
+            "command": "# Query public records and government databases"
+          },
+          {
+            "title": "Network Footprinting",
+            "details": "Map public network infrastructure and services",
+            "command": "# Identify public-facing infrastructure and services"
+          }
+        ]
+      },
+      {
+        "title": "Social Media Analysis",
+        "steps": [
+          {
+            "title": "Profile Analysis",
+            "details": "Analyze social media profiles and public communications",
+            "command": "# Review social media profiles and communications"
+          },
+          {
+            "title": "Relationship Mapping",
+            "details": "Map relationships and connections through social networks",
+            "command": "# Identify relationships and network connections"
+          },
+          {
+            "title": "Content Analysis",
+            "details": "Analyze public content and information disclosure",
+            "command": "# Review public content for sensitive information"
+          }
+        ]
+      },
+      {
+        "title": "Technical Intelligence",
+        "steps": [
+          {
+            "title": "Code Repository Analysis",
+            "details": "Review public code repositories and documentation",
+            "command": "# Analyze public code repositories and commits"
+          },
+          {
+            "title": "Vulnerability Research",
+            "details": "Research known vulnerabilities and exposures",
+            "command": "# Search vulnerability databases and disclosures"
+          },
+          {
+            "title": "Technology Stack Mapping",
+            "details": "Identify technologies and frameworks in use",
+            "command": "# Map technology stack from public sources"
+          }
+        ]
+      },
+      {
+        "title": "Threat Intelligence Correlation",
+        "steps": [
+          {
+            "title": "Indicator Correlation",
+            "details": "Correlate findings with threat intelligence feeds",
+            "command": "# Cross-reference findings with threat intelligence"
+          },
+          {
+            "title": "Risk Assessment",
+            "details": "Assess risks based on OSINT findings",
+            "command": "# Evaluate risks from collected intelligence"
+          },
+          {
+            "title": "Attack Vector Analysis",
+            "details": "Identify potential attack vectors from OSINT data",
+            "command": "# Analyze potential attack vectors and scenarios"
+          }
+        ]
+      },
+      {
+        "title": "Reporting & Mitigation",
+        "steps": [
+          {
+            "title": "Intelligence Synthesis",
+            "details": "Synthesize findings into actionable intelligence",
+            "command": "# Compile OSINT findings into intelligence report"
+          },
+          {
+            "title": "Risk Communication",
+            "details": "Communicate risks and recommendations to stakeholders",
+            "command": "# Present OSINT-based risk assessment findings"
+          },
+          {
+            "title": "Remediation Guidance",
+            "details": "Provide guidance for addressing identified risks",
+            "command": "# Generate OSINT assessment report with recommendations"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "OSINT-Only Assessment Timeline",
+        "stages": [
+          {
+            "label": "Day 1: Passive Reconnaissance",
+            "description": "Gather publicly available information about target",
+            "command": "# Execute passive OSINT gathering techniques"
+          },
+          {
+            "label": "Day 2: Social Media Analysis",
+            "description": "Analyze social media profiles and public communications",
+            "command": "# Review social media and public communications"
+          },
+          {
+            "label": "Day 3: Technical Footprint Mapping",
+            "description": "Map technical infrastructure from public sources",
+            "command": "# Identify technical assets and infrastructure"
+          },
+          {
+            "label": "Day 4: Threat Intelligence Correlation",
+            "description": "Correlate findings with threat intelligence sources",
+            "command": "# Cross-reference with threat intelligence feeds"
+          },
+          {
+            "label": "Day 5: Risk Assessment & Reporting",
+            "description": "Assess risks from OSINT findings and generate report",
+            "command": "# Document OSINT-based risk assessment"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Assessment completed successfully",
+        "meaning": "All phases of the workflow completed without critical issues",
+        "severity": "info"
+      },
+      {
+        "indicator": "Critical findings identified",
+        "meaning": "Critical severity vulnerabilities discovered requiring immediate attention",
+        "severity": "critical"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom workflow adaptation",
+        "scenario": "Adapting workflow for specific client requirements",
+        "command": "# Customize workflow phases",
+        "notes": [
+          "Adapt phases of OSINT-Only Assessment Workflow to match client requirements",
+          "Document any deviations from standard workflow"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "MITRE ATT&CK Framework",
+        "url": "https://attack.mitre.org",
+        "description": "Framework for understanding adversary tactics and techniques"
+      },
+      {
+        "label": "OWASP Top 10",
+        "url": "https://owasp.org/Top10/",
+        "description": "Most critical web application security risks"
+      },
+      {
+        "label": "PTES Guidelines",
+        "url": "http://www.pentest-standard.org/",
+        "description": "Penetration Testing Execution Standard"
+      },
+      {
+        "label": "CIS Controls",
+        "url": "https://www.cisecurity.org/cis-controls/",
+        "description": "Center for Internet Security critical controls"
+      }
+    ]
+  },
+  {
+    "id": "workflow_threat_hunting_lifecycle",
+    "name": "Threat Hunting Lifecycle Workflow",
+    "summary": "Comprehensive workflow for Threat Hunting Lifecycle Workflow",
+    "details": "This workflow guides you through the complete process of Threat Hunting Lifecycle Workflow",
+    "step_sequences": [
+      {
+        "title": "Hypothesis Development",
+        "steps": [
+          {
+            "title": "Intelligence Analysis",
+            "details": "Analyze threat intelligence and develop hunting hypotheses",
+            "command": "# Review threat intelligence and develop hypotheses"
+          },
+          {
+            "title": "Hypothesis Formulation",
+            "details": "Create specific, testable threat hunting hypotheses",
+            "command": "# Formulate clear and actionable hunting hypotheses"
+          },
+          {
+            "title": "Resource Planning",
+            "details": "Plan required data sources and hunting resources",
+            "command": "# Identify data sources and required tools"
+          }
+        ]
+      },
+      {
+        "title": "Investigation Planning",
+        "steps": [
+          {
+            "title": "Data Source Mapping",
+            "details": "Map available data sources and collection methods",
+            "command": "# Identify and validate data sources for hunting"
+          },
+          {
+            "title": "Query Development",
+            "details": "Develop search queries and hunting techniques",
+            "command": "# Create hunting queries and detection logic"
+          },
+          {
+            "title": "Timeline Planning",
+            "details": "Establish hunting timeline and milestones",
+            "command": "# Define hunting phases and timeline"
+          }
+        ]
+      },
+      {
+        "title": "Active Threat Hunting",
+        "steps": [
+          {
+            "title": "Initial Data Collection",
+            "details": "Execute initial data collection and baseline establishment",
+            "command": "# Collect baseline data and establish normal patterns"
+          },
+          {
+            "title": "Hypothesis Testing",
+            "details": "Test hypotheses against collected data",
+            "command": "# Execute hunting queries and analyze results"
+          },
+          {
+            "title": "Anomaly Investigation",
+            "details": "Investigate identified anomalies and suspicious activity",
+            "command": "# Investigate anomalies and suspicious indicators"
+          }
+        ]
+      },
+      {
+        "title": "Detection Engineering",
+        "steps": [
+          {
+            "title": "Indicator Development",
+            "details": "Develop indicators of compromise and detection rules",
+            "command": "# Create IOCs and detection signatures"
+          },
+          {
+            "title": "Alert Creation",
+            "details": "Implement alerts and monitoring for identified threats",
+            "command": "# Develop and deploy detection alerts"
+          },
+          {
+            "title": "Validation Testing",
+            "details": "Test detection effectiveness and reduce false positives",
+            "command": "# Validate detections and tune alert thresholds"
+          }
+        ]
+      },
+      {
+        "title": "Response & Containment",
+        "steps": [
+          {
+            "title": "Incident Response",
+            "details": "Execute incident response procedures for confirmed threats",
+            "command": "# Initiate incident response for confirmed threats"
+          },
+          {
+            "title": "Containment Actions",
+            "details": "Implement containment measures to limit threat impact",
+            "command": "# Execute containment and eradication procedures"
+          },
+          {
+            "title": "Evidence Preservation",
+            "details": "Preserve evidence for forensic analysis and legal purposes",
+            "command": "# Collect and preserve threat evidence"
+          }
+        ]
+      },
+      {
+        "title": "Analysis & Improvement",
+        "steps": [
+          {
+            "title": "Findings Documentation",
+            "details": "Document hunting findings and threat intelligence",
+            "command": "# Document threat hunting findings and lessons learned"
+          },
+          {
+            "title": "Process Enhancement",
+            "details": "Improve threat hunting processes and techniques",
+            "command": "# Update hunting methodologies and playbooks"
+          },
+          {
+            "title": "Intelligence Sharing",
+            "details": "Share findings with relevant stakeholders and communities",
+            "command": "# Generate threat hunting assessment report"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Threat Hunting Lifecycle Timeline",
+        "stages": [
+          {
+            "label": "Week 1: Hypothesis Development",
+            "description": "Develop threat hunting hypotheses based on intelligence",
+            "command": "# Create threat hunting hypotheses and objectives"
+          },
+          {
+            "label": "Week 2: Data Collection Planning",
+            "description": "Plan data sources and collection methods for hunting",
+            "command": "# Identify data sources and collection strategies"
+          },
+          {
+            "label": "Week 3: Active Hunting Execution",
+            "description": "Execute threat hunting activities and analyze findings",
+            "command": "# Conduct active threat hunting across environment"
+          },
+          {
+            "label": "Week 4: Detection Engineering",
+            "description": "Develop detections and improve monitoring based on findings",
+            "command": "# Create new detection rules and alerts"
+          },
+          {
+            "label": "Week 5: Reporting & Process Improvement",
+            "description": "Document findings and improve threat hunting processes",
+            "command": "# Generate threat hunting report and update procedures"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Assessment completed successfully",
+        "meaning": "All phases of the workflow completed without critical issues",
+        "severity": "info"
+      },
+      {
+        "indicator": "Critical findings identified",
+        "meaning": "Critical severity vulnerabilities discovered requiring immediate attention",
+        "severity": "critical"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom workflow adaptation",
+        "scenario": "Adapting workflow for specific client requirements",
+        "command": "# Customize workflow phases",
+        "notes": [
+          "Adapt phases of Threat Hunting Lifecycle Workflow to match client requirements",
+          "Document any deviations from standard workflow"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "MITRE ATT&CK Framework",
+        "url": "https://attack.mitre.org",
+        "description": "Framework for understanding adversary tactics and techniques"
+      },
+      {
+        "label": "OWASP Top 10",
+        "url": "https://owasp.org/Top10/",
+        "description": "Most critical web application security risks"
+      },
+      {
+        "label": "PTES Guidelines",
+        "url": "http://www.pentest-standard.org/",
+        "description": "Penetration Testing Execution Standard"
+      },
+      {
+        "label": "CIS Controls",
+        "url": "https://www.cisecurity.org/cis-controls/",
+        "description": "Center for Internet Security critical controls"
+      }
+    ]
+  }
+]

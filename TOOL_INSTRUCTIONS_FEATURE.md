@@ -8,8 +8,13 @@ The instruction catalog now includes comprehensive coverage of specialized platf
 
 ```text
 data/tool_instructions/
-├── manifest.json       # ordered list of tools exposed in the UI
-└── instructions.json   # rich instruction documents keyed by id
+├── manifest.json           # ordered list of tools exposed in the UI
+├── categories/             # modularized instruction documents by category
+│   ├── reconnaissance.json
+│   ├── scanning_and_enumeration.json
+│   ├── exploitation.json
+│   └── ... (29 category files total)
+└── instructions.json.backup # original monolithic file (preserved)
 ```
 
 * `src/ui/tool_instructions.rs` loads the manifest and instruction catalog once at startup using `OnceLock`. It validates the data (manifest ↔ instructions parity, comparison-table dimensions, etc.) and exposes helpers such as `manifest()`, `grouped_manifest()`, and `get_instructions(id)`.
@@ -34,9 +39,20 @@ Each entry describes a selectable tool:
 * `label` – text shown in the combo box.
 * `category` – grouping label; order in the file defines the group order in the UI.
 
-### Instructions (`instructions.json`)
+### Instructions (`categories/*.json`)
 
-Each instruction document contains:
+The instruction documents are now modularized across 29 category-specific JSON files. Each file contains an array of tool instruction documents for tools in that category:
+
+```text
+data/tool_instructions/categories/
+├── reconnaissance.json           # 9 tools
+├── scanning_and_enumeration.json # 12 tools
+├── exploitation.json             # 12 tools
+├── post_exploitation.json        # 10 tools
+└── ... (25 more category files)
+```
+
+Each instruction document contains the same schema as before:
 
 | Field | Type | Notes |
 | --- | --- | --- |
@@ -95,15 +111,16 @@ Any field may be omitted (Serde defaults will build empty collections). The UI a
 ## Adding or Updating Tool Instructions
 
 1. **Add manifest entry** – insert the tool into `data/tool_instructions/manifest.json`, keeping categories grouped logically.
-2. **Add instruction document** – append a new object to `instructions.json` with the same `id`. At minimum provide `name`, `summary`, installation guides, quick examples, flags, and tips.
-3. **Use the rich sections** when appropriate:
+2. **Determine category file** – find the appropriate category file in `data/tool_instructions/categories/` based on the tool's category from the manifest.
+3. **Add instruction document** – append a new object to the appropriate category JSON file with the same `id`. At minimum provide `name`, `summary`, installation guides, quick examples, flags, and tips.
+4. **Use the rich sections** when appropriate:
    * Step sequences for playbooks/checklists.
    * Workflow guides for layered processes (e.g., masscan → nmap).
    * Output notes for triaging confusing scanner messages.
    * Advanced usage for expert-only flags or scenarios.
    * Comparison tables/resources for contextual knowledge.
-4. **Validate** – run `cargo test` (or rely on CI) to execute `tool_instructions::tests::manifest_matches_instruction_documents`, which ensures every manifest id has a matching document and that comparison tables are well formed.
-5. **Preview** – launch the app or run the `ToolExecutionPanel` tests to ensure the new sections render correctly.
+5. **Validate** – run `cargo test` (or rely on CI) to execute `tool_instructions::tests::manifest_matches_instruction_documents`, which ensures every manifest id has a matching document and that comparison tables are well formed.
+6. **Preview** – launch the app or run the `ToolExecutionPanel` tests to ensure the new sections render correctly.
 
 ## Runtime Behavior & Fallbacks
 

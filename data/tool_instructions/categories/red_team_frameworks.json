@@ -1,0 +1,619 @@
+[
+  {
+    "id": "sliver",
+    "name": "Sliver",
+    "summary": "Open-source command and control framework for red team operations",
+    "details": "Comprehensive guide for using Sliver in penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install Sliver on Debian/Ubuntu systems",
+        "steps": [
+          {
+            "detail": "Update package manager and install Sliver",
+            "copyable": true
+          },
+          {
+            "detail": "Verify installation with version check",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install Sliver on Kali Linux",
+        "steps": [
+          {
+            "detail": "Use apt to install Sliver on Kali",
+            "copyable": true
+          },
+          {
+            "detail": "Confirm installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Container",
+        "summary": "Run Sliver in Docker container",
+        "steps": [
+          {
+            "detail": "Pull Docker image containing Sliver",
+            "copyable": true
+          },
+          {
+            "detail": "Run container with appropriate mounts",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Start Sliver server",
+        "command": "sliver server --listen 0.0.0.0:31337",
+        "notes": [
+          "Default C2 listener port"
+        ]
+      },
+      {
+        "description": "Generate implant",
+        "command": "sliver > generate --os windows --arch amd64 --http-listener",
+        "notes": [
+          "Creates Windows implant"
+        ]
+      },
+      {
+        "description": "Generate Linux implant",
+        "command": "sliver > generate --os linux --format elf --http-listener",
+        "notes": [
+          "Creates Linux ELF binary"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--help",
+        "description": "Display help message"
+      },
+      {
+        "flag": "-v/--verbose",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o/--output",
+        "description": "Output file path"
+      }
+    ],
+    "operational_tips": [
+      "Sliver is open-source alternative to Cobalt Strike",
+      "Supports multiple C2 channels: HTTP, HTTPS, DNS, WireGuard",
+      "Advanced evasion with various encoder chains",
+      "Compatible with Armitage GUI",
+      "Memory-safe rewrite in Rust"
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic Sliver workflow",
+        "steps": [
+          {
+            "title": "Prepare target",
+            "details": "Identify target for Sliver assessment",
+            "command": "# Define your target"
+          },
+          {
+            "title": "Execute Sliver",
+            "details": "Run Sliver with appropriate options",
+            "command": "sliver target"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review Sliver output for findings",
+            "command": "# Review results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Sliver integration workflow",
+        "stages": [
+          {
+            "label": "Initialize Sliver",
+            "description": "Prepare Sliver for use",
+            "command": "sliver init"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run Sliver scan on target",
+            "command": "sliver scan target"
+          },
+          {
+            "label": "Export results",
+            "description": "Export Sliver findings",
+            "command": "sliver export -o results.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] Sliver execution successful",
+        "meaning": "Sliver ran without errors",
+        "severity": "info"
+      },
+      {
+        "indicator": "[!] Sliver finding detected",
+        "meaning": "Potential security issue found by Sliver",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced Sliver techniques",
+        "scenario": "Complex Sliver scenarios in advanced assessments",
+        "command": "sliver advanced-mode",
+        "notes": [
+          "Use for complex Sliver scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Official Sliver documentation",
+        "url": "https://example.com/sliver",
+        "description": "Official guide for Sliver"
+      },
+      {
+        "label": "Sliver GitHub repository",
+        "url": "https://github.com/example/sliver",
+        "description": "Source code and community discussions"
+      }
+    ],
+    "installation": [
+      {
+        "platform": "Linux",
+        "summary": "Install Sliver C&C framework",
+        "steps": [
+          {
+            "detail": "wget https://github.com/BishopFox/sliver/releases/download/v1.5.42/sliver-server_linux",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x sliver-server_linux && sudo mv sliver-server_linux /usr/local/bin/sliver",
+            "copyable": true
+          },
+          {
+            "detail": "sliver --version",
+            "copyable": true
+          },
+          {
+            "detail": "sliver server --listen 0.0.0.0:31337",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker",
+        "summary": "Run Sliver in Docker",
+        "steps": [
+          {
+            "detail": "docker run -d -p 31337:31337 -p 443:443 --name sliver ghcr.io/bishopfox/sliver:latest",
+            "copyable": true
+          },
+          {
+            "detail": "docker logs -f sliver",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "macOS",
+        "summary": "Install Sliver on macOS",
+        "steps": [
+          {
+            "detail": "wget https://github.com/BishopFox/sliver/releases/download/v1.5.42/sliver-server_macos",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x sliver-server_macos && mv sliver-server_macos /usr/local/bin/sliver",
+            "copyable": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "caldera",
+    "name": "Caldera",
+    "summary": "Automated adversary emulation platform for testing defenses",
+    "details": "Comprehensive guide for using Caldera in penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install Caldera on Debian/Ubuntu systems",
+        "steps": [
+          {
+            "detail": "Update package manager and install Caldera",
+            "copyable": true
+          },
+          {
+            "detail": "Verify installation with version check",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install Caldera on Kali Linux",
+        "steps": [
+          {
+            "detail": "Use apt to install Caldera on Kali",
+            "copyable": true
+          },
+          {
+            "detail": "Confirm installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Container",
+        "summary": "Run Caldera in Docker container",
+        "steps": [
+          {
+            "detail": "Pull Docker image containing Caldera",
+            "copyable": true
+          },
+          {
+            "detail": "Run container with appropriate mounts",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Start Caldera server",
+        "command": "python3 server.py",
+        "notes": [
+          "Runs on localhost:8888"
+        ]
+      },
+      {
+        "description": "Deploy with Docker",
+        "command": "docker-compose up -d",
+        "notes": [
+          "Full stack deployment"
+        ]
+      },
+      {
+        "description": "API key generation",
+        "command": "# Generate in web UI under Settings",
+        "notes": [
+          "Required for API access"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--help",
+        "description": "Display help message"
+      },
+      {
+        "flag": "-v/--verbose",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o/--output",
+        "description": "Output file path"
+      }
+    ],
+    "operational_tips": [
+      "Caldera uses MITRE ATT&CK framework for adversary behaviors",
+      "Automated adversary emulation platform",
+      "Supports multiple agents (Sandcat, Ragdoll)",
+      "Schedule operations for specific times",
+      "Export reports in multiple formats"
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic Caldera workflow",
+        "steps": [
+          {
+            "title": "Prepare target",
+            "details": "Identify target for Caldera assessment",
+            "command": "# Define your target"
+          },
+          {
+            "title": "Execute Caldera",
+            "details": "Run Caldera with appropriate options",
+            "command": "caldera target"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review Caldera output for findings",
+            "command": "# Review results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Caldera integration workflow",
+        "stages": [
+          {
+            "label": "Initialize Caldera",
+            "description": "Prepare Caldera for use",
+            "command": "caldera init"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run Caldera scan on target",
+            "command": "caldera scan target"
+          },
+          {
+            "label": "Export results",
+            "description": "Export Caldera findings",
+            "command": "caldera export -o results.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] Caldera execution successful",
+        "meaning": "Caldera ran without errors",
+        "severity": "info"
+      },
+      {
+        "indicator": "[!] Caldera finding detected",
+        "meaning": "Potential security issue found by Caldera",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced Caldera techniques",
+        "scenario": "Complex Caldera scenarios in advanced assessments",
+        "command": "caldera advanced-mode",
+        "notes": [
+          "Use for complex Caldera scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Official Caldera documentation",
+        "url": "https://example.com/caldera",
+        "description": "Official guide for Caldera"
+      },
+      {
+        "label": "Caldera GitHub repository",
+        "url": "https://github.com/example/caldera",
+        "description": "Source code and community discussions"
+      }
+    ],
+    "installation": [
+      {
+        "platform": "Docker",
+        "summary": "Deploy Caldera with Docker",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/mitre/caldera.git --recursive",
+            "copyable": true
+          },
+          {
+            "detail": "cd caldera && docker-compose up",
+            "copyable": true
+          },
+          {
+            "detail": "Navigate to https://localhost:8888",
+            "copyable": false
+          },
+          {
+            "detail": "Default credentials: admin/admin",
+            "copyable": false
+          }
+        ]
+      },
+      {
+        "platform": "Linux Manual",
+        "summary": "Install Caldera on Linux",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/mitre/caldera.git --recursive",
+            "copyable": true
+          },
+          {
+            "detail": "cd caldera && pip3 install -r requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "python3 server.py",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker Compose",
+        "summary": "Full stack with docker-compose",
+        "steps": [
+          {
+            "detail": "cd caldera && docker-compose -f docker-compose.yml up -d",
+            "copyable": true
+          },
+          {
+            "detail": "docker ps | grep caldera",
+            "copyable": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "poshc2",
+    "name": "PoshC2",
+    "summary": "PowerShell-based command and control framework",
+    "details": "Comprehensive guide for using PoshC2 in penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install PoshC2 on Debian/Ubuntu systems",
+        "steps": [
+          {
+            "detail": "Update package manager and install PoshC2",
+            "copyable": true
+          },
+          {
+            "detail": "Verify installation with version check",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install PoshC2 on Kali Linux",
+        "steps": [
+          {
+            "detail": "Use apt to install PoshC2 on Kali",
+            "copyable": true
+          },
+          {
+            "detail": "Confirm installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Container",
+        "summary": "Run PoshC2 in Docker container",
+        "steps": [
+          {
+            "detail": "Pull Docker image containing PoshC2",
+            "copyable": true
+          },
+          {
+            "detail": "Run container with appropriate mounts",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Start PoshC2 server",
+        "command": "python3 posh.py",
+        "notes": [
+          "C2 server startup"
+        ]
+      },
+      {
+        "description": "Generate implant",
+        "command": "# Use dropper generation in UI",
+        "notes": [
+          "Web interface"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--help",
+        "description": "Display help message"
+      },
+      {
+        "flag": "-v/--verbose",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o/--output",
+        "description": "Output file path"
+      }
+    ],
+    "operational_tips": [
+      "PowerShell-based C2 framework",
+      "Mimics command syntax similar to Cobalt Strike",
+      "Good for Red Team operations",
+      "Open source alternative",
+      "Supports staging and unstaging"
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic PoshC2 workflow",
+        "steps": [
+          {
+            "title": "Prepare target",
+            "details": "Identify target for PoshC2 assessment",
+            "command": "# Define your target"
+          },
+          {
+            "title": "Execute PoshC2",
+            "details": "Run PoshC2 with appropriate options",
+            "command": "poshc2 target"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review PoshC2 output for findings",
+            "command": "# Review results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "PoshC2 integration workflow",
+        "stages": [
+          {
+            "label": "Initialize PoshC2",
+            "description": "Prepare PoshC2 for use",
+            "command": "poshc2 init"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run PoshC2 scan on target",
+            "command": "poshc2 scan target"
+          },
+          {
+            "label": "Export results",
+            "description": "Export PoshC2 findings",
+            "command": "poshc2 export -o results.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] PoshC2 execution successful",
+        "meaning": "PoshC2 ran without errors",
+        "severity": "info"
+      },
+      {
+        "indicator": "[!] PoshC2 finding detected",
+        "meaning": "Potential security issue found by PoshC2",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced PoshC2 techniques",
+        "scenario": "Complex PoshC2 scenarios in advanced assessments",
+        "command": "poshc2 advanced-mode",
+        "notes": [
+          "Use for complex PoshC2 scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Official PoshC2 documentation",
+        "url": "https://example.com/poshc2",
+        "description": "Official guide for PoshC2"
+      },
+      {
+        "label": "PoshC2 GitHub repository",
+        "url": "https://github.com/example/poshc2",
+        "description": "Source code and community discussions"
+      }
+    ]
+  }
+]

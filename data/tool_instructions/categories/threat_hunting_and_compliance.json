@@ -1,0 +1,748 @@
+[
+  {
+    "id": "yara",
+    "name": "YARA",
+    "summary": "Pattern matching engine for malware research and detection",
+    "details": "Comprehensive guide for using YARA in penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install YARA on Debian/Ubuntu systems",
+        "steps": [
+          {
+            "detail": "Update package manager and install YARA",
+            "copyable": true
+          },
+          {
+            "detail": "Verify installation with version check",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install YARA on Kali Linux",
+        "steps": [
+          {
+            "detail": "Use apt to install YARA on Kali",
+            "copyable": true
+          },
+          {
+            "detail": "Confirm installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Container",
+        "summary": "Run YARA in Docker container",
+        "steps": [
+          {
+            "detail": "Pull Docker image containing YARA",
+            "copyable": true
+          },
+          {
+            "detail": "Run container with appropriate mounts",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic YARA execution",
+        "command": "yara --help",
+        "notes": [
+          "Display help for YARA"
+        ]
+      },
+      {
+        "description": "Standard YARA scan",
+        "command": "yara target",
+        "notes": [
+          "Run YARA against a target"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--help",
+        "description": "Display help message"
+      },
+      {
+        "flag": "-v/--verbose",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o/--output",
+        "description": "Output file path"
+      }
+    ],
+    "operational_tips": [
+      "Always verify YARA is installed correctly before engagements",
+      "Use YARA within scope boundaries defined in rules of engagement",
+      "Document all YARA findings for reporting",
+      "Review YARA output for false positives"
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic YARA workflow",
+        "steps": [
+          {
+            "title": "Prepare target",
+            "details": "Identify target for YARA assessment",
+            "command": "# Define your target"
+          },
+          {
+            "title": "Execute YARA",
+            "details": "Run YARA with appropriate options",
+            "command": "yara target"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review YARA output for findings",
+            "command": "# Review results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "YARA integration workflow",
+        "stages": [
+          {
+            "label": "Initialize YARA",
+            "description": "Prepare YARA for use",
+            "command": "yara init"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run YARA scan on target",
+            "command": "yara scan target"
+          },
+          {
+            "label": "Export results",
+            "description": "Export YARA findings",
+            "command": "yara export -o results.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] Rule_Name target_file",
+        "meaning": "Rule matched the target file successfully",
+        "severity": "high"
+      },
+      {
+        "indicator": "String found: $string1",
+        "meaning": "Specific pattern detected in file",
+        "severity": "medium"
+      },
+      {
+        "indicator": "No matches",
+        "meaning": "File does not match any rules",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced YARA techniques",
+        "scenario": "Complex YARA scenarios in advanced assessments",
+        "command": "yara advanced-mode",
+        "notes": [
+          "Use for complex YARA scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "YARA documentation",
+        "url": "https://yara.readthedocs.io/",
+        "description": "Official YARA documentation"
+      },
+      {
+        "label": "Yara-Rules",
+        "url": "https://github.com/Yara-Rules/rules",
+        "description": "Community YARA rules collection"
+      },
+      {
+        "label": "VirusTotal",
+        "url": "https://www.virustotal.com/",
+        "description": "YARA rule sharing via VT"
+      }
+    ],
+    "installation": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install YARA pattern engine",
+        "steps": [
+          {
+            "detail": "sudo apt-get update && sudo apt-get install -y automake libtool make gcc pkg-config",
+            "copyable": true
+          },
+          {
+            "detail": "git clone --recursive https://github.com/VirusTotal/yara.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd yara && ./bootstrap.sh && ./configure && make && sudo make install",
+            "copyable": true
+          },
+          {
+            "detail": "sudo ldconfig && yara --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install YARA on Kali",
+        "steps": [
+          {
+            "detail": "sudo apt install -y yara",
+            "copyable": true
+          },
+          {
+            "detail": "yara --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker",
+        "summary": "Run YARA in Docker",
+        "steps": [
+          {
+            "detail": "docker pull citizenstig/yara",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v $(pwd):/home -w /home citizenstig/yara yara --version",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "description": "Scan file with rule",
+        "command": "yara rule.yar target_file",
+        "notes": [
+          "Returns matches"
+        ]
+      },
+      {
+        "description": "Scan directory",
+        "command": "yara -r rule.yar /path/to/scan",
+        "notes": [
+          "-r flag for recursive"
+        ]
+      },
+      {
+        "description": "JSON output",
+        "command": "yara -j rule.yar target_file",
+        "notes": [
+          "Parse with jq or Python"
+        ]
+      }
+    ],
+    "flags": [
+      {
+        "flag": "-r",
+        "description": "Recursive directory scan"
+      },
+      {
+        "flag": "-j",
+        "description": "JSON output format"
+      },
+      {
+        "flag": "-d",
+        "description": "Print matching identifier"
+      },
+      {
+        "flag": "-s",
+        "description": "Print matching strings"
+      },
+      {
+        "flag": "-m",
+        "description": "Print metadata"
+      }
+    ],
+    "tips": [
+      "YARA rules are pattern signatures for malware detection",
+      "Create rules for custom malware or IOCs",
+      "YARA integrates with VirusTotal for threat intelligence",
+      "Use for hunting in disk images, memory, or file systems",
+      "Community rules available from Florian Roth and others"
+    ],
+    "sequences": [
+      {
+        "title": "Malware detection with YARA",
+        "steps": [
+          {
+            "title": "Download rules",
+            "details": "Obtain YARA rules from community sources",
+            "command": "git clone https://github.com/Yara-Rules/rules.git"
+          },
+          {
+            "title": "Create custom rule",
+            "details": "Write rule for specific malware",
+            "command": "cat > malware.yar << 'EOF'\nrule Trojan_Generic {\n  strings:\n    $hex1 = {4D 5A}\n    $string1 = \"malicious_function\"\n  condition:\n    $hex1 at 0 and $string1\n}\nEOF"
+          },
+          {
+            "title": "Test rule",
+            "details": "Validate rule syntax",
+            "command": "yara -p malware.yar test_file.exe"
+          },
+          {
+            "title": "Scan target",
+            "details": "Execute scan against suspicious files",
+            "command": "yara -r malware.yar /tmp/suspicious/"
+          },
+          {
+            "title": "Review results",
+            "details": "Analyze detections",
+            "command": "yara -r -j malware.yar /tmp/suspicious/ | jq"
+          }
+        ]
+      }
+    ],
+    "workflows": [
+      {
+        "name": "Threat hunting with YARA",
+        "stages": [
+          {
+            "label": "Rule collection",
+            "description": "Gather YARA rules for known threats",
+            "command": "# Collect community and custom rules"
+          },
+          {
+            "label": "Environment prep",
+            "description": "Prepare systems for scanning",
+            "command": "# Mount memory, disk images"
+          },
+          {
+            "label": "Rule execution",
+            "description": "Run YARA scans",
+            "command": "yara -r rules/ /target/path"
+          },
+          {
+            "label": "Result analysis",
+            "description": "Review matches and false positives",
+            "command": "# Investigate detections"
+          },
+          {
+            "label": "IOC extraction",
+            "description": "Extract indicators of compromise",
+            "command": "# Document findings"
+          },
+          {
+            "label": "Response action",
+            "description": "Take remediation steps",
+            "command": "# Isolate, remove, or observe"
+          }
+        ]
+      }
+    ],
+    "advanced": [
+      {
+        "title": "Memory hunting",
+        "scenario": "Scan memory dumps for malware artifacts",
+        "command": "volatility -f image.mem --profile=Win7SP1x64 dump_scan | yara -r rules/ -",
+        "notes": [
+          "Combine with volatility",
+          "Detect in-memory malware"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "sigma",
+    "name": "Sigma",
+    "summary": "Generic and open signature format for detection rules",
+    "details": "Comprehensive guide for using Sigma in penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install Sigma on Debian/Ubuntu systems",
+        "steps": [
+          {
+            "detail": "Update package manager and install Sigma",
+            "copyable": true
+          },
+          {
+            "detail": "Verify installation with version check",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install Sigma on Kali Linux",
+        "steps": [
+          {
+            "detail": "Use apt to install Sigma on Kali",
+            "copyable": true
+          },
+          {
+            "detail": "Confirm installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Container",
+        "summary": "Run Sigma in Docker container",
+        "steps": [
+          {
+            "detail": "Pull Docker image containing Sigma",
+            "copyable": true
+          },
+          {
+            "detail": "Run container with appropriate mounts",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Convert Sigma to Elasticsearch",
+        "command": "sigma convert -t elasticsearch rule.yml",
+        "notes": [
+          "Outputs ES query"
+        ]
+      },
+      {
+        "description": "Validate Sigma rule",
+        "command": "sigma check rule.yml",
+        "notes": [
+          "Check rule syntax"
+        ]
+      },
+      {
+        "description": "Convert multiple rules",
+        "command": "sigma convert -t splunk -d rules/",
+        "notes": [
+          "Recursive directory conversion"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--help",
+        "description": "Display help message"
+      },
+      {
+        "flag": "-v/--verbose",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o/--output",
+        "description": "Output file path"
+      }
+    ],
+    "operational_tips": [
+      "Sigma is generic detection rule format",
+      "Rules are YAML-based and platform-agnostic",
+      "Can be converted to Elasticsearch, Splunk, Snort, Suricata, etc.",
+      "Used by SOC/SIEM teams for threat detection",
+      "Complements YARA for log-based hunting"
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic Sigma workflow",
+        "steps": [
+          {
+            "title": "Prepare target",
+            "details": "Identify target for Sigma assessment",
+            "command": "# Define your target"
+          },
+          {
+            "title": "Execute Sigma",
+            "details": "Run Sigma with appropriate options",
+            "command": "sigma target"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review Sigma output for findings",
+            "command": "# Review results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Sigma integration workflow",
+        "stages": [
+          {
+            "label": "Initialize Sigma",
+            "description": "Prepare Sigma for use",
+            "command": "sigma init"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run Sigma scan on target",
+            "command": "sigma scan target"
+          },
+          {
+            "label": "Export results",
+            "description": "Export Sigma findings",
+            "command": "sigma export -o results.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] Sigma execution successful",
+        "meaning": "Sigma ran without errors",
+        "severity": "info"
+      },
+      {
+        "indicator": "[!] Sigma finding detected",
+        "meaning": "Potential security issue found by Sigma",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced Sigma techniques",
+        "scenario": "Complex Sigma scenarios in advanced assessments",
+        "command": "sigma advanced-mode",
+        "notes": [
+          "Use for complex Sigma scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Official Sigma documentation",
+        "url": "https://example.com/sigma",
+        "description": "Official guide for Sigma"
+      },
+      {
+        "label": "Sigma GitHub repository",
+        "url": "https://github.com/example/sigma",
+        "description": "Source code and community discussions"
+      }
+    ],
+    "installation": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install Sigma tools",
+        "steps": [
+          {
+            "detail": "pip3 install sigma-cli",
+            "copyable": true
+          },
+          {
+            "detail": "sigma --version",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/SigmaHQ/sigma.git",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker",
+        "summary": "Run Sigma in Docker",
+        "steps": [
+          {
+            "detail": "docker run --rm -v $(pwd):/work -w /work ghcr.io/sigmahq/sigma:latest sigma --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Python Virtual Environment",
+        "summary": "Development install",
+        "steps": [
+          {
+            "detail": "python3 -m venv sigma-env && source sigma-env/bin/activate",
+            "copyable": true
+          },
+          {
+            "detail": "pip install sigma-cli",
+            "copyable": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "loganalysis",
+    "name": "Log Analysis & Threat Hunting",
+    "summary": "Guide for analyzing logs and threat hunting activities",
+    "details": "Comprehensive guide for using Log Analysis & Threat Hunting in penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install Log Analysis & Threat Hunting on Debian/Ubuntu systems",
+        "steps": [
+          {
+            "detail": "Update package manager and install Log Analysis & Threat Hunting",
+            "copyable": true
+          },
+          {
+            "detail": "Verify installation with version check",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install Log Analysis & Threat Hunting on Kali Linux",
+        "steps": [
+          {
+            "detail": "Use apt to install Log Analysis & Threat Hunting on Kali",
+            "copyable": true
+          },
+          {
+            "detail": "Confirm installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Container",
+        "summary": "Run Log Analysis & Threat Hunting in Docker container",
+        "steps": [
+          {
+            "detail": "Pull Docker image containing Log Analysis & Threat Hunting",
+            "copyable": true
+          },
+          {
+            "detail": "Run container with appropriate mounts",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Search logs",
+        "command": "grep -E 'ERROR|WARN' /var/log/syslog",
+        "notes": [
+          "Basic log search"
+        ]
+      },
+      {
+        "description": "Aggregate logs",
+        "command": "cat /var/log/*.log | sort | uniq -c | sort -rn",
+        "notes": [
+          "Count events"
+        ]
+      },
+      {
+        "description": "Parse JSON logs",
+        "command": "jq '.message, .severity' app.log",
+        "notes": [
+          "Structure extraction"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--help",
+        "description": "Display help message"
+      },
+      {
+        "flag": "-v/--verbose",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o/--output",
+        "description": "Output file path"
+      }
+    ],
+    "operational_tips": [
+      "Critical for threat hunting",
+      "SIEM platforms automate analysis",
+      "Combine with Sigma rules",
+      "Splunk, ELK, Elastic are common platforms",
+      "Log retention policies important"
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic Log Analysis & Threat Hunting workflow",
+        "steps": [
+          {
+            "title": "Prepare target",
+            "details": "Identify target for Log Analysis & Threat Hunting assessment",
+            "command": "# Define your target"
+          },
+          {
+            "title": "Execute Log Analysis & Threat Hunting",
+            "details": "Run Log Analysis & Threat Hunting with appropriate options",
+            "command": "loganalysis target"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review Log Analysis & Threat Hunting output for findings",
+            "command": "# Review results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Log Analysis & Threat Hunting integration workflow",
+        "stages": [
+          {
+            "label": "Initialize Log Analysis & Threat Hunting",
+            "description": "Prepare Log Analysis & Threat Hunting for use",
+            "command": "loganalysis init"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run Log Analysis & Threat Hunting scan on target",
+            "command": "loganalysis scan target"
+          },
+          {
+            "label": "Export results",
+            "description": "Export Log Analysis & Threat Hunting findings",
+            "command": "loganalysis export -o results.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] Log Analysis & Threat Hunting execution successful",
+        "meaning": "Log Analysis & Threat Hunting ran without errors",
+        "severity": "info"
+      },
+      {
+        "indicator": "[!] Log Analysis & Threat Hunting finding detected",
+        "meaning": "Potential security issue found by Log Analysis & Threat Hunting",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced Log Analysis & Threat Hunting techniques",
+        "scenario": "Complex Log Analysis & Threat Hunting scenarios in advanced assessments",
+        "command": "loganalysis advanced-mode",
+        "notes": [
+          "Use for complex Log Analysis & Threat Hunting scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Official Log Analysis & Threat Hunting documentation",
+        "url": "https://example.com/loganalysis",
+        "description": "Official guide for Log Analysis & Threat Hunting"
+      },
+      {
+        "label": "Log Analysis & Threat Hunting GitHub repository",
+        "url": "https://github.com/example/loganalysis",
+        "description": "Source code and community discussions"
+      }
+    ]
+  }
+]

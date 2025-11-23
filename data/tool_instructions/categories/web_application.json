@@ -1,0 +1,1766 @@
+[
+  {
+    "id": "dirbuster",
+    "name": "DirBuster",
+    "summary": "DirBuster is a multi-threaded Java application designed to brute force directories and files names on web/application servers.",
+    "installation_guides": [
+      {
+        "platform": "Download from GitHub",
+        "steps": [
+          {
+            "detail": "wget https://github.com/Va5c0/DirBuster/releases/latest/download/DirBuster-1.0.2.jar",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Requires Java 8+",
+        "steps": [
+          {
+            "detail": "java -version",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic directory scan",
+        "command": "java -jar DirBuster-1.0.2.jar -u https://example.com",
+        "notes": []
+      },
+      {
+        "description": "With custom wordlist",
+        "command": "java -jar DirBuster-1.0.2.jar -u https://example.com -l wordlist.txt",
+        "notes": []
+      },
+      {
+        "description": "With file extensions",
+        "command": "java -jar DirBuster-1.0.2.jar -u https://example.com -x php,asp,html",
+        "notes": []
+      },
+      {
+        "description": "Save results",
+        "command": "java -jar DirBuster-1.0.2.jar -u https://example.com -o results.txt",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-u",
+        "description": "Target URL"
+      },
+      {
+        "flag": "-l",
+        "description": "Wordlist file"
+      },
+      {
+        "flag": "-x",
+        "description": "File extensions"
+      },
+      {
+        "flag": "-o",
+        "description": "Output file"
+      },
+      {
+        "flag": "-t",
+        "description": "Number of threads"
+      },
+      {
+        "flag": "-r",
+        "description": "Recursive scan"
+      },
+      {
+        "flag": "-H",
+        "description": "Custom headers"
+      }
+    ],
+    "operational_tips": [
+      "Use comprehensive wordlists for better coverage.",
+      "Specify relevant file extensions for target technology.",
+      "Adjust threads based on target responsiveness.",
+      "Save results for manual verification and testing."
+    ],
+    "step_sequences": [],
+    "workflow_guides": [],
+    "output_notes": [],
+    "advanced_usage": [],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "whatweb",
+    "name": "WhatWeb",
+    "summary": "WhatWeb is a web scanner that identifies websites, technologies, and version information.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y whatweb",
+            "copyable": true
+          },
+          {
+            "detail": "whatweb --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Pre-installed",
+        "steps": [
+          {
+            "detail": "whatweb https://example.com",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "git clone https://github.com/urbanadventurer/WhatWeb",
+            "copyable": true
+          },
+          {
+            "detail": "cd WhatWeb",
+            "copyable": true
+          },
+          {
+            "detail": "sudo make install",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic web scan",
+        "command": "whatweb https://example.com",
+        "notes": []
+      },
+      {
+        "description": "Verbose output",
+        "command": "whatweb -v https://example.com",
+        "notes": []
+      },
+      {
+        "description": "Aggressive mode",
+        "command": "whatweb -a 3 https://example.com",
+        "notes": []
+      },
+      {
+        "description": "Log results",
+        "command": "whatweb --log-verbose=whatweb.log https://example.com",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-v",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-a",
+        "description": "Aggression level (1-4)"
+      },
+      {
+        "flag": "--log-verbose",
+        "description": "Log verbose output"
+      },
+      {
+        "flag": "--log-brief",
+        "description": "Log brief output"
+      },
+      {
+        "flag": "--log-xml",
+        "description": "Log XML output"
+      },
+      {
+        "flag": "--log-json",
+        "description": "Log JSON output"
+      },
+      {
+        "flag": "--max-redirects",
+        "description": "Maximum redirects"
+      }
+    ],
+    "operational_tips": [
+      "Use higher aggression levels for thorough scanning.",
+      "Log results for later analysis and reporting.",
+      "Combine with other web scanning tools.",
+      "Be aware of rate limiting on targets."
+    ],
+    "step_sequences": [
+      {
+        "title": "Web technology fingerprinting",
+        "steps": [
+          {
+            "title": "Basic scan",
+            "details": "Identify technologies on single URL.",
+            "command": "whatweb https://example.com"
+          },
+          {
+            "title": "Aggressive scan",
+            "details": "Deep fingerprinting with higher aggression.",
+            "command": "whatweb -a 3 https://example.com"
+          },
+          {
+            "title": "Batch scanning",
+            "details": "Scan multiple URLs from file.",
+            "command": "whatweb -i urls.txt --log-verbose whatweb.log"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Web Technology Identification and Targeted Testing Workflow",
+        "stages": [
+          {
+            "label": "Technology detection",
+            "description": "Identify web stack.",
+            "command": "whatweb -a 3 https://example.com > tech.txt"
+          },
+          {
+            "label": "Parse technologies",
+            "description": "Extract frameworks and versions.",
+            "command": "grep -E 'WordPress|Joomla|Drupal|Apache|Nginx' tech.txt"
+          },
+          {
+            "label": "Targeted scanning",
+            "description": "Use appropriate scanner.",
+            "command": "# If WordPress found: wpscan --url https://example.com"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "HTTPServer[nginx/1.18.0]",
+        "meaning": "Web server identified with version.",
+        "severity": "info"
+      },
+      {
+        "indicator": "WordPress[5.8]",
+        "meaning": "CMS detected; run WPScan for deeper assessment.",
+        "severity": "info"
+      },
+      {
+        "indicator": "jQuery[3.5.1]",
+        "meaning": "JavaScript library version identified.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Stealth scan with custom user agent",
+        "command": "whatweb -a 1 --user-agent 'Mozilla/5.0...' -t 10 -i targets.txt --log-json=results.json",
+        "scenario": "Low aggression scan with custom UA and threading.",
+        "notes": [
+          "Use -a 1 for passive scanning, -a 4 for maximum aggression."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "wappalyzer",
+    "name": "Wappalyzer",
+    "summary": "Wappalyzer identifies technologies on websites including content management systems, web servers, and frameworks.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install the CLI through npm for headless tech fingerprinting.",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y nodejs npm",
+            "copyable": true
+          },
+          {
+            "detail": "sudo npm install -g wappalyzer",
+            "copyable": true
+          },
+          {
+            "detail": "wappalyzer --help",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Use Kali's node ecosystem or the browser plugin for visual reconnaissance.",
+        "steps": [
+          {
+            "detail": "sudo apt install -y nodejs npm",
+            "copyable": true
+          },
+          {
+            "detail": "sudo npm install -g wappalyzer",
+            "copyable": true
+          },
+          {
+            "detail": "wappalyzer https://example.com",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Use the official CLI container or browser extension when you cannot install npm globally.",
+        "steps": [
+          {
+            "detail": "docker pull wappalyzer/cli",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm wappalyzer/cli https://example.com",
+            "copyable": true
+          },
+          {
+            "detail": "# Browser: add the Wappalyzer extension from your store",
+            "copyable": false
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Analyze website",
+        "command": "wappalyzer https://example.com",
+        "notes": []
+      },
+      {
+        "description": "JSON output",
+        "command": "wappalyzer --json https://example.com",
+        "notes": []
+      },
+      {
+        "description": "With user agent",
+        "command": "wappalyzer --user-agent 'Custom Bot 1.0' https://example.com",
+        "notes": []
+      },
+      {
+        "description": "Python library usage",
+        "command": "python3 -c 'import wappalyzer; print(wappalyzer.identify(\"https://example.com\"))'",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--json",
+        "description": "JSON output format"
+      },
+      {
+        "flag": "--user-agent",
+        "description": "Custom user agent"
+      },
+      {
+        "flag": "--timeout",
+        "description": "Request timeout"
+      },
+      {
+        "flag": "--verify",
+        "description": "Verify SSL certificates"
+      },
+      {
+        "flag": "--help",
+        "description": "Show help"
+      },
+      {
+        "flag": "--version",
+        "description": "Show version"
+      }
+    ],
+    "operational_tips": [
+      "Use for technology stack identification.",
+      "JSON output is useful for automation.",
+      "Combine with vulnerability scans for context.",
+      "Document technology stack for attack planning."
+    ],
+    "step_sequences": [
+      {
+        "title": "Technology detection workflow",
+        "steps": [
+          {
+            "title": "Browser extension",
+            "details": "Browse target and view detected technologies in extension popup.",
+            "command": "# Click Wappalyzer icon"
+          },
+          {
+            "title": "CLI batch scan",
+            "details": "Analyze multiple URLs via command line.",
+            "command": "wappalyzer https://example.com https://app.example.com -o json > technologies.json"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Wappalyzer \u2192 Version research \u2192 Exploit selection",
+        "stages": [
+          {
+            "label": "Detect stack",
+            "description": "Identify all technologies.",
+            "command": "wappalyzer https://example.com"
+          },
+          {
+            "label": "CVE research",
+            "description": "Look up vulnerabilities for detected versions.",
+            "command": "searchsploit apache 2.4.41"
+          },
+          {
+            "label": "Targeted testing",
+            "description": "Use appropriate tools based on stack.",
+            "command": "nikto -h https://example.com"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "WordPress 5.7",
+        "meaning": "CMS version detected.",
+        "severity": "info"
+      },
+      {
+        "indicator": "nginx 1.18.0",
+        "meaning": "Web server identified.",
+        "severity": "info"
+      },
+      {
+        "indicator": "Google Analytics",
+        "meaning": "Third-party service detected.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Automated CI/CD integration",
+        "command": "wappalyzer https://example.com -o json | jq '.technologies[].name' > detected_tech.txt",
+        "scenario": "Integrate into build pipelines for continuous tech monitoring.",
+        "notes": [
+          "Use with security automation to trigger version-specific scans."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "subjack",
+    "name": "Subjack",
+    "summary": "Subjack is a tool for finding subdomain takeovers by checking DNS records for CNAMEs pointing to services.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "go install github.com/haccer/subjack@latest",
+            "copyable": true
+          },
+          {
+            "detail": "export PATH=$PATH:~/go/bin",
+            "copyable": true
+          },
+          {
+            "detail": "subjack -h",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/haccer/subjack",
+            "copyable": true
+          },
+          {
+            "detail": "cd subjack",
+            "copyable": true
+          },
+          {
+            "detail": "go build",
+            "copyable": true
+          },
+          {
+            "detail": "sudo mv subjack /usr/local/bin/",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "docker pull haccer/subjack",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm haccer/subjack -w domains.txt -t 50 -o results.txt",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Check domain for takeovers",
+        "command": "subjack -d example.com",
+        "notes": []
+      },
+      {
+        "description": "With wordlist",
+        "command": "subjack -d example.com -w subdomains.txt",
+        "notes": []
+      },
+      {
+        "description": "Check specific subdomain",
+        "command": "subjack -d example.com -s test.example.com",
+        "notes": []
+      },
+      {
+        "description": "JSON output",
+        "command": "subjack -d example.com -json",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-d",
+        "description": "Domain to check"
+      },
+      {
+        "flag": "-w",
+        "description": "Wordlist file"
+      },
+      {
+        "flag": "-s",
+        "description": "Specific subdomain"
+      },
+      {
+        "flag": "-json",
+        "description": "JSON output format"
+      },
+      {
+        "flag": "-v",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-t",
+        "description": "Number of threads"
+      },
+      {
+        "flag": "-h",
+        "description": "Show help"
+      }
+    ],
+    "operational_tips": [
+      "Check for vulnerable CNAME configurations.",
+      "Use comprehensive subdomain lists.",
+      "Document all potential takeover opportunities.",
+      "Verify findings manually before exploitation."
+    ],
+    "step_sequences": [
+      {
+        "title": "Subdomain takeover detection",
+        "steps": [
+          {
+            "title": "Basic scan",
+            "details": "Check for takeover vulnerabilities.",
+            "command": "subjack -w subdomains.txt -t 50 -timeout 30 -o takeovers.txt -ssl"
+          },
+          {
+            "title": "Verbose output",
+            "details": "See detailed CNAME information.",
+            "command": "subjack -w subdomains.txt -t 50 -v"
+          },
+          {
+            "title": "Verify findings",
+            "details": "Manually confirm takeover potential.",
+            "command": "dig CNAME suspicious.example.com"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Subdomain enum \u2192 Subjack \u2192 Exploitation",
+        "stages": [
+          {
+            "label": "Gather subdomains",
+            "description": "Use Amass or Subfinder.",
+            "command": "amass enum -passive -d example.com -o subs.txt"
+          },
+          {
+            "label": "Check for takeovers",
+            "description": "Scan for vulnerable CNAMEs.",
+            "command": "subjack -w subs.txt -t 50 -ssl -o vulnerable.txt"
+          },
+          {
+            "label": "Claim subdomain",
+            "description": "Register service and point CNAME.",
+            "command": "# Follow service-specific takeover process"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[Vulnerable] dev.example.com -> s3.amazonaws.com",
+        "meaning": "Subdomain pointing to unclaimed S3 bucket.",
+        "severity": "critical"
+      },
+      {
+        "indicator": "[Not Vulnerable] www.example.com",
+        "meaning": "Subdomain properly configured.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Integration with continuous monitoring",
+        "command": "subjack -w <(amass enum -passive -d example.com) -t 100 -ssl -a -o daily_check.txt",
+        "scenario": "Combine with Amass for fresh subdomain checks daily.",
+        "notes": [
+          "Use with alerting systems to notify on new takeover opportunities."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "burpsuite",
+    "name": "Burp Suite",
+    "summary": "Burp Suite is the leading toolkit for web application security testing, offering intercepting proxy, scanner, repeater, intruder, and extensibility via BApp Store. Available in Community (free) and Professional editions.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via official installer JAR or package manager for persistent installations.",
+        "steps": [
+          {
+            "detail": "wget 'https://portswigger.net/burp/releases/download?product=community&type=linux' -O burpsuite_community.sh",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x burpsuite_community.sh && sudo ./burpsuite_community.sh",
+            "copyable": true
+          },
+          {
+            "detail": "burpsuite &",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Pre-installed Community edition; upgrade to Pro with license key.",
+        "steps": [
+          {
+            "detail": "burpsuite &",
+            "copyable": true
+          },
+          {
+            "detail": "For Pro: File > Import Project Options to load license",
+            "copyable": false
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run containerized Burp with X11 forwarding for GUI access.",
+        "steps": [
+          {
+            "detail": "docker pull raesene/burp",
+            "copyable": true
+          },
+          {
+            "detail": "xhost +local:docker",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix raesene/burp",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Snap / Flatpak",
+        "summary": "Isolated installation via snap for sandboxed environment.",
+        "steps": [
+          {
+            "detail": "sudo snap install burpsuite-community",
+            "copyable": true
+          },
+          {
+            "detail": "snap run burpsuite-community.burpsuite",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Launch Burp Suite",
+        "command": "burpsuite &",
+        "notes": []
+      },
+      {
+        "description": "Configure browser proxy to 127.0.0.1:8080",
+        "command": "# Set browser HTTP proxy to localhost:8080",
+        "notes": []
+      },
+      {
+        "description": "Export CA certificate for HTTPS interception",
+        "command": "curl http://burp/cert -o burp_ca.der",
+        "notes": []
+      },
+      {
+        "description": "Import Burp CA into Firefox",
+        "command": "# Preferences > Privacy & Security > Certificates > View Certificates > Import burp_ca.der",
+        "notes": []
+      }
+    ],
+    "common_flags": [],
+    "operational_tips": [
+      "Always configure proxy listeners on 127.0.0.1 to avoid exposing to network.",
+      "Install Burp CA certificate in all test browsers and tools for HTTPS interception.",
+      "Use Target > Site map to visualize application structure before testing.",
+      "Enable Intercept > Response interception to modify server responses.",
+      "Use Repeater for manual request manipulation and iterative testing.",
+      "Intruder is powerful for automated fuzzing and credential stuffing.",
+      "Professional edition scanner automates vulnerability detection.",
+      "Save project files regularly to preserve state and findings.",
+      "Use BApp Store extensions for specialized testing (e.g., JWT Editor, AuthMatrix).",
+      "Configure upstream proxy in Burp for environments requiring proxy chains."
+    ],
+    "step_sequences": [
+      {
+        "title": "Initial proxy setup and certificate trust",
+        "steps": [
+          {
+            "title": "Start Burp Suite",
+            "details": "Launch Burp with temporary project or persistent saved project.",
+            "command": "burpsuite &"
+          },
+          {
+            "title": "Configure proxy listener",
+            "details": "Verify Proxy > Options shows listener on 127.0.0.1:8080.",
+            "command": "# Check Proxy > Options > Proxy Listeners"
+          },
+          {
+            "title": "Set browser proxy",
+            "details": "Configure browser to use HTTP proxy 127.0.0.1:8080 or use FoxyProxy extension.",
+            "command": "# Firefox: Preferences > Network Settings > Manual proxy: 127.0.0.1:8080"
+          },
+          {
+            "title": "Download Burp CA certificate",
+            "details": "Navigate to http://burp/cert in browser and save the certificate.",
+            "command": "curl http://burp/cert -o burp_ca.der"
+          },
+          {
+            "title": "Install CA certificate",
+            "details": "Import certificate into browser's trusted root store to enable HTTPS interception.",
+            "command": "# Firefox: Preferences > Privacy & Security > View Certificates > Authorities > Import"
+          },
+          {
+            "title": "Test interception",
+            "details": "Enable Intercept and navigate to any HTTPS site to verify traffic capture.",
+            "command": "# Toggle Proxy > Intercept is on"
+          }
+        ]
+      },
+      {
+        "title": "Site mapping and reconnaissance",
+        "steps": [
+          {
+            "title": "Add target to scope",
+            "details": "Define scope in Target tab to focus on specific domains.",
+            "command": "# Target > Scope > Add > example.com"
+          },
+          {
+            "title": "Spider the application",
+            "details": "Use Crawler (Pro) or manually browse to populate site map.",
+            "command": "# Right-click target > Scan (Pro) or browse manually"
+          },
+          {
+            "title": "Review site map",
+            "details": "Examine discovered endpoints, parameters, and forms in Target > Site map.",
+            "command": "# Target > Site map - expand tree to view all discovered paths"
+          },
+          {
+            "title": "Analyze HTTP history",
+            "details": "Review all requests/responses in Proxy > HTTP history for sensitive data.",
+            "command": "# Proxy > HTTP history - filter by scope, status, MIME type"
+          }
+        ]
+      },
+      {
+        "title": "Active testing with Repeater",
+        "steps": [
+          {
+            "title": "Send request to Repeater",
+            "details": "Right-click any interesting request in Proxy or Target and send to Repeater.",
+            "command": "# Right-click request > Send to Repeater"
+          },
+          {
+            "title": "Modify parameters",
+            "details": "Edit request parameters, headers, or body to test for vulnerabilities.",
+            "command": "# Repeater tab - modify request in top panel"
+          },
+          {
+            "title": "Send modified request",
+            "details": "Click Send button to submit modified request and view response.",
+            "command": "# Click Send button"
+          },
+          {
+            "title": "Analyze response",
+            "details": "Check for error messages, reflected input, or anomalous behavior.",
+            "command": "# Review response in bottom panel - Raw, Render, Hex views"
+          }
+        ]
+      },
+      {
+        "title": "Automated fuzzing with Intruder",
+        "steps": [
+          {
+            "title": "Send request to Intruder",
+            "details": "Select a request suitable for parameter fuzzing.",
+            "command": "# Right-click request > Send to Intruder"
+          },
+          {
+            "title": "Configure attack positions",
+            "details": "Mark parameters to fuzz with \u00a7 symbols around target values.",
+            "command": "# Intruder > Positions - Clear \u00a7, then Add \u00a7 around parameters"
+          },
+          {
+            "title": "Load payloads",
+            "details": "Select payload type and load wordlist or generate payloads.",
+            "command": "# Intruder > Payloads - select type, load from file or paste list"
+          },
+          {
+            "title": "Start attack",
+            "details": "Launch attack and monitor results for interesting status codes or response lengths.",
+            "command": "# Click Start attack button - Community edition is throttled"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Sort by status code, length, or response time to identify anomalies.",
+            "command": "# Results table - click column headers to sort, click request to view"
+          }
+        ]
+      },
+      {
+        "title": "Scanner usage (Professional only)",
+        "steps": [
+          {
+            "title": "Configure scan scope",
+            "details": "Define what URLs and insertion points scanner should test.",
+            "command": "# Dashboard > New scan > Scan configuration"
+          },
+          {
+            "title": "Select scan type",
+            "details": "Choose between Crawl and Audit, Audit only, or Crawl only.",
+            "command": "# Select scan type: Crawl and audit for comprehensive testing"
+          },
+          {
+            "title": "Start scan",
+            "details": "Launch scan and monitor progress in Dashboard.",
+            "command": "# Click OK to start scan"
+          },
+          {
+            "title": "Review issues",
+            "details": "Examine discovered vulnerabilities in Target > Issues.",
+            "command": "# Target > Issue activity - sort by severity"
+          },
+          {
+            "title": "Verify findings",
+            "details": "Manually verify high severity issues using Repeater before reporting.",
+            "command": "# Right-click issue > Send to Repeater"
+          }
+        ]
+      },
+      {
+        "title": "Extension management and scripting",
+        "steps": [
+          {
+            "title": "Open BApp Store",
+            "details": "Access extensions marketplace for additional functionality.",
+            "command": "# Extender > BApp Store"
+          },
+          {
+            "title": "Install extension",
+            "details": "Browse and install extensions like Logger++, Autorize, JWT Editor.",
+            "command": "# BApp Store - select extension > Install"
+          },
+          {
+            "title": "Configure extension",
+            "details": "Access extension settings via Extender > Installed tab.",
+            "command": "# Extender > Installed > select extension > Options"
+          },
+          {
+            "title": "Write custom extension",
+            "details": "Use Java, Python, or Ruby to create custom Burp extensions.",
+            "command": "# Extender > Extensions > Add - load custom .py, .rb, or .jar"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Complete web app security assessment",
+        "stages": [
+          {
+            "label": "Setup and reconnaissance",
+            "description": "Configure proxy, install CA cert, spider application.",
+            "command": "burpsuite & # Configure browser proxy and spider target"
+          },
+          {
+            "label": "Passive vulnerability scanning",
+            "description": "Review proxy history and site map for information disclosure.",
+            "command": "# Analyze HTTP history for sensitive data, error messages, debug info"
+          },
+          {
+            "label": "Active testing",
+            "description": "Use Repeater and Intruder for manual and automated testing.",
+            "command": "# Test for SQLi, XSS, IDOR, CSRF, authentication bypass"
+          },
+          {
+            "label": "Automated scanning",
+            "description": "Run Professional scanner for comprehensive vulnerability detection.",
+            "command": "# Dashboard > New scan > Configure and launch"
+          },
+          {
+            "label": "Verification and reporting",
+            "description": "Verify findings, document reproduction steps, generate report.",
+            "command": "# Target > Issue activity > Export findings"
+          }
+        ]
+      },
+      {
+        "name": "Authentication and session testing",
+        "stages": [
+          {
+            "label": "Capture authentication flow",
+            "description": "Intercept login requests to understand authentication mechanism.",
+            "command": "# Enable intercept, perform login, analyze POST request"
+          },
+          {
+            "label": "Test credential handling",
+            "description": "Check for weak passwords, password policy, account lockout.",
+            "command": "# Intruder with password list against login endpoint"
+          },
+          {
+            "label": "Session token analysis",
+            "description": "Examine cookies and tokens for entropy, expiration, secure flags.",
+            "command": "# Sequencer > Select session token > Start capture"
+          },
+          {
+            "label": "Authorization testing",
+            "description": "Test for horizontal and vertical privilege escalation.",
+            "command": "# Use Autorize extension or manually test with different user sessions"
+          }
+        ]
+      },
+      {
+        "name": "Burp Suite API Security Testing with Repeater/Intruder",
+        "stages": [
+          {
+            "label": "Import API definition",
+            "description": "Load OpenAPI/Swagger spec for automatic endpoint discovery.",
+            "command": "# Target > Import OpenAPI definition"
+          },
+          {
+            "label": "Test authentication",
+            "description": "Verify API key, OAuth, JWT token handling.",
+            "command": "# Use JWT Editor extension for token manipulation"
+          },
+          {
+            "label": "Fuzz API parameters",
+            "description": "Test input validation, injection, and business logic.",
+            "command": "# Intruder with API-specific payloads and Content-Type variations"
+          },
+          {
+            "label": "Test rate limiting",
+            "description": "Check for rate limiting and DDoS protection.",
+            "command": "# Intruder with null payloads to send identical requests"
+          }
+        ]
+      },
+      {
+        "name": "Macro and automation workflows",
+        "stages": [
+          {
+            "label": "Record macro",
+            "description": "Automate multi-step processes like login for authenticated scanning.",
+            "command": "# Project options > Sessions > Macros > Add"
+          },
+          {
+            "label": "Configure session handling",
+            "description": "Set rules for automatic session token refresh.",
+            "command": "# Project options > Sessions > Session handling rules > Add"
+          },
+          {
+            "label": "Test with automation",
+            "description": "Run scanner or Intruder with automatic authentication.",
+            "command": "# Scanner will now handle authentication automatically"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Request was redirected to SSL [302]",
+        "meaning": "Application redirects HTTP to HTTPS; ensure testing covers both protocols.",
+        "severity": "info"
+      },
+      {
+        "indicator": "Serialized object was submitted",
+        "meaning": "Potential deserialization vulnerability; test for RCE.",
+        "severity": "warning"
+      },
+      {
+        "indicator": "Cross-site scripting (reflected)",
+        "meaning": "User input reflected without encoding; exploit with XSS payload.",
+        "severity": "high"
+      },
+      {
+        "indicator": "SQL injection (error-based)",
+        "meaning": "Database errors indicate SQLi vulnerability; extract data or escalate.",
+        "severity": "critical"
+      },
+      {
+        "indicator": "Cookie without secure flag",
+        "meaning": "Session cookie can be transmitted over HTTP; risk of interception.",
+        "severity": "medium"
+      },
+      {
+        "indicator": "Strict transport security not enforced",
+        "meaning": "Missing HSTS header; potential for SSL stripping attacks.",
+        "severity": "low"
+      },
+      {
+        "indicator": "Out-of-band resource load",
+        "meaning": "Application makes external requests; potential for SSRF or XXE.",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Headless Burp automation with REST API",
+        "scenario": "Automate scanning in CI/CD pipelines without GUI.",
+        "command": "java -jar -Xmx4g burpsuite_pro.jar --project-file=project.burp --config-file=config.json --unpause-spider-and-scanner",
+        "notes": [
+          "Professional edition required for REST API access.",
+          "Configure scan settings in JSON config file.",
+          "Poll API endpoints for scan status and results."
+        ]
+      },
+      {
+        "title": "Collaborator for out-of-band testing",
+        "scenario": "Detect blind vulnerabilities like SSRF, XXE, DNS exfiltration.",
+        "command": "# Burp automatically uses Collaborator server for out-of-band interactions",
+        "notes": [
+          "Professional edition includes Burp Collaborator.",
+          "Self-host private Collaborator server for sensitive engagements.",
+          "Monitor Collaborator interactions in separate tab."
+        ]
+      },
+      {
+        "title": "Custom scanning with Turbo Intruder",
+        "scenario": "High-speed fuzzing that exceeds Intruder's capabilities.",
+        "command": "# Install Turbo Intruder extension > Right-click request > Extensions > Turbo Intruder",
+        "notes": [
+          "Python-scriptable for complex attack logic.",
+          "Supports pipelining and connection reuse for maximum speed.",
+          "Useful for race conditions and high-volume testing."
+        ]
+      },
+      {
+        "title": "Mobile app testing with invisible proxy",
+        "scenario": "Intercept mobile app traffic without proxy configuration.",
+        "command": "# Proxy > Options > Edit listener > Request handling > Support invisible proxying",
+        "notes": [
+          "Redirect mobile device traffic via iptables to Burp listener.",
+          "Install Burp CA on mobile device for HTTPS interception.",
+          "Handle certificate pinning with Frida or SSL Kill Switch."
+        ]
+      },
+      {
+        "title": "WebSocket testing",
+        "scenario": "Intercept and manipulate WebSocket communications.",
+        "command": "# Proxy > WebSockets history - view and modify WebSocket messages",
+        "notes": [
+          "Burp automatically captures WebSocket traffic.",
+          "Send messages to Repeater for manipulation.",
+          "Test for injection, authentication bypass, and message tampering."
+        ]
+      }
+    ],
+    "comparison_table": {
+      "title": "Burp Suite Community vs Professional",
+      "headers": [
+        "Feature",
+        "Community",
+        "Professional"
+      ],
+      "rows": [
+        [
+          "Intercepting Proxy",
+          "\u2713",
+          "\u2713"
+        ],
+        [
+          "Repeater & Intruder",
+          "\u2713 (throttled)",
+          "\u2713 (unlimited)"
+        ],
+        [
+          "Scanner",
+          "\u2717",
+          "\u2713"
+        ],
+        [
+          "Collaborator",
+          "\u2717",
+          "\u2713"
+        ],
+        [
+          "Save/restore state",
+          "Temporary only",
+          "\u2713"
+        ],
+        [
+          "Extensions",
+          "\u2713",
+          "\u2713"
+        ],
+        [
+          "REST API",
+          "\u2717",
+          "\u2713"
+        ],
+        [
+          "Price",
+          "Free",
+          "$449/user/year"
+        ]
+      ]
+    },
+    "resources": [
+      {
+        "label": "Official Documentation",
+        "url": "https://portswigger.net/burp/documentation",
+        "description": "Comprehensive Burp Suite user guide and reference."
+      },
+      {
+        "label": "Web Security Academy",
+        "url": "https://portswigger.net/web-security",
+        "description": "Free training labs for web vulnerability testing with Burp."
+      },
+      {
+        "label": "BApp Store",
+        "url": "https://portswigger.net/bappstore",
+        "description": "Browse and install Burp Suite extensions."
+      }
+    ]
+  },
+  {
+    "id": "owasp-zap",
+    "name": "OWASP ZAP",
+    "summary": "OWASP Zed Attack Proxy (ZAP) is a free, open-source web application security scanner designed for finding vulnerabilities in web applications. It offers automated scanning, manual testing tools, and extensive API for CI/CD integration.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via snap or download standalone JAR for Java-based deployment.",
+        "steps": [
+          {
+            "detail": "sudo snap install zaproxy --classic",
+            "copyable": true
+          },
+          {
+            "detail": "zaproxy",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Pre-installed on Kali; update regularly for latest security checks.",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y zaproxy",
+            "copyable": true
+          },
+          {
+            "detail": "zaproxy &",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run ZAP in containers for headless scanning or GUI with X11 forwarding.",
+        "steps": [
+          {
+            "detail": "docker pull owasp/zap2docker-stable",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -u zap -p 8080:8080 -i owasp/zap2docker-stable zap-webswing.sh",
+            "copyable": true
+          },
+          {
+            "detail": "# Access ZAP via browser at http://localhost:8080/zap",
+            "copyable": false
+          }
+        ]
+      },
+      {
+        "platform": "Standalone JAR",
+        "summary": "Cross-platform JAR for manual installation on any system with Java.",
+        "steps": [
+          {
+            "detail": "wget https://github.com/zaproxy/zaproxy/releases/download/v2.14.0/ZAP_2.14.0_Linux.tar.gz",
+            "copyable": true
+          },
+          {
+            "detail": "tar -xvf ZAP_2.14.0_Linux.tar.gz",
+            "copyable": true
+          },
+          {
+            "detail": "cd ZAP_2.14.0 && ./zap.sh",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Launch ZAP GUI",
+        "command": "zaproxy &",
+        "notes": []
+      },
+      {
+        "description": "Start ZAP in daemon mode for API access",
+        "command": "zap.sh -daemon -port 8080 -config api.key=changeme",
+        "notes": []
+      },
+      {
+        "description": "Quick spider and scan via CLI",
+        "command": "zap-cli quick-scan --self-contained --start-options '-config api.disablekey=true' http://example.com",
+        "notes": []
+      },
+      {
+        "description": "Generate SSL certificate for HTTPS interception",
+        "command": "# Tools > Options > Dynamic SSL Certificates > Save",
+        "notes": []
+      },
+      {
+        "description": "Export scan report",
+        "command": "# Report > Generate HTML Report",
+        "notes": []
+      }
+    ],
+    "common_flags": [],
+    "operational_tips": [
+      "Enable API key for remote access to prevent unauthorized scanning.",
+      "Install ZAP root CA certificate in browsers for HTTPS interception.",
+      "Use Context feature to define authentication and session management.",
+      "Active scan can be intrusive; get authorization before running.",
+      "Configure attack strength and threshold based on target sensitivity.",
+      "Use ZAP HUD (Heads Up Display) for in-browser testing experience.",
+      "Marketplace offers extensions for specialized testing needs.",
+      "Save sessions regularly to preserve scan results and findings.",
+      "Use automation framework for CI/CD pipeline integration.",
+      "Review false positives before reporting vulnerabilities."
+    ],
+    "step_sequences": [
+      {
+        "title": "Initial setup and certificate configuration",
+        "steps": [
+          {
+            "title": "Launch ZAP",
+            "details": "Start ZAP in standard or daemon mode depending on use case.",
+            "command": "zaproxy &"
+          },
+          {
+            "title": "Configure local proxy",
+            "details": "Verify ZAP is listening on localhost:8080 for HTTP/HTTPS traffic.",
+            "command": "# Tools > Options > Local Proxies - default 127.0.0.1:8080"
+          },
+          {
+            "title": "Generate dynamic SSL certificate",
+            "details": "Create root CA certificate for HTTPS interception.",
+            "command": "# Tools > Options > Dynamic SSL Certificates > Generate"
+          },
+          {
+            "title": "Export root CA",
+            "details": "Save owasp_zap_root_ca.cer to install in browsers and operating system.",
+            "command": "# Tools > Options > Dynamic SSL Certificates > Save"
+          },
+          {
+            "title": "Install CA in browser",
+            "details": "Import certificate into Firefox, Chrome, or system trust store.",
+            "command": "# Firefox: Preferences > Privacy > Certificates > View > Import owasp_zap_root_ca.cer"
+          },
+          {
+            "title": "Configure browser proxy",
+            "details": "Set browser to use ZAP proxy for all HTTP/HTTPS traffic.",
+            "command": "# Browser proxy settings: 127.0.0.1:8080"
+          }
+        ]
+      },
+      {
+        "title": "Manual exploration and passive scanning",
+        "steps": [
+          {
+            "title": "Browse target application",
+            "details": "Navigate through application with ZAP proxy enabled to build site tree.",
+            "command": "# Browse application normally; ZAP captures all traffic"
+          },
+          {
+            "title": "Review site tree",
+            "details": "Examine discovered URLs, parameters, and forms in Sites tab.",
+            "command": "# Sites tab shows hierarchical structure of discovered content"
+          },
+          {
+            "title": "Check passive scan alerts",
+            "details": "Review findings from passive scanning in Alerts tab.",
+            "command": "# Alerts tab - vulnerabilities found without active probing"
+          },
+          {
+            "title": "Analyze HTTP messages",
+            "details": "Inspect requests and responses in History tab for manual analysis.",
+            "command": "# History tab - filter by host, method, or response code"
+          }
+        ]
+      },
+      {
+        "title": "Active scanning workflow",
+        "steps": [
+          {
+            "title": "Define scan scope",
+            "details": "Add target URLs to context and scope to focus scanning.",
+            "command": "# Right-click site in tree > Include in Context > Default Context"
+          },
+          {
+            "title": "Configure scan policy",
+            "details": "Customize active scan rules and thresholds based on target.",
+            "command": "# Analyze > Scan Policy Manager > Add/Modify policy"
+          },
+          {
+            "title": "Start active scan",
+            "details": "Launch active scan against defined scope with selected policy.",
+            "command": "# Right-click context > Attack > Active Scan"
+          },
+          {
+            "title": "Monitor scan progress",
+            "details": "Watch active scan status in bottom panel and adjust if needed.",
+            "command": "# Active Scan tab shows progress, pause/resume controls"
+          },
+          {
+            "title": "Review scan results",
+            "details": "Examine discovered vulnerabilities in Alerts tab, sorted by risk.",
+            "command": "# Alerts tab - high/medium/low/informational findings"
+          },
+          {
+            "title": "Verify findings",
+            "details": "Manually reproduce critical alerts before reporting.",
+            "command": "# Request tab > Manual Request Editor to replay attacks"
+          }
+        ]
+      },
+      {
+        "title": "Spider and AJAX spider configuration",
+        "steps": [
+          {
+            "title": "Traditional spider",
+            "details": "Crawl application by following links and forms.",
+            "command": "# Right-click site > Attack > Spider"
+          },
+          {
+            "title": "Configure spider options",
+            "details": "Set maximum depth, thread count, and scope restrictions.",
+            "command": "# Tools > Options > Spider - configure depth and threads"
+          },
+          {
+            "title": "AJAX spider for JavaScript apps",
+            "details": "Use browser-based crawler for single-page applications.",
+            "command": "# Right-click site > Attack > AJAX Spider"
+          },
+          {
+            "title": "Monitor spider progress",
+            "details": "View discovered URLs and completion status.",
+            "command": "# Spider tab shows crawl progress and discovered nodes"
+          }
+        ]
+      },
+      {
+        "title": "Authentication and session management",
+        "steps": [
+          {
+            "title": "Create authentication context",
+            "details": "Define context for authenticated portions of application.",
+            "command": "# Session > New Context > Include in Scope"
+          },
+          {
+            "title": "Configure authentication method",
+            "details": "Set up form-based, script-based, or manual authentication.",
+            "command": "# Context > Authentication > Form-based or Script-based"
+          },
+          {
+            "title": "Set credentials",
+            "details": "Add valid user accounts for authenticated scanning.",
+            "command": "# Context > Users > Add user with credentials"
+          },
+          {
+            "title": "Configure session management",
+            "details": "Define how ZAP should maintain session tokens.",
+            "command": "# Context > Session Management > Cookie-based or Script"
+          },
+          {
+            "title": "Verify authentication",
+            "details": "Test authentication by forcing user mode and browsing.",
+            "command": "# Enable Force User Mode, browse authenticated areas"
+          }
+        ]
+      },
+      {
+        "title": "ZAP HUD (Heads Up Display) usage",
+        "steps": [
+          {
+            "title": "Enable HUD",
+            "details": "Activate in-browser testing interface overlay.",
+            "command": "# Tools > Options > HUD > Enable when using the ZAP Desktop"
+          },
+          {
+            "title": "Configure HUD browser",
+            "details": "Launch Firefox with ZAP HUD enabled.",
+            "command": "# HUD menu > Launch Browser"
+          },
+          {
+            "title": "Use HUD tools",
+            "details": "Access scan, attack, and analysis tools via browser overlay.",
+            "command": "# HUD buttons appear on left and right sides of browser"
+          },
+          {
+            "title": "View alerts in-context",
+            "details": "See vulnerabilities highlighted directly on vulnerable pages.",
+            "command": "# Alerts appear as badges on page elements"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Complete web application assessment",
+        "stages": [
+          {
+            "label": "Reconnaissance",
+            "description": "Install CA cert, configure proxy, manually explore application.",
+            "command": "zaproxy & # Browse application to populate site tree"
+          },
+          {
+            "label": "Automated discovery",
+            "description": "Run spider and AJAX spider for comprehensive crawling.",
+            "command": "# Attack > Spider + AJAX Spider"
+          },
+          {
+            "label": "Passive analysis",
+            "description": "Review passive scan results for low-hanging fruit.",
+            "command": "# Check Alerts tab for passive findings"
+          },
+          {
+            "label": "Active scanning",
+            "description": "Launch active scan with appropriate policy and scope.",
+            "command": "# Right-click context > Attack > Active Scan"
+          },
+          {
+            "label": "Manual verification",
+            "description": "Validate critical findings using request editor and fuzzer.",
+            "command": "# Use Requester tab and Fuzzer for manual testing"
+          },
+          {
+            "label": "Reporting",
+            "description": "Generate HTML/XML/JSON reports with findings and remediation.",
+            "command": "# Report > Generate HTML Report"
+          }
+        ]
+      },
+      {
+        "name": "OWASP ZAP API Security Testing with Automated Scanner",
+        "stages": [
+          {
+            "label": "Import API definition",
+            "description": "Load OpenAPI/Swagger specification for automatic endpoint discovery.",
+            "command": "# Import > Import an OpenAPI definition from URL or file"
+          },
+          {
+            "label": "Explore API",
+            "description": "Send requests to all defined endpoints to populate history.",
+            "command": "# Sites tree shows all API endpoints from spec"
+          },
+          {
+            "label": "Configure API scan",
+            "description": "Set authentication headers, tokens, and scan policy.",
+            "command": "# Add Authorization header in HTTP Sender Script"
+          },
+          {
+            "label": "Active scan API",
+            "description": "Launch targeted scan against API endpoints.",
+            "command": "# Right-click API context > Active Scan"
+          }
+        ]
+      },
+      {
+        "name": "CI/CD integration with automation framework",
+        "stages": [
+          {
+            "label": "Start ZAP in daemon mode",
+            "description": "Launch headless ZAP with API enabled.",
+            "command": "zap.sh -daemon -port 8080 -config api.key=your-api-key"
+          },
+          {
+            "label": "Configure automation plan",
+            "description": "Create YAML automation framework plan for scanning.",
+            "command": "# Create automation.yaml with job definitions"
+          },
+          {
+            "label": "Execute automation plan",
+            "description": "Run scan via automation framework with specified configuration.",
+            "command": "zap.sh -cmd -autorun automation.yaml"
+          },
+          {
+            "label": "Retrieve results",
+            "description": "Export findings via API or generated reports.",
+            "command": "curl http://localhost:8080/JSON/core/view/alerts/?apikey=your-api-key"
+          },
+          {
+            "label": "Fail build on findings",
+            "description": "Parse results and exit with error code if high-risk issues found.",
+            "command": "# CI script checks alert severity and fails build accordingly"
+          }
+        ]
+      },
+      {
+        "name": "Authenticated scanning workflow",
+        "stages": [
+          {
+            "label": "Record authentication",
+            "description": "Manually log in while ZAP captures authentication flow.",
+            "command": "# Enable ZAP proxy and perform login"
+          },
+          {
+            "label": "Configure context authentication",
+            "description": "Set up authentication method using captured login request.",
+            "command": "# Session > New Context > Authentication > Form-based"
+          },
+          {
+            "label": "Add test users",
+            "description": "Define user accounts with valid credentials for scanning.",
+            "command": "# Context > Users > Add with username/password"
+          },
+          {
+            "label": "Scan as authenticated user",
+            "description": "Run spider and active scan with forced user mode.",
+            "command": "# Enable Force User Mode > Attack > Spider and Active Scan"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "High (Reliability: Confirmed)",
+        "meaning": "Critical vulnerability verified by ZAP; immediate attention required.",
+        "severity": "critical"
+      },
+      {
+        "indicator": "Medium (Reliability: Suspicious)",
+        "meaning": "Potential vulnerability requiring manual verification before reporting.",
+        "severity": "warning"
+      },
+      {
+        "indicator": "SQL Injection",
+        "meaning": "Database injection vulnerability detected; test with manual payloads.",
+        "severity": "critical"
+      },
+      {
+        "indicator": "Cross Site Scripting (Reflected)",
+        "meaning": "User input reflected without sanitization; exploit with XSS payload.",
+        "severity": "high"
+      },
+      {
+        "indicator": "Application Error Disclosure",
+        "meaning": "Verbose error messages reveal internal details; information disclosure risk.",
+        "severity": "medium"
+      },
+      {
+        "indicator": "Cookie No HttpOnly Flag",
+        "meaning": "Session cookies accessible via JavaScript; XSS can steal sessions.",
+        "severity": "low"
+      },
+      {
+        "indicator": "X-Frame-Options Header Not Set",
+        "meaning": "Missing clickjacking protection; application can be framed.",
+        "severity": "medium"
+      },
+      {
+        "indicator": "Timestamp Disclosure - Unix",
+        "meaning": "Unix timestamps in responses may leak information; generally low risk.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Scripting with ZAP API",
+        "scenario": "Automate complex scanning workflows via Python, Java, or JavaScript API clients.",
+        "command": "from zapv2 import ZAPv2\nzap = ZAPv2(apikey='changeme', proxies={'http': 'http://127.0.0.1:8080', 'https': 'http://127.0.0.1:8080'})\nzap.spider.scan('http://example.com')",
+        "notes": [
+          "Install python-owasp-zap-v2.4 package for Python client.",
+          "API supports full ZAP functionality including scan control and reporting.",
+          "Use for CI/CD integration, custom workflows, and orchestration."
+        ]
+      },
+      {
+        "title": "Custom scan policies and rules",
+        "scenario": "Create tailored scan policies for specific application types or compliance requirements.",
+        "command": "# Analyze > Scan Policy Manager > Add > Configure thresholds and rules",
+        "notes": [
+          "Adjust attack strength per rule to balance speed and thoroughness.",
+          "Disable irrelevant rules to reduce scan time and false positives.",
+          "Export policies for reuse across engagements."
+        ]
+      },
+      {
+        "title": "Fuzzer for advanced input testing",
+        "scenario": "Fuzz specific parameters with custom wordlists and payloads.",
+        "command": "# Right-click parameter in Request > Fuzz > Add payloads from file or generator",
+        "notes": [
+          "Supports multiple fuzzers per request for complex testing scenarios.",
+          "Processors can encode, hash, or transform payloads before sending.",
+          "Results filterable by response code, length, or regex patterns."
+        ]
+      },
+      {
+        "title": "Script-based authentication for complex flows",
+        "scenario": "Handle multi-step authentication or non-standard login mechanisms.",
+        "command": "# Context > Authentication > Script-based > Load or write JavaScript/Zest script",
+        "notes": [
+          "Supports JavaScript and Zest scripting languages.",
+          "Scripts can handle OAuth, SAML, multi-factor authentication flows.",
+          "Test scripts via manual request before using in automated scans."
+        ]
+      },
+      {
+        "title": "Marketplace add-ons for specialized testing",
+        "scenario": "Extend ZAP capabilities with community and official extensions.",
+        "command": "# Help > Check for Updates > Marketplace tab > Install add-ons",
+        "notes": [
+          "Popular add-ons: Advanced SQLInjection Scanner, XSS Scanner, WebSockets.",
+          "Community scripts available for specific vulnerability types.",
+          "Keep add-ons updated for latest detection capabilities."
+        ]
+      }
+    ],
+    "comparison_table": {
+      "title": "ZAP vs Burp Suite Comparison",
+      "headers": [
+        "Feature",
+        "OWASP ZAP",
+        "Burp Suite Pro"
+      ],
+      "rows": [
+        [
+          "Price",
+          "Free & Open Source",
+          "$449/user/year"
+        ],
+        [
+          "Intercepting Proxy",
+          "\u2713",
+          "\u2713"
+        ],
+        [
+          "Automated Scanner",
+          "\u2713",
+          "\u2713"
+        ],
+        [
+          "Active Scan Speed",
+          "Fast (unlimited)",
+          "Fast (unlimited)"
+        ],
+        [
+          "API for Automation",
+          "\u2713 Full REST API",
+          "\u2713 REST API"
+        ],
+        [
+          "Scripting",
+          "JavaScript/Python/Zest",
+          "Java/Python/Ruby"
+        ],
+        [
+          "Fuzzer",
+          "\u2713 Built-in",
+          "\u2713 Intruder"
+        ],
+        [
+          "HUD/In-browser",
+          "\u2713 ZAP HUD",
+          "\u2717"
+        ],
+        [
+          "CI/CD Integration",
+          "\u2713 Automation Framework",
+          "\u2713 Enterprise/Cloud"
+        ],
+        [
+          "Community",
+          "Large OSS community",
+          "Professional support"
+        ]
+      ]
+    },
+    "resources": [
+      {
+        "label": "Official Documentation",
+        "url": "https://www.zaproxy.org/docs/",
+        "description": "Comprehensive ZAP user guide and API documentation."
+      },
+      {
+        "label": "Automation Framework Guide",
+        "url": "https://www.zaproxy.org/docs/automate/automation-framework/",
+        "description": "YAML-based automation for CI/CD integration."
+      },
+      {
+        "label": "ZAP in Ten",
+        "url": "https://www.zaproxy.org/zap-in-ten/",
+        "description": "Quick video tutorials covering core ZAP features."
+      },
+      {
+        "label": "OWASP ZAP API",
+        "url": "https://www.zaproxy.org/docs/api/",
+        "description": "Full API reference for programmatic control."
+      }
+    ]
+  }
+]

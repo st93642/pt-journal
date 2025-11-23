@@ -1,0 +1,1876 @@
+[
+  {
+    "id": "frida",
+    "name": "Frida",
+    "summary": "Dynamic binary instrumentation framework for inspecting and modifying application behavior at runtime",
+    "details": "Comprehensive guide for using Frida in penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install Frida on Debian/Ubuntu systems",
+        "steps": [
+          {
+            "detail": "Update package manager and install Frida",
+            "copyable": true
+          },
+          {
+            "detail": "Verify installation with version check",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install Frida on Kali Linux",
+        "steps": [
+          {
+            "detail": "Use apt to install Frida on Kali",
+            "copyable": true
+          },
+          {
+            "detail": "Confirm installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Container",
+        "summary": "Run Frida in Docker container",
+        "steps": [
+          {
+            "detail": "Pull Docker image containing Frida",
+            "copyable": true
+          },
+          {
+            "detail": "Run container with appropriate mounts",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic Frida execution",
+        "command": "frida --help",
+        "notes": [
+          "Display help for Frida"
+        ]
+      },
+      {
+        "description": "Standard Frida scan",
+        "command": "frida target",
+        "notes": [
+          "Run Frida against a target"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--help",
+        "description": "Display help message"
+      },
+      {
+        "flag": "-v/--verbose",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o/--output",
+        "description": "Output file path"
+      }
+    ],
+    "operational_tips": [
+      "Always verify Frida is installed correctly before engagements",
+      "Use Frida within scope boundaries defined in rules of engagement",
+      "Document all Frida findings for reporting",
+      "Review Frida output for false positives"
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic Frida workflow",
+        "steps": [
+          {
+            "title": "Prepare target",
+            "details": "Identify target for Frida assessment",
+            "command": "# Define your target"
+          },
+          {
+            "title": "Execute Frida",
+            "details": "Run Frida with appropriate options",
+            "command": "frida target"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review Frida output for findings",
+            "command": "# Review results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Frida integration workflow",
+        "stages": [
+          {
+            "label": "Initialize Frida",
+            "description": "Prepare Frida for use",
+            "command": "frida init"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run Frida scan on target",
+            "command": "frida scan target"
+          },
+          {
+            "label": "Export results",
+            "description": "Export Frida findings",
+            "command": "frida export -o results.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[*] PID established",
+        "meaning": "Successfully connected to process",
+        "severity": "info"
+      },
+      {
+        "indicator": "[!] Module loaded",
+        "meaning": "JavaScript hook successfully injected",
+        "severity": "info"
+      },
+      {
+        "indicator": "Exception detected",
+        "meaning": "Hook caused exception - review script",
+        "severity": "high"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced Frida techniques",
+        "scenario": "Complex Frida scenarios in advanced assessments",
+        "command": "frida advanced-mode",
+        "notes": [
+          "Use for complex Frida scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Frida official docs",
+        "url": "https://frida.re/docs/home/",
+        "description": "Official Frida documentation"
+      },
+      {
+        "label": "Frida GitHub",
+        "url": "https://github.com/frida/frida",
+        "description": "Source code and examples"
+      },
+      {
+        "label": "Objection project",
+        "url": "https://github.com/sensepost/objection",
+        "description": "High-level Frida wrapper"
+      }
+    ],
+    "installation": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install Frida and Frida tools for dynamic instrumentation",
+        "steps": [
+          {
+            "detail": "sudo apt-get update && sudo apt-get install -y python3-pip",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install frida frida-tools",
+            "copyable": true
+          },
+          {
+            "detail": "frida --version",
+            "copyable": true
+          },
+          {
+            "detail": "frida-ps --help",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install Frida on Kali Linux",
+        "steps": [
+          {
+            "detail": "sudo apt install -y frida frida-tools",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install --upgrade frida",
+            "copyable": true
+          },
+          {
+            "detail": "frida --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Emulator",
+        "summary": "Run Frida in Docker with Android emulator",
+        "steps": [
+          {
+            "detail": "docker run --rm -it frida/frida frida --version",
+            "copyable": true
+          },
+          {
+            "detail": "# Download Android emulator with Frida pre-installed",
+            "copyable": false
+          },
+          {
+            "detail": "frida-server must be running on target device/app",
+            "copyable": false
+          }
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "description": "List running processes",
+        "command": "frida-ps -U",
+        "notes": [
+          "USB device must be connected",
+          "-U means USB device"
+        ]
+      },
+      {
+        "description": "Attach to process",
+        "command": "frida -U -f com.example.app -l script.js",
+        "notes": [
+          "Spawns app with hook",
+          "-l loads JavaScript instrumentation"
+        ]
+      },
+      {
+        "description": "Intercept function",
+        "command": "frida -U -p $(frida-ps -U | grep Chrome | awk '{print $1}')",
+        "notes": [
+          "Attach to existing process"
+        ]
+      }
+    ],
+    "flags": [
+      {
+        "flag": "-U/--usb",
+        "description": "Connect to USB device"
+      },
+      {
+        "flag": "-H/--host",
+        "description": "Remote Frida server host"
+      },
+      {
+        "flag": "-f/--file",
+        "description": "Spawn and attach to process"
+      },
+      {
+        "flag": "-l/--load",
+        "description": "Load JavaScript/TypeScript file"
+      },
+      {
+        "flag": "-p/--pid",
+        "description": "Attach to PID"
+      }
+    ],
+    "tips": [
+      "Frida works with Android, iOS, Windows, macOS, and Linux",
+      "JavaScript API provides hooks for system functions, methods, memory access",
+      "Use frida-ps to enumerate running processes before attaching",
+      "TypeScript support available for better IDE integration",
+      "Combine with objection for advanced iOS/Android penetration testing"
+    ],
+    "sequences": [
+      {
+        "title": "Basic app hooking",
+        "steps": [
+          {
+            "title": "Install Frida server",
+            "details": "Deploy frida-server to Android device",
+            "command": "adb push frida-server-15.3.0-android-arm64 /data/local/tmp/\nadb shell chmod +x /data/local/tmp/frida-server-15.3.0-android-arm64"
+          },
+          {
+            "title": "Start Frida server",
+            "details": "Start the server on the device",
+            "command": "adb shell /data/local/tmp/frida-server-15.3.0-android-arm64 &"
+          },
+          {
+            "title": "Forward port",
+            "details": "Forward USB port for remote connection",
+            "command": "adb forward tcp:27042 tcp:27042"
+          },
+          {
+            "title": "Create hook script",
+            "details": "Write JavaScript to hook target function",
+            "command": "cat > hook.js << 'EOF'\nJava.perform(function() {\n  var Activity = Java.use('android.app.Activity');\n  Activity.onCreate.overload('android.os.Bundle').implementation = function(bundle) {\n    console.log('[*] Activity created:', this.getClass().getName());\n    return this.onCreate(bundle);\n  };\n});\nEOF"
+          },
+          {
+            "title": "Run frida",
+            "details": "Execute Frida with hook script",
+            "command": "frida -U -f com.example.app -l hook.js --no-pause"
+          }
+        ]
+      }
+    ],
+    "workflows": [
+      {
+        "name": "Android app reverse engineering with Frida",
+        "stages": [
+          {
+            "label": "Device setup",
+            "description": "Prepare Android device or emulator",
+            "command": "adb devices; adb shell getprop ro.build.version.release"
+          },
+          {
+            "label": "Install Frida server",
+            "description": "Deploy server to device",
+            "command": "adb push frida-server /data/local/tmp/; adb shell chmod +x /data/local/tmp/frida-server"
+          },
+          {
+            "label": "Start interception",
+            "description": "Launch server and connect",
+            "command": "adb shell /data/local/tmp/frida-server &; frida-ps -U"
+          },
+          {
+            "label": "Develop hooks",
+            "description": "Create JavaScript instrumentation",
+            "command": "# Write JavaScript API hooks"
+          },
+          {
+            "label": "Execute hooks",
+            "description": "Run Frida with scripts",
+            "command": "frida -U -f com.app -l script.js"
+          },
+          {
+            "label": "Analyze results",
+            "description": "Examine captured data and behavior",
+            "command": "# Review logs and findings"
+          }
+        ]
+      }
+    ],
+    "advanced": [
+      {
+        "title": "Memory scanning and modification",
+        "scenario": "Search and modify memory values in running app",
+        "command": "frida-ps -U | grep -i app; frida -U -p PID -l memscan.js",
+        "notes": [
+          "Use for cheating detection bypass",
+          "Memory modifications can crash app"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "mobsf",
+    "name": "MobSF",
+    "summary": "Comprehensive mobile security testing framework supporting Android and iOS applications",
+    "details": "Comprehensive guide for using MobSF in penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install MobSF on Debian/Ubuntu systems",
+        "steps": [
+          {
+            "detail": "Update package manager and install MobSF",
+            "copyable": true
+          },
+          {
+            "detail": "Verify installation with version check",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install MobSF on Kali Linux",
+        "steps": [
+          {
+            "detail": "Use apt to install MobSF on Kali",
+            "copyable": true
+          },
+          {
+            "detail": "Confirm installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Container",
+        "summary": "Run MobSF in Docker container",
+        "steps": [
+          {
+            "detail": "Pull Docker image containing MobSF",
+            "copyable": true
+          },
+          {
+            "detail": "Run container with appropriate mounts",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Start MobSF web server",
+        "command": "cd Mobile-Security-Framework-MobSF && python3 manage.py runserver 0.0.0.0:8000",
+        "notes": [
+          "Access via http://localhost:8000"
+        ]
+      },
+      {
+        "description": "Use MobSF Docker",
+        "command": "docker run -it -p 8000:8000 -v $(pwd):/home/mobsf/uploads mobsf/mobsf:latest",
+        "notes": [
+          "Pre-configured container with all dependencies"
+        ]
+      },
+      {
+        "description": "API scan submission",
+        "command": "curl -F 'file=@app.apk' http://localhost:8000/api/v1/upload",
+        "notes": [
+          "Requires API token from settings"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--help",
+        "description": "Display help message"
+      },
+      {
+        "flag": "-v/--verbose",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o/--output",
+        "description": "Output file path"
+      }
+    ],
+    "operational_tips": [
+      "Always verify MobSF is installed correctly before engagements",
+      "Use MobSF within scope boundaries defined in rules of engagement",
+      "Document all MobSF findings for reporting",
+      "Review MobSF output for false positives"
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic MobSF workflow",
+        "steps": [
+          {
+            "title": "Prepare target",
+            "details": "Identify target for MobSF assessment",
+            "command": "# Define your target"
+          },
+          {
+            "title": "Execute MobSF",
+            "details": "Run MobSF with appropriate options",
+            "command": "mobsf target"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review MobSF output for findings",
+            "command": "# Review results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "MobSF integration workflow",
+        "stages": [
+          {
+            "label": "Initialize MobSF",
+            "description": "Prepare MobSF for use",
+            "command": "mobsf init"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run MobSF scan on target",
+            "command": "mobsf scan target"
+          },
+          {
+            "label": "Export results",
+            "description": "Export MobSF findings",
+            "command": "mobsf export -o results.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Static Analysis",
+        "meaning": "Code and manifest analysis results",
+        "severity": "info"
+      },
+      {
+        "indicator": "Dynamic Analysis",
+        "meaning": "Runtime behavior and permissions tracking",
+        "severity": "info"
+      },
+      {
+        "indicator": "Critical Issue",
+        "meaning": "High-severity security vulnerability found",
+        "severity": "critical"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced MobSF techniques",
+        "scenario": "Complex MobSF scenarios in advanced assessments",
+        "command": "mobsf advanced-mode",
+        "notes": [
+          "Use for complex MobSF scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "MobSF GitHub",
+        "url": "https://github.com/MobSF/Mobile-Security-Framework-MobSF",
+        "description": "Project repository"
+      },
+      {
+        "label": "MobSF Documentation",
+        "url": "https://mobsf.github.io/Mobile-Security-Framework-MobSF/",
+        "description": "Complete documentation"
+      },
+      {
+        "label": "OWASP Mobile",
+        "url": "https://owasp.org/www-project-mobile-security/",
+        "description": "OWASP mobile security guidance"
+      }
+    ],
+    "installation": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install MobSF from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/MobSF/Mobile-Security-Framework-MobSF.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd Mobile-Security-Framework-MobSF",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install -r requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "python3 manage.py runserver",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker",
+        "summary": "Run MobSF in Docker container",
+        "steps": [
+          {
+            "detail": "docker pull mobsf/mobsf:latest",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -it --rm -p 8000:8000 -v /tmp/mobsf:/home/mobsf/uploads mobsf/mobsf:latest",
+            "copyable": true
+          },
+          {
+            "detail": "Navigate to http://localhost:8000",
+            "copyable": false
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install MobSF on Kali",
+        "steps": [
+          {
+            "detail": "sudo apt install -y python3-pip python3-dev libffi-dev",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/MobSF/Mobile-Security-Framework-MobSF.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd Mobile-Security-Framework-MobSF && pip3 install -r requirements.txt",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "description": "Start MobSF web interface",
+        "command": "python3 manage.py runserver",
+        "notes": [
+          "Runs on localhost:8000 by default"
+        ]
+      },
+      {
+        "description": "CLI scan",
+        "command": "python3 mobsf/api/api_cli.py --file app.apk",
+        "notes": [
+          "Requires proper config"
+        ]
+      }
+    ],
+    "flags": [
+      {
+        "flag": "--host",
+        "description": "Specify host address"
+      },
+      {
+        "flag": "--port",
+        "description": "Specify port number"
+      },
+      {
+        "flag": "--api",
+        "description": "Use API mode"
+      }
+    ],
+    "tips": [
+      "MobSF supports APK, IPA, and Android Aab file formats",
+      "Use API for automation in penetration testing workflows",
+      "Database stores scan history and results",
+      "Docker deployment recommended for clean environments"
+    ],
+    "sequences": [
+      {
+        "title": "Mobile app security assessment",
+        "steps": [
+          {
+            "title": "Deploy MobSF",
+            "details": "Start MobSF web interface",
+            "command": "cd Mobile-Security-Framework-MobSF && python3 manage.py runserver 0.0.0.0:8000"
+          },
+          {
+            "title": "Upload app",
+            "details": "Submit APK/IPA for analysis",
+            "command": "# Visit http://localhost:8000 and upload app"
+          },
+          {
+            "title": "Wait for analysis",
+            "details": "MobSF performs static and dynamic analysis",
+            "command": "# Monitor progress on web interface"
+          },
+          {
+            "title": "Review report",
+            "details": "Examine detailed security assessment",
+            "command": "# Click on results to view findings"
+          },
+          {
+            "title": "Export findings",
+            "details": "Generate PDF report",
+            "command": "# Click export report button"
+          }
+        ]
+      }
+    ],
+    "workflows": [
+      {
+        "name": "Android app pentesting with MobSF",
+        "stages": [
+          {
+            "label": "App preparation",
+            "description": "Obtain target app APK",
+            "command": "adb pull /data/app/com.app/app.apk"
+          },
+          {
+            "label": "MobSF deployment",
+            "description": "Start security testing platform",
+            "command": "python3 manage.py runserver"
+          },
+          {
+            "label": "App submission",
+            "description": "Upload APK for analysis",
+            "command": "# Web upload or API"
+          },
+          {
+            "label": "Static analysis",
+            "description": "Automated code and manifest review",
+            "command": "# MobSF processes automatically"
+          },
+          {
+            "label": "Dynamic analysis",
+            "description": "Monitor app runtime behavior",
+            "command": "# Use MobSF emulator integration"
+          },
+          {
+            "label": "Findings compilation",
+            "description": "Review and document findings",
+            "command": "# Generate report"
+          }
+        ]
+      }
+    ],
+    "advanced": [
+      {
+        "title": "API automation",
+        "scenario": "Automate MobSF scans via REST API",
+        "command": "curl -X POST http://localhost:8000/api/v1/upload -F 'file=@app.apk'",
+        "notes": [
+          "Setup API token first",
+          "Useful for CI/CD integration"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "apktool",
+    "name": "APKTool",
+    "summary": "Reverse engineering tool for decoding and rebuilding Android APK files",
+    "details": "Comprehensive guide for using APKTool in penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install APKTool on Debian/Ubuntu systems",
+        "steps": [
+          {
+            "detail": "Update package manager and install APKTool",
+            "copyable": true
+          },
+          {
+            "detail": "Verify installation with version check",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install APKTool on Kali Linux",
+        "steps": [
+          {
+            "detail": "Use apt to install APKTool on Kali",
+            "copyable": true
+          },
+          {
+            "detail": "Confirm installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Container",
+        "summary": "Run APKTool in Docker container",
+        "steps": [
+          {
+            "detail": "Pull Docker image containing APKTool",
+            "copyable": true
+          },
+          {
+            "detail": "Run container with appropriate mounts",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic APKTool execution",
+        "command": "apktool --help",
+        "notes": [
+          "Display help for APKTool"
+        ]
+      },
+      {
+        "description": "Standard APKTool scan",
+        "command": "apktool target",
+        "notes": [
+          "Run APKTool against a target"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--help",
+        "description": "Display help message"
+      },
+      {
+        "flag": "-v/--verbose",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o/--output",
+        "description": "Output file path"
+      }
+    ],
+    "operational_tips": [
+      "Always verify APKTool is installed correctly before engagements",
+      "Use APKTool within scope boundaries defined in rules of engagement",
+      "Document all APKTool findings for reporting",
+      "Review APKTool output for false positives"
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic APKTool workflow",
+        "steps": [
+          {
+            "title": "Prepare target",
+            "details": "Identify target for APKTool assessment",
+            "command": "# Define your target"
+          },
+          {
+            "title": "Execute APKTool",
+            "details": "Run APKTool with appropriate options",
+            "command": "apktool target"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review APKTool output for findings",
+            "command": "# Review results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "APKTool integration workflow",
+        "stages": [
+          {
+            "label": "Initialize APKTool",
+            "description": "Prepare APKTool for use",
+            "command": "apktool init"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run APKTool scan on target",
+            "command": "apktool scan target"
+          },
+          {
+            "label": "Export results",
+            "description": "Export APKTool findings",
+            "command": "apktool export -o results.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "smali folder",
+        "meaning": "Contains Android bytecode - intermediate representation between Java and DEX",
+        "severity": "info"
+      },
+      {
+        "indicator": "resources folder",
+        "meaning": "Contains drawables, layouts, strings and other resources",
+        "severity": "info"
+      },
+      {
+        "indicator": "AndroidManifest.xml",
+        "meaning": "Critical app configuration - permissions, activities, services",
+        "severity": "critical"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced APKTool techniques",
+        "scenario": "Complex APKTool scenarios in advanced assessments",
+        "command": "apktool advanced-mode",
+        "notes": [
+          "Use for complex APKTool scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "APKTool GitHub",
+        "url": "https://github.com/iBotPeaches/Apktool",
+        "description": "Official repository and documentation"
+      },
+      {
+        "label": "Android Manifest",
+        "url": "https://developer.android.com/guide/topics/manifest/manifest-intro",
+        "description": "Android manifest structure reference"
+      },
+      {
+        "label": "Smali documentation",
+        "url": "https://github.com/JesusFreke/smali",
+        "description": "Smali syntax and opcodes"
+      }
+    ],
+    "installation": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install APKTool",
+        "steps": [
+          {
+            "detail": "sudo apt-get install -y default-jdk",
+            "copyable": true
+          },
+          {
+            "detail": "wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.7.0.jar",
+            "copyable": true
+          },
+          {
+            "detail": "sudo mv apktool_2.7.0.jar /usr/local/bin/apktool.jar",
+            "copyable": true
+          },
+          {
+            "detail": "echo '#!/bin/bash\\njava -jar /usr/local/bin/apktool.jar $@' | sudo tee /usr/local/bin/apktool && sudo chmod +x /usr/local/bin/apktool",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install APKTool on Kali",
+        "steps": [
+          {
+            "detail": "sudo apt install -y apktool",
+            "copyable": true
+          },
+          {
+            "detail": "apktool --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker",
+        "summary": "Run APKTool in container",
+        "steps": [
+          {
+            "detail": "docker run --rm -v $(pwd):/work -w /work openjdk:11 bash -c 'wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.7.0.jar && java -jar apktool_2.7.0.jar'",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "description": "Decode APK",
+        "command": "apktool d application.apk",
+        "notes": [
+          "Creates folder with resources and code"
+        ]
+      },
+      {
+        "description": "Rebuild APK",
+        "command": "apktool b application -o app-modified.apk",
+        "notes": [
+          "Builds new APK from modified source"
+        ]
+      },
+      {
+        "description": "Decode without resources",
+        "command": "apktool d -s application.apk",
+        "notes": [
+          "-s flag skips resources"
+        ]
+      }
+    ],
+    "flags": [
+      {
+        "flag": "d",
+        "description": "Decode/decompile APK"
+      },
+      {
+        "flag": "b",
+        "description": "Build/rebuild APK"
+      },
+      {
+        "flag": "-s",
+        "description": "Skip resource decoding"
+      },
+      {
+        "flag": "-r",
+        "description": "Skip resources folder"
+      },
+      {
+        "flag": "-f",
+        "description": "Force overwrite"
+      }
+    ],
+    "tips": [
+      "APKTool is essential for Android APK reverse engineering",
+      "Always work on copies of target APKs",
+      "AndroidManifest.xml contains key app configuration",
+      "Smali code is Android bytecode - decompile with d2j or use JADX for Java",
+      "Rebuilt APKs need signing before installation"
+    ],
+    "sequences": [
+      {
+        "title": "APK decompilation and modification",
+        "steps": [
+          {
+            "title": "Decode APK",
+            "details": "Extract APK contents and resources",
+            "command": "apktool d target.apk -o target-app"
+          },
+          {
+            "title": "Analyze manifest",
+            "details": "Review AndroidManifest.xml for configuration",
+            "command": "cat target-app/AndroidManifest.xml"
+          },
+          {
+            "title": "Review code",
+            "details": "Examine smali bytecode in target-app/smali/",
+            "command": "ls -la target-app/smali/"
+          },
+          {
+            "title": "Modify app",
+            "details": "Edit manifest, code, or resources",
+            "command": "# Make necessary modifications"
+          },
+          {
+            "title": "Rebuild APK",
+            "details": "Repackage modified app",
+            "command": "apktool b target-app -o target-modified.apk"
+          },
+          {
+            "title": "Sign APK",
+            "details": "Create signing key if needed",
+            "command": "keytool -genkey -v -keystore my.keystore -alias app -keyalg RSA -keysize 2048 -validity 10000"
+          }
+        ]
+      }
+    ],
+    "workflows": [
+      {
+        "name": "Android app reverse engineering",
+        "stages": [
+          {
+            "label": "APK extraction",
+            "description": "Get app from device or source",
+            "command": "adb pull /data/app/com.example/app.apk"
+          },
+          {
+            "label": "Decompilation",
+            "description": "Extract and decode APK structure",
+            "command": "apktool d app.apk"
+          },
+          {
+            "label": "Code analysis",
+            "description": "Review smali and manifest",
+            "command": "cat app/AndroidManifest.xml"
+          },
+          {
+            "label": "Modification",
+            "description": "Make targeted changes",
+            "command": "# Edit files in app/"
+          },
+          {
+            "label": "Recompilation",
+            "description": "Rebuild APK with changes",
+            "command": "apktool b app -o app-mod.apk"
+          },
+          {
+            "label": "Signing",
+            "description": "Sign modified APK",
+            "command": "jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore key.jks app-mod.apk alias"
+          }
+        ]
+      }
+    ],
+    "advanced": [
+      {
+        "title": "Hooking with Frida",
+        "scenario": "Combine APKTool analysis with Frida runtime instrumentation",
+        "command": "# Use APKTool findings to create targeted Frida hooks",
+        "notes": [
+          "Understand code flow before hooking",
+          "Test hooks carefully"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "jadx",
+    "name": "JADX",
+    "summary": "Advanced Java decompiler for analyzing Android applications and bytecode",
+    "details": "Comprehensive guide for using JADX in penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install JADX on Debian/Ubuntu systems",
+        "steps": [
+          {
+            "detail": "Update package manager and install JADX",
+            "copyable": true
+          },
+          {
+            "detail": "Verify installation with version check",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install JADX on Kali Linux",
+        "steps": [
+          {
+            "detail": "Use apt to install JADX on Kali",
+            "copyable": true
+          },
+          {
+            "detail": "Confirm installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Container",
+        "summary": "Run JADX in Docker container",
+        "steps": [
+          {
+            "detail": "Pull Docker image containing JADX",
+            "copyable": true
+          },
+          {
+            "detail": "Run container with appropriate mounts",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic JADX execution",
+        "command": "jadx --help",
+        "notes": [
+          "Display help for JADX"
+        ]
+      },
+      {
+        "description": "Standard JADX scan",
+        "command": "jadx target",
+        "notes": [
+          "Run JADX against a target"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--help",
+        "description": "Display help message"
+      },
+      {
+        "flag": "-v/--verbose",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o/--output",
+        "description": "Output file path"
+      }
+    ],
+    "operational_tips": [
+      "Always verify JADX is installed correctly before engagements",
+      "Use JADX within scope boundaries defined in rules of engagement",
+      "Document all JADX findings for reporting",
+      "Review JADX output for false positives"
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic JADX workflow",
+        "steps": [
+          {
+            "title": "Prepare target",
+            "details": "Identify target for JADX assessment",
+            "command": "# Define your target"
+          },
+          {
+            "title": "Execute JADX",
+            "details": "Run JADX with appropriate options",
+            "command": "jadx target"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review JADX output for findings",
+            "command": "# Review results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "JADX integration workflow",
+        "stages": [
+          {
+            "label": "Initialize JADX",
+            "description": "Prepare JADX for use",
+            "command": "jadx init"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run JADX scan on target",
+            "command": "jadx scan target"
+          },
+          {
+            "label": "Export results",
+            "description": "Export JADX findings",
+            "command": "jadx export -o results.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Decompilation complete",
+        "meaning": "Source code successfully recovered from bytecode",
+        "severity": "info"
+      },
+      {
+        "indicator": "Obfuscation detected",
+        "meaning": "Code appears obfuscated - review carefully",
+        "severity": "medium"
+      },
+      {
+        "indicator": "Invalid code section",
+        "meaning": "Some bytecode could not be decompiled - check original",
+        "severity": "low"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced JADX techniques",
+        "scenario": "Complex JADX scenarios in advanced assessments",
+        "command": "jadx advanced-mode",
+        "notes": [
+          "Use for complex JADX scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "JADX GitHub",
+        "url": "https://github.com/skylot/jadx",
+        "description": "Official project repository"
+      },
+      {
+        "label": "Android Studio",
+        "url": "https://developer.android.com/studio",
+        "description": "IDE for analyzing imported projects"
+      },
+      {
+        "label": "ProGuard",
+        "url": "https://www.guardsquare.com/proguard",
+        "description": "Android app obfuscation tool"
+      }
+    ],
+    "installation": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install JADX decompiler",
+        "steps": [
+          {
+            "detail": "sudo apt-get install -y openjdk-11-jdk",
+            "copyable": true
+          },
+          {
+            "detail": "wget https://github.com/skylot/jadx/releases/download/v1.4.7/jadx-1.4.7.zip",
+            "copyable": true
+          },
+          {
+            "detail": "unzip jadx-1.4.7.zip && sudo mv jadx /opt/",
+            "copyable": true
+          },
+          {
+            "detail": "/opt/jadx/bin/jadx --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install JADX on Kali",
+        "steps": [
+          {
+            "detail": "sudo apt install -y jadx",
+            "copyable": true
+          },
+          {
+            "detail": "jadx --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker",
+        "summary": "Run JADX in Docker",
+        "steps": [
+          {
+            "detail": "docker run --rm -v $(pwd):/work -w /work openjdk:11 bash -c 'wget https://github.com/skylot/jadx/releases/download/v1.4.7/jadx-1.4.7.zip && unzip jadx-1.4.7.zip'",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "description": "Decompile APK to Java",
+        "command": "jadx -d output app.apk",
+        "notes": [
+          "Creates output folder with Java source"
+        ]
+      },
+      {
+        "description": "GUI mode",
+        "command": "jadx-gui app.apk",
+        "notes": [
+          "Interactive decompiler interface"
+        ]
+      },
+      {
+        "description": "Export to Gradle project",
+        "command": "jadx -d output --export-gradle app.apk",
+        "notes": [
+          "Creates gradle project structure"
+        ]
+      }
+    ],
+    "flags": [
+      {
+        "flag": "-d",
+        "description": "Output directory"
+      },
+      {
+        "flag": "--export-gradle",
+        "description": "Export as gradle project"
+      },
+      {
+        "flag": "--show-bad-code",
+        "description": "Include decompilation errors"
+      },
+      {
+        "flag": "-e",
+        "description": "Exclude specific paths"
+      },
+      {
+        "flag": "--threads",
+        "description": "Thread count for decompilation"
+      }
+    ],
+    "tips": [
+      "JADX produces better Java output than other decompilers for modern Android",
+      "GUI interface extremely helpful for interactive analysis",
+      "Handles obfuscation better than many competitors",
+      "Export to Gradle for use in IDE like Android Studio",
+      "Command-line useful for batch processing"
+    ],
+    "sequences": [
+      {
+        "title": "Android source code recovery",
+        "steps": [
+          {
+            "title": "Decompile APK",
+            "details": "Convert bytecode to readable Java source",
+            "command": "jadx -d source app.apk"
+          },
+          {
+            "title": "Examine structure",
+            "details": "Review decompiled package structure",
+            "command": "find source -name '*.java' | head -20"
+          },
+          {
+            "title": "Search for suspicious code",
+            "details": "Look for hardcoded credentials, API calls",
+            "command": "grep -r 'password\\|token\\|secret' source/"
+          },
+          {
+            "title": "Analyze APIs",
+            "details": "Identify external API calls and endpoints",
+            "command": "grep -r 'http\\|socket\\|intent' source/ | grep -v '.class'"
+          },
+          {
+            "title": "Generate report",
+            "details": "Document findings in structure",
+            "command": "# Create organized findings document"
+          }
+        ]
+      }
+    ],
+    "workflows": [
+      {
+        "name": "Comprehensive APK analysis with JADX",
+        "stages": [
+          {
+            "label": "APK source retrieval",
+            "description": "Obtain target APK file",
+            "command": "adb pull /data/app/com.target/app.apk"
+          },
+          {
+            "label": "Source decompilation",
+            "description": "Convert to readable Java code",
+            "command": "jadx -d output app.apk"
+          },
+          {
+            "label": "Code review",
+            "description": "Analyze decompiled Java source",
+            "command": "# Review source structure"
+          },
+          {
+            "label": "Vulnerability search",
+            "description": "Look for security issues",
+            "command": "grep -r 'eval\\|reflection\\|crypto' output/"
+          },
+          {
+            "label": "Secret identification",
+            "description": "Find hardcoded secrets",
+            "command": "grep -r 'key\\|password\\|token' output/"
+          },
+          {
+            "label": "Findings documentation",
+            "description": "Create assessment report",
+            "command": "# Document vulnerabilities"
+          }
+        ]
+      }
+    ],
+    "advanced": [
+      {
+        "title": "Integration with IDE",
+        "scenario": "Import decompiled project into Android Studio",
+        "command": "jadx --export-gradle app.apk; # Import as gradle project",
+        "notes": [
+          "Enables IDE code analysis",
+          "Useful for structural understanding"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "androidsuite",
+    "name": "Android Exploitation Suite",
+    "summary": "Collection of tools for comprehensive Android security testing and exploitation",
+    "details": "Comprehensive guide for using Android Exploitation Suite in penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install Android Exploitation Suite on Debian/Ubuntu systems",
+        "steps": [
+          {
+            "detail": "Update package manager and install Android Exploitation Suite",
+            "copyable": true
+          },
+          {
+            "detail": "Verify installation with version check",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install Android Exploitation Suite on Kali Linux",
+        "steps": [
+          {
+            "detail": "Use apt to install Android Exploitation Suite on Kali",
+            "copyable": true
+          },
+          {
+            "detail": "Confirm installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Container",
+        "summary": "Run Android Exploitation Suite in Docker container",
+        "steps": [
+          {
+            "detail": "Pull Docker image containing Android Exploitation Suite",
+            "copyable": true
+          },
+          {
+            "detail": "Run container with appropriate mounts",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "List Android devices",
+        "command": "adb devices",
+        "notes": [
+          "Shows connected devices"
+        ]
+      },
+      {
+        "description": "Pull app from device",
+        "command": "adb pull /data/app/com.example/app.apk",
+        "notes": [
+          "Extracts APK"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--help",
+        "description": "Display help message"
+      },
+      {
+        "flag": "-v/--verbose",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o/--output",
+        "description": "Output file path"
+      }
+    ],
+    "operational_tips": [
+      "Requires Android device or emulator",
+      "Rooting recommended for full access",
+      "ADB (Android Debug Bridge) is primary tool",
+      "Frida, MobSF, and APKTool integrate with Android exploitation"
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic Android Exploitation Suite workflow",
+        "steps": [
+          {
+            "title": "Prepare target",
+            "details": "Identify target for Android Exploitation Suite assessment",
+            "command": "# Define your target"
+          },
+          {
+            "title": "Execute Android Exploitation Suite",
+            "details": "Run Android Exploitation Suite with appropriate options",
+            "command": "androidsuite target"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review Android Exploitation Suite output for findings",
+            "command": "# Review results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Android Exploitation Suite integration workflow",
+        "stages": [
+          {
+            "label": "Initialize Android Exploitation Suite",
+            "description": "Prepare Android Exploitation Suite for use",
+            "command": "androidsuite init"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run Android Exploitation Suite scan on target",
+            "command": "androidsuite scan target"
+          },
+          {
+            "label": "Export results",
+            "description": "Export Android Exploitation Suite findings",
+            "command": "androidsuite export -o results.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] Android Exploitation Suite execution successful",
+        "meaning": "Android Exploitation Suite ran without errors",
+        "severity": "info"
+      },
+      {
+        "indicator": "[!] Android Exploitation Suite finding detected",
+        "meaning": "Potential security issue found by Android Exploitation Suite",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced Android Exploitation Suite techniques",
+        "scenario": "Complex Android Exploitation Suite scenarios in advanced assessments",
+        "command": "androidsuite advanced-mode",
+        "notes": [
+          "Use for complex Android Exploitation Suite scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Official Android Exploitation Suite documentation",
+        "url": "https://example.com/androidsuite",
+        "description": "Official guide for Android Exploitation Suite"
+      },
+      {
+        "label": "Android Exploitation Suite GitHub repository",
+        "url": "https://github.com/example/androidsuite",
+        "description": "Source code and community discussions"
+      }
+    ],
+    "installation": [
+      {
+        "platform": "Android SDK",
+        "summary": "Android exploitation suite setup",
+        "steps": [
+          {
+            "detail": "# Download Android SDK Platform Tools",
+            "copyable": false
+          },
+          {
+            "detail": "# Install Android Studio or command-line tools",
+            "copyable": false
+          },
+          {
+            "detail": "adb version",
+            "copyable": true
+          },
+          {
+            "detail": "adb devices",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker Emulator",
+        "summary": "Android emulator in Docker",
+        "steps": [
+          {
+            "detail": "docker pull budtmo/docker-android",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -d -p 5900:5900 budtmo/docker-android:latest",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Physical Device",
+        "summary": "Rooted Android device",
+        "steps": [
+          {
+            "detail": "Enable USB debugging in Developer Options",
+            "copyable": false
+          },
+          {
+            "detail": "adb connect device_ip:5555",
+            "copyable": true
+          },
+          {
+            "detail": "adb root && adb shell su",
+            "copyable": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "iossuite",
+    "name": "iOS Exploitation Suite",
+    "summary": "Toolkit for iOS penetration testing and vulnerability assessment",
+    "details": "Comprehensive guide for using iOS Exploitation Suite in penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install iOS Exploitation Suite on Debian/Ubuntu systems",
+        "steps": [
+          {
+            "detail": "Update package manager and install iOS Exploitation Suite",
+            "copyable": true
+          },
+          {
+            "detail": "Verify installation with version check",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install iOS Exploitation Suite on Kali Linux",
+        "steps": [
+          {
+            "detail": "Use apt to install iOS Exploitation Suite on Kali",
+            "copyable": true
+          },
+          {
+            "detail": "Confirm installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Container",
+        "summary": "Run iOS Exploitation Suite in Docker container",
+        "steps": [
+          {
+            "detail": "Pull Docker image containing iOS Exploitation Suite",
+            "copyable": true
+          },
+          {
+            "detail": "Run container with appropriate mounts",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic iOS Exploitation Suite execution",
+        "command": "iossuite --help",
+        "notes": [
+          "Display help for iOS Exploitation Suite"
+        ]
+      },
+      {
+        "description": "Standard iOS Exploitation Suite scan",
+        "command": "iossuite target",
+        "notes": [
+          "Run iOS Exploitation Suite against a target"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--help",
+        "description": "Display help message"
+      },
+      {
+        "flag": "-v/--verbose",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o/--output",
+        "description": "Output file path"
+      }
+    ],
+    "operational_tips": [
+      "Always verify iOS Exploitation Suite is installed correctly before engagements",
+      "Use iOS Exploitation Suite within scope boundaries defined in rules of engagement",
+      "Document all iOS Exploitation Suite findings for reporting",
+      "Review iOS Exploitation Suite output for false positives"
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic iOS Exploitation Suite workflow",
+        "steps": [
+          {
+            "title": "Prepare target",
+            "details": "Identify target for iOS Exploitation Suite assessment",
+            "command": "# Define your target"
+          },
+          {
+            "title": "Execute iOS Exploitation Suite",
+            "details": "Run iOS Exploitation Suite with appropriate options",
+            "command": "iossuite target"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review iOS Exploitation Suite output for findings",
+            "command": "# Review results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "iOS Exploitation Suite integration workflow",
+        "stages": [
+          {
+            "label": "Initialize iOS Exploitation Suite",
+            "description": "Prepare iOS Exploitation Suite for use",
+            "command": "iossuite init"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run iOS Exploitation Suite scan on target",
+            "command": "iossuite scan target"
+          },
+          {
+            "label": "Export results",
+            "description": "Export iOS Exploitation Suite findings",
+            "command": "iossuite export -o results.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] iOS Exploitation Suite execution successful",
+        "meaning": "iOS Exploitation Suite ran without errors",
+        "severity": "info"
+      },
+      {
+        "indicator": "[!] iOS Exploitation Suite finding detected",
+        "meaning": "Potential security issue found by iOS Exploitation Suite",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced iOS Exploitation Suite techniques",
+        "scenario": "Complex iOS Exploitation Suite scenarios in advanced assessments",
+        "command": "iossuite advanced-mode",
+        "notes": [
+          "Use for complex iOS Exploitation Suite scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Official iOS Exploitation Suite documentation",
+        "url": "https://example.com/iossuite",
+        "description": "Official guide for iOS Exploitation Suite"
+      },
+      {
+        "label": "iOS Exploitation Suite GitHub repository",
+        "url": "https://github.com/example/iossuite",
+        "description": "Source code and community discussions"
+      }
+    ],
+    "installation": [
+      {
+        "platform": "macOS with Xcode",
+        "summary": "iOS penetration testing setup",
+        "steps": [
+          {
+            "detail": "xcode-select --install",
+            "copyable": true
+          },
+          {
+            "detail": "brew install libimobiledevice",
+            "copyable": true
+          },
+          {
+            "detail": "idevice_id -l",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Linux with libimobiledevice",
+        "summary": "iOS tools on Linux",
+        "steps": [
+          {
+            "detail": "sudo apt install -y libimobiledevice-utils",
+            "copyable": true
+          },
+          {
+            "detail": "idevice_id -l",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "iOS Device",
+        "summary": "Jailbroken device preparation",
+        "steps": [
+          {
+            "detail": "# Jailbreak device using checkra1n or similar",
+            "copyable": false
+          },
+          {
+            "detail": "# Install Frida server on device",
+            "copyable": false
+          },
+          {
+            "detail": "# Enable SSH access for remote connection",
+            "copyable": false
+          }
+        ]
+      }
+    ]
+  }
+]

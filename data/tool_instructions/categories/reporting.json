@@ -1,0 +1,923 @@
+[
+  {
+    "id": "dradis",
+    "name": "Dradis",
+    "summary": "Dradis is an open-source collaboration and reporting platform designed for security professionals. It centralizes findings from multiple tools, enables team collaboration, and generates professional reports for penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via Ruby gems or use the CE (Community Edition) package.",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y git ruby ruby-dev build-essential libsqlite3-dev nodejs",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/dradis/dradis-ce.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd dradis-ce && gem install bundler && bundle install",
+            "copyable": true
+          },
+          {
+            "detail": "bundle exec rails server",
+            "copyable": true
+          },
+          {
+            "detail": "# Access Dradis at http://localhost:3000",
+            "copyable": false
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Pre-installed on Kali or install via gem with dependencies.",
+        "steps": [
+          {
+            "detail": "dradis &",
+            "copyable": true
+          },
+          {
+            "detail": "# Access at http://localhost:3004",
+            "copyable": false
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run Dradis CE in containerized environment for isolation.",
+        "steps": [
+          {
+            "detail": "docker pull dradis/dradis-ce",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -d -p 3000:3000 dradis/dradis-ce",
+            "copyable": true
+          },
+          {
+            "detail": "# Access at http://localhost:3000",
+            "copyable": false
+          }
+        ]
+      },
+      {
+        "platform": "Dradis Professional",
+        "summary": "Commercial Pro/Teams edition with advanced features and support.",
+        "steps": [
+          {
+            "detail": "# Download from https://dradisframework.com/pro/",
+            "copyable": false
+          },
+          {
+            "detail": "# Follow installation wizard for Pro edition",
+            "copyable": false
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Start Dradis server",
+        "command": "bundle exec rails server",
+        "notes": []
+      },
+      {
+        "description": "Import Nmap XML scan",
+        "command": "# Upload > Import from file > Select nmap.xml",
+        "notes": []
+      },
+      {
+        "description": "Create new project",
+        "command": "# Projects > New Project > Enter name and details",
+        "notes": []
+      },
+      {
+        "description": "Export findings report",
+        "command": "# Export > Select template > Generate report",
+        "notes": []
+      }
+    ],
+    "common_flags": [],
+    "operational_tips": [
+      "Create separate projects for each engagement or client.",
+      "Use templates to standardize finding formats and methodologies.",
+      "Import tool outputs early to avoid manual data entry.",
+      "Tag findings with CVSS scores and remediation priorities.",
+      "Collaborate with team members using notes and comments.",
+      "Export reports in multiple formats (HTML, PDF, Word) for client delivery.",
+      "Backup projects regularly; database corruption can occur.",
+      "Use attachments to include screenshots and evidence files.",
+      "Customize report templates to match organizational branding.",
+      "Pro edition offers real-time collaboration and advanced integrations."
+    ],
+    "step_sequences": [
+      {
+        "title": "Project setup and tool import workflow",
+        "steps": [
+          {
+            "title": "Create new project",
+            "details": "Initialize project workspace for engagement.",
+            "command": "# Projects > New Project > Name: Client Pentest 2024"
+          },
+          {
+            "title": "Define project structure",
+            "details": "Organize nodes representing networks, hosts, and services.",
+            "command": "# Add nodes: Network > Hosts > Services"
+          },
+          {
+            "title": "Import Nmap results",
+            "details": "Upload Nmap XML to automatically populate hosts and services.",
+            "command": "# Upload > Import from File > nmap_scan.xml"
+          },
+          {
+            "title": "Import Nessus scan",
+            "details": "Add vulnerability data from Nessus or OpenVAS.",
+            "command": "# Upload > Import from File > nessus_scan.nessus"
+          },
+          {
+            "title": "Import Burp/ZAP findings",
+            "details": "Merge web application vulnerabilities into project.",
+            "command": "# Upload > Import from File > burp_report.xml or zap_report.xml"
+          },
+          {
+            "title": "Review imported data",
+            "details": "Verify all findings populated correctly in project tree.",
+            "command": "# Navigate nodes to review hosts, services, vulnerabilities"
+          }
+        ]
+      },
+      {
+        "title": "Manual finding documentation",
+        "steps": [
+          {
+            "title": "Create new note",
+            "details": "Document manual findings not captured by automated tools.",
+            "command": "# Select node > New Note"
+          },
+          {
+            "title": "Use templates",
+            "details": "Apply predefined templates for common vulnerability types.",
+            "command": "# Note editor > Apply template: SQL Injection, XSS, etc."
+          },
+          {
+            "title": "Add evidence",
+            "details": "Attach screenshots, code snippets, and proof-of-concept.",
+            "command": "# Note editor > Attachments > Upload files"
+          },
+          {
+            "title": "Set severity and CVSS",
+            "details": "Assign risk ratings using CVSS calculator or custom scale.",
+            "command": "# Note fields > Severity: Critical/High/Medium/Low, CVSS Score"
+          },
+          {
+            "title": "Include remediation",
+            "details": "Provide actionable recommendations for fixing vulnerability.",
+            "command": "# Remediation field > Detailed fix instructions"
+          }
+        ]
+      },
+      {
+        "title": "Team collaboration workflow",
+        "steps": [
+          {
+            "title": "Invite team members",
+            "details": "Add collaborators to project with appropriate permissions.",
+            "command": "# Project Settings > Team > Invite users"
+          },
+          {
+            "title": "Assign findings",
+            "details": "Delegate verification or testing tasks to team members.",
+            "command": "# Note > Assign to: TeamMember"
+          },
+          {
+            "title": "Add comments",
+            "details": "Collaborate via threaded comments on findings.",
+            "command": "# Note > Comments > Add comment"
+          },
+          {
+            "title": "Track status",
+            "details": "Update finding status as testing progresses.",
+            "command": "# Note > Status: New, In Progress, Verified, False Positive"
+          },
+          {
+            "title": "Review before reporting",
+            "details": "Team lead reviews all findings before report generation.",
+            "command": "# Filter by Status: Ready for Report"
+          }
+        ]
+      },
+      {
+        "title": "Report generation and export",
+        "steps": [
+          {
+            "title": "Select report template",
+            "details": "Choose from built-in or custom report templates.",
+            "command": "# Export > Select template: Executive Summary, Technical Report, Compliance"
+          },
+          {
+            "title": "Configure report options",
+            "details": "Set scope, include/exclude findings, customize sections.",
+            "command": "# Report options > Include: Executive Summary, Findings, Appendices"
+          },
+          {
+            "title": "Generate report",
+            "details": "Export report in desired format (HTML, Word, PDF).",
+            "command": "# Export > Generate > Download report"
+          },
+          {
+            "title": "Review and edit",
+            "details": "Proofread exported report and make manual edits if needed.",
+            "command": "# Open exported document, review formatting and content"
+          },
+          {
+            "title": "Deliver to client",
+            "details": "Package report with executive summary and technical appendices.",
+            "command": "# Compile final deliverables for client handoff"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "End-to-end penetration test reporting",
+        "stages": [
+          {
+            "label": "Project initialization",
+            "description": "Create project structure and define scope.",
+            "command": "# New Project > Define networks, hosts, applications in scope"
+          },
+          {
+            "label": "Tool output aggregation",
+            "description": "Import results from Nmap, Nessus, Burp, Metasploit, etc.",
+            "command": "# Upload > Import multiple tool outputs"
+          },
+          {
+            "label": "Manual testing documentation",
+            "description": "Add findings from manual testing and exploitation.",
+            "command": "# Create notes with templates, attach evidence"
+          },
+          {
+            "label": "Collaborative review",
+            "description": "Team validates findings, removes false positives.",
+            "command": "# Team reviews, comments, updates statuses"
+          },
+          {
+            "label": "Report generation",
+            "description": "Produce executive and technical reports.",
+            "command": "# Export > Generate reports for stakeholders"
+          }
+        ]
+      },
+      {
+        "name": "Continuous engagement tracking",
+        "stages": [
+          {
+            "label": "Create baseline project",
+            "description": "Document initial security posture.",
+            "command": "# New Project > Baseline Assessment Q1"
+          },
+          {
+            "label": "Import quarterly scans",
+            "description": "Add new findings from ongoing assessments.",
+            "command": "# Upload > Import Q2, Q3, Q4 scan results"
+          },
+          {
+            "label": "Track remediation",
+            "description": "Update finding statuses as vulnerabilities are fixed.",
+            "command": "# Update Status: Fixed, Mitigated, Accepted"
+          },
+          {
+            "label": "Generate trend reports",
+            "description": "Show security improvement over time.",
+            "command": "# Export > Trend report comparing quarters"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Import successful: 247 nodes added",
+        "meaning": "Tool output imported correctly; review node tree for completeness.",
+        "severity": "info"
+      },
+      {
+        "indicator": "Export complete: report.html generated",
+        "meaning": "Report successfully created; download and review before delivery.",
+        "severity": "info"
+      },
+      {
+        "indicator": "Database migration required",
+        "meaning": "Dradis version updated; run migrations to update database schema.",
+        "severity": "warning"
+      },
+      {
+        "indicator": "Attachment upload failed",
+        "meaning": "File size or type restriction; check configuration or resize image.",
+        "severity": "error"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom report templates",
+        "scenario": "Create branded report templates with organizational styling.",
+        "command": "# Templates > New Template > Edit HTML/ERB template files",
+        "notes": [
+          "Templates use ERB (Embedded Ruby) for dynamic content.",
+          "Customize CSS for branding and layout.",
+          "Test templates with sample projects before production use."
+        ]
+      },
+      {
+        "title": "API integration for automation",
+        "scenario": "Automate project creation and finding import via REST API.",
+        "command": "curl -X POST http://localhost:3000/api/projects -H 'Authorization: Bearer TOKEN' -d '{\"project\":{\"name\":\"Auto Project\"}}'",
+        "notes": [
+          "Generate API tokens in user settings.",
+          "Automate report generation in CI/CD pipelines.",
+          "Integrate with ticketing systems for vulnerability tracking."
+        ]
+      },
+      {
+        "title": "Custom plugin development",
+        "scenario": "Create plugins to import proprietary tool formats.",
+        "command": "# Develop Ruby plugin following Dradis plugin architecture",
+        "notes": [
+          "Study existing plugins in /app/uploaders/ directory.",
+          "Implement upload and parsing methods for custom format.",
+          "Test plugin thoroughly before deploying to production."
+        ]
+      },
+      {
+        "title": "Database backup and migration",
+        "scenario": "Regular backups to prevent data loss during upgrades.",
+        "command": "bundle exec rake db:backup && bundle exec rake db:migrate",
+        "notes": [
+          "Schedule automated backups before upgrades.",
+          "Store backups on separate infrastructure.",
+          "Test restore procedures periodically."
+        ]
+      }
+    ],
+    "comparison_table": {
+      "title": "Dradis CE vs Professional",
+      "headers": [
+        "Feature",
+        "Community Edition",
+        "Professional"
+      ],
+      "rows": [
+        [
+          "Price",
+          "Free & Open Source",
+          "$499+/user/year"
+        ],
+        [
+          "Tool integrations",
+          "20+ importers",
+          "30+ importers"
+        ],
+        [
+          "Real-time collaboration",
+          "\u2717",
+          "\u2713"
+        ],
+        [
+          "Advanced reporting",
+          "Basic templates",
+          "Advanced + custom"
+        ],
+        [
+          "Support",
+          "Community forums",
+          "Professional support"
+        ],
+        [
+          "API access",
+          "Limited",
+          "Full REST API"
+        ],
+        [
+          "Compliance templates",
+          "Basic",
+          "PCI-DSS, HIPAA, ISO 27001"
+        ],
+        [
+          "User management",
+          "Basic",
+          "RBAC, LDAP, SSO"
+        ]
+      ]
+    },
+    "resources": [
+      {
+        "label": "Official Documentation",
+        "url": "https://dradisframework.com/support/guides/",
+        "description": "User guides and administrator documentation."
+      },
+      {
+        "label": "GitHub Repository",
+        "url": "https://github.com/dradis/dradis-ce",
+        "description": "Community Edition source code and issue tracker."
+      },
+      {
+        "label": "Plugin Directory",
+        "url": "https://dradisframework.com/integrations/",
+        "description": "Browse available tool integrations and plugins."
+      }
+    ]
+  },
+  {
+    "id": "faraday",
+    "name": "Faraday",
+    "summary": "Faraday is an Integrated Penetration-Test Environment (IPE) that combines security tools, manages vulnerabilities, enables team collaboration, and integrates with numerous pentesting tools for centralized workspace management.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via pip or Debian package for system-wide deployment.",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y python3-pip python3-venv postgresql",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install faradaysec",
+            "copyable": true
+          },
+          {
+            "detail": "sudo systemctl start postgresql && sudo systemctl enable postgresql",
+            "copyable": true
+          },
+          {
+            "detail": "faraday-manage initdb",
+            "copyable": true
+          },
+          {
+            "detail": "faraday-server",
+            "copyable": true
+          },
+          {
+            "detail": "# Access web UI at http://localhost:5985",
+            "copyable": false
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Pre-installed or installable via apt with full dependencies.",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y faraday",
+            "copyable": true
+          },
+          {
+            "detail": "sudo systemctl start postgresql",
+            "copyable": true
+          },
+          {
+            "detail": "faraday-manage initdb",
+            "copyable": true
+          },
+          {
+            "detail": "faraday-server &",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run Faraday in containerized environment with persistence.",
+        "steps": [
+          {
+            "detail": "docker pull faradaysec/faraday",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -d -p 5985:5985 -v faraday_data:/home/faraday/.faraday faradaysec/faraday",
+            "copyable": true
+          },
+          {
+            "detail": "# Access at http://localhost:5985",
+            "copyable": false
+          }
+        ]
+      },
+      {
+        "platform": "Commercial/Enterprise",
+        "summary": "Faraday Professional with advanced features and support.",
+        "steps": [
+          {
+            "detail": "# Contact https://www.faradaysec.com for enterprise licensing",
+            "copyable": false
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Start Faraday server",
+        "command": "faraday-server",
+        "notes": []
+      },
+      {
+        "description": "Create new workspace",
+        "command": "# Web UI > Workspaces > New Workspace",
+        "notes": []
+      },
+      {
+        "description": "Import Nmap scan",
+        "command": "# Workspace > Import > Upload nmap.xml",
+        "notes": []
+      },
+      {
+        "description": "Run tool with Faraday plugin",
+        "command": "faraday-cli tool run nmap -sV -oX - target.com",
+        "notes": []
+      }
+    ],
+    "common_flags": [],
+    "operational_tips": [
+      "Use workspaces to separate different engagements and clients.",
+      "Leverage native tool plugins for automatic import (nmap, nikto, burp, etc.).",
+      "Tag vulnerabilities for easy filtering and reporting.",
+      "Enable Faraday agent for real-time tool output capture.",
+      "Integrate with Metasploit for exploit management.",
+      "Export findings to CSV, JSON, or XML for external processing.",
+      "Use custom fields to track CVSS, remediation status, or compliance.",
+      "Professional edition offers API, LDAP, SSO, and advanced analytics.",
+      "Set up PostgreSQL properly for multi-user collaboration.",
+      "Regular backups are critical; Faraday stores all data in PostgreSQL."
+    ],
+    "step_sequences": [
+      {
+        "title": "Initial setup and workspace creation",
+        "steps": [
+          {
+            "title": "Initialize database",
+            "details": "Create PostgreSQL database and tables for Faraday.",
+            "command": "faraday-manage initdb"
+          },
+          {
+            "title": "Create admin user",
+            "details": "Set up initial administrator account.",
+            "command": "faraday-manage create-superuser"
+          },
+          {
+            "title": "Start Faraday server",
+            "details": "Launch web server for GUI access.",
+            "command": "faraday-server"
+          },
+          {
+            "title": "Access web interface",
+            "details": "Open browser and log in to Faraday.",
+            "command": "# Navigate to http://localhost:5985"
+          },
+          {
+            "title": "Create workspace",
+            "details": "Set up isolated workspace for engagement.",
+            "command": "# Dashboard > Workspaces > New > Name: Client Pentest"
+          }
+        ]
+      },
+      {
+        "title": "Tool integration and data import",
+        "steps": [
+          {
+            "title": "Install Faraday client",
+            "details": "Install client for command-line tool integration.",
+            "command": "pip install faraday-client"
+          },
+          {
+            "title": "Configure client",
+            "details": "Connect client to Faraday server and select workspace.",
+            "command": "faraday-cli auth -f http://localhost:5985 -u admin -p password"
+          },
+          {
+            "title": "Run tools with automatic import",
+            "details": "Execute pentesting tools with Faraday plugins enabled.",
+            "command": "faraday-cli tool run nmap -sV -A target.com"
+          },
+          {
+            "title": "Manual import from files",
+            "details": "Upload tool reports via web UI for parsing.",
+            "command": "# Workspace > Data > Import Reports > Upload files"
+          },
+          {
+            "title": "Review imported data",
+            "details": "Verify hosts, services, and vulnerabilities were imported.",
+            "command": "# Hosts, Services, Vulnerabilities tabs"
+          }
+        ]
+      },
+      {
+        "title": "Vulnerability management",
+        "steps": [
+          {
+            "title": "Review vulnerabilities",
+            "details": "Examine discovered vulnerabilities sorted by severity.",
+            "command": "# Vulnerabilities tab > Sort by Severity"
+          },
+          {
+            "title": "Create manual vulnerability",
+            "details": "Document findings not captured by tools.",
+            "command": "# Vulnerabilities > New > Fill template fields"
+          },
+          {
+            "title": "Add evidence",
+            "details": "Attach screenshots, logs, and proof-of-concept.",
+            "command": "# Vulnerability detail > Attachments > Upload"
+          },
+          {
+            "title": "Set remediation status",
+            "details": "Track vulnerability lifecycle from discovery to fix.",
+            "command": "# Vulnerability > Status: Open, In Progress, Fixed, Risk Accepted"
+          },
+          {
+            "title": "Tag and categorize",
+            "details": "Apply tags for filtering and grouping.",
+            "command": "# Vulnerability > Tags: Web, Network, Critical, OWASP Top 10"
+          }
+        ]
+      },
+      {
+        "title": "Team collaboration workflow",
+        "steps": [
+          {
+            "title": "Create team members",
+            "details": "Add user accounts with appropriate roles.",
+            "command": "# Admin > Users > New User > Set role: Pentester, Admin, Client"
+          },
+          {
+            "title": "Share workspace",
+            "details": "Grant access to workspace for collaboration.",
+            "command": "# Workspace Settings > Members > Add users"
+          },
+          {
+            "title": "Assign vulnerabilities",
+            "details": "Delegate testing or verification to team members.",
+            "command": "# Vulnerability > Owner: Assign to team member"
+          },
+          {
+            "title": "Comment and discuss",
+            "details": "Use comments for collaborative analysis.",
+            "command": "# Vulnerability > Comments > Add notes"
+          }
+        ]
+      },
+      {
+        "title": "Reporting and export",
+        "steps": [
+          {
+            "title": "Generate vulnerability report",
+            "details": "Create comprehensive report from workspace data.",
+            "command": "# Reports > Generate > Select template and filters"
+          },
+          {
+            "title": "Export to external format",
+            "details": "Download data in CSV, JSON, or XML for processing.",
+            "command": "# Data > Export > Format: CSV/JSON/XML"
+          },
+          {
+            "title": "Executive dashboard",
+            "details": "View high-level metrics and trends.",
+            "command": "# Dashboard shows vulnerability distribution, severity stats"
+          },
+          {
+            "title": "Custom reports via API",
+            "details": "Use REST API for programmatic report generation.",
+            "command": "curl -H 'Authorization: Token YOUR_TOKEN' http://localhost:5985/api/v2/ws/workspace_name/vulns"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Faraday IDE Collaborative Penetration Testing Workflow",
+        "stages": [
+          {
+            "label": "Workspace initialization",
+            "description": "Create workspace, configure scope, add team members.",
+            "command": "# New Workspace > Configure > Invite team"
+          },
+          {
+            "label": "Reconnaissance phase",
+            "description": "Run discovery scans with automatic Faraday import.",
+            "command": "faraday-cli tool run nmap -sn 192.168.1.0/24"
+          },
+          {
+            "label": "Vulnerability scanning",
+            "description": "Execute vulnerability scanners and import results.",
+            "command": "faraday-cli tool run nmap -sV --script vuln 192.168.1.0/24"
+          },
+          {
+            "label": "Manual testing",
+            "description": "Document manual findings, add evidence, set severity.",
+            "command": "# Create vulnerabilities via web UI, attach PoCs"
+          },
+          {
+            "label": "Remediation tracking",
+            "description": "Update statuses as client fixes vulnerabilities.",
+            "command": "# Update vulnerability statuses during retesting"
+          },
+          {
+            "label": "Final reporting",
+            "description": "Generate reports and export findings.",
+            "command": "# Reports > Generate final deliverables"
+          }
+        ]
+      },
+      {
+        "name": "Continuous assessment with Faraday",
+        "stages": [
+          {
+            "label": "Baseline workspace",
+            "description": "Create initial assessment workspace.",
+            "command": "# Workspace: Q1 Baseline Assessment"
+          },
+          {
+            "label": "Scheduled scanning",
+            "description": "Automate recurring scans via cron or CI/CD.",
+            "command": "# Cron job: faraday-cli tool run nmap -sV targets.txt"
+          },
+          {
+            "label": "Trend analysis",
+            "description": "Compare vulnerability counts over time.",
+            "command": "# Dashboard shows trends across time periods"
+          },
+          {
+            "label": "Remediation verification",
+            "description": "Re-scan to confirm fixes were effective.",
+            "command": "# Update statuses based on retest results"
+          }
+        ]
+      },
+      {
+        "name": "Tool chain integration",
+        "stages": [
+          {
+            "label": "Reconnaissance tools",
+            "description": "Integrate nmap, masscan, amass for discovery.",
+            "command": "faraday-cli tool run amass enum -d example.com"
+          },
+          {
+            "label": "Web scanners",
+            "description": "Import Burp, ZAP, Nikto, wpscan reports.",
+            "command": "# Import burp_scan.xml, zap_report.xml"
+          },
+          {
+            "label": "Exploitation frameworks",
+            "description": "Connect Metasploit workspace to Faraday.",
+            "command": "# Metasploit: load faraday; faraday_use workspace_name"
+          },
+          {
+            "label": "Specialized tools",
+            "description": "Import SQLMap, Nessus, OpenVAS outputs.",
+            "command": "# Import tool outputs via web UI or CLI"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Successfully imported 152 vulnerabilities",
+        "meaning": "Tool output parsed and added to workspace; review for accuracy.",
+        "severity": "info"
+      },
+      {
+        "indicator": "Connection to Faraday server failed",
+        "meaning": "Server not running or network issue; check faraday-server status.",
+        "severity": "error"
+      },
+      {
+        "indicator": "Workspace created: ClientPentest2024",
+        "meaning": "New workspace ready for data import and collaboration.",
+        "severity": "info"
+      },
+      {
+        "indicator": "Authentication required",
+        "meaning": "API token or credentials needed; run faraday-cli auth.",
+        "severity": "warning"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "REST API for automation",
+        "scenario": "Programmatically manage workspaces, vulnerabilities, and reports.",
+        "command": "curl -X POST -H 'Authorization: Token YOUR_TOKEN' -H 'Content-Type: application/json' -d '{\"name\":\"New Vuln\",\"severity\":\"high\"}' http://localhost:5985/api/v2/ws/workspace/vulns",
+        "notes": [
+          "Generate API token in user profile settings.",
+          "Full API documentation available at /api/doc.",
+          "Automate vulnerability creation, updates, and exports."
+        ]
+      },
+      {
+        "title": "Custom tool plugins",
+        "scenario": "Create parsers for proprietary or unsupported tools.",
+        "command": "# Develop Python plugin following Faraday plugin structure in faraday_plugins/",
+        "notes": [
+          "Study existing plugins for XML/JSON parsing examples.",
+          "Implement Plugin class with parseOutputString method.",
+          "Test plugin with sample tool outputs before deployment."
+        ]
+      },
+      {
+        "title": "Metasploit integration",
+        "scenario": "Synchronize Metasploit workspace with Faraday for exploit management.",
+        "command": "msf> load faraday\nmsf> faraday_use workspace_name",
+        "notes": [
+          "Install faraday-plugins gem in Metasploit environment.",
+          "All Metasploit findings automatically sync to Faraday.",
+          "View exploited hosts and sessions in Faraday web UI."
+        ]
+      },
+      {
+        "title": "LDAP/SSO integration (Professional)",
+        "scenario": "Enterprise authentication for team deployments.",
+        "command": "# Configure LDAP in server.ini: [ldap] section",
+        "notes": [
+          "Professional edition required for LDAP/SSO.",
+          "Centralize user management with Active Directory.",
+          "Configure role mappings for automatic permissions."
+        ]
+      },
+      {
+        "title": "Custom fields and compliance mapping",
+        "scenario": "Track compliance requirements (PCI-DSS, HIPAA, etc.) per vulnerability.",
+        "command": "# Admin > Custom Fields > Add field: Compliance_Requirement",
+        "notes": [
+          "Create dropdown fields for compliance frameworks.",
+          "Filter and report by compliance tags.",
+          "Export compliance-specific reports for auditors."
+        ]
+      }
+    ],
+    "comparison_table": {
+      "title": "Faraday Community vs Professional",
+      "headers": [
+        "Feature",
+        "Community",
+        "Professional"
+      ],
+      "rows": [
+        [
+          "Price",
+          "Free & Open Source",
+          "$990+/user/year"
+        ],
+        [
+          "Multi-user support",
+          "\u2713",
+          "\u2713 Enhanced"
+        ],
+        [
+          "Tool integrations",
+          "60+ plugins",
+          "80+ plugins"
+        ],
+        [
+          "REST API",
+          "\u2713 Full",
+          "\u2713 Full"
+        ],
+        [
+          "LDAP/SSO",
+          "\u2717",
+          "\u2713"
+        ],
+        [
+          "Advanced analytics",
+          "Basic",
+          "\u2713 Advanced dashboards"
+        ],
+        [
+          "Compliance reports",
+          "Basic",
+          "PCI-DSS, HIPAA, ISO 27001"
+        ],
+        [
+          "Support",
+          "Community",
+          "Professional SLA"
+        ]
+      ]
+    },
+    "resources": [
+      {
+        "label": "Official Documentation",
+        "url": "https://docs.faradaysec.com/",
+        "description": "User guides, API docs, and plugin development."
+      },
+      {
+        "label": "GitHub Repository",
+        "url": "https://github.com/infobyte/faraday",
+        "description": "Community edition source code and issues."
+      },
+      {
+        "label": "Plugin Repository",
+        "url": "https://github.com/infobyte/faraday_plugins",
+        "description": "Tool parser plugins for Faraday integration."
+      }
+    ]
+  }
+]

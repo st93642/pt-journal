@@ -1,0 +1,1624 @@
+[
+  {
+    "id": "amass",
+    "name": "Amass",
+    "summary": "OWASP Amass performs in-depth attack surface mapping for external assets. It combines passive and active reconnaissance with graph exports and historical tracking.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from repos or Go toolchain",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y amass",
+            "copyable": true
+          },
+          {
+            "detail": "mkdir -p ~/.config/amass",
+            "copyable": true
+          },
+          {
+            "detail": "amass -version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Pre-installed with companion wordlists",
+        "steps": [
+          {
+            "detail": "sudo apt install -y amass amass-wordlists",
+            "copyable": true
+          },
+          {
+            "detail": "ls /usr/share/amass/wordlists",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Official containerized deployment",
+        "steps": [
+          {
+            "detail": "docker pull caffix/amass",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v $PWD:/output caffix/amass enum -passive -d example.com",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Passive enumeration",
+        "command": "amass enum -passive -d example.com",
+        "notes": []
+      },
+      {
+        "description": "Active brute-force with wordlist",
+        "command": "amass enum -active -brute -w data/wordlists/subdomains.txt -d example.com",
+        "notes": []
+      },
+      {
+        "description": "ASN and netblock intel",
+        "command": "amass intel -asn 13335",
+        "notes": []
+      },
+      {
+        "description": "Graph export",
+        "command": "amass viz -d example.com -o graph.gexf",
+        "notes": []
+      },
+      {
+        "description": "Track changes over time",
+        "command": "amass track -d example.com",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "enum/intel/viz/db/track",
+        "description": "Module to run"
+      },
+      {
+        "flag": "-d/-df",
+        "description": "Target domain or file with multiple domains"
+      },
+      {
+        "flag": "-brute",
+        "description": "Enable brute-force enumeration"
+      },
+      {
+        "flag": "-src",
+        "description": "Show data sources for findings"
+      },
+      {
+        "flag": "-ip",
+        "description": "Include resolved IP addresses"
+      },
+      {
+        "flag": "-o/-json",
+        "description": "Write results to text or JSON"
+      }
+    ],
+    "operational_tips": [
+      "Configure API keys (~/.config/amass/config.ini) for richer passive data.",
+      "Use amass db to reuse previous discoveries during new engagements.",
+      "Export graphs (viz) to share with teammates or include in reports.",
+      "Blend passive + active modes for accuracy while limiting noise."
+    ],
+    "step_sequences": [
+      {
+        "title": "Passive OSINT baseline",
+        "steps": [
+          {
+            "title": "Configure API keys",
+            "details": "Edit ~/.config/amass/config.ini with VirusTotal, Shodan, SecurityTrails tokens.",
+            "command": "nano ~/.config/amass/config.ini"
+          },
+          {
+            "title": "Run passive sweep",
+            "details": "Collect subdomains without touching target infrastructure.",
+            "command": "amass enum -passive -d example.com -o passive.txt"
+          },
+          {
+            "title": "Review discoveries",
+            "details": "Examine the database for new assets.",
+            "command": "amass db -d example.com -show"
+          }
+        ]
+      },
+      {
+        "title": "Active brute-force enumeration",
+        "steps": [
+          {
+            "title": "Launch active scan",
+            "details": "Use wordlists with custom resolvers for brute force.",
+            "command": "amass enum -active -brute -w /usr/share/amass/wordlists/all.txt -d example.com -src -ip"
+          },
+          {
+            "title": "Export graph",
+            "details": "Generate GEXF for Maltego or Gephi.",
+            "command": "amass viz -d example.com -o graph.gexf"
+          },
+          {
+            "title": "Track changes",
+            "details": "Monitor new assets over time.",
+            "command": "amass track -d example.com -last 2"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Passive \u2192 Active \u2192 Verification",
+        "stages": [
+          {
+            "label": "Amass passive",
+            "description": "Gather all public subdomain data.",
+            "command": "amass enum -passive -d example.com -o passive.txt"
+          },
+          {
+            "label": "DNS validation",
+            "description": "Verify candidates resolve.",
+            "command": "dnsrecon -d example.com -D passive.txt -t brt"
+          },
+          {
+            "label": "Port scanning",
+            "description": "Identify services on validated hosts.",
+            "command": "nmap -sV -iL live.txt -oA scans/services"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[Passive] api.example.com",
+        "meaning": "Square brackets indicate which module sourced the finding.",
+        "severity": "info"
+      },
+      {
+        "indicator": "ASN: 13335",
+        "meaning": "ASN context helps identify ownership and scope boundaries.",
+        "severity": "info"
+      },
+      {
+        "indicator": "Address: 203.0.113.42",
+        "meaning": "Resolved IPs ready for port scanning.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Recursive crawl with custom resolvers",
+        "command": "amass enum -active -brute -w custom.txt -min-for-recursive 3 -rf resolvers.txt -d example.com",
+        "scenario": "Recursively enumerate when finding multiple subdomains at a level.",
+        "notes": [
+          "Use --max-depth to prevent infinite loops on wildcard zones."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "sublist3r",
+    "name": "Sublist3r",
+    "summary": "Sublist3r is a fast Python subdomain enumeration tool designed to enumerate subdomains of websites using OSINT.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y sublist3r",
+            "copyable": true
+          },
+          {
+            "detail": "sublist3r -h",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Pre-installed",
+        "steps": [
+          {
+            "detail": "sublist3r -d example.com",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "git clone https://github.com/aboul3la/Sublist3r",
+            "copyable": true
+          },
+          {
+            "detail": "cd Sublist3r",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install -r requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "python3 sublist3r.py -h",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic subdomain enumeration",
+        "command": "python3 sublist3r.py -d example.com",
+        "notes": []
+      },
+      {
+        "description": "Fast enumeration with verbose output",
+        "command": "python3 sublist3r.py -d example.com -v -t 20",
+        "notes": []
+      },
+      {
+        "description": "Save results to file",
+        "command": "python3 sublist3r.py -d example.com -o subdomains.txt",
+        "notes": []
+      },
+      {
+        "description": "Use specific search engines",
+        "command": "python3 sublist3r.py -d example.com -e google,bing,yahoo",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-d",
+        "description": "Domain to enumerate"
+      },
+      {
+        "flag": "-v",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-t",
+        "description": "Number of threads"
+      },
+      {
+        "flag": "-e",
+        "description": "Search engines to use"
+      },
+      {
+        "flag": "-o",
+        "description": "Output file"
+      },
+      {
+        "flag": "-p",
+        "description": "Include ports for subdomains"
+      }
+    ],
+    "operational_tips": [
+      "Use multiple search engines for better coverage.",
+      "Combine with other tools like Amass for comprehensive enumeration.",
+      "Save results for later analysis and correlation.",
+      "Consider rate limiting to avoid being blocked by search engines."
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic subdomain enumeration",
+        "steps": [
+          {
+            "title": "Run search",
+            "details": "Query multiple search engines for subdomains.",
+            "command": "sublist3r -d example.com -o subdomains.txt"
+          },
+          {
+            "title": "Verify live",
+            "details": "Check which subdomains resolve.",
+            "command": "cat subdomains.txt | dnsx -silent -o live_subs.txt"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Subdomain Discovery and HTTP Service Validation",
+        "stages": [
+          {
+            "label": "Sublist3r enum",
+            "description": "Gather subdomains from public sources.",
+            "command": "sublist3r -d example.com -o subs.txt"
+          },
+          {
+            "label": "DNS resolution",
+            "description": "Filter only live hosts.",
+            "command": "dnsx -l subs.txt -resp-only -o resolved.txt"
+          },
+          {
+            "label": "HTTP detection",
+            "description": "Identify web services.",
+            "command": "httpx -l resolved.txt -title -tech-detect -o web_services.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[-] Enumerating subdomains now for example.com",
+        "meaning": "Sublist3r started; sources include Google, Bing, Yahoo, etc.",
+        "severity": "info"
+      },
+      {
+        "indicator": "[+] api.example.com",
+        "meaning": "Subdomain discovered and added to results.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Threaded brute force",
+        "command": "sublist3r -d example.com -b -t 50 -o subs_bruteforce.txt",
+        "scenario": "Enable brute force with 50 threads for faster enumeration.",
+        "notes": [
+          "Requires local wordlists in Sublist3r/subbrute/"
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "theHarvester",
+    "name": "theHarvester",
+    "summary": "theHarvester is an OSINT tool for gathering emails, subdomains, hosts, employee names, open ports, and banners from different public sources.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y theharvester",
+            "copyable": true
+          },
+          {
+            "detail": "theHarvester -h",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Pre-installed",
+        "steps": [
+          {
+            "detail": "theHarvester -d example.com -l 100 -b google",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "docker pull kalilinux/kali-rolling",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -it kalilinux/kali-rolling bash",
+            "copyable": true
+          },
+          {
+            "detail": "apt update && apt install -y theharvester",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic email and subdomain gathering",
+        "command": "python3 theHarvester.py -d example.com -l 500 -b google",
+        "notes": []
+      },
+      {
+        "description": "Comprehensive OSINT with multiple sources",
+        "command": "python3 theHarvester.py -d example.com -l 1000 -b all",
+        "notes": []
+      },
+      {
+        "description": "Shodan integration for host discovery",
+        "command": "python3 theHarvester.py -d example.com -l 500 -b shodan",
+        "notes": []
+      },
+      {
+        "description": "Save results to XML",
+        "command": "python3 theHarvester.py -d example.com -l 500 -b google -f myresults.xml",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-d",
+        "description": "Domain to search"
+      },
+      {
+        "flag": "-l",
+        "description": "Limit number of results"
+      },
+      {
+        "flag": "-b",
+        "description": "Data source (google, bing, etc.)"
+      },
+      {
+        "flag": "-f",
+        "description": "Save output to file"
+      },
+      {
+        "flag": "-n",
+        "description": "Start DNS resolution of discovered hosts"
+      },
+      {
+        "flag": "-c",
+        "description": "Perform DNS brute force"
+      }
+    ],
+    "operational_tips": [
+      "Use 'all' as data source for comprehensive gathering.",
+      "Combine with Shodan API for additional host information.",
+      "Be aware of API rate limits for various sources.",
+      "Export results for correlation with other tools."
+    ],
+    "step_sequences": [
+      {
+        "title": "OSINT gathering for pentest scope",
+        "steps": [
+          {
+            "title": "Email enumeration",
+            "details": "Harvest employee emails from search engines.",
+            "command": "theHarvester -d example.com -l 500 -b google -f emails"
+          },
+          {
+            "title": "Subdomain discovery",
+            "details": "Extract subdomains using multiple sources.",
+            "command": "theHarvester -d example.com -l 1000 -b all -f osint_results"
+          },
+          {
+            "title": "Shodan integration",
+            "details": "Query Shodan for exposed services.",
+            "command": "theHarvester -d example.com -b shodan -f shodan_intel"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "theHarvester \u2192 Email validation \u2192 Phishing prep",
+        "stages": [
+          {
+            "label": "Harvest emails",
+            "description": "Gather all public email addresses.",
+            "command": "theHarvester -d example.com -l 1000 -b linkedin,google -f emails.html"
+          },
+          {
+            "label": "Validate addresses",
+            "description": "Check if emails are active (external tool).",
+            "command": "# Use external SMTP validation or Hunter.io"
+          },
+          {
+            "label": "Build target list",
+            "description": "Create phishing campaign targets.",
+            "command": "cat emails.html | grep @ | sort -u > phishing_targets.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[*] Searching Google",
+        "meaning": "theHarvester is querying a specific data source.",
+        "severity": "info"
+      },
+      {
+        "indicator": "admin@example.com",
+        "meaning": "Email address discovered; useful for social engineering assessments.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Multi-source comprehensive scan",
+        "command": "theHarvester -d example.com -l 5000 -b google,bing,linkedin,twitter,shodan,virustotal -f full_osint.xml",
+        "scenario": "Aggregate data from all available sources for complete OSINT picture.",
+        "notes": [
+          "Configure API keys in /etc/theHarvester/api-keys.yaml for premium sources."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "dnsrecon",
+    "name": "DNSRecon",
+    "summary": "DNSRecon is a powerful DNS enumeration script that provides multiple techniques for gathering DNS information.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y dnsrecon",
+            "copyable": true
+          },
+          {
+            "detail": "dnsrecon -h",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Pre-installed",
+        "steps": [
+          {
+            "detail": "dnsrecon -d example.com",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "git clone https://github.com/darkoperator/dnsrecon",
+            "copyable": true
+          },
+          {
+            "detail": "cd dnsrecon",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install -r requirements.txt",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Standard enumeration",
+        "command": "dnsrecon -d example.com -t std",
+        "notes": []
+      },
+      {
+        "description": "Zone transfer attempt",
+        "command": "dnsrecon -d example.com -t axfr",
+        "notes": []
+      },
+      {
+        "description": "Reverse lookup of IP range",
+        "command": "dnsrecon -d example.com -t rvl -r 192.168.1.0/24",
+        "notes": []
+      },
+      {
+        "description": "Brute force subdomains",
+        "command": "dnsrecon -d example.com -t brte -D wordlist.txt",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-d",
+        "description": "Target domain"
+      },
+      {
+        "flag": "-t",
+        "description": "Type of enumeration"
+      },
+      {
+        "flag": "-n",
+        "description": "Name server to use"
+      },
+      {
+        "flag": "-r",
+        "description": "IP range for reverse lookup"
+      },
+      {
+        "flag": "-D",
+        "description": "Dictionary file for brute force"
+      },
+      {
+        "flag": "-a",
+        "description": "Perform all enumeration types"
+      }
+    ],
+    "operational_tips": [
+      "Always try zone transfer first - high impact if successful.",
+      "Use custom wordlists for better brute force results.",
+      "Combine with other DNS tools for comprehensive coverage.",
+      "Document all DNS findings for attack surface mapping."
+    ],
+    "step_sequences": [
+      {
+        "title": "DNS enumeration and zone transfer",
+        "steps": [
+          {
+            "title": "Standard enumeration",
+            "details": "Query A, AAAA, NS, MX, SOA records.",
+            "command": "dnsrecon -d example.com -t std"
+          },
+          {
+            "title": "Zone transfer attempt",
+            "details": "Try AXFR against all NS servers.",
+            "command": "dnsrecon -d example.com -t axfr"
+          },
+          {
+            "title": "Reverse lookup",
+            "details": "Map IPs back to hostnames.",
+            "command": "dnsrecon -d example.com -t rvl -r 192.168.1.0/24"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "DNS recon \u2192 Certificate transparency \u2192 Amass",
+        "stages": [
+          {
+            "label": "DNSRecon std",
+            "description": "Baseline DNS records.",
+            "command": "dnsrecon -d example.com -t std -j dns_base.json"
+          },
+          {
+            "label": "Certificate logs",
+            "description": "Query crt.sh for certificate-based subdomains.",
+            "command": "curl -s 'https://crt.sh/?q=%25.example.com&output=json' | jq -r '.[].name_value' | sort -u > crt_subs.txt"
+          },
+          {
+            "label": "Amass merge",
+            "description": "Combine findings and enrich with Amass.",
+            "command": "amass enum -d example.com -passive -df crt_subs.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[*] Performing General Enumeration",
+        "meaning": "DNSRecon is running standard record queries.",
+        "severity": "info"
+      },
+      {
+        "indicator": "[+] AXFR successful",
+        "meaning": "Zone transfer worked; full zone data captured.",
+        "severity": "warning"
+      },
+      {
+        "indicator": "[-] AXFR failed",
+        "meaning": "Zone transfer blocked; expected for hardened DNS.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Brute force with custom wordlist",
+        "command": "dnsrecon -d example.com -t brt -D /usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt -n 8.8.8.8",
+        "scenario": "Use large wordlists against public resolvers for thorough coverage.",
+        "notes": [
+          "Save results as JSON with -j for easy parsing."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "dnsenum",
+    "name": "DNSenum",
+    "summary": "DNSenum is a multithreaded perl script to enumerate DNS information of a domain and discover non-contiguous IP blocks.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y dnsenum",
+            "copyable": true
+          },
+          {
+            "detail": "dnsenum -h",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Pre-installed",
+        "steps": [
+          {
+            "detail": "dnsenum example.com",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "docker run --rm kalilinux/kali-rolling dnsenum example.com",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic DNS enumeration",
+        "command": "dnsenum example.com",
+        "notes": []
+      },
+      {
+        "description": "Verbose with subdomain brute force",
+        "command": "dnsenum --subfile subdomains.txt -f /usr/share/wordlists/dns.txt example.com",
+        "notes": []
+      },
+      {
+        "description": "With thread control and WHOIS",
+        "command": "dnsenum -t 16 -w example.com",
+        "notes": []
+      },
+      {
+        "description": "Reverse lookup of IP range",
+        "command": "dnsenum -r 192.168.1.0/24 example.com",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--subfile",
+        "description": "Save subdomains to file"
+      },
+      {
+        "flag": "-f",
+        "description": "Dictionary file for brute force"
+      },
+      {
+        "flag": "-t",
+        "description": "Number of threads"
+      },
+      {
+        "flag": "-w",
+        "description": "Perform WHOIS queries"
+      },
+      {
+        "flag": "-r",
+        "description": "Reverse lookup of IP range"
+      },
+      {
+        "flag": "-s",
+        "description": "Perform reverse lookups on subnets"
+      }
+    ],
+    "operational_tips": [
+      "Use good wordlists for subdomain brute forcing.",
+      "Monitor thread count to avoid overwhelming target servers.",
+      "Combine results with other DNS tools for completeness.",
+      "Save subdomain lists for later testing phases."
+    ],
+    "step_sequences": [
+      {
+        "title": "Full DNS enumeration",
+        "steps": [
+          {
+            "title": "Default scan",
+            "details": "Enumerate DNS with built-in wordlist.",
+            "command": "dnsenum example.com"
+          },
+          {
+            "title": "Custom wordlist",
+            "details": "Use your own subdomain list.",
+            "command": "dnsenum --subfile /usr/share/seclists/Discovery/DNS/fierce-hostlist.txt example.com"
+          },
+          {
+            "title": "Output results",
+            "details": "Save findings to file.",
+            "command": "dnsenum -o dnsenum_results.xml example.com"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "DNS Enumeration and Visual Reconnaissance Pipeline",
+        "stages": [
+          {
+            "label": "DNS discovery",
+            "description": "Find all subdomains and IPs.",
+            "command": "dnsenum --threads 10 example.com > dnsenum.txt"
+          },
+          {
+            "label": "Extract hostnames",
+            "description": "Parse out discovered hosts.",
+            "command": "grep 'example.com' dnsenum.txt | awk '{print $1}' | sort -u > hosts.txt"
+          },
+          {
+            "label": "Screenshot capture",
+            "description": "Use EyeWitness or Aquatone.",
+            "command": "eyewitness -f hosts.txt --web"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Brute forcing with /usr/share/dnsenum/dns.txt",
+        "meaning": "DNSenum is using default wordlist for subdomain brute force.",
+        "severity": "info"
+      },
+      {
+        "indicator": "admin.example.com. 300 IN A 203.0.113.10",
+        "meaning": "Subdomain resolved; TTL and IP provided.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Reverse lookup of netblock",
+        "command": "dnsenum --enum --noreverse --threads 20 example.com",
+        "scenario": "Skip reverse lookups to speed up enumeration.",
+        "notes": [
+          "Use --dnsserver to specify custom resolver for testing."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "maltego",
+    "name": "Maltego",
+    "summary": "Maltego is an interactive data mining tool that renders directed graphs for link analysis. It's excellent for visualizing relationships between entities.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "wget https://www.maltego.com/downloads/maltego-ce.deb",
+            "copyable": true
+          },
+          {
+            "detail": "sudo dpkg -i maltego-ce.deb",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt --fix-broken install",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Pre-installed in some editions",
+        "steps": [
+          {
+            "detail": "sudo apt install -y maltego",
+            "copyable": true
+          },
+          {
+            "detail": "maltego",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Community image available",
+        "steps": [
+          {
+            "detail": "# Maltego GUI requires X11 forwarding or VNC",
+            "copyable": true
+          },
+          {
+            "detail": "# Use official installers for desktop environments",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Launch Maltego GUI",
+        "command": "maltego",
+        "notes": []
+      },
+      {
+        "description": "Run Maltego with specific transform",
+        "command": "maltego -transform 'maltego.DNS_To_IPAddress'",
+        "notes": []
+      },
+      {
+        "description": "Import data for analysis",
+        "command": "# Use GUI to import CSV, JSON, or other formats",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-transform",
+        "description": "Run specific transform"
+      },
+      {
+        "flag": "-import",
+        "description": "Import data file"
+      },
+      {
+        "flag": "-export",
+        "description": "Export graph results"
+      },
+      {
+        "flag": "-machine",
+        "description": "Run in machine mode"
+      }
+    ],
+    "operational_tips": [
+      "Use transforms to automatically discover related information.",
+      "Save graphs for later analysis and reporting.",
+      "Combine with OSINT data for comprehensive intelligence.",
+      "Consider API keys for premium transforms and data sources."
+    ],
+    "step_sequences": [
+      {
+        "title": "Initial OSINT investigation",
+        "steps": [
+          {
+            "title": "Launch Maltego",
+            "details": "Open the GUI and create/sign in to account.",
+            "command": "maltego"
+          },
+          {
+            "title": "Create new graph",
+            "details": "Start with a domain entity.",
+            "command": "# Add domain from entity palette"
+          },
+          {
+            "title": "Run transforms",
+            "details": "Right-click domain \u2192 Run All Transforms \u2192 To DNS/Websites",
+            "command": "# Graphically expands relationships"
+          },
+          {
+            "title": "Visualize attack surface",
+            "details": "Examine connections and identify high-value targets.",
+            "command": "# Review graph layout"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Maltego \u2192 Export \u2192 Recon-ng import",
+        "stages": [
+          {
+            "label": "Maltego graph",
+            "description": "Build comprehensive attack surface map visually.",
+            "command": "# Use Maltego GUI transforms"
+          },
+          {
+            "label": "Export entities",
+            "description": "Save discovered entities to CSV/XML.",
+            "command": "# File \u2192 Export \u2192 Graph to CSV"
+          },
+          {
+            "label": "Recon-ng import",
+            "description": "Load data into Recon-ng for scriptable recon.",
+            "command": "# Use Recon-ng import modules"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Entity: Domain [example.com]",
+        "meaning": "Central pivot point for transforms.",
+        "severity": "info"
+      },
+      {
+        "indicator": "Transform: To DNS Name [NS]",
+        "meaning": "Discovered nameservers linked to domain.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "API-driven transforms",
+        "command": "# Configure API keys in Maltego \u2192 Transforms \u2192 Hub",
+        "scenario": "Enable premium transforms for deeper OSINT (Shodan, VirusTotal, PassiveTotal).",
+        "notes": [
+          "Automate with Maltego TRX framework for custom transforms."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "recon-ng",
+    "name": "Recon-ng",
+    "summary": "Recon-ng is a powerful Web Reconnaissance framework with a modular interface similar to Metasploit.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y recon-ng",
+            "copyable": true
+          },
+          {
+            "detail": "recon-ng",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Pre-installed",
+        "steps": [
+          {
+            "detail": "recon-ng",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "git clone https://github.com/lanmaster53/recon-ng",
+            "copyable": true
+          },
+          {
+            "detail": "cd recon-ng",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install -r REQUIREMENTS",
+            "copyable": true
+          },
+          {
+            "detail": "./recon-ng",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Launch Recon-ng",
+        "command": "./recon-ng",
+        "notes": []
+      },
+      {
+        "description": "Create workspace",
+        "command": "recon-ng> workspace create example",
+        "notes": []
+      },
+      {
+        "description": "Add domain and run modules",
+        "command": "recon-ng> add domains example.com",
+        "notes": []
+      },
+      {
+        "description": "Run Google dorking module",
+        "command": "recon-ng> modules search google_site_web",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "workspace",
+        "description": "Manage workspaces"
+      },
+      {
+        "flag": "add",
+        "description": "Add target data"
+      },
+      {
+        "flag": "modules",
+        "description": "Manage reconnaissance modules"
+      },
+      {
+        "flag": "keys",
+        "description": "Manage API keys"
+      },
+      {
+        "flag": "show",
+        "description": "Show various information"
+      }
+    ],
+    "operational_tips": [
+      "Configure API keys for maximum module functionality.",
+      "Use workspaces to organize different engagements.",
+      "Chain modules for comprehensive reconnaissance.",
+      "Export data for analysis in other tools."
+    ],
+    "step_sequences": [
+      {
+        "title": "Modular reconnaissance workflow",
+        "steps": [
+          {
+            "title": "Create workspace",
+            "details": "Organize findings by target.",
+            "command": "[recon-ng] > workspaces create example_pentest"
+          },
+          {
+            "title": "Install modules",
+            "details": "Add recon modules from marketplace.",
+            "command": "[recon-ng][example_pentest] > marketplace install all"
+          },
+          {
+            "title": "Configure API keys",
+            "details": "Set keys for premium data sources.",
+            "command": "[recon-ng][example_pentest] > keys add shodan_api YOUR_KEY"
+          },
+          {
+            "title": "Load and run module",
+            "details": "Execute reconnaissance tasks.",
+            "command": "[recon-ng][example_pentest] > modules load recon/domains-hosts/hackertarget\\n options set SOURCE example.com\\n run"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Recon-ng \u2192 Database export \u2192 Report generation",
+        "stages": [
+          {
+            "label": "Module execution",
+            "description": "Run multiple recon modules to populate DB.",
+            "command": "# Run modules via CLI or rc script"
+          },
+          {
+            "label": "Query database",
+            "description": "Extract hosts, contacts, credentials.",
+            "command": "[recon-ng] > db query SELECT * FROM hosts"
+          },
+          {
+            "label": "Generate report",
+            "description": "Export findings to HTML/CSV.",
+            "command": "[recon-ng] > modules load reporting/html\\n run"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[*] Module loaded: recon/domains-hosts/hackertarget",
+        "meaning": "Recon-ng loaded the module successfully.",
+        "severity": "info"
+      },
+      {
+        "indicator": "[+] Found: admin.example.com (203.0.113.5)",
+        "meaning": "New host discovered and added to workspace database.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Scripted reconnaissance with resource files",
+        "command": "recon-ng -r recon_script.rc",
+        "scenario": "Automate multi-module workflows with resource files.",
+        "notes": [
+          "Example rc file:\\nworkspaces create auto_recon\\nmodules load recon/domains-hosts/hackertarget\\noptions set SOURCE example.com\\nrun"
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "photon",
+    "name": "Photon",
+    "summary": "Photon is an incredibly fast crawler designed for OSINT that extracts URLs, emails, files, website accounts, and more.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "git clone https://github.com/s0md3v/Photon",
+            "copyable": true
+          },
+          {
+            "detail": "cd Photon",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install -r requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "python3 photon.py -h",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "git clone https://github.com/s0md3v/Photon ~/Photon",
+            "copyable": true
+          },
+          {
+            "detail": "cd ~/Photon && pip3 install -r requirements.txt",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "docker pull s0md3v/photon",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -v $PWD:/output s0md3v/photon -u https://example.com -o /output",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic web crawling",
+        "command": "python3 photon.py -u https://example.com",
+        "notes": []
+      },
+      {
+        "description": "Deep crawl with more threads",
+        "command": "python3 photon.py -u https://example.com -l 3 -t 20",
+        "notes": []
+      },
+      {
+        "description": "Save all data",
+        "command": "python3 photon.py -u https://example.com -d example --output",
+        "notes": []
+      },
+      {
+        "description": "Crawl with cookies and headers",
+        "command": "python3 photon.py -u https://example.com -c 'session=abc123' -h 'Authorization: Bearer token'",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-u",
+        "description": "Target URL"
+      },
+      {
+        "flag": "-l",
+        "description": "Level of crawling depth"
+      },
+      {
+        "flag": "-t",
+        "description": "Number of threads"
+      },
+      {
+        "flag": "-d",
+        "description": "Output directory name"
+      },
+      {
+        "flag": "--output",
+        "description": "Save output to files"
+      },
+      {
+        "flag": "-c",
+        "description": "Cookie string"
+      },
+      {
+        "flag": "-h",
+        "description": "Custom headers"
+      }
+    ],
+    "operational_tips": [
+      "Increase threads for faster crawling but monitor target response.",
+      "Use appropriate depth levels to avoid infinite crawling.",
+      "Save all output for later analysis and correlation.",
+      "Combine with other tools for comprehensive reconnaissance."
+    ],
+    "step_sequences": [
+      {
+        "title": "Website crawling and data extraction",
+        "steps": [
+          {
+            "title": "Basic crawl",
+            "details": "Harvest URLs, emails, JS files from target site.",
+            "command": "python3 photon.py -u https://example.com -o output/"
+          },
+          {
+            "title": "Deep crawl with threads",
+            "details": "Accelerate with multithreading.",
+            "command": "python3 photon.py -u https://example.com -t 20 -o results/"
+          },
+          {
+            "title": "Review findings",
+            "details": "Examine extracted intelligence.",
+            "command": "ls output/example.com/"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Photon \u2192 JS analysis \u2192 Endpoint discovery",
+        "stages": [
+          {
+            "label": "Photon crawl",
+            "description": "Extract all links and assets.",
+            "command": "python3 photon.py -u https://app.example.com -o photon_out/"
+          },
+          {
+            "label": "JavaScript extraction",
+            "description": "Find hidden API endpoints in JS files.",
+            "command": "cat photon_out/app.example.com/scripts.txt | httpx -silent > js_files.txt"
+          },
+          {
+            "label": "LinkFinder analysis",
+            "description": "Parse JS for URLs and parameters.",
+            "command": "python3 linkfinder.py -i js_files.txt -o endpoints.html"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] Extracting URLs",
+        "meaning": "Photon is crawling and collecting all hyperlinks.",
+        "severity": "info"
+      },
+      {
+        "indicator": "[!] admin@example.com",
+        "meaning": "Email address found; potential target for social engineering.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Crawl with custom headers and cookies",
+        "command": "python3 photon.py -u https://example.com --headers 'Authorization: Bearer TOKEN' --cookies 'session=abc123' -o auth_crawl/",
+        "scenario": "Authenticated crawling to discover internal pages.",
+        "notes": [
+          "Export cookies from browser DevTools for testing."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": []
+  },
+  {
+    "id": "spiderfoot",
+    "name": "SpiderFoot",
+    "summary": "SpiderFoot is an OSINT automation tool that integrates with numerous data sources to gather intelligence on IP addresses, domain names, email addresses, etc.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "git clone https://github.com/smicallef/spiderfoot",
+            "copyable": true
+          },
+          {
+            "detail": "cd spiderfoot",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install -r requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "python3 sf.py -l 127.0.0.1:5001",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from repos",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y spiderfoot",
+            "copyable": true
+          },
+          {
+            "detail": "spiderfoot -l 127.0.0.1:5001",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": null,
+        "steps": [
+          {
+            "detail": "docker pull spiderfoot/spiderfoot",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -p 5001:5001 spiderfoot/spiderfoot",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Launch SpiderFoot web interface",
+        "command": "python3 sf.py -l 127.0.0.1:5001",
+        "notes": []
+      },
+      {
+        "description": "CLI scan of domain",
+        "command": "python3 sf.py -d example.com -s all -o json",
+        "notes": []
+      },
+      {
+        "description": "Scan with specific modules",
+        "command": "python3 sf.py -d example.com -m sfp_dns,sfp_shodan",
+        "notes": []
+      },
+      {
+        "description": "Scan with strict correlation",
+        "command": "python3 sf.py -d example.com -S -t 2",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-d",
+        "description": "Target domain/IP/email"
+      },
+      {
+        "flag": "-s",
+        "description": "Scan modules to use"
+      },
+      {
+        "flag": "-m",
+        "description": "Specific modules to run"
+      },
+      {
+        "flag": "-o",
+        "description": "Output format"
+      },
+      {
+        "flag": "-l",
+        "description": "Listen address for web UI"
+      },
+      {
+        "flag": "-S",
+        "description": "Strict correlation mode"
+      },
+      {
+        "flag": "-t",
+        "description": "Maximum thread count"
+      }
+    ],
+    "operational_tips": [
+      "Use web interface for better visualization and control.",
+      "Configure API keys for maximum data source coverage.",
+      "Use strict correlation to reduce false positives.",
+      "Export results for integration with other tools."
+    ],
+    "step_sequences": [
+      {
+        "title": "Automated OSINT collection",
+        "steps": [
+          {
+            "title": "Start web interface",
+            "details": "Launch SpiderFoot server.",
+            "command": "python3 sf.py -l 127.0.0.1:5001"
+          },
+          {
+            "title": "Create scan",
+            "details": "Navigate to http://127.0.0.1:5001 and start new scan with domain target.",
+            "command": "# Use web UI"
+          },
+          {
+            "title": "Review findings",
+            "details": "Examine discovered subdomains, IPs, emails, vulnerabilities.",
+            "command": "# Export results from web UI"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "OSINT Automation and Vulnerability Correlation",
+        "stages": [
+          {
+            "label": "SpiderFoot scan",
+            "description": "Run automated OSINT modules.",
+            "command": "# Configure scan via web UI"
+          },
+          {
+            "label": "Export CSV",
+            "description": "Download findings for analysis.",
+            "command": "# Export from web UI"
+          },
+          {
+            "label": "Nuclei scanning",
+            "description": "Test discovered endpoints for CVEs.",
+            "command": "nuclei -l discovered_hosts.txt -t cves/"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[MODULE] DNS Resolution",
+        "meaning": "SpiderFoot module actively resolving hostnames.",
+        "severity": "info"
+      },
+      {
+        "indicator": "[FINDING] Subdomain: api.example.com",
+        "meaning": "New subdomain discovered via passive DNS.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "CLI-driven scan with custom modules",
+        "command": "python3 sf.py -s example.com -m sfp_dnsbrute,sfp_shodan,sfp_virustotal -o json -q",
+        "scenario": "Run headless scan with specific modules for automation.",
+        "notes": [
+          "Configure API keys in spiderfoot.yaml for enhanced results."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": []
+  }
+]

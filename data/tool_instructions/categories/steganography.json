@@ -1,0 +1,1296 @@
+[
+  {
+    "id": "steghide",
+    "name": "Steghide",
+    "summary": "Steghide hides and extracts data inside images or audio files while supporting passphrase encryption and integrity checks.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from official repositories",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y steghide",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Already packaged with wordlists",
+        "steps": [
+          {
+            "detail": "steghide --version",
+            "copyable": true
+          },
+          {
+            "detail": "ls /usr/share/wordlists/rockyou.txt.gz",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "macOS (Homebrew)",
+        "summary": "Install via brew",
+        "steps": [
+          {
+            "detail": "brew install steghide",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Embed secret file",
+        "command": "steghide embed -cf cover.jpg -ef secret.txt -sf secret.jpg -p pass123",
+        "notes": [
+          "-cf cover file, -ef embedded file, -sf stego output"
+        ]
+      },
+      {
+        "description": "Extract payload",
+        "command": "steghide extract -sf secret.jpg -p pass123",
+        "notes": [
+          "Writes file to current directory"
+        ]
+      },
+      {
+        "description": "List info",
+        "command": "steghide info secret.jpg",
+        "notes": [
+          "Shows embedded file names if passphrase known"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "embed/extract/info",
+        "description": "Operation modes"
+      },
+      {
+        "flag": "-cf / -sf",
+        "description": "Cover file / stego file"
+      },
+      {
+        "flag": "-ef",
+        "description": "File to embed"
+      },
+      {
+        "flag": "-p",
+        "description": "Passphrase"
+      },
+      {
+        "flag": "-z",
+        "description": "Compression level"
+      }
+    ],
+    "operational_tips": [
+      "Use lossless formats (BMP/WAV) when possible\u2014JPEG adds noise that can corrupt payloads.",
+      "Document hashes of both cover and stego files to prove authenticity.",
+      "Use wordlists + steghide brute force (stegcracker) when auditing client-supplied evidence.",
+      "Always remove metadata from cover images to avoid tipping off defenders."
+    ],
+    "step_sequences": [
+      {
+        "title": "Embedding workflow",
+        "steps": [
+          {
+            "title": "Choose cover",
+            "details": "Select high-entropy image.",
+            "command": "identify -verbose cover.jpg | grep Colors"
+          },
+          {
+            "title": "Embed file",
+            "details": "Use strong passphrase.",
+            "command": "steghide embed -cf cover.jpg -ef creds.csv -sf cover-creds.jpg -p 'Complex!Pass'"
+          },
+          {
+            "title": "Validate",
+            "details": "Extract to confirm integrity.",
+            "command": "steghide extract -sf cover-creds.jpg -p 'Complex!Pass'"
+          }
+        ]
+      },
+      {
+        "title": "Incident response (extraction)",
+        "steps": [
+          {
+            "title": "Identify suspect files",
+            "details": "List media from evidence share.",
+            "command": "find evidence/ -iname '*.jpg'"
+          },
+          {
+            "title": "Attempt extraction",
+            "details": "Use known passphrase or dictionary.",
+            "command": "steghide extract -sf evidence/img1.jpg -p Company2023"
+          },
+          {
+            "title": "Document",
+            "details": "Record success/failure and hash outputs.",
+            "command": "sha256sum extracted/*"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Payload prep \u2192 Stego delivery \u2192 Validation",
+        "stages": [
+          {
+            "label": "Prepare",
+            "description": "Compress + encrypt sensitive data.",
+            "command": "tar czf payload.tgz data/ && gpg -c payload.tgz"
+          },
+          {
+            "label": "Hide",
+            "description": "Embed encrypted blob into benign media.",
+            "command": "steghide embed -cf brochure.png -ef payload.tgz.gpg -sf brochure-final.png"
+          },
+          {
+            "label": "Deliver",
+            "description": "Send stego file through approved channel.",
+            "command": "scp brochure-final.png client:/evidence"
+          },
+          {
+            "label": "Verify",
+            "description": "Provide passphrase + extraction procedure to stakeholders.",
+            "command": "steghide extract -sf brochure-final.png"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "embedding algorithm: Rijndael-128",
+        "meaning": "Encryption active; cite cipher in report.",
+        "severity": "Info"
+      },
+      {
+        "indicator": "capacity exceeded",
+        "meaning": "Cover file too small for payload; choose larger file.",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "wrong passphrase",
+        "meaning": "Extraction failed\u2014verify secret or attempt brute force.",
+        "severity": "High"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Dictionary attacks",
+        "command": "stegcracker secret.jpg rockyou.txt",
+        "scenario": "Audit client incident evidence for hidden payloads.",
+        "notes": [
+          "Require python3 and steghide installed"
+        ]
+      },
+      {
+        "title": "Batch embedding",
+        "command": "for img in *.jpg; do steghide embed -cf $img -ef payload.bin -sf embeds/$img -p key; done",
+        "scenario": "Automate generation of multiple stego files.",
+        "notes": [
+          "Track mapping of cover\u2192payload."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Steghide docs",
+        "url": "https://steghide.sourceforge.net/documentation.php",
+        "description": "Official manual."
+      },
+      {
+        "label": "Stegcracker",
+        "url": "https://github.com/Paradoxis/StegCracker",
+        "description": "Brute-force wrapper for steghide."
+      },
+      {
+        "label": "DFIR stego analysis",
+        "url": "https://dfir.blog/stego-triage/",
+        "description": "Guidance for blue teams analyzing stego content."
+      }
+    ]
+  },
+  {
+    "id": "outguess",
+    "name": "OutGuess",
+    "summary": "OutGuess hides arbitrary data inside redundant bits of JPEG or PNM files while preserving statistics to avoid detection.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via apt",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y outguess",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Use default binary",
+        "steps": [
+          {
+            "detail": "outguess -h",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Source compile",
+        "summary": "Needed when customizing quantization tables",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/resurrecting-open-source-projects/outguess.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd outguess && ./configure && make",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Embed file into JPEG",
+        "command": "outguess -k secret -d secret.txt cover.jpg stego.jpg",
+        "notes": [
+          "-k sets passphrase, -d data"
+        ]
+      },
+      {
+        "description": "Extract hidden data",
+        "command": "outguess -k secret -r stego.jpg output.txt",
+        "notes": [
+          "Writes decrypted data"
+        ]
+      },
+      {
+        "description": "Specify capacity",
+        "command": "outguess -s 10 -k key -d payload.bin base.jpg out.jpg",
+        "notes": [
+          "-s sets bits per channel"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-d file",
+        "description": "Data to embed"
+      },
+      {
+        "flag": "-r file",
+        "description": "Recover data"
+      },
+      {
+        "flag": "-k pass",
+        "description": "Passphrase"
+      },
+      {
+        "flag": "-s bits",
+        "description": "Strength/capacity"
+      },
+      {
+        "flag": "-x",
+        "description": "Preserve statistics (default)"
+      }
+    ],
+    "operational_tips": [
+      "OutGuess is designed for JPEG\u2014use steghide for WAV/BMP payloads.",
+      "Keep payload smaller than 5% of cover to minimize detection.",
+      "Use unique passphrases per engagement to avoid cross-client reuse.",
+      "Store original cover so you can prove modification delta."
+    ],
+    "step_sequences": [
+      {
+        "title": "Payload creation",
+        "steps": [
+          {
+            "title": "Encrypt data",
+            "details": "Protect payload before hiding.",
+            "command": "openssl enc -aes-256-cbc -in report.pdf -out report.enc"
+          },
+          {
+            "title": "Embed",
+            "details": "Hide encrypted file in JPEG.",
+            "command": "outguess -k 'S3cret!' -d report.enc cover.jpg stego.jpg"
+          },
+          {
+            "title": "Verify",
+            "details": "Ensure extraction works.",
+            "command": "outguess -k 'S3cret!' -r stego.jpg recovered.enc"
+          }
+        ]
+      },
+      {
+        "title": "Forensic extraction",
+        "steps": [
+          {
+            "title": "Inspect JPEG",
+            "details": "Check quantization tables and EXIF.",
+            "command": "exiftool suspect.jpg"
+          },
+          {
+            "title": "Attempt brute force",
+            "details": "Use wordlist for passphrase discovery.",
+            "command": "outguess -k $(cat wordlist.txt) -r suspect.jpg loot.bin"
+          },
+          {
+            "title": "Document evidence",
+            "details": "Record success/failure and indicator.",
+            "command": "sha256sum loot.bin"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Encrypt \u2192 Hide \u2192 Deliver",
+        "stages": [
+          {
+            "label": "Encrypt",
+            "description": "Protect payload before stego.",
+            "command": "age -p payload.bin > payload.age"
+          },
+          {
+            "label": "Hide",
+            "description": "Embed with OutGuess.",
+            "command": "outguess -k pass -d payload.age photo.jpg drop.jpg"
+          },
+          {
+            "label": "Transmit",
+            "description": "Send drop file through allowed channel.",
+            "command": "curl -T drop.jpg https://fileshare"
+          },
+          {
+            "label": "Verify",
+            "description": "Send extraction instructions to customer.",
+            "command": "outguess -k pass -r drop.jpg payload.age"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "data embedded flag",
+        "meaning": "OutGuess confirmed payload addition.",
+        "severity": "Info"
+      },
+      {
+        "indicator": "not enough capacity",
+        "meaning": "Reduce payload or use larger cover.",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "passphrase incorrect",
+        "meaning": "Extraction failed; escalate to brute force if needed.",
+        "severity": "High"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Batch processing",
+        "command": "for img in samples/*.jpg; do outguess -k key -d payload.bin $img out/$img; done",
+        "scenario": "Mass-generate stego drops for red team exercises.",
+        "notes": [
+          "Track which file maps to each recipient."
+        ]
+      },
+      {
+        "title": "Custom quantization",
+        "command": "outguess -Q custom.qtable -k pass -d file.bin base.jpg out.jpg",
+        "scenario": "Blend into camera-specific statistics.",
+        "notes": [
+          "Extract qtables from sample using jpeginfo -c"
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "OutGuess manual",
+        "url": "https://www.outguess.org/docs/",
+        "description": "Official usage guide."
+      },
+      {
+        "label": "JPEG steganography research",
+        "url": "https://dfrws.org/sites/default/files/session-files/paper-embedding-secret-data-with-jpeg.pdf",
+        "description": "Background on detection avoidance."
+      },
+      {
+        "label": "Payload detection tools",
+        "url": "https://github.com/Quibik/JstegDetect",
+        "description": "Share with defenders in remediation recommendations."
+      }
+    ]
+  },
+  {
+    "id": "exiftool",
+    "name": "ExifTool",
+    "summary": "ExifTool reads and writes metadata across thousands of file formats, helping investigators trace camera sources, timestamps, and hidden data.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from apt",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y libimage-exiftool-perl",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "macOS (Homebrew)",
+        "summary": "Install brew package",
+        "steps": [
+          {
+            "detail": "brew install exiftool",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Portable",
+        "summary": "Download stand-alone binary",
+        "steps": [
+          {
+            "detail": "curl -LO https://exiftool.org/Image-ExifTool-12.70.tar.gz",
+            "copyable": true
+          },
+          {
+            "detail": "tar xzf Image-ExifTool-12.70.tar.gz",
+            "copyable": true
+          },
+          {
+            "detail": "./exiftool(-k) test.jpg",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "List metadata",
+        "command": "exiftool photo.jpg",
+        "notes": [
+          "Shows camera model, GPS, timestamps"
+        ]
+      },
+      {
+        "description": "Remove GPS",
+        "command": "exiftool -gps:all= -xmp:geotag= photo.jpg",
+        "notes": [
+          "Creates backup copy by default"
+        ]
+      },
+      {
+        "description": "Export to JSON",
+        "command": "exiftool -json evidence/*.jpg > metadata.json",
+        "notes": [
+          "Useful for ingestion into PT Journal"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-all:all",
+        "description": "Read/write every tag"
+      },
+      {
+        "flag": "-json/-csv",
+        "description": "Structured output"
+      },
+      {
+        "flag": "-gps:all=",
+        "description": "Delete GPS tags"
+      },
+      {
+        "flag": "-overwrite_original",
+        "description": "Avoid creating _original backups"
+      }
+    ],
+    "operational_tips": [
+      "Use `exiftool -s -s -s` for concise tag names when diffing multiple files.",
+      "Always hash files before and after metadata editing to show integrity.",
+      "When anonymizing deliverables, strip both EXIF and XMP/ICC tags.",
+      "For IR cases, compare DateTimeOriginal vs FileModifyDate to spot tampering."
+    ],
+    "step_sequences": [
+      {
+        "title": "Image sanitization",
+        "steps": [
+          {
+            "title": "Baseline metadata",
+            "details": "Dump metadata to file for record.",
+            "command": "exiftool -json photo.jpg > before.json"
+          },
+          {
+            "title": "Strip sensitive fields",
+            "details": "Remove GPS and serial numbers.",
+            "command": "exiftool -gps:all= -serialnumber= -overwrite_original photo.jpg"
+          },
+          {
+            "title": "Verify",
+            "details": "Diff metadata after sanitization.",
+            "command": "exiftool -json photo.jpg > after.json && diff before.json after.json"
+          }
+        ]
+      },
+      {
+        "title": "Attribution investigation",
+        "steps": [
+          {
+            "title": "Collect across set",
+            "details": "Export metadata for entire evidence folder.",
+            "command": "exiftool -csv -DateTimeOriginal -Make -Model -SerialNumber evidence/ > meta.csv"
+          },
+          {
+            "title": "Pivot",
+            "details": "Identify recurring devices or time anomalies.",
+            "command": "csvtool col 2,3,4 meta.csv | sort | uniq -c"
+          },
+          {
+            "title": "Report",
+            "details": "Attach CSV + findings to PT Journal.",
+            "command": "# PT Journal \u2192 Evidence \u2192 Upload meta.csv"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Collect \u2192 Sanitize \u2192 Deliver",
+        "stages": [
+          {
+            "label": "Collect",
+            "description": "Copy suspect media and hash.",
+            "command": "sha256sum *.jpg > hashes.txt"
+          },
+          {
+            "label": "Analyze",
+            "description": "Parse metadata into structured format.",
+            "command": "exiftool -json *.jpg > export.json"
+          },
+          {
+            "label": "Sanitize",
+            "description": "Strip sensitive info before sharing externally.",
+            "command": "exiftool -gps:all= -Creator= -overwrite_original *.jpg"
+          },
+          {
+            "label": "Deliver",
+            "description": "Provide sanitized files + metadata diff to stakeholders.",
+            "command": "tar czf sanitized.tar.gz sanitized/"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "GPS Latitude",
+        "meaning": "Precise location of photo\u2014handle as sensitive data.",
+        "severity": "High"
+      },
+      {
+        "indicator": "Serial Number",
+        "meaning": "Can tie assets back to owner/equipment.",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "ModifyDate != DateTimeOriginal",
+        "meaning": "Potential tampering or editing event.",
+        "severity": "Medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Recursive diff",
+        "command": "exiftool -r -json images/ > before.json && exiftool -overwrite_original -all= images/ && exiftool -r -json images/ > after.json",
+        "scenario": "Track exactly which tags were removed before publishing evidence.",
+        "notes": [
+          "Keep backups of originals"
+        ]
+      },
+      {
+        "title": "Metadata injection",
+        "command": "exiftool -Artist='PT Journal' -Copyright='2024 PTJ' file.png",
+        "scenario": "Watermark deliverables or plant beacons in honeypot data.",
+        "notes": [
+          "Do not alter client-supplied evidence without approval"
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Official ExifTool site",
+        "url": "https://exiftool.org/",
+        "description": "Downloads and documentation."
+      },
+      {
+        "label": "Metadata reference",
+        "url": "https://exiftool.org/TagNames/",
+        "description": "Lookup for specific tag names."
+      },
+      {
+        "label": "Photo forensics",
+        "url": "https://29a.ch/photo-forensics/",
+        "description": "Use alongside metadata when validating images."
+      }
+    ]
+  },
+  {
+    "id": "binwalk",
+    "name": "Binwalk",
+    "summary": "Binwalk analyzes firmware images for embedded files, compressed sections, and executable code, and can automatically extract them for reversing.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install binary + extraction dependencies",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y binwalk p7zip-full gzip bzip2 tar sasquatch",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "pip/virtualenv",
+        "summary": "Install latest binwalk from PyPI",
+        "steps": [
+          {
+            "detail": "python3 -m venv ~/.venvs/binwalk",
+            "copyable": true
+          },
+          {
+            "detail": "~/.venvs/binwalk/bin/pip install binwalk",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker",
+        "summary": "Use container for consistent extraction",
+        "steps": [
+          {
+            "detail": "docker run --rm -it -v $PWD:/work remnux/binwalk",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Scan firmware",
+        "command": "binwalk firmware.bin",
+        "notes": [
+          "Detects known headers, compression, signatures"
+        ]
+      },
+      {
+        "description": "Extract automatically",
+        "command": "binwalk -eM firmware.bin",
+        "notes": [
+          "Recursively extracts nested archives"
+        ]
+      },
+      {
+        "description": "Carve with signature file",
+        "command": "binwalk -D 'png image:png' image.bin",
+        "notes": [
+          "Extracts specific file types only"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-e/-x",
+        "description": "Extract (with or without recursion)"
+      },
+      {
+        "flag": "-M",
+        "description": "Matryoshka recursion"
+      },
+      {
+        "flag": "-D <rule>",
+        "description": "Carve by signature"
+      },
+      {
+        "flag": "-B",
+        "description": "Search for raw big-endian signatures"
+      }
+    ],
+    "operational_tips": [
+      "Install sasquatch and jefferson for SquashFS/UbiFS extraction.",
+      "Use --dd='.*' to force dd-style carving when signature database misses proprietary formats.",
+      "Combine with `strings` and `grep` to find hardcoded credentials quickly.",
+      "Always copy firmware image before extraction\u2014binwalk writes output directories alongside the file."
+    ],
+    "step_sequences": [
+      {
+        "title": "Firmware triage",
+        "steps": [
+          {
+            "title": "Identify architecture",
+            "details": "Scan for CPU/OS strings.",
+            "command": "binwalk firmware.bin"
+          },
+          {
+            "title": "Extract filesystem",
+            "details": "Use recursive extraction.",
+            "command": "binwalk -eM firmware.bin"
+          },
+          {
+            "title": "Mount and analyze",
+            "details": "Inspect extracted squashfs/jffs2.",
+            "command": "sudo unsquashfs -d rootfs _firmware.bin.extracted/squashfs-root.squashfs"
+          }
+        ]
+      },
+      {
+        "title": "Hunting hardcoded secrets",
+        "steps": [
+          {
+            "title": "Search strings",
+            "details": "Look for passwords/keys.",
+            "command": "strings -n 8 rootfs/bin/* | grep -i password"
+          },
+          {
+            "title": "Inspect web config",
+            "details": "Check default creds in config files.",
+            "command": "grep -R 'admin' rootfs/etc"
+          },
+          {
+            "title": "Document findings",
+            "details": "Add evidence to PT Journal.",
+            "command": "# PT Journal \u2192 Findings \u2192 Firmware secrets"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Download \u2192 Binwalk \u2192 Diff",
+        "stages": [
+          {
+            "label": "Collect",
+            "description": "Download firmware from vendor portal.",
+            "command": "wget https://vendor/firmware.bin"
+          },
+          {
+            "label": "Analyze",
+            "description": "Run binwalk + extraction.",
+            "command": "binwalk -eM firmware.bin"
+          },
+          {
+            "label": "Diff",
+            "description": "Compare with previous firmware for new components.",
+            "command": "diff -ru prev/_firmware prev/new"
+          },
+          {
+            "label": "Report",
+            "description": "Highlight vulnerabilities/hardcoded secrets.",
+            "command": "# PT Journal \u2192 Firmware assessment"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Compression: squaschfs",
+        "meaning": "Firmware contains SquashFS\u2014extract with unsquashfs.",
+        "severity": "Info"
+      },
+      {
+        "indicator": "Executable code section",
+        "meaning": "Possible bootloader/ARM binary for reversing.",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Unknown header",
+        "meaning": "Signature not recognized\u2014create custom rule.",
+        "severity": "Low"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom signatures",
+        "command": "binwalk -y 'gzip' -y 'xz' firmware.bin",
+        "scenario": "Limit output to specific formats for clarity.",
+        "notes": [
+          "Signature definitions live in /etc/binwalk/sig.bin"
+        ]
+      },
+      {
+        "title": "Patch diffing",
+        "command": "bindiff.py _old.extracted _new.extracted",
+        "scenario": "Track vendor changes between firmware revisions.",
+        "notes": [
+          "Combine with git diff for config files"
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Binwalk docs",
+        "url": "https://github.com/ReFirmLabs/binwalk",
+        "description": "Official documentation."
+      },
+      {
+        "label": "Firmware security wiki",
+        "url": "https://firmware.re/firmware/",
+        "description": "Guides for router and IoT analysis."
+      },
+      {
+        "label": "FACT (Firmware Analysis Comparison Tool)",
+        "url": "https://github.com/fkie-cad/FACT_core",
+        "description": "Use alongside binwalk for large assessments."
+      }
+    ]
+  },
+  {
+    "id": "foremost",
+    "name": "Foremost",
+    "summary": "Foremost is a forensic file carver that recovers deleted files from disk or memory images using header/footer signatures.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from official repositories",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y foremost",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Check default config at /etc/foremost.conf",
+        "steps": [
+          {
+            "detail": "ls /etc/foremost.conf",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "macOS (Homebrew)",
+        "summary": "Install via brew",
+        "steps": [
+          {
+            "detail": "brew install foremost",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Carve all defaults",
+        "command": "foremost -i disk.img -o output",
+        "notes": [
+          "Creates per-filetype directories"
+        ]
+      },
+      {
+        "description": "Limit to jpg/pdf",
+        "command": "foremost -t jpg,pdf -i card.dd -o carved",
+        "notes": [
+          "Speeds up analysis"
+        ]
+      },
+      {
+        "description": "Use custom config",
+        "command": "foremost -c custom.conf -i dump.raw -o loot",
+        "notes": [
+          "Add proprietary signatures"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-i file",
+        "description": "Input image"
+      },
+      {
+        "flag": "-o dir",
+        "description": "Output directory"
+      },
+      {
+        "flag": "-t types",
+        "description": "Comma-separated file types"
+      },
+      {
+        "flag": "-c config",
+        "description": "Alternate configuration"
+      },
+      {
+        "flag": "-w",
+        "description": "Audit only"
+      }
+    ],
+    "operational_tips": [
+      "Work on copies of disk images to preserve evidence.",
+      "Customize /etc/foremost.conf with organization-specific signatures.",
+      "Review output/audit.txt to trace offsets back to the original image.",
+      "Follow carved files with exiftool or strings to validate usefulness."
+    ],
+    "step_sequences": [
+      {
+        "title": "Evidence carve",
+        "steps": [
+          {
+            "title": "Hash image",
+            "details": "Record baseline hash.",
+            "command": "sha256sum disk.img"
+          },
+          {
+            "title": "Run foremost",
+            "details": "Carve relevant file types.",
+            "command": "foremost -t docx,pdf,jpg -i disk.img -o carve_out"
+          },
+          {
+            "title": "Review",
+            "details": "Sort carved files by timestamp.",
+            "command": "find carve_out -type f -printf '%T+ %p\n' | sort"
+          }
+        ]
+      },
+      {
+        "title": "Custom signature workflow",
+        "steps": [
+          {
+            "title": "Edit config",
+            "details": "Add new magic signatures.",
+            "command": "sudo nano /etc/foremost.conf"
+          },
+          {
+            "title": "Dry run",
+            "details": "Use -w to test matches.",
+            "command": "foremost -w -t custom -i sample.bin"
+          },
+          {
+            "title": "Full carve",
+            "details": "Run carve once validated.",
+            "command": "foremost -t custom -i dump.raw -o custom_carve"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Acquire \u2192 Carve \u2192 Correlate",
+        "stages": [
+          {
+            "label": "Acquire",
+            "description": "Image disk/ram and hash.",
+            "command": "dd if=/dev/sdb of=disk.img bs=4M status=progress"
+          },
+          {
+            "label": "Carve",
+            "description": "Run foremost with targeted file types.",
+            "command": "foremost -t jpg,pdf -i disk.img -o /cases/123/carve"
+          },
+          {
+            "label": "Correlate",
+            "description": "Map carved files back to timeline.",
+            "command": "log2timeline.py -q timeline.plaso /cases/123/carve"
+          },
+          {
+            "label": "Report",
+            "description": "Attach recovered artifacts to PT Journal.",
+            "command": "# PT Journal \u2192 Evidence \u2192 Upload carve report"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "File: carved/jpg/00000001.jpg",
+        "meaning": "File recovered successfully.",
+        "severity": "Info"
+      },
+      {
+        "indicator": "ERROR: could not allocate block",
+        "meaning": "Image corruption or disk full.",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "audit.txt offset",
+        "meaning": "Use offset to prove original location.",
+        "severity": "Info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Parallel carving",
+        "command": "foremost -T 4 -i disk.img -o carve",
+        "scenario": "Use threaded fork (yforemost) on multi-core hosts.",
+        "notes": [
+          "Vanilla foremost is single-threaded\u2014consider at-scale alternatives."
+        ]
+      },
+      {
+        "title": "Memory carving",
+        "command": "vol.py -f mem.raw filescan | awk '{print $2}' | xargs -I{} foremost -o mem_carve -i mem.raw -s {}",
+        "scenario": "Pivot from Volatility offsets directly into carved files.",
+        "notes": [
+          "Great for credential artifacts in RAM dumps."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Foremost man page",
+        "url": "https://linux.die.net/man/1/foremost",
+        "description": "Official usage."
+      },
+      {
+        "label": "Foremost config guide",
+        "url": "https://wiki.sleuthkit.org/index.php/Foremost",
+        "description": "Explains header/footer syntax."
+      },
+      {
+        "label": "Community signatures",
+        "url": "https://github.com/AmberMD/foremost-signatures",
+        "description": "Sample rules to extend built-in types."
+      }
+    ]
+  },
+  {
+    "id": "strings",
+    "name": "strings",
+    "summary": "GNU strings extracts printable sequences from binaries, memory dumps, and firmware images for quick triage and hunting for hardcoded secrets.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Part of binutils",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y binutils",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Preinstalled",
+        "steps": [
+          {
+            "detail": "strings --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Windows (Sysinternals)",
+        "summary": "Use strings.exe",
+        "steps": [
+          {
+            "detail": "curl -O https://live.sysinternals.com/strings.exe",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Search binary for URLs",
+        "command": "strings -a malware.bin | grep -i http",
+        "notes": []
+      },
+      {
+        "description": "UTF-16 support",
+        "command": "strings -el payload.dll",
+        "notes": [
+          "-e l for little-endian UTF-16"
+        ]
+      },
+      {
+        "description": "Limit length",
+        "command": "strings -n 6 firmware.bin",
+        "notes": [
+          "Ignore shorter noise"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-a",
+        "description": "Scan entire file"
+      },
+      {
+        "flag": "-n <len>",
+        "description": "Minimum string length"
+      },
+      {
+        "flag": "-e l/b/s",
+        "description": "Encoding (UTF-16 little/big, 7-bit)"
+      },
+      {
+        "flag": "-t x/d/o",
+        "description": "Print offsets"
+      },
+      {
+        "flag": "-f file",
+        "description": "Prefix filenames in output"
+      }
+    ],
+    "operational_tips": [
+      "Pipe strings into ripgrep or awk for quick filtering.",
+      "Use -t d to align interesting strings with firmware offsets for reporting.",
+      "Combine with binwalk or Volatility to analyze extracted sections.",
+      "Run both ASCII and UTF-16 passes when looking at Windows binaries."
+    ],
+    "step_sequences": [
+      {
+        "title": "Malware triage",
+        "steps": [
+          {
+            "title": "ASCII sweep",
+            "details": "Look for obvious IoCs.",
+            "command": "strings -n 6 sample.bin | tee ascii.txt"
+          },
+          {
+            "title": "Unicode sweep",
+            "details": "Catch Windows resource strings.",
+            "command": "strings -el sample.bin | tee unicode.txt"
+          },
+          {
+            "title": "Pivot",
+            "details": "Search for domains/APIs and add to PT Journal.",
+            "command": "rg -i 'wininet|http' unicode.txt"
+          }
+        ]
+      },
+      {
+        "title": "Firmware credential hunt",
+        "steps": [
+          {
+            "title": "Extract strings",
+            "details": "Dump strings with offsets.",
+            "command": "strings -t x rootfs.bin > strings.txt"
+          },
+          {
+            "title": "Filter",
+            "details": "Search for password indicators.",
+            "command": "grep -i 'pass\\|key' strings.txt"
+          },
+          {
+            "title": "Validate",
+            "details": "Navigate to offset and confirm context.",
+            "command": "xxd -g1 -s 0x123456 -l 64 rootfs.bin"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Dump \u2192 Filter \u2192 Report",
+        "stages": [
+          {
+            "label": "Dump",
+            "description": "Save ASCII & Unicode strings.",
+            "command": "strings -a sample.bin > ascii.txt && strings -el sample.bin > unicode.txt"
+          },
+          {
+            "label": "Filter",
+            "description": "Use regex/wordlists to find secrets.",
+            "command": "rg -f keywords.txt ascii.txt"
+          },
+          {
+            "label": "Confirm",
+            "description": "Cross-check with disassembly or hexdump.",
+            "command": "radare2 -q -c 's 0xADDRESS; px 64' sample.bin"
+          },
+          {
+            "label": "Document",
+            "description": "Attach IoC list to PT Journal.",
+            "command": "# PT Journal \u2192 Evidence \u2192 Upload strings summary"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "http://update.example.com",
+        "meaning": "Possible command-and-control endpoint.",
+        "severity": "High"
+      },
+      {
+        "indicator": "APIKEY=",
+        "meaning": "Hardcoded credential present.",
+        "severity": "High"
+      },
+      {
+        "indicator": "offset 0x12ab34",
+        "meaning": "Use offset for reverse engineering context.",
+        "severity": "Info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Entropy-aware",
+        "command": "binwalk -R 'AES' firmware.bin | cut -d: -f1 | xargs -I{} strings -s {} firmware.bin",
+        "scenario": "Dump strings only from sections containing AES markers.",
+        "notes": [
+          "Reduces noise."
+        ]
+      },
+      {
+        "title": "Memory captures",
+        "command": "vol.py -f mem.raw strings -n 12 | tee mem_strings.txt",
+        "scenario": "Pull live credentials from memory dumps.",
+        "notes": [
+          "Requires Volatility profile"
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "GNU Binutils",
+        "url": "https://sourceware.org/binutils/docs/binutils/strings.html",
+        "description": "Official documentation."
+      },
+      {
+        "label": "Sysinternals strings",
+        "url": "https://learn.microsoft.com/sysinternals/downloads/strings",
+        "description": "Windows version usage."
+      },
+      {
+        "label": "Firmware strings hunting",
+        "url": "https://trailofbits.github.io/firmware-security/strings.html",
+        "description": "Best practices."
+      }
+    ]
+  }
+]

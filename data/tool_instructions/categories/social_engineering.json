@@ -1,0 +1,522 @@
+[
+  {
+    "id": "setoolkit",
+    "name": "Social Engineer Toolkit (SET)",
+    "summary": "The Social-Engineer Toolkit (SET) is an open-source Python-driven framework designed for simulating social engineering attacks including spear phishing, credential harvesting, infectious media, and payload delivery for security awareness training and authorized penetration testing.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via official repository or clone from GitHub.",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y git python3 python3-pip",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/trustedsec/social-engineer-toolkit/ setoolkit/",
+            "copyable": true
+          },
+          {
+            "detail": "cd setoolkit && pip3 install -r requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "sudo python3 setup.py install",
+            "copyable": true
+          },
+          {
+            "detail": "setoolkit",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Pre-installed on Kali; update regularly for latest attack vectors.",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y set",
+            "copyable": true
+          },
+          {
+            "detail": "setoolkit",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run SET in isolated container for campaign management.",
+        "steps": [
+          {
+            "detail": "docker pull trustedsec/social-engineer-toolkit",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -it --net=host trustedsec/social-engineer-toolkit",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Launch SET interactive menu",
+        "command": "setoolkit",
+        "notes": []
+      },
+      {
+        "description": "Credential harvester attack",
+        "command": "# SET > Social-Engineering Attacks > Website Attack Vectors > Credential Harvester",
+        "notes": []
+      },
+      {
+        "description": "Infectious media generator",
+        "command": "# SET > Social-Engineering Attacks > Infectious Media Generator",
+        "notes": []
+      },
+      {
+        "description": "Mass mailer for spear phishing",
+        "command": "# SET > Social-Engineering Attacks > Spear-Phishing Attack Vectors > Mass Email",
+        "notes": []
+      }
+    ],
+    "common_flags": [],
+    "operational_tips": [
+      "Always obtain explicit written authorization before running SET campaigns.",
+      "Use dedicated infrastructure with clean IP reputation for phishing simulations.",
+      "Test email templates against spam filters before mass deployment.",
+      "Educate targets after campaigns to improve security awareness.",
+      "Use realistic scenarios based on client's industry and threats.",
+      "Document all campaign parameters for reproducibility and reporting.",
+      "Clean up payloads, web servers, and email infrastructure after completion.",
+      "Monitor campaign metrics: open rates, click rates, credential submission.",
+      "Combine with payload frameworks like Metasploit for full exploitation chains.",
+      "Be aware of legal implications; misuse can result in criminal charges."
+    ],
+    "step_sequences": [
+      {
+        "title": "Credential harvesting website attack",
+        "steps": [
+          {
+            "title": "Launch SET",
+            "details": "Start Social Engineer Toolkit interactive menu.",
+            "command": "setoolkit"
+          },
+          {
+            "title": "Select attack vector",
+            "details": "Choose Website Attack Vectors from main menu.",
+            "command": "# 1) Social-Engineering Attacks\n# 2) Website Attack Vectors\n# 3) Credential Harvester Attack Method"
+          },
+          {
+            "title": "Clone target site",
+            "details": "Enter URL of site to clone (e.g., company login page).",
+            "command": "# 2) Site Cloner\n# IP for POST back: [your-attacker-IP]\n# URL to clone: https://target-company.com/login"
+          },
+          {
+            "title": "Start web server",
+            "details": "SET automatically starts Apache on port 80 to serve cloned site.",
+            "command": "# Web server started on 0.0.0.0:80"
+          },
+          {
+            "title": "Deliver phishing link",
+            "details": "Send victims link to your attacker IP via email or social media.",
+            "command": "# Phishing email: http://your-attacker-IP/"
+          },
+          {
+            "title": "Harvest credentials",
+            "details": "Monitor SET console for captured username/password submissions.",
+            "command": "# Credentials displayed in real-time as victims submit forms"
+          },
+          {
+            "title": "Stop campaign",
+            "details": "Ctrl+C to stop web server and save captured credentials.",
+            "command": "^C"
+          }
+        ]
+      },
+      {
+        "title": "Spear phishing with malicious attachment",
+        "steps": [
+          {
+            "title": "Select spear phishing",
+            "details": "Choose Spear-Phishing Attack Vectors from main menu.",
+            "command": "# 1) Social-Engineering Attacks\n# 1) Spear-Phishing Attack Vectors\n# 2) Create a FileFormat Payload"
+          },
+          {
+            "title": "Generate malicious file",
+            "details": "Create weaponized PDF, Word, or Excel document.",
+            "command": "# Select payload: 14) Adobe PDF Embedded EXE Social Engineering\n# Enter filename: quarterly_report.pdf"
+          },
+          {
+            "title": "Configure payload",
+            "details": "Set reverse connection handler details for callback.",
+            "command": "# LHOST: your-attacker-IP\n# LPORT: 443"
+          },
+          {
+            "title": "Setup listener",
+            "details": "Start Metasploit handler to catch incoming connections.",
+            "command": "# SET offers to start Metasploit listener automatically"
+          },
+          {
+            "title": "Compose phishing email",
+            "details": "Create convincing pretext and attach malicious file.",
+            "command": "# Use mass mailer or single email template\n# Attach generated payload"
+          },
+          {
+            "title": "Send and monitor",
+            "details": "Deliver email and wait for victim to open attachment.",
+            "command": "# Monitor Metasploit console for sessions"
+          }
+        ]
+      },
+      {
+        "title": "Infectious media generation (USB drop)",
+        "steps": [
+          {
+            "title": "Select infectious media",
+            "details": "Choose Infectious Media Generator from main menu.",
+            "command": "# 1) Social-Engineering Attacks\n# 3) Infectious Media Generator"
+          },
+          {
+            "title": "Choose file format",
+            "details": "Select exploit or payload delivery method.",
+            "command": "# 1) File-Format Exploits\n# 2) Standard Metasploit Executable"
+          },
+          {
+            "title": "Configure payload",
+            "details": "Set reverse shell parameters for connection.",
+            "command": "# Select: windows/meterpreter/reverse_tcp\n# LHOST: attacker-IP\n# LPORT: 4444"
+          },
+          {
+            "title": "Generate autorun",
+            "details": "Create autorun.inf for automatic execution on USB insertion.",
+            "command": "# Generate in /root/.set/autorun/"
+          },
+          {
+            "title": "Copy to USB drive",
+            "details": "Write files to physical USB for drop attack.",
+            "command": "# cp /root/.set/autorun/* /media/usb/"
+          },
+          {
+            "title": "Deploy and monitor",
+            "details": "Place USB in target location and monitor for connections.",
+            "command": "# Social engineer victim to insert USB\n# Monitor Metasploit listener"
+          }
+        ]
+      },
+      {
+        "title": "Powershell attack vector",
+        "steps": [
+          {
+            "title": "Select Powershell attack",
+            "details": "Use PowerShell for fileless payload delivery.",
+            "command": "# 1) Social-Engineering Attacks\n# 9) PowerShell Attack Vectors\n# 1) PowerShell Alphanumeric Shellcode Injector"
+          },
+          {
+            "title": "Generate Powershell payload",
+            "details": "Create encoded PowerShell command for delivery.",
+            "command": "# Select payload type\n# LHOST: attacker-IP\n# LPORT: 443"
+          },
+          {
+            "title": "Delivery method",
+            "details": "Copy PowerShell command for delivery via phishing or HTA.",
+            "command": "# Payload saved to /root/.set/\n# Copy command for delivery"
+          },
+          {
+            "title": "Social engineer execution",
+            "details": "Trick victim into running PowerShell command.",
+            "command": "# Email pretending to be IT: 'Run this command to fix your issue...'"
+          },
+          {
+            "title": "Catch session",
+            "details": "Monitor Metasploit listener for incoming connections.",
+            "command": "# msfconsole handler catches reverse shell"
+          }
+        ]
+      },
+      {
+        "title": "QR code attack vector",
+        "steps": [
+          {
+            "title": "Select QR code generator",
+            "details": "Create malicious QR codes for physical social engineering.",
+            "command": "# 1) Social-Engineering Attacks\n# 8) QRCode Generator Attack Vector"
+          },
+          {
+            "title": "Enter malicious URL",
+            "details": "Point QR code to credential harvester or exploit page.",
+            "command": "# Enter URL: http://attacker-IP/fake-login"
+          },
+          {
+            "title": "Generate QR code",
+            "details": "SET creates scannable QR code image.",
+            "command": "# QR code saved to /root/.set/qr_code.png"
+          },
+          {
+            "title": "Print and deploy",
+            "details": "Print QR codes on flyers, stickers, or posters for physical deployment.",
+            "command": "# Print QR code and place in target locations"
+          },
+          {
+            "title": "Monitor for scans",
+            "details": "Watch for victims scanning QR codes and accessing payload.",
+            "command": "# Monitor web server logs and harvester"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Complete phishing campaign",
+        "stages": [
+          {
+            "label": "Reconnaissance",
+            "description": "Research target organization, identify employees, gather email addresses.",
+            "command": "# OSINT: LinkedIn, company website, theHarvester"
+          },
+          {
+            "label": "Infrastructure setup",
+            "description": "Register domain, setup email server, prepare payload hosting.",
+            "command": "# Register lookalike domain, configure SMTP, setup web hosting"
+          },
+          {
+            "label": "Payload creation",
+            "description": "Generate malicious attachment or credential harvester with SET.",
+            "command": "setoolkit # Generate fileformat payload or clone login page"
+          },
+          {
+            "label": "Pretext development",
+            "description": "Craft convincing email pretext based on target research.",
+            "command": "# Create email template: urgent IT alert, invoice, benefits update"
+          },
+          {
+            "label": "Campaign execution",
+            "description": "Send phishing emails to target list, monitor responses.",
+            "command": "# SET mass mailer or external SMTP tool"
+          },
+          {
+            "label": "Monitoring and response",
+            "description": "Track opens, clicks, credential submissions, shell callbacks.",
+            "command": "# Monitor SET console, Metasploit sessions, web logs"
+          },
+          {
+            "label": "Cleanup and reporting",
+            "description": "Shutdown infrastructure, document results, educate targets.",
+            "command": "# Stop listeners, remove payloads, generate metrics report"
+          }
+        ]
+      },
+      {
+        "name": "Multi-vector social engineering",
+        "stages": [
+          {
+            "label": "Initial phishing",
+            "description": "Credential harvesting campaign to collect usernames/passwords.",
+            "command": "# SET credential harvester cloning login page"
+          },
+          {
+            "label": "Verify credentials",
+            "description": "Test collected credentials against target services.",
+            "command": "# Manual testing or automated validation"
+          },
+          {
+            "label": "Payload delivery via email",
+            "description": "Send authenticated email with malicious attachment from compromised account.",
+            "command": "# Use harvested credentials to send from legitimate account"
+          },
+          {
+            "label": "Physical USB drop",
+            "description": "Deploy infectious media in parking lot or reception.",
+            "command": "# SET infectious media generator > create USB payloads"
+          },
+          {
+            "label": "Exploit multiple vectors",
+            "description": "Maximize chances of success with layered approach.",
+            "command": "# Combine email, physical, and phone-based pretexting"
+          }
+        ]
+      },
+      {
+        "name": "Awareness training campaign",
+        "stages": [
+          {
+            "label": "Baseline assessment",
+            "description": "Measure current employee susceptibility to phishing.",
+            "command": "# Run simulated phishing campaign, track click rates"
+          },
+          {
+            "label": "Targeted training",
+            "description": "Educate employees who fell for simulation.",
+            "command": "# Security awareness training for vulnerable users"
+          },
+          {
+            "label": "Follow-up testing",
+            "description": "Re-test with more sophisticated attacks.",
+            "command": "# Spear phishing with personalized pretexts"
+          },
+          {
+            "label": "Metrics and reporting",
+            "description": "Track improvement over time, report to management.",
+            "command": "# Generate metrics: click rate reduction, reporting rate increase"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[*] Credential Harvester is now listening...",
+        "meaning": "Web server active, waiting for victims to submit credentials.",
+        "severity": "info"
+      },
+      {
+        "indicator": "[*] WE GOT A HIT! Printing the output:",
+        "meaning": "Victim submitted credentials; check console for username/password.",
+        "severity": "success"
+      },
+      {
+        "indicator": "[*] Payload created: /root/.set/payload.exe",
+        "meaning": "Malicious file generated successfully; ready for delivery.",
+        "severity": "info"
+      },
+      {
+        "indicator": "[!] Apache is not installed, would you like to install?",
+        "meaning": "Web server dependency missing; install Apache2 for web attacks.",
+        "severity": "warning"
+      },
+      {
+        "indicator": "[*] Metasploit handler started",
+        "meaning": "Listener active for payload callbacks; monitor for incoming shells.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom template development",
+        "scenario": "Create branded phishing templates for specific organizations.",
+        "command": "# Edit templates in /usr/share/set/src/templates/\n# Modify HTML/CSS to match target branding",
+        "notes": [
+          "Clone real company login pages for authenticity.",
+          "Test rendering across browsers and email clients.",
+          "Include logos, colors, and language matching target."
+        ]
+      },
+      {
+        "title": "Integration with external SMTP",
+        "scenario": "Use external email service for better delivery rates.",
+        "command": "# SET config.py: SENDMAIL = 'ON'\n# Configure SMTP relay in /etc/ssmtp/ssmtp.conf",
+        "notes": [
+          "Use compromised or lookalike domains for sender.",
+          "Configure SPF, DKIM, DMARC to bypass spam filters.",
+          "Warm up email sending IP before mass campaigns."
+        ]
+      },
+      {
+        "title": "Automation with SET command-line",
+        "scenario": "Automate campaign deployment for large-scale testing.",
+        "command": "# setoolkit --automated config.txt",
+        "notes": [
+          "Create config file with attack parameters.",
+          "Schedule via cron for recurring awareness tests.",
+          "Parse output for automated reporting."
+        ]
+      },
+      {
+        "title": "Payload obfuscation and evasion",
+        "scenario": "Evade AV and email gateway detection.",
+        "command": "# Use custom encoders, encryption, or packing\n# Veil-Evasion integration for advanced payloads",
+        "notes": [
+          "Combine SET with Veil-Evasion for better evasion.",
+          "Test payloads against VirusTotal (with caution).",
+          "Use macro-enabled documents for Microsoft Office targets."
+        ]
+      },
+      {
+        "title": "Tracking and analytics",
+        "scenario": "Implement tracking pixels and link analytics for campaign metrics.",
+        "command": "# Embed tracking images in emails\n# Use URL shorteners with analytics (bitly, custom)",
+        "notes": [
+          "Track email opens with 1x1 pixel images.",
+          "Monitor link clicks with custom redirect scripts.",
+          "Correlate metrics with user demographics for targeted training."
+        ]
+      }
+    ],
+    "comparison_table": {
+      "title": "SET vs Other Phishing Frameworks",
+      "headers": [
+        "Feature",
+        "SET",
+        "Gophish",
+        "King Phisher"
+      ],
+      "rows": [
+        [
+          "Price",
+          "Free & Open Source",
+          "Free & Open Source",
+          "Free & Open Source"
+        ],
+        [
+          "Ease of use",
+          "Menu-driven CLI",
+          "Web GUI",
+          "GTK GUI"
+        ],
+        [
+          "Credential harvesting",
+          "\u2713",
+          "\u2713",
+          "\u2713"
+        ],
+        [
+          "Payload generation",
+          "\u2713 Metasploit",
+          "Limited",
+          "Limited"
+        ],
+        [
+          "Email templates",
+          "Basic",
+          "\u2713 Rich editor",
+          "\u2713 Jinja2"
+        ],
+        [
+          "Campaign tracking",
+          "Basic",
+          "\u2713 Advanced",
+          "\u2713 Advanced"
+        ],
+        [
+          "Infectious media",
+          "\u2713",
+          "\u2717",
+          "\u2717"
+        ],
+        [
+          "Best for",
+          "Payload delivery",
+          "Awareness training",
+          "Red team ops"
+        ]
+      ]
+    },
+    "resources": [
+      {
+        "label": "Official GitHub",
+        "url": "https://github.com/trustedsec/social-engineer-toolkit",
+        "description": "SET source code, issues, and documentation."
+      },
+      {
+        "label": "TrustedSec Blog",
+        "url": "https://www.trustedsec.com/blog/",
+        "description": "Articles and tutorials on social engineering techniques."
+      },
+      {
+        "label": "SET User Manual",
+        "url": "https://github.com/trustedsec/social-engineer-toolkit/blob/master/readme/USER_MANUAL.md",
+        "description": "Comprehensive user guide for all SET features."
+      }
+    ]
+  }
+]

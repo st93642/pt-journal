@@ -1,0 +1,1054 @@
+[
+  {
+    "id": "shodan-cli",
+    "name": "Shodan CLI",
+    "summary": "Command-line interface for querying Shodan's internet-wide scanning data",
+    "details": "Comprehensive guide for using Shodan CLI in penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install Shodan CLI on Debian/Ubuntu systems",
+        "steps": [
+          {
+            "detail": "Update package manager and install Shodan CLI",
+            "copyable": true
+          },
+          {
+            "detail": "Verify installation with version check",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install Shodan CLI on Kali Linux",
+        "steps": [
+          {
+            "detail": "Use apt to install Shodan CLI on Kali",
+            "copyable": true
+          },
+          {
+            "detail": "Confirm installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Container",
+        "summary": "Run Shodan CLI in Docker container",
+        "steps": [
+          {
+            "detail": "Pull Docker image containing Shodan CLI",
+            "copyable": true
+          },
+          {
+            "detail": "Run container with appropriate mounts",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Search Shodan",
+        "command": "shodan search --fields ip_str,port,org --limit 100 'port:80 country:US'",
+        "notes": [
+          "Requires valid API key"
+        ]
+      },
+      {
+        "description": "Get host information",
+        "command": "shodan host 8.8.8.8",
+        "notes": [
+          "Details for specific IP"
+        ]
+      },
+      {
+        "description": "Search for specific service",
+        "command": "shodan search 'Server: Apache' --limit 50",
+        "notes": [
+          "Search public data"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--help",
+        "description": "Display help message"
+      },
+      {
+        "flag": "-v/--verbose",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o/--output",
+        "description": "Output file path"
+      }
+    ],
+    "operational_tips": [
+      "Shodan API key required (free and paid tiers)",
+      "Useful for passive reconnaissance",
+      "Discovers exposed services and devices",
+      "Historical data available for trend analysis",
+      "Combine with other OSINT tools"
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic Shodan CLI workflow",
+        "steps": [
+          {
+            "title": "Prepare target",
+            "details": "Identify target for Shodan CLI assessment",
+            "command": "# Define your target"
+          },
+          {
+            "title": "Execute Shodan CLI",
+            "details": "Run Shodan CLI with appropriate options",
+            "command": "shodan_cli target"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review Shodan CLI output for findings",
+            "command": "# Review results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Shodan CLI integration workflow",
+        "stages": [
+          {
+            "label": "Initialize Shodan CLI",
+            "description": "Prepare Shodan CLI for use",
+            "command": "shodan_cli init"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run Shodan CLI scan on target",
+            "command": "shodan_cli scan target"
+          },
+          {
+            "label": "Export results",
+            "description": "Export Shodan CLI findings",
+            "command": "shodan_cli export -o results.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] Shodan CLI execution successful",
+        "meaning": "Shodan CLI ran without errors",
+        "severity": "info"
+      },
+      {
+        "indicator": "[!] Shodan CLI finding detected",
+        "meaning": "Potential security issue found by Shodan CLI",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced Shodan CLI techniques",
+        "scenario": "Complex Shodan CLI scenarios in advanced assessments",
+        "command": "shodan_cli advanced-mode",
+        "notes": [
+          "Use for complex Shodan CLI scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Official Shodan CLI documentation",
+        "url": "https://example.com/shodan-cli",
+        "description": "Official guide for Shodan CLI"
+      },
+      {
+        "label": "Shodan CLI GitHub repository",
+        "url": "https://github.com/example/shodan-cli",
+        "description": "Source code and community discussions"
+      }
+    ],
+    "installation": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install Shodan CLI tool",
+        "steps": [
+          {
+            "detail": "pip3 install shodan",
+            "copyable": true
+          },
+          {
+            "detail": "shodan version",
+            "copyable": true
+          },
+          {
+            "detail": "shodan init YOUR_API_KEY",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Shodan on Kali",
+        "steps": [
+          {
+            "detail": "sudo apt install -y python3-shodan",
+            "copyable": true
+          },
+          {
+            "detail": "shodan init YOUR_API_KEY",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker",
+        "summary": "Run Shodan in container",
+        "steps": [
+          {
+            "detail": "docker run --rm -it -e SHODAN_KEY=YOUR_KEY ubuntu bash",
+            "copyable": true
+          },
+          {
+            "detail": "apt update && apt install -y python3-pip && pip3 install shodan",
+            "copyable": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "censys-api",
+    "name": "Censys API",
+    "summary": "Internet data platform providing host, IP, and certificate intelligence",
+    "details": "Comprehensive guide for using Censys API in penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install Censys API on Debian/Ubuntu systems",
+        "steps": [
+          {
+            "detail": "Update package manager and install Censys API",
+            "copyable": true
+          },
+          {
+            "detail": "Verify installation with version check",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install Censys API on Kali Linux",
+        "steps": [
+          {
+            "detail": "Use apt to install Censys API on Kali",
+            "copyable": true
+          },
+          {
+            "detail": "Confirm installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Container",
+        "summary": "Run Censys API in Docker container",
+        "steps": [
+          {
+            "detail": "Pull Docker image containing Censys API",
+            "copyable": true
+          },
+          {
+            "detail": "Run container with appropriate mounts",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Query certificates",
+        "command": "curl https://censys.io/api/v1/search/certificates?query=example.com",
+        "notes": [
+          "Requires authentication"
+        ]
+      },
+      {
+        "description": "Host information",
+        "command": "curl https://censys.io/api/v1/hosts/1.1.1.1",
+        "notes": [
+          "Get host data"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--help",
+        "description": "Display help message"
+      },
+      {
+        "flag": "-v/--verbose",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o/--output",
+        "description": "Output file path"
+      }
+    ],
+    "operational_tips": [
+      "Censys indexes internet-wide scanning data",
+      "Certificate transparency search useful for enumeration",
+      "Historical data for tracking changes",
+      "API requires API ID and secret",
+      "Free tier available"
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic Censys API workflow",
+        "steps": [
+          {
+            "title": "Prepare target",
+            "details": "Identify target for Censys API assessment",
+            "command": "# Define your target"
+          },
+          {
+            "title": "Execute Censys API",
+            "details": "Run Censys API with appropriate options",
+            "command": "censys_api target"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review Censys API output for findings",
+            "command": "# Review results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Censys API integration workflow",
+        "stages": [
+          {
+            "label": "Initialize Censys API",
+            "description": "Prepare Censys API for use",
+            "command": "censys_api init"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run Censys API scan on target",
+            "command": "censys_api scan target"
+          },
+          {
+            "label": "Export results",
+            "description": "Export Censys API findings",
+            "command": "censys_api export -o results.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] Censys API execution successful",
+        "meaning": "Censys API ran without errors",
+        "severity": "info"
+      },
+      {
+        "indicator": "[!] Censys API finding detected",
+        "meaning": "Potential security issue found by Censys API",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced Censys API techniques",
+        "scenario": "Complex Censys API scenarios in advanced assessments",
+        "command": "censys_api advanced-mode",
+        "notes": [
+          "Use for complex Censys API scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Official Censys API documentation",
+        "url": "https://example.com/censys-api",
+        "description": "Official guide for Censys API"
+      },
+      {
+        "label": "Censys API GitHub repository",
+        "url": "https://github.com/example/censys-api",
+        "description": "Source code and community discussions"
+      }
+    ]
+  },
+  {
+    "id": "hunter-io",
+    "name": "Hunter.io",
+    "summary": "Email discovery and verification service for reconnaissance",
+    "details": "Comprehensive guide for using Hunter.io in penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install Hunter.io on Debian/Ubuntu systems",
+        "steps": [
+          {
+            "detail": "Update package manager and install Hunter.io",
+            "copyable": true
+          },
+          {
+            "detail": "Verify installation with version check",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install Hunter.io on Kali Linux",
+        "steps": [
+          {
+            "detail": "Use apt to install Hunter.io on Kali",
+            "copyable": true
+          },
+          {
+            "detail": "Confirm installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Container",
+        "summary": "Run Hunter.io in Docker container",
+        "steps": [
+          {
+            "detail": "Pull Docker image containing Hunter.io",
+            "copyable": true
+          },
+          {
+            "detail": "Run container with appropriate mounts",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Search for emails",
+        "command": "hunter search --domain example.com",
+        "notes": [
+          "Requires API key"
+        ]
+      },
+      {
+        "description": "Verify email",
+        "command": "hunter verify test@example.com",
+        "notes": [
+          "Check email validity"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--help",
+        "description": "Display help message"
+      },
+      {
+        "flag": "-v/--verbose",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o/--output",
+        "description": "Output file path"
+      }
+    ],
+    "operational_tips": [
+      "Email discovery service for reconnaissance",
+      "Useful for phishing campaign preparation",
+      "Free tier provides limited queries",
+      "Integrates with OSINT tools",
+      "Helps identify company email patterns"
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic Hunter.io workflow",
+        "steps": [
+          {
+            "title": "Prepare target",
+            "details": "Identify target for Hunter.io assessment",
+            "command": "# Define your target"
+          },
+          {
+            "title": "Execute Hunter.io",
+            "details": "Run Hunter.io with appropriate options",
+            "command": "hunter_io target"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review Hunter.io output for findings",
+            "command": "# Review results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Hunter.io integration workflow",
+        "stages": [
+          {
+            "label": "Initialize Hunter.io",
+            "description": "Prepare Hunter.io for use",
+            "command": "hunter_io init"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run Hunter.io scan on target",
+            "command": "hunter_io scan target"
+          },
+          {
+            "label": "Export results",
+            "description": "Export Hunter.io findings",
+            "command": "hunter_io export -o results.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] Hunter.io execution successful",
+        "meaning": "Hunter.io ran without errors",
+        "severity": "info"
+      },
+      {
+        "indicator": "[!] Hunter.io finding detected",
+        "meaning": "Potential security issue found by Hunter.io",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced Hunter.io techniques",
+        "scenario": "Complex Hunter.io scenarios in advanced assessments",
+        "command": "hunter_io advanced-mode",
+        "notes": [
+          "Use for complex Hunter.io scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Official Hunter.io documentation",
+        "url": "https://example.com/hunter-io",
+        "description": "Official guide for Hunter.io"
+      },
+      {
+        "label": "Hunter.io GitHub repository",
+        "url": "https://github.com/example/hunter-io",
+        "description": "Source code and community discussions"
+      }
+    ]
+  },
+  {
+    "id": "crtsh",
+    "name": "Crt.sh",
+    "summary": "Certificate transparency search engine for subdomain enumeration",
+    "details": "Comprehensive guide for using Crt.sh in penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install Crt.sh on Debian/Ubuntu systems",
+        "steps": [
+          {
+            "detail": "Update package manager and install Crt.sh",
+            "copyable": true
+          },
+          {
+            "detail": "Verify installation with version check",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install Crt.sh on Kali Linux",
+        "steps": [
+          {
+            "detail": "Use apt to install Crt.sh on Kali",
+            "copyable": true
+          },
+          {
+            "detail": "Confirm installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Container",
+        "summary": "Run Crt.sh in Docker container",
+        "steps": [
+          {
+            "detail": "Pull Docker image containing Crt.sh",
+            "copyable": true
+          },
+          {
+            "detail": "Run container with appropriate mounts",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Search via web interface",
+        "command": "curl 'https://crt.sh/?q=%.example.com&output=json'",
+        "notes": [
+          "No auth required"
+        ]
+      },
+      {
+        "description": "Find subdomains",
+        "command": "curl 'https://crt.sh/?q=%.example.com&output=json' | jq -r '.[].name_value'",
+        "notes": [
+          "Extract subdomains"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--help",
+        "description": "Display help message"
+      },
+      {
+        "flag": "-v/--verbose",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o/--output",
+        "description": "Output file path"
+      }
+    ],
+    "operational_tips": [
+      "Certificate transparency logs are public",
+      "Excellent for subdomain enumeration",
+      "No authentication required",
+      "Useful for OSINT-only assessments",
+      "Free and reliable service"
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic Crt.sh workflow",
+        "steps": [
+          {
+            "title": "Prepare target",
+            "details": "Identify target for Crt.sh assessment",
+            "command": "# Define your target"
+          },
+          {
+            "title": "Execute Crt.sh",
+            "details": "Run Crt.sh with appropriate options",
+            "command": "crtsh target"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review Crt.sh output for findings",
+            "command": "# Review results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Crt.sh integration workflow",
+        "stages": [
+          {
+            "label": "Initialize Crt.sh",
+            "description": "Prepare Crt.sh for use",
+            "command": "crtsh init"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run Crt.sh scan on target",
+            "command": "crtsh scan target"
+          },
+          {
+            "label": "Export results",
+            "description": "Export Crt.sh findings",
+            "command": "crtsh export -o results.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] Crt.sh execution successful",
+        "meaning": "Crt.sh ran without errors",
+        "severity": "info"
+      },
+      {
+        "indicator": "[!] Crt.sh finding detected",
+        "meaning": "Potential security issue found by Crt.sh",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced Crt.sh techniques",
+        "scenario": "Complex Crt.sh scenarios in advanced assessments",
+        "command": "crtsh advanced-mode",
+        "notes": [
+          "Use for complex Crt.sh scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Official Crt.sh documentation",
+        "url": "https://example.com/crtsh",
+        "description": "Official guide for Crt.sh"
+      },
+      {
+        "label": "Crt.sh GitHub repository",
+        "url": "https://github.com/example/crtsh",
+        "description": "Source code and community discussions"
+      }
+    ]
+  },
+  {
+    "id": "holehe",
+    "name": "Holehe",
+    "summary": "Email validation service to identify compromised accounts and breaches",
+    "details": "Comprehensive guide for using Holehe in penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install Holehe on Debian/Ubuntu systems",
+        "steps": [
+          {
+            "detail": "Update package manager and install Holehe",
+            "copyable": true
+          },
+          {
+            "detail": "Verify installation with version check",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install Holehe on Kali Linux",
+        "steps": [
+          {
+            "detail": "Use apt to install Holehe on Kali",
+            "copyable": true
+          },
+          {
+            "detail": "Confirm installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Container",
+        "summary": "Run Holehe in Docker container",
+        "steps": [
+          {
+            "detail": "Pull Docker image containing Holehe",
+            "copyable": true
+          },
+          {
+            "detail": "Run container with appropriate mounts",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Check email breaches",
+        "command": "holehe test@example.com",
+        "notes": [
+          "Check multiple services"
+        ]
+      },
+      {
+        "description": "Export results",
+        "command": "holehe --verbose test@example.com > results.txt",
+        "notes": [
+          "Detailed output"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--help",
+        "description": "Display help message"
+      },
+      {
+        "flag": "-v/--verbose",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o/--output",
+        "description": "Output file path"
+      }
+    ],
+    "operational_tips": [
+      "Checks if email exists in compromised databases",
+      "Helps identify reused credentials",
+      "Useful for phishing and social engineering",
+      "Free to use",
+      "Integrates with reconnaissance workflows"
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic Holehe workflow",
+        "steps": [
+          {
+            "title": "Prepare target",
+            "details": "Identify target for Holehe assessment",
+            "command": "# Define your target"
+          },
+          {
+            "title": "Execute Holehe",
+            "details": "Run Holehe with appropriate options",
+            "command": "holehe target"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review Holehe output for findings",
+            "command": "# Review results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Holehe integration workflow",
+        "stages": [
+          {
+            "label": "Initialize Holehe",
+            "description": "Prepare Holehe for use",
+            "command": "holehe init"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run Holehe scan on target",
+            "command": "holehe scan target"
+          },
+          {
+            "label": "Export results",
+            "description": "Export Holehe findings",
+            "command": "holehe export -o results.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] Holehe execution successful",
+        "meaning": "Holehe ran without errors",
+        "severity": "info"
+      },
+      {
+        "indicator": "[!] Holehe finding detected",
+        "meaning": "Potential security issue found by Holehe",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced Holehe techniques",
+        "scenario": "Complex Holehe scenarios in advanced assessments",
+        "command": "holehe advanced-mode",
+        "notes": [
+          "Use for complex Holehe scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Official Holehe documentation",
+        "url": "https://example.com/holehe",
+        "description": "Official guide for Holehe"
+      },
+      {
+        "label": "Holehe GitHub repository",
+        "url": "https://github.com/example/holehe",
+        "description": "Source code and community discussions"
+      }
+    ]
+  },
+  {
+    "id": "whoisutils",
+    "name": "WHOIS Utilities",
+    "summary": "Domain and IP address lookup tools for reconnaissance",
+    "details": "Comprehensive guide for using WHOIS Utilities in penetration testing engagements.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install WHOIS Utilities on Debian/Ubuntu systems",
+        "steps": [
+          {
+            "detail": "Update package manager and install WHOIS Utilities",
+            "copyable": true
+          },
+          {
+            "detail": "Verify installation with version check",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install WHOIS Utilities on Kali Linux",
+        "steps": [
+          {
+            "detail": "Use apt to install WHOIS Utilities on Kali",
+            "copyable": true
+          },
+          {
+            "detail": "Confirm installation",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker/Container",
+        "summary": "Run WHOIS Utilities in Docker container",
+        "steps": [
+          {
+            "detail": "Pull Docker image containing WHOIS Utilities",
+            "copyable": true
+          },
+          {
+            "detail": "Run container with appropriate mounts",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Query domain",
+        "command": "whois example.com",
+        "notes": [
+          "Domain registration info"
+        ]
+      },
+      {
+        "description": "IP lookup",
+        "command": "whois 8.8.8.8",
+        "notes": [
+          "IP holder information"
+        ]
+      },
+      {
+        "description": "Reverse DNS",
+        "command": "nslookup 8.8.8.8",
+        "notes": [
+          "DNS lookup"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--help",
+        "description": "Display help message"
+      },
+      {
+        "flag": "-v/--verbose",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-o/--output",
+        "description": "Output file path"
+      }
+    ],
+    "operational_tips": [
+      "Basic but essential OSINT tool",
+      "Passive reconnaissance only",
+      "Provides registrant and ownership info",
+      "Historical data useful for tracking",
+      "No credentials required"
+    ],
+    "step_sequences": [
+      {
+        "title": "Basic WHOIS Utilities workflow",
+        "steps": [
+          {
+            "title": "Prepare target",
+            "details": "Identify target for WHOIS Utilities assessment",
+            "command": "# Define your target"
+          },
+          {
+            "title": "Execute WHOIS Utilities",
+            "details": "Run WHOIS Utilities with appropriate options",
+            "command": "whoisutils target"
+          },
+          {
+            "title": "Analyze results",
+            "details": "Review WHOIS Utilities output for findings",
+            "command": "# Review results"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "WHOIS Utilities integration workflow",
+        "stages": [
+          {
+            "label": "Initialize WHOIS Utilities",
+            "description": "Prepare WHOIS Utilities for use",
+            "command": "whoisutils init"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run WHOIS Utilities scan on target",
+            "command": "whoisutils scan target"
+          },
+          {
+            "label": "Export results",
+            "description": "Export WHOIS Utilities findings",
+            "command": "whoisutils export -o results.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] WHOIS Utilities execution successful",
+        "meaning": "WHOIS Utilities ran without errors",
+        "severity": "info"
+      },
+      {
+        "indicator": "[!] WHOIS Utilities finding detected",
+        "meaning": "Potential security issue found by WHOIS Utilities",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced WHOIS Utilities techniques",
+        "scenario": "Complex WHOIS Utilities scenarios in advanced assessments",
+        "command": "whoisutils advanced-mode",
+        "notes": [
+          "Use for complex WHOIS Utilities scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Official WHOIS Utilities documentation",
+        "url": "https://example.com/whoisutils",
+        "description": "Official guide for WHOIS Utilities"
+      },
+      {
+        "label": "WHOIS Utilities GitHub repository",
+        "url": "https://github.com/example/whoisutils",
+        "description": "Source code and community discussions"
+      }
+    ]
+  }
+]

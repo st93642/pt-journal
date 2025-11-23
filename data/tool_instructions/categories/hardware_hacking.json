@@ -1,0 +1,836 @@
+[
+  {
+    "id": "hackrf",
+    "name": "HackRF One",
+    "summary": "HackRF One is a half-duplex SDR transceiver (1 MHz \u2013 6 GHz) commonly used for wireless security research and signal replay.",
+    "installation_guides": [
+      {
+        "platform": "Firmware & tools",
+        "summary": "Install host utilities and update firmware",
+        "steps": [
+          {
+            "detail": "sudo apt install -y hackrf libhackrf-dev",
+            "copyable": true
+          },
+          {
+            "detail": "sudo hackrf_info",
+            "copyable": true
+          },
+          {
+            "detail": "sudo hackrf_spiflash -w hackrf_one_usb.bin",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Enable SDR group permissions",
+        "steps": [
+          {
+            "detail": "sudo usermod -aG plugdev $USER",
+            "copyable": true
+          },
+          {
+            "detail": "sudo udevadm control --reload-rules",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Windows",
+        "summary": "Use Zadig drivers",
+        "steps": [
+          {
+            "detail": "Install Zadig and replace driver with WinUSB",
+            "copyable": false
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Device info",
+        "command": "hackrf_info",
+        "notes": []
+      },
+      {
+        "description": "Spectrum sweep",
+        "command": "hackrf_sweep -f 2.4G:2.5G -n 4096 -w 1000000",
+        "notes": []
+      },
+      {
+        "description": "Record signal",
+        "command": "hackrf_transfer -r wifi.iq -f 2462000000 -s 20000000",
+        "notes": [
+          "Produces IQ file"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-f freq",
+        "description": "Center frequency"
+      },
+      {
+        "flag": "-s rate",
+        "description": "Sample rate"
+      },
+      {
+        "flag": "-a 1",
+        "description": "Enable antenna power"
+      },
+      {
+        "flag": "-g gain",
+        "description": "VGA gain"
+      }
+    ],
+    "operational_tips": [
+      "Always calibrate (hackrf_debug --si5351c -n 0 -w 26) after firmware updates.",
+      "Use external filters/amps when dealing with cellular/L-band signals to avoid front-end overload.",
+      "Record IQ data for offline analysis with GNU Radio or URH.",
+      "Respect legal/regional power limits; HackRF can transmit across wide bands."
+    ],
+    "step_sequences": [
+      {
+        "title": "Capturing key fob",
+        "steps": [
+          {
+            "title": "Find frequency",
+            "details": "Use hackrf_sweep to locate strong carriers.",
+            "command": "hackrf_sweep -f 300M:400M"
+          },
+          {
+            "title": "Record IQ",
+            "details": "Capture raw transmission.",
+            "command": "hackrf_transfer -r keyfob.iq -f 315000000 -s 2000000 -a 1"
+          },
+          {
+            "title": "Analyze",
+            "details": "Load capture into URH/GNU Radio.",
+            "command": "urh keyfob.iq"
+          }
+        ]
+      },
+      {
+        "title": "Replay lab signal",
+        "steps": [
+          {
+            "title": "Transmit capture",
+            "details": "Use hackrf_transfer to replay.",
+            "command": "hackrf_transfer -t keyfob.iq -f 315000000 -s 2000000 -a 1"
+          },
+          {
+            "title": "Verify",
+            "details": "Check target response.",
+            "command": "# Observe device behavior"
+          },
+          {
+            "title": "Document",
+            "details": "Record capture settings for report.",
+            "command": "# PT Journal \u2192 Evidence"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Survey \u2192 Capture \u2192 Replay",
+        "stages": [
+          {
+            "label": "Survey",
+            "description": "Sweep bands for active signals.",
+            "command": "hackrf_sweep -f 900M:930M"
+          },
+          {
+            "label": "Capture",
+            "description": "Record IQ with proper gain.",
+            "command": "hackrf_transfer -r capture.iq -f 915000000 -s 10000000"
+          },
+          {
+            "label": "Replay/Decode",
+            "description": "Feed IQ into GNURadio/URH for decode or re-transmit.",
+            "command": "urh capture.iq"
+          },
+          {
+            "label": "Report",
+            "description": "Share reproduction steps and mitigate.",
+            "command": "# PT Journal \u2192 Wireless finding"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "hackrf_info: board ID",
+        "meaning": "Device recognized and ready.",
+        "severity": "Info"
+      },
+      {
+        "indicator": "Lost samples",
+        "meaning": "Sample rate too high or USB throughput low.",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "PLL unlock",
+        "meaning": "Out-of-range frequency or hardware issue.",
+        "severity": "High"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Remote HackRF",
+        "command": "hackrf_tcp -s 2000000",
+        "scenario": "Expose HackRF over network and connect via SoapySDR/GNU Radio.",
+        "notes": [
+          "Protect port with SSH tunnel"
+        ]
+      },
+      {
+        "title": "Clock synchronization",
+        "command": "hackrf_clock -i 10MHz",
+        "scenario": "Lock device to external reference for precise measurements.",
+        "notes": [
+          "Requires clock-in mod"
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Great Scott Gadgets docs",
+        "url": "https://greatscottgadgets.com/hackrf/",
+        "description": "Official handbook."
+      },
+      {
+        "label": "HackRF tools",
+        "url": "https://github.com/greatscottgadgets/hackrf",
+        "description": "Firmware + utilities."
+      },
+      {
+        "label": "RF best practices",
+        "url": "https://osmocom.org/projects/hackrf/wiki",
+        "description": "Field notes and tutorials."
+      }
+    ]
+  },
+  {
+    "id": "gqrx",
+    "name": "Gqrx",
+    "summary": "Gqrx is a GNU Radio\u2013based SDR receiver with FFT waterfall, demodulation, and recording features for quick signal reconnaissance.",
+    "installation_guides": [
+      {
+        "platform": "Ubuntu/Debian",
+        "summary": "Install from official PPA",
+        "steps": [
+          {
+            "detail": "sudo add-apt-repository -y ppa:gqrx/gqrx-sdr",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt update && sudo apt install -y gqrx-sdr",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install packaged build",
+        "steps": [
+          {
+            "detail": "sudo apt install -y gqrx-sdr gr-osmosdr",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "AppImage",
+        "summary": "Portable option for field kits",
+        "steps": [
+          {
+            "detail": "wget https://gqrx.dk/download/gqrx-x86_64.AppImage",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x gqrx-x86_64.AppImage && ./gqrx-x86_64.AppImage",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Launch receiver",
+        "command": "gqrx",
+        "notes": [
+          "Select SDR device on first run"
+        ]
+      },
+      {
+        "description": "Record IQ",
+        "command": "# Toolbar \u2192 Record IQ (Ctrl+R)",
+        "notes": []
+      },
+      {
+        "description": "Use frequency scanner",
+        "command": "# Tools \u2192 Frequency Scanner",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--device <string>",
+        "description": "Override device arguments"
+      },
+      {
+        "flag": "--config <file>",
+        "description": "Load saved configuration"
+      },
+      {
+        "flag": "--remote",
+        "description": "Enable TCP remote control"
+      }
+    ],
+    "operational_tips": [
+      "Lower sample rate if you see 'lost samples' in the status bar.",
+      "Enable DC removal and I/Q correction for HackRF/LimeSDR to clean center spikes.",
+      "Bookmark active channels and export them for wardriving reports.",
+      "Record IQ for intermittent signals so they can be replayed in GNURadio or URH."
+    ],
+    "step_sequences": [
+      {
+        "title": "Band survey",
+        "steps": [
+          {
+            "title": "Scan",
+            "details": "Use frequency scanner to sweep ISM band.",
+            "command": "# Tools \u2192 Frequency Scanner"
+          },
+          {
+            "title": "Bookmark",
+            "details": "Add bookmarks for interesting carriers.",
+            "command": "# Right-click waterfall \u2192 Bookmark"
+          },
+          {
+            "title": "Export",
+            "details": "Save bookmarks.csv for sharing.",
+            "command": "# Bookmarks \u2192 Export"
+          }
+        ]
+      },
+      {
+        "title": "IQ capture",
+        "steps": [
+          {
+            "title": "Tune",
+            "details": "Set frequency/gain based on signal of interest.",
+            "command": "# Receiver Options"
+          },
+          {
+            "title": "Record",
+            "details": "Start IQ capture.",
+            "command": "# Press Record"
+          },
+          {
+            "title": "Analyze",
+            "details": "Open IQ file with GNURadio/URH.",
+            "command": "urh recordings/*.wav"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Survey \u2192 Capture \u2192 Decode",
+        "stages": [
+          {
+            "label": "Survey",
+            "description": "Use Gqrx waterfall to locate emitters.",
+            "command": "gqrx --config survey.conf"
+          },
+          {
+            "label": "Capture",
+            "description": "Record IQ segments when activity appears.",
+            "command": "# Press Record"
+          },
+          {
+            "label": "Decode",
+            "description": "Process IQ in URH or GNURadio Companion.",
+            "command": "urh recordings/iq.dat"
+          },
+          {
+            "label": "Report",
+            "description": "Attach screenshots + IQ excerpts to PT Journal.",
+            "command": "# PT Journal \u2192 Wireless evidence"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "ALSA underrun",
+        "meaning": "Audio device cannot keep up; lower audio sample rate or use PulseAudio.",
+        "severity": "Low"
+      },
+      {
+        "indicator": "Overload warning",
+        "meaning": "Gain too high; reduce LNA/VGA to avoid clipping.",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Lost samples",
+        "meaning": "USB throughput or CPU limit reached.",
+        "severity": "Medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Headless control",
+        "command": "gqrx --remote --config remote.conf",
+        "scenario": "Enable TCP remote control and script tuning/recording.",
+        "notes": [
+          "Enable Remote Control checkbox in settings first"
+        ]
+      },
+      {
+        "title": "Preset launch",
+        "command": "gqrx --config ism.conf --device='rtl=0,samplerate=2.4e6'",
+        "scenario": "Start with predefined center frequency and gain for lab demos.",
+        "notes": [
+          "Combine with gqrx-remote CLI"
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Gqrx documentation",
+        "url": "https://gqrx.dk/documents",
+        "description": "Official guides"
+      },
+      {
+        "label": "Remote control API",
+        "url": "https://github.com/gqrx-sdr/gqrx-sdr/wiki/Remote-control",
+        "description": "Automate tuning"
+      },
+      {
+        "label": "SDR Academy",
+        "url": "https://greatscottgadgets.com/sdr/",
+        "description": "Signal hacking fundamentals"
+      }
+    ]
+  },
+  {
+    "id": "gnuradio",
+    "name": "GNU Radio",
+    "summary": "GNU Radio is an open-source DSP framework used to build SDR applications, signal decoders, and rapid RF prototypes.",
+    "installation_guides": [
+      {
+        "platform": "PyBOMBS",
+        "summary": "Install via PyBOMBS workspace",
+        "steps": [
+          {
+            "detail": "pip3 install pybombs --user",
+            "copyable": true
+          },
+          {
+            "detail": "pybombs auto-config",
+            "copyable": true
+          },
+          {
+            "detail": "pybombs prefix init ~/gnuradio -a myprefix -R gnuradio-default",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Ubuntu PPA",
+        "summary": "Quick install",
+        "steps": [
+          {
+            "detail": "sudo add-apt-repository -y ppa:gnuradio/gnuradio-releases",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt update && sudo apt install -y gnuradio gr-osmosdr",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Conda",
+        "summary": "Isolated environment",
+        "steps": [
+          {
+            "detail": "conda create -n gr python=3.10 gnuradio",
+            "copyable": true
+          },
+          {
+            "detail": "conda activate gr",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Launch GRC",
+        "command": "gnuradio-companion",
+        "notes": []
+      },
+      {
+        "description": "Run flowgraph headless",
+        "command": "python3 top_block.py",
+        "notes": []
+      },
+      {
+        "description": "Use gr_modtool",
+        "command": "gr_modtool newmod custom",
+        "notes": [
+          "Create custom blocks"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "gnuradio-companion -w",
+        "description": "Disable splash screen"
+      },
+      {
+        "flag": "python3 flowgraph.py --args",
+        "description": "Pass runtime parameters"
+      },
+      {
+        "flag": "gr_modtool add -t general",
+        "description": "Add new block"
+      }
+    ],
+    "operational_tips": [
+      "Group blocks into hierarchical blocks for readability.",
+      "Use Message Debug blocks to inspect PDUs when troubleshooting.",
+      "Keep sampling rates realistic for your hardware to avoid overruns.",
+      "Export companion flowgraphs to Python when integrating with automation."
+    ],
+    "step_sequences": [
+      {
+        "title": "Building receiver",
+        "steps": [
+          {
+            "title": "Prototype in GRC",
+            "details": "Use blocks (osmocom source \u2192 low pass \u2192 WBFM).",
+            "command": "gnuradio-companion"
+          },
+          {
+            "title": "Test",
+            "details": "Run from GUI and adjust gains.",
+            "command": "# Press Run"
+          },
+          {
+            "title": "Export",
+            "details": "Generate Python flowgraph for automation.",
+            "command": "File \u2192 Generate"
+          }
+        ]
+      },
+      {
+        "title": "Custom block",
+        "steps": [
+          {
+            "title": "Create module",
+            "details": "Start new module.",
+            "command": "gr_modtool newmod ptj_blocks"
+          },
+          {
+            "title": "Add block",
+            "details": "Create custom general block.",
+            "command": "gr_modtool add -t general packet_tag"
+          },
+          {
+            "title": "Build",
+            "details": "Compile and install.",
+            "command": "cmake .. && make && sudo make install"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Prototype \u2192 Test \u2192 Deploy",
+        "stages": [
+          {
+            "label": "Prototype",
+            "description": "Use GRC to drag/drop blocks.",
+            "command": "gnuradio-companion --new"
+          },
+          {
+            "label": "Test",
+            "description": "Run with live SDR input.",
+            "command": "python3 flowgraph.py --args 'uhd,addr=192.168.10.2'"
+          },
+          {
+            "label": "Deploy",
+            "description": "Package flowgraph into Docker/automation pipeline.",
+            "command": "docker build -t gr-receiver ."
+          },
+          {
+            "label": "Document",
+            "description": "Attach screenshots/config to PT Journal.",
+            "command": "# PT Journal \u2192 Wireless lab"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "UHD: O",
+        "meaning": "Overrun; SDR not keeping up.",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "ALSA underrun",
+        "meaning": "Audio sink can't keep pace.",
+        "severity": "Low"
+      },
+      {
+        "indicator": "Flowgraph locked",
+        "meaning": "Top block running.",
+        "severity": "Info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Out-of-tree blocks",
+        "command": "gr_modtool makexml custom.xml",
+        "scenario": "Share custom DSP modules across team.",
+        "notes": [
+          "Version control modules separately"
+        ]
+      },
+      {
+        "title": "Remote headless run",
+        "command": "python3 flowgraph.py --remote-port 5656",
+        "scenario": "Expose control port for dashboards.",
+        "notes": [
+          "Requires network sink blocks"
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "GNU Radio docs",
+        "url": "https://wiki.gnuradio.org/index.php/Main_Page",
+        "description": "Official documentation"
+      },
+      {
+        "label": "GRCon talks",
+        "url": "https://www.gnuradio.org/grcon/grcon-content/",
+        "description": "Conference recordings"
+      },
+      {
+        "label": "DSP tutorials",
+        "url": "https://greatscottgadgets.com/sdr/",
+        "description": "Foundational SDR guide"
+      }
+    ]
+  },
+  {
+    "id": "urh",
+    "name": "Universal Radio Hacker",
+    "summary": "URH visualizes and decodes captured RF signals, helps reverse protocols, and can generate replay or fuzzing frames.",
+    "installation_guides": [
+      {
+        "platform": "pip",
+        "summary": "Install URH with Qt dependencies",
+        "steps": [
+          {
+            "detail": "pip3 install urh",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "AppImage",
+        "summary": "Portable release",
+        "steps": [
+          {
+            "detail": "wget https://github.com/jopohl/urh/releases/download/v2.9.7/urh-x86_64.AppImage",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x urh-x86_64.AppImage && ./urh-x86_64.AppImage",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install via apt",
+        "steps": [
+          {
+            "detail": "sudo apt install -y urh",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Launch GUI",
+        "command": "urh",
+        "notes": []
+      },
+      {
+        "description": "Import IQ file",
+        "command": "# File \u2192 Import \u2192 Signals",
+        "notes": []
+      },
+      {
+        "description": "Replay burst",
+        "command": "# Emulator tab \u2192 Play",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "urh --device hackrf",
+        "description": "Select SDR device"
+      },
+      {
+        "flag": "--import mycapture.iq",
+        "description": "Open file on startup"
+      },
+      {
+        "flag": "--no-splash",
+        "description": "Skip splash screen"
+      }
+    ],
+    "operational_tips": [
+      "Use the inspector to highlight symbol boundaries before protocol analysis.",
+      "Switch to relative view to normalize amplitude differences across captures.",
+      "Use labelled sequences to teach URH patterns, then use Analyzer \u2192 Protocol search.",
+      "Export decoded frames to CSV for inclusion in PT Journal."
+    ],
+    "step_sequences": [
+      {
+        "title": "Protocol reverse engineering",
+        "steps": [
+          {
+            "title": "Import IQ",
+            "details": "Load capture from HackRF/Gqrx.",
+            "command": "urh capture.iq"
+          },
+          {
+            "title": "Detect symbols",
+            "details": "Use Automatic detection.",
+            "command": "# Analyzer \u2192 Auto detect"
+          },
+          {
+            "title": "Label fields",
+            "details": "Mark header/address/payload.",
+            "command": "# Use Label button"
+          }
+        ]
+      },
+      {
+        "title": "Replay attack",
+        "steps": [
+          {
+            "title": "Load burst",
+            "details": "Select recorded sequence.",
+            "command": "# Signals tab \u2192 Add"
+          },
+          {
+            "title": "Configure device",
+            "details": "Set HackRF center frequency/gain.",
+            "command": "# Emulator tab"
+          },
+          {
+            "title": "Transmit",
+            "details": "Play burst and observe target.",
+            "command": "# Click Play"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Capture \u2192 Decode \u2192 Replay",
+        "stages": [
+          {
+            "label": "Capture",
+            "description": "Use HackRF/Gqrx to record signal.",
+            "command": "hackrf_transfer -r device.iq"
+          },
+          {
+            "label": "Decode",
+            "description": "Import into URH and derive protocol.",
+            "command": "urh device.iq"
+          },
+          {
+            "label": "Replay",
+            "description": "Send crafted frames to validate findings.",
+            "command": "# Emulator tab"
+          },
+          {
+            "label": "Document",
+            "description": "Export plots/CSV for PT Journal.",
+            "command": "# File \u2192 Export"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Bitrate auto detected",
+        "meaning": "URH guessed symbol rate; verify manually.",
+        "severity": "Info"
+      },
+      {
+        "indicator": "Alignment lost",
+        "meaning": "Need better slicing points.",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Tx busy",
+        "meaning": "SDR not configured properly for transmit.",
+        "severity": "High"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Batch fuzzing",
+        "command": "urh --fuzz scripts/fuzz.py",
+        "scenario": "Automate sending mutated frames.",
+        "notes": [
+          "Requires scripting plug-in"
+        ]
+      },
+      {
+        "title": "Headless export",
+        "command": "urh --export-csv sequences.urh",
+        "scenario": "Convert labelled protocols into CSV for reporting.",
+        "notes": [
+          "Useful for PT Journal attachments"
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "URH docs",
+        "url": "https://github.com/jopohl/urh",
+        "description": "Official documentation"
+      },
+      {
+        "label": "RF reverse engineering guide",
+        "url": "https://greatscottgadgets.com/sdr/",
+        "description": "Background training"
+      },
+      {
+        "label": "URH tutorials",
+        "url": "https://www.youtube.com/playlist?list=PLt3zZlbrTrWf9NBI6sD3A3p0hN82F_9xZ",
+        "description": "Video walkthroughs"
+      }
+    ]
+  }
+]

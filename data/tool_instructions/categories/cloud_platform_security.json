@@ -1,0 +1,1102 @@
+[
+  {
+    "id": "prowler",
+    "name": "Prowler",
+    "summary": "Prowler is an open-source security tool for AWS, Azure, GCP, and Kubernetes to do security assessments, audits, incident response, compliance, continuous monitoring, hardening, forensics readiness, and operational best practices.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from pip or snap",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "pip install prowler",
+            "copyable": true
+          },
+          {
+            "detail": "prowler --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from source or pip",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/prowler-cloud/prowler.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd prowler",
+            "copyable": true
+          },
+          {
+            "detail": "pip install -r requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "./prowler --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Official containerized deployment",
+        "steps": [
+          {
+            "detail": "docker pull toniblyx/prowler",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -it toniblyx/prowler aws",
+            "copyable": true
+          },
+          {
+            "detail": "# Configure AWS credentials in environment",
+            "copyable": false
+          },
+          {
+            "detail": "export AWS_ACCESS_KEY_ID=your_key",
+            "copyable": true
+          },
+          {
+            "detail": "export AWS_SECRET_ACCESS_KEY=your_secret",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Run AWS security assessment",
+        "command": "prowler aws",
+        "notes": [
+          "Requires AWS credentials configured",
+          "Outputs HTML and CSV reports"
+        ]
+      },
+      {
+        "description": "Check specific service",
+        "command": "prowler aws -M s3",
+        "notes": [
+          "Focus on S3 security checks only",
+          "Useful for targeted assessments"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "AWS Security Assessment",
+        "steps": [
+          {
+            "title": "Configure AWS credentials",
+            "details": "Set up AWS CLI credentials with appropriate IAM permissions",
+            "command": "aws configure"
+          },
+          {
+            "title": "Run comprehensive assessment",
+            "details": "Execute Prowler against all AWS services",
+            "command": "prowler aws -f csv"
+          },
+          {
+            "title": "Review findings",
+            "details": "Analyze generated reports for security issues",
+            "command": "# Check output directory for reports"
+          },
+          {
+            "title": "Export findings",
+            "details": "Convert findings to required format",
+            "command": "prowler aws -o json"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Multi-account AWS Assessment",
+        "stages": [
+          {
+            "label": "Configure profiles",
+            "description": "Set up multiple AWS profiles for different accounts",
+            "command": "aws configure --profile account1"
+          },
+          {
+            "label": "Run assessment per account",
+            "description": "Execute Prowler against each account",
+            "command": "prowler aws --profile account1"
+          },
+          {
+            "label": "Consolidate findings",
+            "description": "Merge results from multiple accounts",
+            "command": "# Use custom scripts to aggregate CSV outputs"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[FAIL] S3 bucket allows public access",
+        "meaning": "S3 bucket has public read/write permissions",
+        "severity": "high"
+      },
+      {
+        "indicator": "[PASS] CloudTrail logging enabled",
+        "meaning": "CloudTrail is properly configured for auditing",
+        "severity": "info"
+      },
+      {
+        "indicator": "[WARNING] IAM user has console access",
+        "meaning": "IAM user has console access - consider programmatic only",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom compliance checks",
+        "command": "prowler aws -C custom_check_list.txt",
+        "scenario": "Run specific compliance frameworks (CIS, NIST, GDPR)",
+        "notes": [
+          "Create custom check lists for specific requirements",
+          "Integrate with CI/CD pipelines"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Prowler Documentation",
+        "url": "https://github.com/prowler-cloud/prowler",
+        "description": "Official documentation and usage guide"
+      },
+      {
+        "label": "AWS Security Best Practices",
+        "url": "https://docs.aws.amazon.com/security/",
+        "description": "AWS security documentation and guidelines"
+      }
+    ]
+  },
+  {
+    "id": "scoutsuite",
+    "name": "ScoutSuite",
+    "summary": "ScoutSuite is a multi-cloud security auditing tool. Security auditors can use it to evaluate the security posture of their cloud environments.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from pip",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "pip install scoutsuite",
+            "copyable": true
+          },
+          {
+            "detail": "scout --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/nccgroup/ScoutSuite.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd ScoutSuite",
+            "copyable": true
+          },
+          {
+            "detail": "pip install -r requirements.txt",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Containerized deployment",
+        "steps": [
+          {
+            "detail": "docker pull nccgroup/scoutsuite",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -it nccgroup/scoutsuite",
+            "copyable": true
+          },
+          {
+            "detail": "# Mount volume for reports",
+            "copyable": false
+          },
+          {
+            "detail": "docker run -v $(pwd):/reports nccgroup/scoutsuite",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Scan AWS environment",
+        "command": "scout aws",
+        "notes": [
+          "Requires AWS credentials",
+          "Generates HTML report"
+        ]
+      },
+      {
+        "description": "Scan Azure environment",
+        "command": "scout azure",
+        "notes": [
+          "Requires Azure authentication",
+          "Interactive login prompt"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Multi-Cloud Security Assessment",
+        "steps": [
+          {
+            "title": "Configure cloud credentials",
+            "details": "Set up credentials for each cloud provider",
+            "command": "# AWS: aws configure, Azure: az login, GCP: gcloud auth login"
+          },
+          {
+            "title": "Run cloud-specific scans",
+            "details": "Execute ScoutSuite against each provider",
+            "command": "scout azure && scout gcp && scout aws"
+          },
+          {
+            "title": "Review findings",
+            "details": "Analyze HTML reports for security issues",
+            "command": "# Open generated report-*.html files"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Continuous Cloud Monitoring",
+        "stages": [
+          {
+            "label": "Automate scans",
+            "description": "Schedule regular ScoutSuite executions",
+            "command": "# Use cron or cloud scheduler"
+          },
+          {
+            "label": "Compare results",
+            "description": "Track security posture changes over time",
+            "command": "# Use diff tools on JSON outputs"
+          },
+          {
+            "label": "Alert on changes",
+            "description": "Set up notifications for new findings",
+            "command": "# Integrate with SIEM or monitoring tools"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Dangerous rule found",
+        "meaning": "High-risk security configuration detected",
+        "severity": "high"
+      },
+      {
+        "indicator": "Warning rule found",
+        "meaning": "Medium-risk security issue",
+        "severity": "medium"
+      },
+      {
+        "indicator": "Good rule found",
+        "meaning": "Security best practice followed",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom rules",
+        "command": "scout --rules-dir custom_rules/",
+        "scenario": "Add organization-specific security checks",
+        "notes": [
+          "Write custom Python rules",
+          "Extend framework capabilities"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "ScoutSuite GitHub",
+        "url": "https://github.com/nccgroup/ScoutSuite",
+        "description": "Official repository and documentation"
+      },
+      {
+        "label": "Cloud Security Guides",
+        "url": "https://cloud.google.com/security",
+        "description": "Multi-cloud security best practices"
+      }
+    ]
+  },
+  {
+    "id": "cloudmapper",
+    "name": "CloudMapper",
+    "summary": "CloudMapper helps you analyze your Amazon Web Services (AWS) environments. It was originally created by Duo Security and is now maintained by the community.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from pip",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "pip install cloudmapper",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/duo-labs/cloudmapper.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd cloudmapper",
+            "copyable": true
+          },
+          {
+            "detail": "pip install -r requirements.txt",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run from Docker",
+        "steps": [
+          {
+            "detail": "docker pull duosecurity/cloudmapper",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -it duosecurity/cloudmapper",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Collect AWS data",
+        "command": "cloudmapper.py collect --account 123456789012",
+        "notes": [
+          "Collects configuration data from AWS account"
+        ]
+      },
+      {
+        "description": "Generate network diagram",
+        "command": "cloudmapper.py visualize --account 123456789012",
+        "notes": [
+          "Creates interactive HTML network visualization"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "AWS Network Visualization",
+        "steps": [
+          {
+            "title": "Configure AWS credentials",
+            "details": "Set up AWS CLI credentials",
+            "command": "aws configure"
+          },
+          {
+            "title": "Collect account data",
+            "details": "Gather configuration from AWS",
+            "command": "cloudmapper.py collect --account your-account"
+          },
+          {
+            "title": "Generate visualization",
+            "details": "Create network diagram",
+            "command": "cloudmapper.py visualize --account your-account"
+          },
+          {
+            "title": "Review findings",
+            "details": "Analyze network topology",
+            "command": "# Open web/index.html"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Multi-Account Analysis",
+        "stages": [
+          {
+            "label": "Data collection",
+            "description": "Collect data from all AWS accounts",
+            "command": "cloudmapper.py collect --all-profiles"
+          },
+          {
+            "label": "Visualization",
+            "description": "Generate network diagrams",
+            "command": "cloudmapper.py visualize --all-profiles"
+          },
+          {
+            "label": "Security review",
+            "description": "Analyze network security posture",
+            "command": "# Review network exposures and connections"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Public subnet exposed",
+        "meaning": "Subnet has direct internet access",
+        "severity": "medium"
+      },
+      {
+        "indicator": "VPC peering connection",
+        "meaning": "Network connection between VPCs",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom inventory filtering",
+        "command": "cloudmapper.py collect --filter-tag Environment:Production",
+        "scenario": "Focus on specific resources",
+        "notes": [
+          "Filter by tags for targeted analysis"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "CloudMapper GitHub",
+        "url": "https://github.com/duo-labs/cloudmapper",
+        "description": "Official repository and documentation"
+      }
+    ]
+  },
+  {
+    "id": "pacu",
+    "name": "Pacu",
+    "summary": "Pacu is an AWS exploitation framework, designed for testing the security of Amazon Web Services environments.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from source",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/RhinoSecurityLabs/pacu.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd pacu",
+            "copyable": true
+          },
+          {
+            "detail": "pip install -r requirements.txt",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from source with dependencies",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/RhinoSecurityLabs/pacu.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd pacu",
+            "copyable": true
+          },
+          {
+            "detail": "bash install.sh",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run from Docker container",
+        "steps": [
+          {
+            "detail": "docker pull rhinosecuritylabs/pacu",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -it rhinosecuritylabs/pacu",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Start Pacu interactive session",
+        "command": "python3 pacu.py",
+        "notes": [
+          "Launches the Pacu exploitation framework"
+        ]
+      },
+      {
+        "description": "Run reconnaissance module",
+        "command": "run whoami",
+        "notes": [
+          "Check current AWS identity and permissions"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "AWS Penetration Testing",
+        "steps": [
+          {
+            "title": "Configure AWS credentials",
+            "details": "Set up target AWS credentials",
+            "command": "aws configure"
+          },
+          {
+            "title": "Start Pacu framework",
+            "details": "Launch the exploitation framework",
+            "command": "python3 pacu.py"
+          },
+          {
+            "title": "Run reconnaissance",
+            "details": "Identify attack surface",
+            "command": "run whoami"
+          },
+          {
+            "title": "Execute exploitation modules",
+            "details": "Run specific attack modules",
+            "command": "run ebs__download_snapshot"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Privilege Escalation Testing",
+        "stages": [
+          {
+            "label": "Enumerate permissions",
+            "description": "Check current IAM permissions",
+            "command": "run iam__enum_permissions"
+          },
+          {
+            "label": "Identify escalation paths",
+            "description": "Find privilege escalation opportunities",
+            "command": "run iam__privesc_scan"
+          },
+          {
+            "label": "Exploit vulnerabilities",
+            "description": "Execute privilege escalation",
+            "command": "run iam__backdoor_assume_role"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Admin access detected",
+        "meaning": "Current credentials have administrative privileges",
+        "severity": "high"
+      },
+      {
+        "indicator": "Privilege escalation possible",
+        "meaning": "Path to higher privileges identified",
+        "severity": "high"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom module development",
+        "command": "# Create modules in /pacu/modules/",
+        "scenario": "Develop custom exploitation modules",
+        "notes": [
+          "Follow Pacu module development guidelines"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Pacu GitHub",
+        "url": "https://github.com/RhinoSecurityLabs/pacu",
+        "description": "Official repository and documentation"
+      }
+    ]
+  },
+  {
+    "id": "microburst",
+    "name": "MicroBurst",
+    "summary": "MicroBurst is a collection of scripts for assessing Microsoft Azure security.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from source",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/NetSPI/MicroBurst.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd MicroBurst",
+            "copyable": true
+          },
+          {
+            "detail": "pip install -r requirements.txt",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install with PowerShell modules",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/NetSPI/MicroBurst.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd MicroBurst",
+            "copyable": true
+          },
+          {
+            "detail": "Import-Module .\\MicroBurst.psm1",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run in PowerShell environment",
+        "steps": [
+          {
+            "detail": "# Requires PowerShell Core",
+            "copyable": false
+          },
+          {
+            "detail": "pwsh -File MicroBurst.ps1",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Run Azure reconnaissance",
+        "command": "Invoke-AzureRecon",
+        "notes": [
+          "Performs comprehensive Azure reconnaissance"
+        ]
+      },
+      {
+        "description": "Check for storage account access",
+        "command": "Get-AzureStorageInfo",
+        "notes": [
+          "Enumerates accessible storage accounts"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Azure Security Assessment",
+        "steps": [
+          {
+            "title": "Authenticate to Azure",
+            "details": "Connect to Azure subscription",
+            "command": "Connect-AzAccount"
+          },
+          {
+            "title": "Run reconnaissance",
+            "details": "Enumerate Azure resources",
+            "command": "Invoke-AzureRecon"
+          },
+          {
+            "title": "Analyze findings",
+            "details": "Review security issues",
+            "command": "# Check output for vulnerabilities"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Azure Tenant Assessment",
+        "stages": [
+          {
+            "label": "Tenant enumeration",
+            "description": "Discover Azure AD configuration",
+            "command": "Get-AzureDomainInfo"
+          },
+          {
+            "label": "Resource enumeration",
+            "description": "List all accessible resources",
+            "command": "Invoke-AzureRecon"
+          },
+          {
+            "label": "Security analysis",
+            "description": "Identify security misconfigurations",
+            "command": "# Review findings and recommendations"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Public storage account",
+        "meaning": "Storage account accessible from internet",
+        "severity": "high"
+      },
+      {
+        "indicator": "Weak authentication",
+        "meaning": "Authentication mechanism vulnerable",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom scripts",
+        "command": "# Extend MicroBurst with custom modules",
+        "scenario": "Develop organization-specific tests",
+        "notes": [
+          "Follow PowerShell module patterns"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "MicroBurst GitHub",
+        "url": "https://github.com/NetSPI/MicroBurst",
+        "description": "Official repository and documentation"
+      }
+    ]
+  },
+  {
+    "id": "gcp-enum",
+    "name": "GCP-Enum",
+    "summary": "GCP-Enum is a multi-threaded GCP security enumeration tool designed to make GCP security testing more efficient.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from source",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/RhinoSecurityLabs/GCPSecurityResearch.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd GCPSecurityResearch/GCP-Enum",
+            "copyable": true
+          },
+          {
+            "detail": "pip install -r requirements.txt",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install dependencies and run",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/RhinoSecurityLabs/GCPSecurityResearch.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd GCPSecurityResearch/GCP-Enum",
+            "copyable": true
+          },
+          {
+            "detail": "pip install -r requirements.txt",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run with gcloud CLI",
+        "steps": [
+          {
+            "detail": "gcloud auth login",
+            "copyable": true
+          },
+          {
+            "detail": "gcloud config set project your-project-id",
+            "copyable": true
+          },
+          {
+            "detail": "python3 gcp_enum.py",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Run GCP enumeration",
+        "command": "python3 gcp_enum.py",
+        "notes": [
+          "Enumerates all accessible GCP resources"
+        ]
+      },
+      {
+        "description": "Check specific project",
+        "command": "python3 gcp_enum.py -p project-id",
+        "notes": [
+          "Targets specific GCP project"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "GCP Security Assessment",
+        "steps": [
+          {
+            "title": "Configure GCP credentials",
+            "details": "Set up GCP authentication",
+            "command": "gcloud auth login"
+          },
+          {
+            "title": "Set target project",
+            "details": "Specify GCP project to assess",
+            "command": "gcloud config set project project-id"
+          },
+          {
+            "title": "Run enumeration",
+            "details": "Enumerate GCP resources",
+            "command": "python3 gcp_enum.py"
+          },
+          {
+            "title": "Review findings",
+            "details": "Analyze security issues",
+            "command": "# Check output for vulnerabilities"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Multi-Project Analysis",
+        "stages": [
+          {
+            "label": "Project discovery",
+            "description": "List all accessible projects",
+            "command": "gcloud projects list"
+          },
+          {
+            "label": "Enumerate each project",
+            "description": "Run enumeration on all projects",
+            "command": "python3 gcp_enum.py -a"
+          },
+          {
+            "label": "Consolidate findings",
+            "description": "Aggregate security findings",
+            "command": "# Review combined output"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Public bucket",
+        "meaning": "Cloud Storage bucket publicly accessible",
+        "severity": "high"
+      },
+      {
+        "indicator": "Open firewall rule",
+        "meaning": "Firewall allows unrestricted access",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom service enumeration",
+        "command": "python3 gcp_enum.py -s compute",
+        "scenario": "Focus on specific GCP services",
+        "notes": [
+          "Target specific services for deeper analysis"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "GCP-Enum GitHub",
+        "url": "https://github.com/RhinoSecurityLabs/GCPSecurityResearch",
+        "description": "Official repository and documentation"
+      }
+    ]
+  },
+  {
+    "id": "cloud-iam-enum",
+    "name": "Cloud IAM Enumerators",
+    "summary": "Collection of tools for enumerating cloud IAM permissions and identifying privilege escalation paths across multiple cloud providers.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install various IAM tools",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "pip install aws-iam-privesc",
+            "copyable": true
+          },
+          {
+            "detail": "pip install azurehound",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install IAM enumeration tools",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/RhinoSecurityLabs/pacu.git",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/BloodHoundAD/AzureHound.git",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run IAM tools in containers",
+        "steps": [
+          {
+            "detail": "docker pull python:3.9",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -it python:3.9 bash",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "AWS IAM privilege escalation check",
+        "command": "python3 aws_iam_privesc.py",
+        "notes": [
+          "Checks for AWS IAM privilege escalation paths"
+        ]
+      },
+      {
+        "description": "Azure AD enumeration",
+        "command": "azurehound -u user@domain.com -p password",
+        "notes": [
+          "Enumerates Azure AD relationships"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Cloud IAM Analysis",
+        "steps": [
+          {
+            "title": "Configure cloud credentials",
+            "details": "Set up cloud provider credentials",
+            "command": "aws configure && az login"
+          },
+          {
+            "title": "Enumerate permissions",
+            "details": "Check current IAM permissions",
+            "command": "python3 aws_iam_privesc.py"
+          },
+          {
+            "title": "Identify escalation paths",
+            "details": "Find privilege escalation opportunities",
+            "command": "# Review tool output for escalation vectors"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Multi-Cloud IAM Assessment",
+        "stages": [
+          {
+            "label": "AWS IAM analysis",
+            "description": "Analyze AWS IAM permissions",
+            "command": "python3 aws_iam_privesc.py"
+          },
+          {
+            "label": "Azure AD analysis",
+            "description": "Map Azure AD relationships",
+            "command": "azurehound -c"
+          },
+          {
+            "label": "GCP IAM analysis",
+            "description": "Check GCP IAM permissions",
+            "command": "gcloud iam service-accounts list"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Privilege escalation possible",
+        "meaning": "Path to higher privileges identified",
+        "severity": "high"
+      },
+      {
+        "indicator": "Admin access detected",
+        "meaning": "Current credentials have administrative privileges",
+        "severity": "high"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Cross-cloud analysis",
+        "command": "# Combine results from multiple cloud providers",
+        "scenario": "Analyze permissions across cloud environments",
+        "notes": [
+          "Identify cross-cloud security issues"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Cloud IAM Security",
+        "url": "https://cloud.google.com/iam",
+        "description": "Cloud IAM best practices and documentation"
+      }
+    ]
+  }
+]

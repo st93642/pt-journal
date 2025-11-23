@@ -3,7 +3,7 @@ use serde::Deserialize;
 use std::{collections::HashMap, fs, sync::OnceLock};
 
 const MANIFEST_PATH: &str = "data/tool_instructions/manifest.json";
-const INSTRUCTIONS_PATH: &str = "data/tool_instructions/instructions.json";
+const INSTRUCTIONS_DIR: &str = "data/tool_instructions/categories";
 
 static REGISTRY: OnceLock<ToolInstructionRegistry> = OnceLock::new();
 
@@ -101,13 +101,33 @@ fn load_manifest() -> Result<Vec<ToolManifestEntry>> {
 }
 
 fn load_instruction_documents() -> Result<HashMap<String, ToolInstructions>> {
-    let contents = fs::read_to_string(INSTRUCTIONS_PATH)
-        .with_context(|| format!("Unable to read instructions at {INSTRUCTIONS_PATH}"))?;
-    let mut docs: Vec<ToolInstructions> = serde_json::from_str(&contents)
-        .with_context(|| format!("Invalid instructions JSON at {INSTRUCTIONS_PATH}"))?;
+    let mut all_docs = Vec::new();
 
-    let mut map = HashMap::with_capacity(docs.len());
-    for doc in docs.drain(..) {
+    // Read all JSON files from the categories directory
+    let entries = fs::read_dir(INSTRUCTIONS_DIR)
+        .with_context(|| format!("Unable to read instructions directory at {INSTRUCTIONS_DIR}"))?;
+
+    for entry in entries {
+        let entry = entry.with_context(|| format!("Failed to read directory entry in {INSTRUCTIONS_DIR}"))?;
+        let path = entry.path();
+
+        if path.extension().and_then(|s| s.to_str()) == Some("json") {
+            let contents = fs::read_to_string(&path)
+                .with_context(|| format!("Unable to read instructions file {:?}", path))?;
+
+            let mut docs: Vec<ToolInstructions> = serde_json::from_str(&contents)
+                .with_context(|| format!("Invalid instructions JSON in {:?}", path))?;
+
+            all_docs.append(&mut docs);
+        }
+    }
+
+    if all_docs.is_empty() {
+        return Err(anyhow!("No instruction documents were loaded from {INSTRUCTIONS_DIR}"));
+    }
+
+    let mut map = HashMap::with_capacity(all_docs.len());
+    for doc in all_docs {
         if map.contains_key(&doc.id) {
             return Err(anyhow!(
                 "Duplicate instruction document defined for tool '{}'.",
@@ -116,10 +136,6 @@ fn load_instruction_documents() -> Result<HashMap<String, ToolInstructions>> {
         }
         validate_instruction(&doc)?;
         map.insert(doc.id.clone(), doc);
-    }
-
-    if map.is_empty() {
-        return Err(anyhow!("No instruction documents were loaded"));
     }
 
     Ok(map)

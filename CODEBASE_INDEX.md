@@ -94,6 +94,14 @@ pt-journal/
 │   ├── comptia_secplus/       # Security+ questions (7 directories)
 │   ├── ceh/                   # CEH methodology (26 directories)
 │   ├── pentest/               # PenTest+ content (7 directories)
+│   ├── tool_instructions/     # Security tool reference data
+│   │   ├── manifest.json      # Tool catalog (193 entries, 29 categories)
+│   │   ├── categories/        # Modularized instruction documents
+│   │   │   ├── reconnaissance.json     # 9 reconnaissance tools
+│   │   │   ├── scanning_and_enumeration.json # 12 scanning tools
+│   │   │   ├── exploitation.json       # 12 exploitation tools
+│   │   │   └── ... (25 more category files)
+│   │   └── instructions.json.backup # Original monolithic file
 │   └── wordlists/             # Common wordlists for tools
 ├── docs/                       # Technical documentation
 │   ├── MODULE_CONTRACTS.md    # API contracts (15.7KB)

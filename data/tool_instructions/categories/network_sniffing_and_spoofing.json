@@ -1,0 +1,1875 @@
+[
+  {
+    "id": "wireshark",
+    "name": "Wireshark",
+    "summary": "Wireshark is a GUI packet analyzer with deep protocol dissection, expert diagnostics, and export tooling for network troubleshooting and security analysis.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install Wireshark with dumpcap permissions for non-root captures",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y wireshark",
+            "copyable": true
+          },
+          {
+            "detail": "sudo usermod -aG wireshark $USER",
+            "copyable": true
+          },
+          {
+            "detail": "newgrp wireshark && wireshark -v",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Ensure capture helpers are configured securely",
+        "steps": [
+          {
+            "detail": "sudo apt install -y wireshark-gtk wireshark-cli",
+            "copyable": true
+          },
+          {
+            "detail": "sudo dpkg-reconfigure wireshark-common",
+            "copyable": true
+          },
+          {
+            "detail": "sudo setcap cap_net_raw,cap_net_admin+eip /usr/bin/dumpcap",
+            "copyable": true
+          },
+          {
+            "detail": "sudo -u $USER wireshark -i eth0 -k",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Flatpak / Portable",
+        "summary": "Use sandboxed builds when distro packages lag behind",
+        "steps": [
+          {
+            "detail": "flatpak install -y flathub org.wireshark.Wireshark",
+            "copyable": true
+          },
+          {
+            "detail": "flatpak run org.wireshark.Wireshark",
+            "copyable": true
+          },
+          {
+            "detail": "export SSLKEYLOGFILE=$XDG_CACHE_HOME/sslkeys.log",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Immediate TLS capture on wired uplink",
+        "command": "wireshark -k -i eth0 -f 'tcp port 443'",
+        "notes": [
+          "Use capture filters to keep file sizes manageable"
+        ]
+      },
+      {
+        "description": "Open capture file with HTTP display filter",
+        "command": "wireshark -r suspect.pcapng -Y 'http.request'",
+        "notes": [
+          "Display filters do not modify on-disk packets"
+        ]
+      },
+      {
+        "description": "Isolate beaconing host and export subset",
+        "command": "wireshark -r beaconing.pcapng -Y 'ip.addr == 10.10.5.42' -w 10.10.5.42.pcapng",
+        "notes": [
+          "Combine display filters with -w to create trimmed pcaps"
+        ]
+      },
+      {
+        "description": "Color-code retransmissions for quick triage",
+        "command": "# GUI: View \u2192 Coloring Rules \u2192 Add rule 'tcp.analysis.retransmission'",
+        "notes": [
+          "Expert Info + custom colors highlight unreliable flows"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-i <iface>",
+        "description": "Select capture interface"
+      },
+      {
+        "flag": "-k",
+        "description": "Start capturing immediately"
+      },
+      {
+        "flag": "-f '<bpf>'",
+        "description": "Apply libpcap capture filter"
+      },
+      {
+        "flag": "-Y '<display>'",
+        "description": "Apply display filter on load"
+      },
+      {
+        "flag": "-o pref:value",
+        "description": "Override preference (e.g., tls.keylog_file)"
+      },
+      {
+        "flag": "-w file.pcapng",
+        "description": "Write captured frames to file"
+      }
+    ],
+    "operational_tips": [
+      "Use dumpcap for long captures and open files live in Wireshark to reduce GUI crashes.",
+      "Keep capture filters minimal\u2014display filters are far more flexible for analysis.",
+      "Enable name resolution only when needed; it adds DNS noise and slows parsing.",
+      "Leverage Statistics \u2192 Conversations/Endpoints to pivot from macro view to single flows quickly."
+    ],
+    "step_sequences": [
+      {
+        "title": "Encrypted web troubleshooting",
+        "steps": [
+          {
+            "title": "Collect key log file",
+            "details": "Configure browser SSLKEYLOGFILE to export session secrets.",
+            "command": "export SSLKEYLOGFILE=~/sslkeys.log"
+          },
+          {
+            "title": "Capture negotiated session",
+            "details": "Watch TLS handshake and data on target host.",
+            "command": "wireshark -k -i eth0 -Y 'ip.addr == 10.0.0.15 && tls'"
+          },
+          {
+            "title": "Decrypt TLS payload",
+            "details": "Point Wireshark to key log and reprocess packets.",
+            "command": "Edit \u2192 Preferences \u2192 Protocols \u2192 TLS \u2192 (Pre)-Master-Secret log"
+          }
+        ]
+      },
+      {
+        "title": "Remote site packet triage",
+        "steps": [
+          {
+            "title": "Trigger remote capture",
+            "details": "Use ssh + tcpdump to stream packets.",
+            "command": "ssh jump 'sudo tcpdump -U -i ens3 -w - not port 22' | wireshark -k -i -"
+          },
+          {
+            "title": "Bookmark suspects",
+            "details": "Mark interesting frames (Ctrl+M) and add comments for reporting.",
+            "command": "# GUI: Right-click frame \u2192 Set/Unset Mark"
+          },
+          {
+            "title": "Export artifacts",
+            "details": "Save marked packets as separate evidence bundle.",
+            "command": "File \u2192 Export Specified Packets \u2192 Marked packets"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Packet capture triage \u2192 enrichment \u2192 report",
+        "stages": [
+          {
+            "label": "Edge capture",
+            "description": "Collect rolling pcap with tcpdump or dumpcap on the affected segment.",
+            "command": "tcpdump -i eth0 -G 300 -W 6 -w /tmp/edge-%Y%m%d%H%M%S.pcap"
+          },
+          {
+            "label": "Deep inspection",
+            "description": "Open suspected time window in Wireshark, apply heuristics, and annotate findings.",
+            "command": "wireshark -r edge-20231122113000.pcapng -Y 'tcp.analysis.flags || dns'"
+          },
+          {
+            "label": "Share evidence",
+            "description": "Export flows + IO graphs for the ticketing system.",
+            "command": "File \u2192 Export Packet Dissections \u2192 As JSON"
+          },
+          {
+            "label": "Document",
+            "description": "Attach Wireshark screenshots to PT Journal evidence entry.",
+            "command": "# PT Journal \u2192 Evidence \u2192 Attach capture summary"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[Expert Info (Error)]",
+        "meaning": "Wireshark detected malformed traffic or retransmission storms requiring escalation.",
+        "severity": "High"
+      },
+      {
+        "indicator": "Client Hello (SNI: login.example.com)",
+        "meaning": "Confirms target hostname despite TLS, useful for scoping and filtering.",
+        "severity": "Info"
+      },
+      {
+        "indicator": "Follow TCP Stream \u2192 suspicious PowerShell base64",
+        "meaning": "Likely C2 beacon or data exfiltration that should become a finding.",
+        "severity": "Critical"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Decrypt TLS with pre-master secrets",
+        "command": "wireshark -o tls.keylog_file:/tmp/sslkeys.log -r compromised.pcapng",
+        "scenario": "Analyze malware HTTPS traffic captured with browser or endpoint SSL key logging enabled.",
+        "notes": [
+          "Key log works for NSS/OpenSSL clients; for Windows SCHANNEL export session secrets via mimikatz."
+        ]
+      },
+      {
+        "title": "Extcap remote capture",
+        "command": "wireshark --extcap-interfaces",
+        "scenario": "Leverage SSHDump, UDP listener, or Bluetooth extcap modules to capture from devices you cannot access locally.",
+        "notes": [
+          "Use Capture \u2192 Options \u2192 Manage Interfaces to add extcap endpoints."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Wireshark User Guide",
+        "url": "https://www.wireshark.org/docs/wsug_html_chunked/",
+        "description": "Official documentation covering capture, filters, and analysis."
+      },
+      {
+        "label": "Display Filter Reference",
+        "url": "https://www.wireshark.org/docs/dfref/",
+        "description": "Authoritative reference for every display filter field."
+      },
+      {
+        "label": "Sample Capture Library",
+        "url": "https://wiki.wireshark.org/SampleCaptures",
+        "description": "Collection of pcaps for testing and training."
+      }
+    ]
+  },
+  {
+    "id": "tshark",
+    "name": "TShark",
+    "summary": "TShark is Wireshark's CLI analyzer for automated packet capture, filter testing, and exporting structured data into other tooling.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install CLI decoder with proper capabilities",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y tshark",
+            "copyable": true
+          },
+          {
+            "detail": "sudo dpkg-reconfigure wireshark-common",
+            "copyable": true
+          },
+          {
+            "detail": "sudo usermod -aG wireshark $USER",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Full-featured terminal workflow",
+        "steps": [
+          {
+            "detail": "sudo apt install -y tshark termshark",
+            "copyable": true
+          },
+          {
+            "detail": "sudo setcap cap_net_raw,cap_net_admin+eip /usr/bin/dumpcap",
+            "copyable": true
+          },
+          {
+            "detail": "tshark -D",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Ephemeral",
+        "summary": "Containerized capture without polluting the host",
+        "steps": [
+          {
+            "detail": "docker pull wireshark/tshark",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -it --net=host -v $PWD:/pcaps wireshark/tshark -i eth0 -a duration:30 -w /pcaps/quick.pcapng",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v $PWD:/pcaps wireshark/tshark -r /pcaps/quick.pcapng -z io,stat,5,AVG(frame.len)frame.len",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "One-minute DNS capture with ring buffers",
+        "command": "tshark -i eth0 -f 'port 53' -a duration:60 -b filesize:10 -w dns-%Y%m%d%H%M.pcapng",
+        "notes": [
+          "-a stops capture, -b rotates files to avoid disk exhaustion."
+        ]
+      },
+      {
+        "description": "Filter suspicious NXDOMAIN spikes",
+        "command": "tshark -r dns-latest.pcapng -Y 'dns.flags.rcode != 0'",
+        "notes": [
+          "Display filters mirror Wireshark syntax."
+        ]
+      },
+      {
+        "description": "Export concise CSV for enrichment",
+        "command": "tshark -i any -Y 'http.request' -T fields -e frame.time -e ip.src -e http.host -E header=y -E separator=,",
+        "notes": [
+          "Perfect for piping into awk or SIEM forwarders."
+        ]
+      },
+      {
+        "description": "Generate IO stats",
+        "command": "tshark -r suspect.pcapng -z io,stat,5,tcp.flags.reset==1",
+        "notes": [
+          "-z tables make quick dashboards for reports."
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-i <iface>",
+        "description": "Select capture interface"
+      },
+      {
+        "flag": "-f '<bpf>'",
+        "description": "Capture filter executed by libpcap"
+      },
+      {
+        "flag": "-Y '<display>'",
+        "description": "Display filter before output"
+      },
+      {
+        "flag": "-T fields",
+        "description": "Field-based output instead of verbose text"
+      },
+      {
+        "flag": "-e <field>",
+        "description": "Append field column (requires -T fields)"
+      },
+      {
+        "flag": "-b <ring>",
+        "description": "Ring buffer (filesize:MB,count:N or duration:sec)"
+      }
+    ],
+    "operational_tips": [
+      "Use -l for line-buffered output when piping into grep or alerting scripts.",
+      "Combine -a duration with -b filesize to run continuous captures without manual cleanup.",
+      "tshark honors Wireshark profiles\u2014copy ~/.config/wireshark/profiles to reuse filters and coloring rules.",
+      "Termshark provides curses-based visualization when an SSH session needs quick context without X forwarding."
+    ],
+    "step_sequences": [
+      {
+        "title": "Headless DNS beacon hunt",
+        "steps": [
+          {
+            "title": "Enumerate capture interfaces",
+            "details": "List numeric IDs for remote adapters.",
+            "command": "tshark -D"
+          },
+          {
+            "title": "Capture to rotating files",
+            "details": "Monitor any interface while carving 50 MB buffers for later analysis.",
+            "command": "sudo tshark -i 2 -f 'udp port 53' -b filesize:50 -b files:10 -w /var/tmp/dns-cycle"
+          },
+          {
+            "title": "Summarize anomalies",
+            "details": "Extract domains with high failure counts.",
+            "command": "tshark -r /var/tmp/dns-cycle01.pcapng -Y 'dns.flags.rcode != 0' -T fields -e dns.qry.name | sort | uniq -c"
+          }
+        ]
+      },
+      {
+        "title": "Field export to ELK",
+        "steps": [
+          {
+            "title": "Capture HTTP metadata",
+            "details": "Capture only headers for compliance review.",
+            "command": "tshark -i eth0 -f 'tcp port 80 or tcp port 443' -s 256 -T fields -e frame.time_epoch -e ip.src -e http.host -e http.request.uri -E separator=, > http.csv"
+          },
+          {
+            "title": "Normalize with Python",
+            "details": "Wrap CSV rows into JSON lines for Filebeat.",
+            "command": "python3 -c 'import csv,json,sys;[print(json.dumps({\"time\":r[0],\"src\":r[1],\"host\":r[2],\"uri\":r[3]})) for r in csv.reader(sys.stdin)]' < http.csv"
+          },
+          {
+            "title": "Ship to SIEM",
+            "details": "Send enriched events to Logstash/Elastic for dashboards.",
+            "command": "curl -H 'Content-Type: application/json' -XPOST http://elk:9200/http-events/_bulk --data-binary @events.ndjson"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Rapid CLI capture \u2192 decode \u2192 enrichment",
+        "stages": [
+          {
+            "label": "Trigger capture",
+            "description": "Deploy tshark with ring buffer on jump host.",
+            "command": "tshark -i bond0 -b filesize:100 -b files:8 -w /captures/jump"
+          },
+          {
+            "label": "Filter suspects",
+            "description": "Replay buffer to isolate interesting flows before transferring gigabytes.",
+            "command": "tshark -r /captures/jump03.pcapng -Y 'tcp.analysis.retransmission || tls.handshake.type == 11'"
+          },
+          {
+            "label": "Export fields",
+            "description": "Convert curated packets into JSON/CSV for timeline correlation.",
+            "command": "tshark -r curated.pcapng -T ek > timeline.json"
+          },
+          {
+            "label": "Attach to ticket",
+            "description": "Upload capture summary + sanitized pcaps into PT Journal evidence.",
+            "command": "# PT Journal \u2192 Evidence \u2192 Upload artifacts"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "frame.time_epoch",
+        "meaning": "Precise timestamp (epoch seconds) ideal for correlating with logs.",
+        "severity": "Info"
+      },
+      {
+        "indicator": "tcp.analysis.retransmission",
+        "meaning": "Noisy retransmissions may signal packet drops, DoS, or sandboxed malware trying to reconnect.",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "dns.qry.name == suspicious-domain.tld",
+        "meaning": "Potential C2/resolution of staged payloads that must be scoped.",
+        "severity": "High"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Conversation statistics",
+        "command": "tshark -r traffic.pcapng -q -z conv,ip",
+        "scenario": "Identify top talkers and data transfers without switching to GUI.",
+        "notes": [
+          "Add ,tree for JSON-like output."
+        ]
+      },
+      {
+        "title": "Profile-driven exports",
+        "command": "tshark -C PTJ-CLI -r capture.pcapng -T fields -e frame.number -e frame.time",
+        "scenario": "Reuse GUI profiles for CLI exports without redefining every column.",
+        "notes": [
+          "Profiles live in ~/.config/wireshark/profiles; ship them with assessments."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "TShark Man Page",
+        "url": "https://www.wireshark.org/docs/man-pages/tshark.html",
+        "description": "Authoritative CLI flag reference."
+      },
+      {
+        "label": "Display Filter Reference",
+        "url": "https://www.wireshark.org/docs/dfref/",
+        "description": "Same syntax used by Wireshark GUI."
+      },
+      {
+        "label": "termshark",
+        "url": "https://termshark.io",
+        "description": "Terminal UI that consumes TShark output for remote workflows."
+      }
+    ]
+  },
+  {
+    "id": "tcpdump",
+    "name": "TCPDump",
+    "summary": "tcpdump is the de facto standard for lightweight packet capture, supporting powerful BPF filters and flexible output for forensics or live debugging.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install tcpdump and grant capabilities for non-root usage",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y tcpdump",
+            "copyable": true
+          },
+          {
+            "detail": "sudo setcap cap_net_raw,cap_net_admin+eip /usr/sbin/tcpdump",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Preinstalled but confirm interface access",
+        "steps": [
+          {
+            "detail": "sudo apt install -y tcpdump net-tools",
+            "copyable": true
+          },
+          {
+            "detail": "sudo tcpdump -D",
+            "copyable": true
+          },
+          {
+            "detail": "sudo tcpdump -i wlan0 -n -c 5",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "macOS/Homebrew",
+        "summary": "Install latest libpcap build for Apple silicon/Intel",
+        "steps": [
+          {
+            "detail": "brew update",
+            "copyable": true
+          },
+          {
+            "detail": "brew install tcpdump",
+            "copyable": true
+          },
+          {
+            "detail": "sudo /opt/homebrew/opt/libpcap/sbin/tcpdump -D",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Capture verbose HTTP handshake",
+        "command": "sudo tcpdump -i eth0 -nnvvXS -c 50 'tcp port 80'",
+        "notes": [
+          "-X dumps ASCII/hex payload, useful for credentials on unencrypted services."
+        ]
+      },
+      {
+        "description": "Rolling PCAP buffers",
+        "command": "sudo tcpdump -i bond0 -G 300 -W 6 -w /var/log/pcaps/bond0-%Y%m%d%H%M%S.pcap",
+        "notes": [
+          "Creates six five-minute files before overwriting."
+        ]
+      },
+      {
+        "description": "Quick DNS triage",
+        "command": "sudo tcpdump -i any -l -n 'udp port 53' | tee dns.log",
+        "notes": [
+          "-l line buffers output so tee/grep work reliably."
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-i <iface>",
+        "description": "Interface to capture on; -i any listens on all"
+      },
+      {
+        "flag": "-n / -nn",
+        "description": "Disable name resolution for faster output"
+      },
+      {
+        "flag": "-s <snaplen>",
+        "description": "Bytes to capture per packet (0 = full)"
+      },
+      {
+        "flag": "-w file",
+        "description": "Write raw packets to PCAP"
+      },
+      {
+        "flag": "-G/-C",
+        "description": "Rotate files by seconds (-G) or size in MB (-C)"
+      }
+    ],
+    "operational_tips": [
+      "Apply capture filters as close to the source as possible to minimize CPU and disk use.",
+      "Use -U when streaming captures over ssh to Wireshark or Suricata to flush buffers frequently.",
+      "Combine tcpdump with taskset/cgroups on noisy servers so packet drops do not impact production workloads.",
+      "Document filter strings inside PT Journal notes to make captures reproducible."
+    ],
+    "step_sequences": [
+      {
+        "title": "Incident containment capture",
+        "steps": [
+          {
+            "title": "Scope suspect hosts",
+            "details": "Gather interface names and IPs from the ticket.",
+            "command": "ip addr show | grep inet"
+          },
+          {
+            "title": "Start bounded capture",
+            "details": "Limit to critical ports and stop after 10 minutes.",
+            "command": "sudo tcpdump -i ens160 -w incident-%H%M.pcap -G 600 -W 1 'host 10.20.5.23 and (tcp port 22 or 3389)'"
+          },
+          {
+            "title": "Transfer evidence",
+            "details": "Compress and ship PCAP to analysis workstation.",
+            "command": "xz -z incident-*.pcap && scp incident-*.pcap.xz analyst@lab:~/cases/"
+          }
+        ]
+      },
+      {
+        "title": "Baselining east-west traffic",
+        "steps": [
+          {
+            "title": "Capture metadata only",
+            "details": "Grab headers by lowering snaplen.",
+            "command": "sudo tcpdump -i vlan20 -s 96 -w eastwest.pcap"
+          },
+          {
+            "title": "Summarize conversations",
+            "details": "Use tshark or capinfos to see who talked to whom.",
+            "command": "tshark -r eastwest.pcap -q -z conv,ip"
+          },
+          {
+            "title": "Flag anomalies",
+            "details": "Add unusual ports/IPs to PT Journal evidence for follow-up scanning.",
+            "command": "# PT Journal \u2192 Evidence \u2192 Add conversation summary"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "tcpdump collection \u2192 Wireshark review \u2192 reporting",
+        "stages": [
+          {
+            "label": "Edge capture",
+            "description": "Launch tcpdump with BPF tuned to the incident type.",
+            "command": "sudo tcpdump -i edge0 -s 0 -w /tmp/edge-%s.pcap 'host victim.example.com'"
+          },
+          {
+            "label": "Analysis",
+            "description": "Move curated PCAP into Wireshark or tshark for enrichment.",
+            "command": "scp edge-*.pcap analyst01:~/evidence/"
+          },
+          {
+            "label": "Derive indicators",
+            "description": "Extract IPs/domains/file hashes and push to threat intel feeds.",
+            "command": "tshark -r evidence/edge-1.pcap -T fields -e ip.src -e tls.handshake.extensions_server_name | sort -u"
+          },
+          {
+            "label": "Document",
+            "description": "Attach both PCAP and summary table into PT Journal.",
+            "command": "# PT Journal \u2192 Findings \u2192 Attach network evidence"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Flags [S]",
+        "meaning": "SYN packets without ACK may indicate scanning or handshake failures.",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "length 1514 > snaplen",
+        "meaning": "Frames truncated\u2014consider increasing -s if payloads matter.",
+        "severity": "Info"
+      },
+      {
+        "indicator": "IP truncated-ip - 32 bytes missing",
+        "meaning": "Packet loss or VLAN offload features are interfering; double-check NIC settings.",
+        "severity": "High"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Remote FIFO streaming",
+        "command": "mkfifo /tmp/cap; ssh sensor 'sudo tcpdump -i enp3s0 -w - not port 22' > /tmp/cap & wireshark -k -i /tmp/cap",
+        "scenario": "View remote traffic live without storing large captures on the compromised host.",
+        "notes": [
+          "FIFO closes when tcpdump exits; restart to continue streaming."
+        ]
+      },
+      {
+        "title": "Hardware timestamping",
+        "command": "sudo tcpdump -i eno1 -j adapter_unsynced -tttt",
+        "scenario": "Use NIC-provided timestamps when nanosecond precision is required for legal chain of custody.",
+        "notes": [
+          "Check ethtool -T to confirm NIC support."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "tcpdump/Libpcap Manual",
+        "url": "https://www.tcpdump.org/manpages/tcpdump.1.html",
+        "description": "Complete option reference."
+      },
+      {
+        "label": "Practical Packet Analysis (No Starch)",
+        "url": "https://nostarch.com/packetanalysis3",
+        "description": "Hands-on guide featuring tcpdump + Wireshark workflows."
+      },
+      {
+        "label": "Packetlife Filter Cheatsheet",
+        "url": "https://packetlife.net/media/library/12/tcpdump.pdf",
+        "description": "Quick reference for BPF syntax."
+      }
+    ]
+  },
+  {
+    "id": "ettercap",
+    "name": "Ettercap",
+    "summary": "Ettercap performs LAN-based man-in-the-middle attacks with ARP poisoning, credential sniffing, and extensible plugins.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install curses/GTK builds and enable forwarding",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y ettercap-text-only ettercap-common",
+            "copyable": true
+          },
+          {
+            "detail": "sudo sysctl -w net.ipv4.ip_forward=1",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Leverage bundled plugins and menu profiles",
+        "steps": [
+          {
+            "detail": "sudo apt install -y ettercap-graphical",
+            "copyable": true
+          },
+          {
+            "detail": "sudo ettercap -G",
+            "copyable": true
+          },
+          {
+            "detail": "# Menu \u2192 Plugins \u2192 Load etter.dns_spoof",
+            "copyable": false
+          }
+        ]
+      },
+      {
+        "platform": "Source / Custom",
+        "summary": "Compile bleeding-edge Ettercap for new protocol dissectors",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/Ettercap/ettercap.git",
+            "copyable": true
+          },
+          {
+            "detail": "cmake -B build -S ettercap -DENABLE_SSL=ON",
+            "copyable": true
+          },
+          {
+            "detail": "cmake --build build && sudo cmake --install build",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "ARP poison two hosts (text UI)",
+        "command": "sudo ettercap -T -q -M arp:remote /192.168.1.100// /192.168.1.1//",
+        "notes": [
+          "-T text mode, -q suppresses banner noise."
+        ]
+      },
+      {
+        "description": "Sniff credentials for specific service",
+        "command": "sudo ettercap -T -M arp:remote -i eth0 -F ftp.filter /HOST_A// /HOST_B//",
+        "notes": [
+          "Filters allow inline modification of payloads."
+        ]
+      },
+      {
+        "description": "Use unified sniffing",
+        "command": "sudo ettercap -u -T -i wlan0",
+        "notes": [
+          "Unified sniffing enables MITM when poisoning is not required."
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-T / -G",
+        "description": "Text or GTK interface"
+      },
+      {
+        "flag": "-M <plugin>",
+        "description": "Man-in-the-middle method (e.g., arp:remote, dhcp, mitm)"
+      },
+      {
+        "flag": "-q",
+        "description": "Quiet output"
+      },
+      {
+        "flag": "-F filter.ecf",
+        "description": "Apply Ettercap filter"
+      },
+      {
+        "flag": "/victim1// /victim2//",
+        "description": "Target specification syntax"
+      }
+    ],
+    "operational_tips": [
+      "Disable LLMNR/mDNS spoofing when on production customer networks\u2014keep engagement scoping in mind.",
+      "Run in bridged mode (-B) when you must stay inline and avoid ARP poisoning signature noise.",
+      "Combine Ettercap with driftnet or urlsnarf to capture higher-layer artifacts once MITM is established.",
+      "Always restore ARP tables (ettercap automatically sends cleanup) but verify with arp -a before disconnecting."
+    ],
+    "step_sequences": [
+      {
+        "title": "Credential harvesting runbook",
+        "steps": [
+          {
+            "title": "Recon",
+            "details": "Identify gateway + victim IP/MAC via netdiscover or arp",
+            "command": "sudo arp-scan --localnet"
+          },
+          {
+            "title": "Launch MITM",
+            "details": "Start Ettercap poisoning between host and gateway",
+            "command": "sudo ettercap -T -M arp:remote /192.168.50.42// /192.168.50.1//"
+          },
+          {
+            "title": "Log credentials",
+            "details": "Enable password logger plugin and export to file",
+            "command": "# Plugins \u2192 Manage the plugins \u2192 passwd"
+          }
+        ]
+      },
+      {
+        "title": "Inline payload manipulation",
+        "steps": [
+          {
+            "title": "Compile filter",
+            "details": "Author etter.filter to rewrite HTTP responses",
+            "command": "etterfilter http_inject.filter -o http_inject.ef"
+          },
+          {
+            "title": "Poison + inject",
+            "details": "Deploy filter during MITM",
+            "command": "sudo ettercap -T -F http_inject.ef -M arp:remote /victim// /gateway//"
+          },
+          {
+            "title": "Capture evidence",
+            "details": "Record tampered payloads via tcpdump/Wireshark",
+            "command": "tcpdump -i eth0 -s0 -w mitm-evidence.pcap host victim"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Discovery \u2192 MITM \u2192 Exfil evidence",
+        "stages": [
+          {
+            "label": "Survey",
+            "description": "Enumerate wireless/wired segment and identify juicy hosts.",
+            "command": "netdiscover -r 192.168.1.0/24"
+          },
+          {
+            "label": "Poison",
+            "description": "Use Ettercap to become the gateway.",
+            "command": "ettercap -T -M arp:remote /victim// /router//"
+          },
+          {
+            "label": "Harvest",
+            "description": "Run plugins (dns_spoof, sslstrip alternatives) and auxiliary sniffers.",
+            "command": "# Load ettercap plugins + launch driftnet/urlsnarf"
+          },
+          {
+            "label": "Report",
+            "description": "Document captured credentials, timestamps, and affected hosts.",
+            "command": "# PT Journal \u2192 Findings \u2192 Cred harvesting"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[MITM ARP]",
+        "meaning": "Log entry confirming successful poisoning of both halves.",
+        "severity": "Info"
+      },
+      {
+        "indicator": "Plugin dns_spoof: reply sent",
+        "meaning": "DNS responses are being forged\u2014ensure this is within scope.",
+        "severity": "High"
+      },
+      {
+        "indicator": "SSL stripping Detected",
+        "meaning": "Targets downgraded to HTTP; collect evidence quickly before blue team reacts.",
+        "severity": "Critical"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Bridged sniffing",
+        "command": "sudo ettercap -T -B eth0:eth1",
+        "scenario": "Place Ettercap inline between two physical NICs when poisoning is noisy or blocked.",
+        "notes": [
+          "Requires two interfaces; acts like a transparent bridge."
+        ]
+      },
+      {
+        "title": "IPv6 RA spoofing",
+        "command": "sudo ettercap -T -M randarp6 /fe80::1// /victim_mac//",
+        "scenario": "Exploit IPv6-enabled networks where RA guard is absent.",
+        "notes": [
+          "Use responsibly\u2014can DoS entire subnet."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Official Ettercap docs",
+        "url": "https://ettercap.github.io/ettercap/",
+        "description": "Project overview, filters, and plugin reference."
+      },
+      {
+        "label": "Filter language reference",
+        "url": "https://github.com/Ettercap/ettercap/blob/master/share/etter.filter.examples",
+        "description": "Examples for writing custom filters."
+      },
+      {
+        "label": "Bettercap vs Ettercap",
+        "url": "https://www.bettercap.org/legacy/ettercap",
+        "description": "Tradeoffs between Ettercap and newer frameworks."
+      }
+    ]
+  },
+  {
+    "id": "driftnet",
+    "name": "Driftnet",
+    "summary": "Driftnet passively captures images and audio streams from HTTP traffic, making it easy to demonstrate privacy risks on open networks.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from repositories and ensure X11 forwarding if running remotely",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y driftnet",
+            "copyable": true
+          },
+          {
+            "detail": "driftnet -h",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Use curses-only mode when GUI is unavailable",
+        "steps": [
+          {
+            "detail": "sudo apt install -y driftnet graphicsmagick",
+            "copyable": true
+          },
+          {
+            "detail": "sudo driftnet -i wlan0 -p",
+            "copyable": true
+          },
+          {
+            "detail": "mkdir -p ~/evidence/driftnet",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker",
+        "summary": "Containerize captures to keep host clean",
+        "steps": [
+          {
+            "detail": "docker run --rm -it --net=host -e DISPLAY driftnet/driftnet -i eth0",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -it --net=host -v $PWD:/loot driftnet/driftnet -x -d /loot -i wlan0",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Monitor guest WiFi images",
+        "command": "sudo driftnet -i wlan0",
+        "notes": [
+          "Requires traffic to be unencrypted or decrypted via MITM."
+        ]
+      },
+      {
+        "description": "Headless capture for reporting",
+        "command": "sudo driftnet -i eth0 -x -d ~/evidence/driftnet",
+        "notes": [
+          "-x disables GUI and only writes files."
+        ]
+      },
+      {
+        "description": "Apply libpcap filter",
+        "command": "sudo driftnet -i wlan0 -f 'tcp port 80 and host 10.0.0.12'",
+        "notes": [
+          "Capture only a single victim for scoped demos."
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-i <iface>",
+        "description": "Interface to sniff"
+      },
+      {
+        "flag": "-d <dir>",
+        "description": "Directory to save extracted objects"
+      },
+      {
+        "flag": "-x",
+        "description": "Disable display window (headless)"
+      },
+      {
+        "flag": "-p",
+        "description": "Do not enable promiscuous mode"
+      },
+      {
+        "flag": "-f '<bpf>'",
+        "description": "Apply capture filter"
+      }
+    ],
+    "operational_tips": [
+      "Combine with Ettercap/Bettercap to downgrade HTTPS or run in environments where TLS interception is permitted.",
+      "Trim evidence\u2014screenshots of the Driftnet window are often more compelling than dumping every file.",
+      "Set expectations with clients; Driftnet is noisy proof-of-concept, not a covert exfiltration channel.",
+      "Rotate output directories per engagement to avoid mixing customer data."
+    ],
+    "step_sequences": [
+      {
+        "title": "Guest WiFi privacy demo",
+        "steps": [
+          {
+            "title": "Establish MITM",
+            "details": "Use Bettercap/Ettercap to intercept HTTP streams.",
+            "command": "bettercap -iface wlan0 -caplet hstshijack"
+          },
+          {
+            "title": "Run Driftnet",
+            "details": "Display live image board to stakeholders.",
+            "command": "sudo driftnet -i wlan0"
+          },
+          {
+            "title": "Capture proof",
+            "details": "Screenshot the session and archive select files.",
+            "command": "import -window driftnet ~/evidence/driftnet.png"
+          }
+        ]
+      },
+      {
+        "title": "Headless extraction",
+        "steps": [
+          {
+            "title": "Prepare target directory",
+            "details": "Ensure disk has enough space for artifacts.",
+            "command": "mkdir -p /var/tmp/driftnet"
+          },
+          {
+            "title": "Run without GUI",
+            "details": "Pipe object list into audit log.",
+            "command": "sudo driftnet -i eth0 -x -d /var/tmp/driftnet | tee driftnet.log"
+          },
+          {
+            "title": "Review artifacts",
+            "details": "Hash captured files and add to report.",
+            "command": "find /var/tmp/driftnet -type f -print0 | xargs -0 sha256sum > hashes.txt"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Wireless MITM \u2192 Content capture \u2192 Findings",
+        "stages": [
+          {
+            "label": "Intercept",
+            "description": "Use Wifite/Bettercap to obtain plaintext streams.",
+            "command": "wifite -i wlan0 --wps --wep"
+          },
+          {
+            "label": "Capture media",
+            "description": "Run Driftnet to show live leakage.",
+            "command": "driftnet -i wlan0 -d ./loot"
+          },
+          {
+            "label": "Curate",
+            "description": "Select representative images/audio proving risk.",
+            "command": "feh --auto-zoom ./loot"
+          },
+          {
+            "label": "Document",
+            "description": "Add screenshots + narrative to PT Journal privacy finding.",
+            "command": "# PT Journal \u2192 Findings \u2192 Add privacy exposure"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Saved /loot/2023-11-22-134015-img.jpg",
+        "meaning": "File extracted successfully; include metadata when citing evidence.",
+        "severity": "Info"
+      },
+      {
+        "indicator": "TCP reassembly failed",
+        "meaning": "Lossy wireless environment\u2014capture closer to AP or increase snaplen.",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Unsupported MIME type",
+        "meaning": "Traffic may be encrypted or compressed; pivot to proxying tools.",
+        "severity": "Low"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Split-screen dashboards",
+        "command": "driftnet -i eth0 -d /loot & sudo urlsnarf -i eth0",
+        "scenario": "Combine visual artifacts with URL logs for executive demos.",
+        "notes": [
+          "Use tmux to keep panes synchronized."
+        ]
+      },
+      {
+        "title": "Offline PCAP replay",
+        "command": "driftnet -x -d ./pcap-artifacts -r beaconing.pcap",
+        "scenario": "Extract images from captured PCAP without touching target again.",
+        "notes": [
+          "Use tcpdump -w to record first."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Driftnet README",
+        "url": "https://github.com/deiv/driftnet",
+        "description": "Upstream project information."
+      },
+      {
+        "label": "Bettercap Caplets",
+        "url": "https://www.bettercap.org/caplets/",
+        "description": "Useful when pairing Driftnet with HTTPS stripping."
+      },
+      {
+        "label": "Ethical guidelines",
+        "url": "https://www.owasp.org/index.php/Pentest_pre-engagement",
+        "description": "Ensure demonstrations remain within agreed scope."
+      }
+    ]
+  },
+  {
+    "id": "dsniff",
+    "name": "dsniff",
+    "summary": "dsniff is a collection of network monitoring tools (urlsnarf, mailsnarf, filesnarf, macof, etc.) used to sniff cleartext credentials and stress-test switched networks.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install suite and supporting libraries",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y dsniff",
+            "copyable": true
+          },
+          {
+            "detail": "ls /usr/sbin | grep snarf",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Use preconfigured aliases inside /usr/share/dsniff",
+        "steps": [
+          {
+            "detail": "sudo apt install -y dsniff x11-apps",
+            "copyable": true
+          },
+          {
+            "detail": "sudo urlsnarf -h",
+            "copyable": true
+          },
+          {
+            "detail": "sudo macof -i eth0 -n 100000",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Source build",
+        "summary": "Compile when package repos lag behind",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/tecknicon/dsniff.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd dsniff && ./configure && make",
+            "copyable": true
+          },
+          {
+            "detail": "sudo make install",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Log web requests",
+        "command": "sudo urlsnarf -i eth0 > urls.log",
+        "notes": [
+          "Outputs combined Apache-style logs for HTTP traffic."
+        ]
+      },
+      {
+        "description": "Capture FTP files",
+        "command": "sudo filesnarf -i eth0",
+        "notes": [
+          "Saves files transferred over FTP, NFS, or SMB (depending on mode)."
+        ]
+      },
+      {
+        "description": "Overflow CAM table",
+        "command": "sudo macof -i eth0 -n 500000",
+        "notes": [
+          "Stress test switches to force broadcast flooding."
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-i <iface>",
+        "description": "Select interface"
+      },
+      {
+        "flag": "-n <count>",
+        "description": "Number of MAC entries for macof"
+      },
+      {
+        "flag": "-p",
+        "description": "Promiscuous capture for various *snarf tools"
+      },
+      {
+        "flag": "-f <file>",
+        "description": "Read targets/from file (arpspoof, dnsspoof)"
+      },
+      {
+        "flag": "-r <pcap>",
+        "description": "Replay traffic from PCAP instead of live network"
+      }
+    ],
+    "operational_tips": [
+      "Pair arpspoof/dnsspoof with urlsnarf or driftnet to demonstrate full attack chain.",
+      "macof is noisy\u2014only run on isolated lab networks or with explicit customer approval.",
+      "Use the -p switch on urlsnarf/mailsnarf to keep sniffing even if promiscuous mode fails.",
+      "Log file timestamps and store sanitized samples so they can be included in PT Journal."
+    ],
+    "step_sequences": [
+      {
+        "title": "Cleartext credential sweep",
+        "steps": [
+          {
+            "title": "Establish MITM",
+            "details": "Poison gateway with arpspoof for the scoped host list.",
+            "command": "sudo arpspoof -t 192.168.10.50 192.168.10.1"
+          },
+          {
+            "title": "Run snarfers",
+            "details": "Capture URLs, IMAP/POP passwords, and FTP data.",
+            "command": "sudo urlsnarf -i eth0 > urls.log & sudo mailsnarf -i eth0 > mail.log"
+          },
+          {
+            "title": "Summarize findings",
+            "details": "Extract credentials and impacted systems for reporting.",
+            "command": "grep -E 'USER|PASS' mail.log | tee creds.txt"
+          }
+        ]
+      },
+      {
+        "title": "Switch resilience testing",
+        "steps": [
+          {
+            "title": "Baseline switch",
+            "details": "Record current CPU and port stats.",
+            "command": "snmpwalk -v2c -c public switch IF-MIB::ifDescr"
+          },
+          {
+            "title": "Launch macof",
+            "details": "Overflow CAM table to force broadcast flooding.",
+            "command": "sudo macof -i eth0 -n 200000"
+          },
+          {
+            "title": "Observe impact",
+            "details": "Use tcpdump/wireshark to confirm now-broadcast traffic.",
+            "command": "sudo tcpdump -i eth0 ether broadcast"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Arpspoof \u2192 Snarf \u2192 Evidence",
+        "stages": [
+          {
+            "label": "Poison",
+            "description": "Use arpspoof/dnsspoof to intercept flows.",
+            "command": "arpspoof -t victim gateway"
+          },
+          {
+            "label": "Harvest",
+            "description": "Run urlsnarf/mailsnarf/filesnarf simultaneously.",
+            "command": "urlsnarf -i eth0 | tee urls.log"
+          },
+          {
+            "label": "Pivot",
+            "description": "Feed suspicious hosts into other tooling (Hydra, Metasploit).",
+            "command": "cut -d' ' -f3 urls.log | sort -u > targets.txt"
+          },
+          {
+            "label": "Report",
+            "description": "Attach sanitized logs to PT Journal and note detections if any occurred.",
+            "command": "# PT Journal \u2192 Findings \u2192 Add credential leakage"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "urlsnarf: host=internalwiki",
+        "meaning": "Users accessing internal HTTP resources over insecure network.",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "mailsnarf: PASS <base64>",
+        "meaning": "Recovered IMAP/POP credentials that can be replayed.",
+        "severity": "High"
+      },
+      {
+        "indicator": "macof: flood complete",
+        "meaning": "Switch CAM table likely exhausted\u2014monitor for IDS alerts.",
+        "severity": "Info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "PCAP replay for testing",
+        "command": "urlsnarf -r captive-portal.pcap",
+        "scenario": "Demonstrate dsniff findings using sanitized captures instead of customer traffic.",
+        "notes": [
+          "Great for tabletop or training sessions."
+        ]
+      },
+      {
+        "title": "Custom dnsspoof zone",
+        "command": "dnsspoof -i eth0 -f spoof.hosts",
+        "scenario": "Force clients to malicious infrastructure during phishing simulations.",
+        "notes": [
+          "Combine with sslstrip replacements like Bettercap HSTS bypass."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "dsniff GitHub",
+        "url": "https://github.com/tecknicon/dsniff",
+        "description": "Community-maintained fork with patches."
+      },
+      {
+        "label": "Original documentation",
+        "url": "https://www.monkey.org/~dugsong/dsniff/",
+        "description": "Classic README covering each tool in the suite."
+      },
+      {
+        "label": "Cheatsheet",
+        "url": "https://highon.coffee/blog/dsniff-cheatsheet/",
+        "description": "Command summary for the individual utilities."
+      }
+    ]
+  },
+  {
+    "id": "mitmproxy",
+    "name": "mitmproxy",
+    "summary": "mitmproxy is an interactive HTTPS proxy with scripting support for inspecting, replaying, and modifying client/server traffic.",
+    "installation_guides": [
+      {
+        "platform": "Python/pip",
+        "summary": "Install mitmproxy inside a virtual environment",
+        "steps": [
+          {
+            "detail": "python3 -m venv ~/.venvs/mitmproxy",
+            "copyable": true
+          },
+          {
+            "detail": "~/.venvs/mitmproxy/bin/pip install --upgrade pip mitmproxy",
+            "copyable": true
+          },
+          {
+            "detail": "~/.venvs/mitmproxy/bin/mitmproxy --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali/Ubuntu",
+        "summary": "Use distro package for quick start",
+        "steps": [
+          {
+            "detail": "sudo apt install -y mitmproxy",
+            "copyable": true
+          },
+          {
+            "detail": "mitmproxy --set console_eventlog_verbosity=info",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker",
+        "summary": "Run isolated instance for demos",
+        "steps": [
+          {
+            "detail": "docker run --rm -it -p 8080:8080 -p 8081:8081 mitmproxy/mitmproxy",
+            "copyable": true
+          },
+          {
+            "detail": "curl -x http://127.0.0.1:8080 http://example.com",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Interactive proxy",
+        "command": "mitmproxy -p 8080",
+        "notes": [
+          "Point browser/device at proxy and install mitmproxy CA cert."
+        ]
+      },
+      {
+        "description": "Save flows",
+        "command": "mitmdump -p 8080 -w capture.mitm",
+        "notes": [
+          "Use mitmweb --server to replay flows visually."
+        ]
+      },
+      {
+        "description": "Rewrite header",
+        "command": "mitmproxy --set header.replace:User-Agent=PTJ-Lab",
+        "notes": [
+          "Quick way to test WAFs and API behavior."
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-p <port>",
+        "description": "HTTP(S) proxy listening port"
+      },
+      {
+        "flag": "-w file",
+        "description": "Write captured flows"
+      },
+      {
+        "flag": "-r file",
+        "description": "Replay saved flows"
+      },
+      {
+        "flag": "--mode reverse:http://target",
+        "description": "Reverse proxy mode"
+      }
+    ],
+    "operational_tips": [
+      "Export the mitmproxy CA certificate (mitmproxy --export-cert) and store it with engagement artifacts.",
+      "Use mitmweb for non-technical stakeholders\u2014it provides clickable summaries and timeline charts.",
+      "Write simple Python addons to automate repetitive tampering (token swap, header injection, etc.)."
+    ],
+    "step_sequences": [
+      {
+        "title": "API fuzzing with mitmproxy",
+        "steps": [
+          {
+            "title": "Intercept baseline traffic",
+            "details": "Route API client through mitmproxy and record flows.",
+            "command": "mitmdump -p 8080 -w api-baseline.mitm"
+          },
+          {
+            "title": "Modify requests",
+            "details": "Use `~q` filter to select requests and edit payloads.",
+            "command": "# In TUI: press e to edit request body"
+          },
+          {
+            "title": "Replay variations",
+            "details": "Clone flows and send mutated payloads.",
+            "command": "mitmproxy \u2192 Flow list \u2192 a (duplicate) \u2192 r (replay)"
+          }
+        ]
+      },
+      {
+        "title": "Mobile application inspection",
+        "steps": [
+          {
+            "title": "Install root CA",
+            "details": "Push mitmproxy-ca-cert.cer to device trust store.",
+            "command": "adb push ~/.mitmproxy/mitmproxy-ca-cert.cer /sdcard/"
+          },
+          {
+            "title": "Capture session",
+            "details": "Proxy device through attacker workstation.",
+            "command": "mitmproxy -p 8080 --set block_global=false"
+          },
+          {
+            "title": "Export evidence",
+            "details": "Save flows to file and attach to report.",
+            "command": "mitmproxy \u2192 w \u2192 mobile-session.mitm"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Proxy \u2192 Modify \u2192 Report",
+        "stages": [
+          {
+            "label": "Proxy setup",
+            "description": "Configure browser/mobile device to trust mitmproxy.",
+            "command": "mitmproxy --listen-host 0.0.0.0 -p 8080"
+          },
+          {
+            "label": "Interact",
+            "description": "Browse application, mark vulnerable flows.",
+            "command": "# Use tagging (Shift+space) for interesting requests"
+          },
+          {
+            "label": "Automate",
+            "description": "Write short addon to reproduce issue reliably.",
+            "command": "mitmdump -s exploit.py -r vulnerable.mitm"
+          },
+          {
+            "label": "Document",
+            "description": "Export curl/httpie commands and embed in PT Journal.",
+            "command": "mitmproxy export curl --flow 5"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "certificate pinning error",
+        "meaning": "Client refused proxy CA\u2014plan for bypass or instrumentation.",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "401 Unauthorized followed by 200",
+        "meaning": "Authentication bypass or replay succeeded.",
+        "severity": "High"
+      },
+      {
+        "indicator": "Large binary response",
+        "meaning": "Download API/exposed storage; capture hash for evidence.",
+        "severity": "Info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Addon-based autorouting",
+        "command": "mitmdump -s addons/inject_header.py",
+        "scenario": "Inject headers/tokens automatically for every request to a scope hostname.",
+        "notes": [
+          "Addons run on both request and response hooks."
+        ]
+      },
+      {
+        "title": "Reverse proxy mode",
+        "command": "mitmproxy --mode reverse:https://api.example.com/ -w reverse.mitm",
+        "scenario": "Drop into inline testing when upstream TLS pinning cannot be disabled.",
+        "notes": [
+          "Great in front of staging APIs or for SSRF proof-of-concepts."
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Official docs",
+        "url": "https://docs.mitmproxy.org/stable/",
+        "description": "Configuration, shortcuts, and addon API."
+      },
+      {
+        "label": "mitmproxy examples",
+        "url": "https://github.com/mitmproxy/mitmproxy/tree/master/examples",
+        "description": "Addon samples for automation."
+      },
+      {
+        "label": "Bypassing certificate pinning",
+        "url": "https://book.hacktricks.xyz/mobile-apps-pentesting/intercepting-communications",
+        "description": "Techniques for mobile testing with mitmproxy."
+      }
+    ]
+  },
+  {
+    "id": "bettercap",
+    "name": "Bettercap",
+    "summary": "Bettercap is a modular network reconnaissance and attack framework with caplets for WiFi/BTLE sniffing, spoofing, and MITM automation.",
+    "installation_guides": [
+      {
+        "platform": "Go install",
+        "summary": "Build Bettercap from source for latest features",
+        "steps": [
+          {
+            "detail": "go install github.com/bettercap/bettercap@latest",
+            "copyable": true
+          },
+          {
+            "detail": "$HOME/go/bin/bettercap -h",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Use packaged version plus caplet repo",
+        "steps": [
+          {
+            "detail": "sudo apt install -y bettercap capstone libusb-1.0-0-dev",
+            "copyable": true
+          },
+          {
+            "detail": "bettercap -eval 'caplets.update; ui.update'",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Raspberry Pi",
+        "summary": "Deploy portable rogue AP toolkit",
+        "steps": [
+          {
+            "detail": "curl -L https://get.bettercap.org | sudo bash",
+            "copyable": true
+          },
+          {
+            "detail": "sudo bettercap -iface wlan0",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Start interactive session",
+        "command": "sudo bettercap -iface eth0",
+        "notes": [
+          "Use `help` within console to list modules."
+        ]
+      },
+      {
+        "description": "Run caplet",
+        "command": "sudo bettercap -caplet hstshijack",
+        "notes": [
+          "Caplets automate scriptable workflows (DNS spoofing, SSL stripping)."
+        ]
+      },
+      {
+        "description": "Web UI",
+        "command": "sudo bettercap -iface wlan0 -caplet http-ui",
+        "notes": [
+          "Exposes dashboard on https://127.0.0.1:8083/"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-iface <name>",
+        "description": "Network interface"
+      },
+      {
+        "flag": "-caplet file",
+        "description": "Execute predefined caplet"
+      },
+      {
+        "flag": "-eval '<cmd>'",
+        "description": "Run commands inline"
+      },
+      {
+        "flag": "-script <lua>",
+        "description": "Load Lua automation"
+      }
+    ],
+    "operational_tips": [
+      "Sync caplets regularly: `caplets.update; ui.update`.",
+      "Use `events.stream on` to push logs to external syslog targets.",
+      "Prefer `net.probe on` for quiet recon before enabling ARP spoofing modules.",
+      "Document executed caplets and parameters to reproduce results later."
+    ],
+    "step_sequences": [
+      {
+        "title": "HSTS bypass run",
+        "steps": [
+          {
+            "title": "Enable wifi recon",
+            "details": "Discover clients/APs before attacking.",
+            "command": "wifi.recon on"
+          },
+          {
+            "title": "Launch MITM",
+            "details": "Spoof DNS and strip TLS.",
+            "command": "set http.proxy.sslstrip true; set dns.spoof.domains *; dns.spoof on"
+          },
+          {
+            "title": "Collect creds",
+            "details": "Monitor events log and export JSON.",
+            "command": "events.show http.proxy"
+          }
+        ]
+      },
+      {
+        "title": "BLE assessment",
+        "steps": [
+          {
+            "title": "Scan BLE devices",
+            "details": "Identify advertisements.",
+            "command": "ble.recon on"
+          },
+          {
+            "title": "Sniff characteristic",
+            "details": "Subscribe to notifications.",
+            "command": "ble.spoof on; ble.subscribe CC:EE:CC:EE:AA:01"
+          },
+          {
+            "title": "Replay payload",
+            "details": "Send crafted packets.",
+            "command": "ble.write 0x000b cafe"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Bettercap engagement rhythm",
+        "stages": [
+          {
+            "label": "Recon",
+            "description": "wifi.recon / net.show to map environment.",
+            "command": "bettercap -iface wlan0 -eval 'net.show; wifi.recon on'"
+          },
+          {
+            "label": "Exploit",
+            "description": "Execute caplets (hstshijack, dns_spoof).",
+            "command": "caplets.show"
+          },
+          {
+            "label": "Harvest",
+            "description": "Stream event log to file for reporting.",
+            "command": "events.log ~/evidence/bettercap.log"
+          },
+          {
+            "label": "Cleanup",
+            "description": "Disable spoofing, toggle modules off, archive config.",
+            "command": "net.probe off; arp.spoof off; caplets.save session.cap"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "http.proxy (creds)",
+        "meaning": "Credentials intercepted; redact before sharing.",
+        "severity": "High"
+      },
+      {
+        "indicator": "wifi.client A0:XX",
+        "meaning": "New station joined; monitor for rogue devices.",
+        "severity": "Info"
+      },
+      {
+        "indicator": "events.error dns.spoof",
+        "meaning": "Spoof failed\u2014likely DNSSEC or responder blocking.",
+        "severity": "Medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Headless REST API",
+        "command": "bettercap -rest 127.0.0.1:8081 -iface eth0",
+        "scenario": "Control Bettercap remotely via HTTP API or Web UI.",
+        "notes": [
+          "Protect with auth tokens; disable when done."
+        ]
+      },
+      {
+        "title": "Custom caplet",
+        "command": "cat > custom.cap <<'EOC'\nset net.sniff.output custom.pcap\nset http.proxy.sslstrip true\nnet.sniff on\nEOC",
+        "scenario": "Bundle repeatable logic in version-controlled caplets.",
+        "notes": [
+          "Store under ~/.bettercap/caplets"
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Bettercap docs",
+        "url": "https://www.bettercap.org/usage/",
+        "description": "Command reference and caplet format."
+      },
+      {
+        "label": "Caplet index",
+        "url": "https://github.com/bettercap/caplets",
+        "description": "Community-maintained attack scripts."
+      },
+      {
+        "label": "Bettercap Academy",
+        "url": "https://www.bettercap.org/training/",
+        "description": "Official walkthroughs and labs."
+      }
+    ]
+  }
+]

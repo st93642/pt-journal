@@ -1,0 +1,831 @@
+[
+  {
+    "id": "scalpel",
+    "name": "Scalpel",
+    "summary": "Scalpel is a high-performance file carver derived from Foremost with multithreading and flexible configuration syntax.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from apt",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y scalpel",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Copy configuration template before editing",
+        "steps": [
+          {
+            "detail": "sudo cp /etc/scalpel/scalpel.conf /etc/scalpel/scalpel.conf.bak",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Source build",
+        "summary": "Compile latest release",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/sleuthkit/scalpel.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd scalpel && ./configure && make",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Default carve",
+        "command": "scalpel disk.img -o scalpel_out",
+        "notes": []
+      },
+      {
+        "description": "Specific file types",
+        "command": "scalpel -c jpg.conf image.dd -o jpg_only",
+        "notes": []
+      },
+      {
+        "description": "Resume run",
+        "command": "scalpel -r scalpel.log",
+        "notes": [
+          "Restart from failed offset"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-c file",
+        "description": "Use custom configuration"
+      },
+      {
+        "flag": "-o dir",
+        "description": "Output directory"
+      },
+      {
+        "flag": "-b size",
+        "description": "Read block size override"
+      },
+      {
+        "flag": "-r log",
+        "description": "Resume using log"
+      }
+    ],
+    "operational_tips": [
+      "Disable unused file types in scalpel.conf to reduce runtime.",
+      "Scalpel is multi-threaded\u2014set SCALPEL_THREADS env var to control CPU usage.",
+      "Always carve to separate disks to avoid thrashing the evidence image.",
+      "Keep the log file; it documents hits with offsets for reporting."
+    ],
+    "step_sequences": [
+      {
+        "title": "Custom config carving",
+        "steps": [
+          {
+            "title": "Prepare signature file",
+            "details": "Enable only required file types.",
+            "command": "grep -v '^#' /etc/scalpel/scalpel.conf > custom.conf"
+          },
+          {
+            "title": "Run scalpel",
+            "details": "Execute with custom config.",
+            "command": "scalpel -c custom.conf memory.raw -o carve"
+          },
+          {
+            "title": "Review log",
+            "details": "Analyze hits and offsets.",
+            "command": "less carve/scalpel.log"
+          }
+        ]
+      },
+      {
+        "title": "Large image workflow",
+        "steps": [
+          {
+            "title": "Split image",
+            "details": "Use split/partclone to process chunks.",
+            "command": "split -b 5G disk.img disk.part"
+          },
+          {
+            "title": "Parallel carving",
+            "details": "Run scalpel per chunk.",
+            "command": "for part in disk.part*; do scalpel $part -o carve_$part & done"
+          },
+          {
+            "title": "Merge results",
+            "details": "Consolidate carved data and logs.",
+            "command": "find carve_* -type f -print"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Configure \u2192 Carve \u2192 Validate",
+        "stages": [
+          {
+            "label": "Configure",
+            "description": "Tune scalpel.conf.",
+            "command": "sed -i 's/#jpg/jpg/' /etc/scalpel/scalpel.conf"
+          },
+          {
+            "label": "Carve",
+            "description": "Run scalpel with logging.",
+            "command": "scalpel disk.img -o carve_run"
+          },
+          {
+            "label": "Validate",
+            "description": "Hash carved files and tie to offsets.",
+            "command": "sha256sum carve_run/jpg/*"
+          },
+          {
+            "label": "Report",
+            "description": "Attach carve log + sample files to PT Journal.",
+            "command": "# PT Journal \u2192 Evidence \u2192 Upload scalpel log"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Scalpel completed with errors",
+        "meaning": "Check log for bad sectors or misconfigured types.",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Hits: 120 jpg",
+        "meaning": "Recovered items; verify for sensitive data.",
+        "severity": "Info"
+      },
+      {
+        "indicator": "Skipped | carved due to short file",
+        "meaning": "Files under threshold; adjust config if necessary.",
+        "severity": "Low"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Network storage",
+        "command": "scalpel -c conf -O nfs://analysis/carve disk.img",
+        "scenario": "Write carve output to remote share while processing.",
+        "notes": [
+          "Mount share prior to run"
+        ]
+      },
+      {
+        "title": "Sleuth Kit integration",
+        "command": "icat -i raw disk.img 5 | scalpel -c doc.conf -o carve_inode",
+        "scenario": "Carve specific inode/partition output via TSK.",
+        "notes": [
+          "Combine with mmls/fls results"
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Scalpel GitHub",
+        "url": "https://github.com/sleuthkit/scalpel",
+        "description": "Source and docs."
+      },
+      {
+        "label": "Carving best practices",
+        "url": "https://www.sleuthkit.org/sleuthkit/docs.php",
+        "description": "Guidelines for forensic carving."
+      },
+      {
+        "label": "Digital forensics corp",
+        "url": "https://digitalforensicscorp.com/blog/file-carving/",
+        "description": "Overview to share with non-technical stakeholders."
+      }
+    ]
+  },
+  {
+    "id": "bulk_extractor",
+    "name": "bulk_extractor",
+    "summary": "bulk_extractor scans disk images, memory dumps, or network captures and extracts artifacts such as emails, URLs, credit cards, and gzip fragments without relying on file system structures.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install package and feature plugins",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y bulk-extractor afflib libewf-tools",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Use bulk_extractor and beviewer GUI",
+        "steps": [
+          {
+            "detail": "bulk_extractor -h",
+            "copyable": true
+          },
+          {
+            "detail": "beviewer",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Source",
+        "summary": "Build from GitHub for latest scanners",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/simsong/bulk_extractor.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd bulk_extractor && ./configure && make && sudo make install",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Default scan",
+        "command": "bulk_extractor -o output disk.dd",
+        "notes": []
+      },
+      {
+        "description": "Disable scanners",
+        "command": "bulk_extractor -S email=0 -S http=0 -o focused image.E01",
+        "notes": [
+          "Only run needed scanners"
+        ]
+      },
+      {
+        "description": "Process PCAP",
+        "command": "bulk_extractor -o out capture.pcap",
+        "notes": [
+          "Supports many file types"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-o dir",
+        "description": "Output directory"
+      },
+      {
+        "flag": "-S name=value",
+        "description": "Set scanner options"
+      },
+      {
+        "flag": "-E <scanners>",
+        "description": "Enable subset of scanners"
+      },
+      {
+        "flag": "-R <size>",
+        "description": "Block size (resume)"
+      },
+      {
+        "flag": "-g",
+        "description": "Generate histogram reports"
+      }
+    ],
+    "operational_tips": [
+      "Use feature files (.txt) to quickly grep for IoCs without opening the entire dataset.",
+      "Open the BEViewer GUI to visualize histograms and carve contexts.",
+      "Disable credit-card scanner when working with sensitive customer data unless explicitly scoped.",
+      "Document scanner configuration (-S flags) so results are reproducible."
+    ],
+    "step_sequences": [
+      {
+        "title": "Evidence processing",
+        "steps": [
+          {
+            "title": "Run bulk_extractor",
+            "details": "Scan disk image with default scanners.",
+            "command": "bulk_extractor -o be_out disk.dd"
+          },
+          {
+            "title": "Review reports",
+            "details": "Open histograms + feature files.",
+            "command": "beviewer be_out"
+          },
+          {
+            "title": "Export IoCs",
+            "details": "Filter emails/domains.",
+            "command": "cut -f2 be_out/email.txt | sort -u > emails.txt"
+          }
+        ]
+      },
+      {
+        "title": "Targeted scanning",
+        "steps": [
+          {
+            "title": "Limit scanners",
+            "details": "Focus on credit cards + URLs.",
+            "command": "bulk_extractor -E ccnd,URL -o cc_out disk.dd"
+          },
+          {
+            "title": "Validate hits",
+            "details": "Use built-in verify tool.",
+            "command": "python3 ccnbulk.py cc_out/ccn.txt"
+          },
+          {
+            "title": "Report",
+            "details": "Attach sanitized list to PT Journal.",
+            "command": "# PT Journal \u2192 Evidence \u2192 Upload bulk extractor report"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Acquire \u2192 Scan \u2192 Triangulate",
+        "stages": [
+          {
+            "label": "Acquire",
+            "description": "Image drive with dd/ewfacquire.",
+            "command": "ewfacquire /dev/sdb"
+          },
+          {
+            "label": "Scan",
+            "description": "Run bulk_extractor with relevant scanners.",
+            "command": "bulk_extractor -E URL,email,exe -o case01 image.E01"
+          },
+          {
+            "label": "Triangulate",
+            "description": "Combine feature files with logs.",
+            "command": "python3 correlate.py case01/email.txt prod_mailboxes.csv"
+          },
+          {
+            "label": "Remediate",
+            "description": "Share IoCs and removal instructions with client.",
+            "command": "# PT Journal \u2192 Findings \u2192 Data exposure"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "EMAIL: user@example.com",
+        "meaning": "Email found; confirm ownership.",
+        "severity": "Info"
+      },
+      {
+        "indicator": "CCN: 4111 1111 1111 1111",
+        "meaning": "Possible payment data exposure\u2014escalate per PCI requirements.",
+        "severity": "High"
+      },
+      {
+        "indicator": "URL: http://malware",
+        "meaning": "Outbound beacon or malicious download site.",
+        "severity": "Medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Resume large jobs",
+        "command": "bulk_extractor -R 1073741824 -o be_out disk.dd",
+        "scenario": "Automatically resumes after each gigabyte in case of interruption.",
+        "notes": [
+          "Use with --finish when job restarts"
+        ]
+      },
+      {
+        "title": "Distributed scanning",
+        "command": "bulk_extractor -o host1 disk.img & bulk_extractor -o host2 disk.img",
+        "scenario": "Split image across multiple nodes; merge reports after.",
+        "notes": [
+          "Use be_merge.py to consolidate"
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Official wiki",
+        "url": "https://github.com/simsong/bulk_extractor/wiki",
+        "description": "Usage and scanner docs."
+      },
+      {
+        "label": "BEViewer",
+        "url": "https://github.com/digitalsleuth/beviewer",
+        "description": "GUI viewer."
+      },
+      {
+        "label": "Bulk extractor training",
+        "url": "https://digitalcorpora.org/corpora/disk-images/bulk-extractor-training",
+        "description": "Sample images for practice."
+      }
+    ]
+  },
+  {
+    "id": "xxd",
+    "name": "xxd",
+    "summary": "xxd creates hexdumps and can reverse them back to binary, making it a quick option for inspecting files or patching bytes.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Provided by vim-common",
+        "steps": [
+          {
+            "detail": "sudo apt install -y vim-common",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Preinstalled",
+        "steps": [
+          {
+            "detail": "xxd -version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Windows (WSL)",
+        "summary": "Install via packages or use BusyBox",
+        "steps": [
+          {
+            "detail": "sudo apt install -y vim-common",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Hex dump",
+        "command": "xxd file.bin | head",
+        "notes": []
+      },
+      {
+        "description": "Specify width",
+        "command": "xxd -g1 -c16 firmware.bin",
+        "notes": [
+          "Byte-wise groups"
+        ]
+      },
+      {
+        "description": "Reverse dump",
+        "command": "xxd -r patched.hex patched.bin",
+        "notes": [
+          "Convert hex back to binary"
+        ]
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-g <bytes>",
+        "description": "Bytes per group"
+      },
+      {
+        "flag": "-c <cols>",
+        "description": "Bytes per line"
+      },
+      {
+        "flag": "-r",
+        "description": "Reverse operation"
+      },
+      {
+        "flag": "-s offset",
+        "description": "Skip bytes before dumping"
+      }
+    ],
+    "operational_tips": [
+      "Combine with sed/awk to patch single bytes via hex editing.",
+      "Use -ps to output plain hex stream for scripting or network payloads.",
+      "When reversing, ensure there are no extra spaces/offsets in the hex file.",
+      "Document offsets inside PT Journal so others can reproduce the patch."
+    ],
+    "step_sequences": [
+      {
+        "title": "Binary diff",
+        "steps": [
+          {
+            "title": "Dump both files",
+            "details": "Create comparable hex dumps.",
+            "command": "xxd -g1 -c16 old.bin > old.hex && xxd -g1 -c16 new.bin > new.hex"
+          },
+          {
+            "title": "Compare",
+            "details": "Use diff to see byte changes.",
+            "command": "diff -u old.hex new.hex"
+          },
+          {
+            "title": "Patch",
+            "details": "Edit hex and reverse.",
+            "command": "xxd -r new.hex patched.bin"
+          }
+        ]
+      },
+      {
+        "title": "Inline modification",
+        "steps": [
+          {
+            "title": "Dump region",
+            "details": "Focus on offset.",
+            "command": "xxd -g1 -s 0x100 -l 32 target.bin"
+          },
+          {
+            "title": "Edit hex",
+            "details": "Change bytes with editor.",
+            "command": "xxd -g1 target.bin > temp.hex && vim temp.hex"
+          },
+          {
+            "title": "Rebuild",
+            "details": "Convert back to binary.",
+            "command": "xxd -r temp.hex target.bin"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Dump \u2192 Edit \u2192 Validate",
+        "stages": [
+          {
+            "label": "Dump",
+            "description": "Create baseline hex file.",
+            "command": "xxd -g1 firmware.bin > firmware.hex"
+          },
+          {
+            "label": "Edit",
+            "description": "Modify bytes for patch/PoC.",
+            "command": "vim firmware.hex"
+          },
+          {
+            "label": "Rebuild",
+            "description": "Reverse hex back to binary.",
+            "command": "xxd -r firmware.hex firmware_patched.bin"
+          },
+          {
+            "label": "Validate",
+            "description": "Hash + run tests to confirm change.",
+            "command": "sha256sum firmware_patched.bin"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "00000100: 41 42 43",
+        "meaning": "Offset and bytes displayed.",
+        "severity": "Info"
+      },
+      {
+        "indicator": "xxd: unexpected EOF",
+        "meaning": "Likely missing newline or truncated hex on reverse.",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Binary file matches",
+        "meaning": "After reverse, file identical\u2014patch succeeded.",
+        "severity": "Info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Plain hex stream",
+        "command": "xxd -p shellcode.bin | tr -d '\n'",
+        "scenario": "Embed shellcode into exploits.",
+        "notes": [
+          "Use -c to control width"
+        ]
+      },
+      {
+        "title": "Network patching",
+        "command": "printf '00000010: 90 90 90\n' | xxd -r - firmware.bin",
+        "scenario": "Patch bytes directly from stdin.",
+        "notes": [
+          "Handy for quick nop sled inserts"
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "xxd manual",
+        "url": "https://linux.die.net/man/1/xxd",
+        "description": "Official options."
+      },
+      {
+        "label": "Binary patching tutorial",
+        "url": "https://reverseengineering.stackexchange.com/questions/9135/",
+        "description": "Common workflows."
+      },
+      {
+        "label": "Hex editing with vim",
+        "url": "https://vimhelp.org/repeat.txt.html#:%20XXD",
+        "description": "Use xxd within Vim."
+      }
+    ]
+  },
+  {
+    "id": "hexedit",
+    "name": "hexedit",
+    "summary": "hexedit is a terminal-based hexadecimal editor for navigating and modifying binary files interactively.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via apt",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y hexedit",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Preinstalled",
+        "steps": [
+          {
+            "detail": "hexedit --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "macOS",
+        "summary": "Install via Homebrew",
+        "steps": [
+          {
+            "detail": "brew install hexedit",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Open binary",
+        "command": "hexedit firmware.bin",
+        "notes": []
+      },
+      {
+        "description": "Jump to offset",
+        "command": "# Press Ctrl+_ then enter hex offset",
+        "notes": []
+      },
+      {
+        "description": "Save changes",
+        "command": "# Press F2 to write file",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "-s",
+        "description": "Start at offset"
+      },
+      {
+        "flag": "-m",
+        "description": "Read-only mode"
+      },
+      {
+        "flag": "-l <len>",
+        "description": "Limit file length"
+      }
+    ],
+    "operational_tips": [
+      "Use read-only (-m) when triaging evidence to avoid accidental writes.",
+      "Combine with xxd exports for before/after diffs.",
+      "Press Tab to toggle between hex and ASCII editing modes.",
+      "Document modifications in PT Journal with offsets for reproducibility."
+    ],
+    "step_sequences": [
+      {
+        "title": "Patch workflow",
+        "steps": [
+          {
+            "title": "Open file",
+            "details": "Launch hexedit in read/write mode.",
+            "command": "hexedit target.bin"
+          },
+          {
+            "title": "Navigate",
+            "details": "Jump to offset needing patch.",
+            "command": "Ctrl+_ then offset"
+          },
+          {
+            "title": "Modify",
+            "details": "Edit bytes and save with F2.",
+            "command": "# After editing press F2"
+          }
+        ]
+      },
+      {
+        "title": "Read-only review",
+        "steps": [
+          {
+            "title": "Open in safe mode",
+            "details": "Prevent writes.",
+            "command": "hexedit -m evidence.img"
+          },
+          {
+            "title": "Take notes",
+            "details": "Record offsets/values.",
+            "command": "# Use PT Journal note template"
+          },
+          {
+            "title": "Export region",
+            "details": "Use xxd for attachments.",
+            "command": "xxd -s 0x200 -l 64 evidence.img"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Inspect \u2192 Patch \u2192 Validate",
+        "stages": [
+          {
+            "label": "Inspect",
+            "description": "Open file in hexedit -m.",
+            "command": "hexedit -m firmware.bin"
+          },
+          {
+            "label": "Patch",
+            "description": "Remove -m and modify bytes.",
+            "command": "hexedit firmware.bin"
+          },
+          {
+            "label": "Validate",
+            "description": "Hash files and test.",
+            "command": "sha256sum firmware.bin"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "EOF reached",
+        "meaning": "You attempted to move past file size.",
+        "severity": "Info"
+      },
+      {
+        "indicator": "File is read only",
+        "meaning": "Launched with -m or lacking permissions.",
+        "severity": "Medium"
+      },
+      {
+        "indicator": "Write failed",
+        "meaning": "Disk permission or attribute prevents saving.",
+        "severity": "High"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Template editing",
+        "command": "hexedit -s 0x100 -l 0x40 firmware.bin",
+        "scenario": "Limit view to region for safer patching.",
+        "notes": [
+          "Use with -m for initial review"
+        ]
+      },
+      {
+        "title": "Automated record",
+        "command": "script -q hexedit-session.txt hexedit firmware.bin",
+        "scenario": "Capture keystrokes for chain-of-custody.",
+        "notes": [
+          "Stop recording with exit"
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "hexedit man page",
+        "url": "https://linux.die.net/man/1/hexedit",
+        "description": "Official usage."
+      },
+      {
+        "label": "Binary patching primer",
+        "url": "https://www.cc.gatech.edu/~brunzema/CS3651/readings/hexediting.pdf",
+        "description": "Background for new analysts."
+      },
+      {
+        "label": "Live forensics tips",
+        "url": "https://resources.infosecinstitute.com/topic/hex-editors-for-forensics/",
+        "description": "When to use hexedit vs GUI editors."
+      }
+    ]
+  }
+]

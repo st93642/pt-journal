@@ -773,5 +773,195 @@
     "id": "workflow_cloud_security_assessment",
     "label": "Cloud Security Assessment Workflow",
     "category": "Workflow Guides"
+  },
+  {
+    "id": "frida",
+    "label": "Frida - Dynamic Binary Instrumentation",
+    "category": "Mobile & Reverse Engineering"
+  },
+  {
+    "id": "mobsf",
+    "label": "MobSF - Mobile Security Framework",
+    "category": "Mobile & Reverse Engineering"
+  },
+  {
+    "id": "apktool",
+    "label": "APKTool - APK Decompilation",
+    "category": "Mobile & Reverse Engineering"
+  },
+  {
+    "id": "jadx",
+    "label": "JADX - Java Decompiler",
+    "category": "Mobile & Reverse Engineering"
+  },
+  {
+    "id": "androidsuite",
+    "label": "Android Exploitation Suite",
+    "category": "Mobile & Reverse Engineering"
+  },
+  {
+    "id": "iossuite",
+    "label": "iOS Exploitation Suite",
+    "category": "Mobile & Reverse Engineering"
+  },
+  {
+    "id": "shodan-cli",
+    "label": "Shodan CLI - Internet Search Engine",
+    "category": "OSINT & Recon Enhanced"
+  },
+  {
+    "id": "censys-api",
+    "label": "Censys API - Internet Scanning Data",
+    "category": "OSINT & Recon Enhanced"
+  },
+  {
+    "id": "hunter-io",
+    "label": "Hunter.io - Email Discovery",
+    "category": "OSINT & Recon Enhanced"
+  },
+  {
+    "id": "crtsh",
+    "label": "Crt.sh - Certificate Transparency",
+    "category": "OSINT & Recon Enhanced"
+  },
+  {
+    "id": "holehe",
+    "label": "Holehe - Email Validation",
+    "category": "OSINT & Recon Enhanced"
+  },
+  {
+    "id": "whoisutils",
+    "label": "WHOIS Utilities - Domain Lookup",
+    "category": "OSINT & Recon Enhanced"
+  },
+  {
+    "id": "proxychains",
+    "label": "Proxychains - Network Proxy",
+    "category": "Lateral Movement & Directory"
+  },
+  {
+    "id": "socks-tunneling",
+    "label": "SOCKS Tunneling Guide",
+    "category": "Lateral Movement & Directory"
+  },
+  {
+    "id": "dns-tunneling",
+    "label": "DNS Tunneling Guide",
+    "category": "Lateral Movement & Directory"
+  },
+  {
+    "id": "ssh-portforward",
+    "label": "SSH Port Forwarding Guide",
+    "category": "Lateral Movement & Directory"
+  },
+  {
+    "id": "ldapsearch",
+    "label": "ldapsearch - LDAP Query Tool",
+    "category": "Lateral Movement & Directory"
+  },
+  {
+    "id": "ldapdump",
+    "label": "ldapdump - LDAP Data Export",
+    "category": "Lateral Movement & Directory"
+  },
+  {
+    "id": "adrecon",
+    "label": "ADRecon - Active Directory Enumeration",
+    "category": "Lateral Movement & Directory"
+  },
+  {
+    "id": "zerologon",
+    "label": "Zerologon Exploitation Guide",
+    "category": "Lateral Movement & Directory"
+  },
+  {
+    "id": "sliver",
+    "label": "Sliver - Command & Control Framework",
+    "category": "Red Team Frameworks"
+  },
+  {
+    "id": "caldera",
+    "label": "Caldera - Automated Adversary Emulation",
+    "category": "Red Team Frameworks"
+  },
+  {
+    "id": "poshc2",
+    "label": "PoshC2 - PowerShell C&C",
+    "category": "Red Team Frameworks"
+  },
+  {
+    "id": "yara",
+    "label": "YARA - Pattern Matching Engine",
+    "category": "Threat Hunting & Compliance"
+  },
+  {
+    "id": "sigma",
+    "label": "Sigma - Threat Detection Rules",
+    "category": "Threat Hunting & Compliance"
+  },
+  {
+    "id": "loganalysis",
+    "label": "Log Analysis & Threat Hunting",
+    "category": "Threat Hunting & Compliance"
+  },
+  {
+    "id": "workflow_internal_network_ptes",
+    "label": "Internal Network Penetration Testing with AD Focus",
+    "category": "Workflow Guides"
+  },
+  {
+    "id": "workflow_wireless_security_assessment",
+    "label": "Wireless Security Assessment Workflow",
+    "category": "Workflow Guides"
+  },
+  {
+    "id": "workflow_physical_security_malware",
+    "label": "Physical Security & Malware Drop Assessment",
+    "category": "Workflow Guides"
+  },
+  {
+    "id": "workflow_social_engineering_campaign",
+    "label": "Social Engineering Campaign Workflow",
+    "category": "Workflow Guides"
+  },
+  {
+    "id": "workflow_incident_response_forensics",
+    "label": "Incident Response & Forensics Workflow",
+    "category": "Workflow Guides"
+  },
+  {
+    "id": "workflow_pci_dss_assessment",
+    "label": "PCI-DSS Compliance Assessment",
+    "category": "Workflow Guides"
+  },
+  {
+    "id": "workflow_hipaa_compliance",
+    "label": "HIPAA Compliance Assessment",
+    "category": "Workflow Guides"
+  },
+  {
+    "id": "workflow_cloud_iam_assessment",
+    "label": "Cloud IAM Assessment Workflow",
+    "category": "Workflow Guides"
+  },
+  {
+    "id": "workflow_supply_chain_security",
+    "label": "Supply Chain Security Assessment",
+    "category": "Workflow Guides"
+  },
+  {
+    "id": "workflow_evasion_obfuscation",
+    "label": "Evasion & Obfuscation Techniques",
+    "category": "Workflow Guides"
+  },
+  {
+    "id": "workflow_osint_assessment",
+    "label": "OSINT-Only Assessment Workflow",
+    "category": "Workflow Guides"
+  },
+  {
+    "id": "workflow_threat_hunting_lifecycle",
+    "label": "Threat Hunting Lifecycle Workflow",
+    "category": "Workflow Guides"
   }
 ]

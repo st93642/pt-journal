@@ -703,5 +703,75 @@
     "id": "playbook_persistence_mechanism_installation",
     "label": "Persistence Mechanism Installation",
     "category": "Attack Playbooks"
+  },
+  {
+    "id": "prowler",
+    "label": "Prowler - AWS Security Assessment",
+    "category": "Cloud Platform Security"
+  },
+  {
+    "id": "scoutsuite",
+    "label": "ScoutSuite - Multi-Cloud Security Auditing",
+    "category": "Cloud Platform Security"
+  },
+  {
+    "id": "cloudmapper",
+    "label": "CloudMapper - AWS Network Visualization",
+    "category": "Cloud Platform Security"
+  },
+  {
+    "id": "pacu",
+    "label": "Pacu - AWS Exploitation Framework",
+    "category": "Cloud Platform Security"
+  },
+  {
+    "id": "microburst",
+    "label": "MicroBurst - Azure Security Assessment",
+    "category": "Cloud Platform Security"
+  },
+  {
+    "id": "gcp-enum",
+    "label": "GCP-Enum - Google Cloud Enumeration",
+    "category": "Cloud Platform Security"
+  },
+  {
+    "id": "cloud-iam-enum",
+    "label": "Cloud IAM Enumerators",
+    "category": "Cloud Platform Security"
+  },
+  {
+    "id": "trivy",
+    "label": "Trivy - Container & VM Scanner",
+    "category": "Container & Kubernetes"
+  },
+  {
+    "id": "grype",
+    "label": "Grype - Container Vulnerability Scanner",
+    "category": "Container & Kubernetes"
+  },
+  {
+    "id": "clair",
+    "label": "Clair - Static Container Analysis",
+    "category": "Container & Kubernetes"
+  },
+  {
+    "id": "kube-hunter",
+    "label": "kube-hunter - Kubernetes Penetration Testing",
+    "category": "Container & Kubernetes"
+  },
+  {
+    "id": "kubesploit",
+    "label": "Kubesploit - Kubernetes Exploitation Framework",
+    "category": "Container & Kubernetes"
+  },
+  {
+    "id": "registry-scanner",
+    "label": "Registry Scanners",
+    "category": "Container & Kubernetes"
+  },
+  {
+    "id": "workflow_cloud_security_assessment",
+    "label": "Cloud Security Assessment Workflow",
+    "category": "Workflow Guides"
   }
 ]

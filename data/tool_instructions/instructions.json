@@ -27634,5 +27634,2214 @@
         "description": "JavaScript security best practices and tools"
       }
     ]
+  },
+  {
+    "id": "prowler",
+    "name": "Prowler",
+    "summary": "Prowler is an open-source security tool for AWS, Azure, GCP, and Kubernetes to do security assessments, audits, incident response, compliance, continuous monitoring, hardening, forensics readiness, and operational best practices.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from pip or snap",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "pip install prowler",
+            "copyable": true
+          },
+          {
+            "detail": "prowler --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from source or pip",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/prowler-cloud/prowler.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd prowler",
+            "copyable": true
+          },
+          {
+            "detail": "pip install -r requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "./prowler --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Official containerized deployment",
+        "steps": [
+          {
+            "detail": "docker pull toniblyx/prowler",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -it toniblyx/prowler aws",
+            "copyable": true
+          },
+          {
+            "detail": "# Configure AWS credentials in environment",
+            "copyable": false
+          },
+          {
+            "detail": "export AWS_ACCESS_KEY_ID=your_key",
+            "copyable": true
+          },
+          {
+            "detail": "export AWS_SECRET_ACCESS_KEY=your_secret",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Run AWS security assessment",
+        "command": "prowler aws",
+        "notes": [
+          "Requires AWS credentials configured",
+          "Outputs HTML and CSV reports"
+        ]
+      },
+      {
+        "description": "Check specific service",
+        "command": "prowler aws -M s3",
+        "notes": [
+          "Focus on S3 security checks only",
+          "Useful for targeted assessments"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "AWS Security Assessment",
+        "steps": [
+          {
+            "title": "Configure AWS credentials",
+            "details": "Set up AWS CLI credentials with appropriate IAM permissions",
+            "command": "aws configure"
+          },
+          {
+            "title": "Run comprehensive assessment",
+            "details": "Execute Prowler against all AWS services",
+            "command": "prowler aws -f csv"
+          },
+          {
+            "title": "Review findings",
+            "details": "Analyze generated reports for security issues",
+            "command": "# Check output directory for reports"
+          },
+          {
+            "title": "Export findings",
+            "details": "Convert findings to required format",
+            "command": "prowler aws -o json"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Multi-account AWS Assessment",
+        "stages": [
+          {
+            "label": "Configure profiles",
+            "description": "Set up multiple AWS profiles for different accounts",
+            "command": "aws configure --profile account1"
+          },
+          {
+            "label": "Run assessment per account",
+            "description": "Execute Prowler against each account",
+            "command": "prowler aws --profile account1"
+          },
+          {
+            "label": "Consolidate findings",
+            "description": "Merge results from multiple accounts",
+            "command": "# Use custom scripts to aggregate CSV outputs"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "[FAIL] S3 bucket allows public access",
+        "meaning": "S3 bucket has public read/write permissions",
+        "severity": "high"
+      },
+      {
+        "indicator": "[PASS] CloudTrail logging enabled",
+        "meaning": "CloudTrail is properly configured for auditing",
+        "severity": "info"
+      },
+      {
+        "indicator": "[WARNING] IAM user has console access",
+        "meaning": "IAM user has console access - consider programmatic only",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom compliance checks",
+        "command": "prowler aws -C custom_check_list.txt",
+        "scenario": "Run specific compliance frameworks (CIS, NIST, GDPR)",
+        "notes": [
+          "Create custom check lists for specific requirements",
+          "Integrate with CI/CD pipelines"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Prowler Documentation",
+        "url": "https://github.com/prowler-cloud/prowler",
+        "description": "Official documentation and usage guide"
+      },
+      {
+        "label": "AWS Security Best Practices",
+        "url": "https://docs.aws.amazon.com/security/",
+        "description": "AWS security documentation and guidelines"
+      }
+    ]
+  },
+  {
+    "id": "scoutsuite",
+    "name": "ScoutSuite",
+    "summary": "ScoutSuite is a multi-cloud security auditing tool. Security auditors can use it to evaluate the security posture of their cloud environments.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from pip",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "pip install scoutsuite",
+            "copyable": true
+          },
+          {
+            "detail": "scout --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/nccgroup/ScoutSuite.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd ScoutSuite",
+            "copyable": true
+          },
+          {
+            "detail": "pip install -r requirements.txt",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Containerized deployment",
+        "steps": [
+          {
+            "detail": "docker pull nccgroup/scoutsuite",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -it nccgroup/scoutsuite",
+            "copyable": true
+          },
+          {
+            "detail": "# Mount volume for reports",
+            "copyable": false
+          },
+          {
+            "detail": "docker run -v $(pwd):/reports nccgroup/scoutsuite",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Scan AWS environment",
+        "command": "scout aws",
+        "notes": [
+          "Requires AWS credentials",
+          "Generates HTML report"
+        ]
+      },
+      {
+        "description": "Scan Azure environment",
+        "command": "scout azure",
+        "notes": [
+          "Requires Azure authentication",
+          "Interactive login prompt"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Multi-Cloud Security Assessment",
+        "steps": [
+          {
+            "title": "Configure cloud credentials",
+            "details": "Set up credentials for each cloud provider",
+            "command": "# AWS: aws configure, Azure: az login, GCP: gcloud auth login"
+          },
+          {
+            "title": "Run cloud-specific scans",
+            "details": "Execute ScoutSuite against each provider",
+            "command": "scout azure && scout gcp && scout aws"
+          },
+          {
+            "title": "Review findings",
+            "details": "Analyze HTML reports for security issues",
+            "command": "# Open generated report-*.html files"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Continuous Cloud Monitoring",
+        "stages": [
+          {
+            "label": "Automate scans",
+            "description": "Schedule regular ScoutSuite executions",
+            "command": "# Use cron or cloud scheduler"
+          },
+          {
+            "label": "Compare results",
+            "description": "Track security posture changes over time",
+            "command": "# Use diff tools on JSON outputs"
+          },
+          {
+            "label": "Alert on changes",
+            "description": "Set up notifications for new findings",
+            "command": "# Integrate with SIEM or monitoring tools"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Dangerous rule found",
+        "meaning": "High-risk security configuration detected",
+        "severity": "high"
+      },
+      {
+        "indicator": "Warning rule found",
+        "meaning": "Medium-risk security issue",
+        "severity": "medium"
+      },
+      {
+        "indicator": "Good rule found",
+        "meaning": "Security best practice followed",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom rules",
+        "command": "scout --rules-dir custom_rules/",
+        "scenario": "Add organization-specific security checks",
+        "notes": [
+          "Write custom Python rules",
+          "Extend framework capabilities"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "ScoutSuite GitHub",
+        "url": "https://github.com/nccgroup/ScoutSuite",
+        "description": "Official repository and documentation"
+      },
+      {
+        "label": "Cloud Security Guides",
+        "url": "https://cloud.google.com/security",
+        "description": "Multi-cloud security best practices"
+      }
+    ]
+  },
+  {
+    "id": "trivy",
+    "name": "Trivy",
+    "summary": "Trivy is a simple and comprehensive vulnerability scanner for containers and other artifacts. It detects OS packages and software dependencies in container images, file systems, and Git repositories.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from apt repository",
+        "steps": [
+          {
+            "detail": "sudo apt-get install wget apt-transport-https gnupg lsb-release",
+            "copyable": true
+          },
+          {
+            "detail": "wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -",
+            "copyable": true
+          },
+          {
+            "detail": "echo \"deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main\" | sudo tee -a /etc/apt/sources.list.d/trivy.list",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt-get update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt-get install trivy",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from binary",
+        "steps": [
+          {
+            "detail": "wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.30.0_Linux-64bit.tar.gz",
+            "copyable": true
+          },
+          {
+            "detail": "tar zxvf trivy_0.30.0_Linux-64bit.tar.gz",
+            "copyable": true
+          },
+          {
+            "detail": "sudo mv trivy /usr/local/bin/",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Official Docker image",
+        "steps": [
+          {
+            "detail": "docker pull aquasec/trivy:latest",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image nginx:latest",
+            "copyable": true
+          },
+          {
+            "detail": "# For filesystem scanning",
+            "copyable": false
+          },
+          {
+            "detail": "docker run --rm -v /path/to/scan:/data aquasec/trivy fs /data",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Scan container image",
+        "command": "trivy image nginx:latest",
+        "notes": [
+          "Scans for OS and application vulnerabilities",
+          "Outputs severity levels and CVE details"
+        ]
+      },
+      {
+        "description": "Scan filesystem",
+        "command": "trivy fs /path/to/directory",
+        "notes": [
+          "Scans local directories for vulnerabilities",
+          "Useful for CI/CD pipeline integration"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Container Security Assessment",
+        "steps": [
+          {
+            "title": "Pull target image",
+            "details": "Download the container image to scan",
+            "command": "docker pull application:latest"
+          },
+          {
+            "title": "Run vulnerability scan",
+            "details": "Scan for known vulnerabilities",
+            "command": "trivy image application:latest"
+          },
+          {
+            "title": "Review findings",
+            "details": "Analyze severity and impact of vulnerabilities",
+            "command": "# Check CRITICAL and HIGH severity findings"
+          },
+          {
+            "title": "Generate report",
+            "details": "Export results for documentation",
+            "command": "trivy image --format json --output report.json application:latest"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "CI/CD Pipeline Integration",
+        "stages": [
+          {
+            "label": "Build stage",
+            "description": "Build container image",
+            "command": "docker build -t app:${BUILD_NUMBER} ."
+          },
+          {
+            "label": "Security scan",
+            "description": "Run Trivy vulnerability scan",
+            "command": "trivy image --exit-code 1 app:${BUILD_NUMBER}"
+          },
+          {
+            "label": "Deploy stage",
+            "description": "Deploy if scan passes",
+            "command": "docker push app:${BUILD_NUMBER}"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "CRITICAL: CVE-2023-1234",
+        "meaning": "Critical vulnerability requiring immediate patching",
+        "severity": "critical"
+      },
+      {
+        "indicator": "HIGH: Outdated package version",
+        "meaning": "Package has known high-severity vulnerabilities",
+        "severity": "high"
+      },
+      {
+        "indicator": "MEDIUM: Configuration issue",
+        "meaning": "Security misconfiguration detected",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom policy checks",
+        "command": "trivy image --policy policy.yaml app:latest",
+        "scenario": "Define custom security policies",
+        "notes": [
+          "Create YAML policy files",
+          "Enforce organizational security standards"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Trivy Documentation",
+        "url": "https://github.com/aquasecurity/trivy",
+        "description": "Official documentation and usage guide"
+      },
+      {
+        "label": "Container Security Best Practices",
+        "url": "https://aquasecurity.github.io/trivy/",
+        "description": "Container security guidelines and tutorials"
+      }
+    ]
+  },
+  {
+    "id": "kube-hunter",
+    "name": "kube-hunter",
+    "summary": "kube-hunter is a penetration testing tool for Kubernetes clusters. It can be used to test for vulnerabilities in Kubernetes clusters.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from pip",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "pip install kube-hunter",
+            "copyable": true
+          },
+          {
+            "detail": "kube-hunter --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/aquasecurity/kube-hunter.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd kube-hunter",
+            "copyable": true
+          },
+          {
+            "detail": "pip install -r requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "python kube_hunter.py",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run from Docker container",
+        "steps": [
+          {
+            "detail": "docker pull aquasec/kube-hunter",
+            "copyable": true
+          },
+          {
+            "detail": "# Run from outside cluster",
+            "copyable": false
+          },
+          {
+            "detail": "docker run --rm aquasec/kube-hunter",
+            "copyable": true
+          },
+          {
+            "detail": "# Run from inside cluster",
+            "copyable": false
+          },
+          {
+            "detail": "docker run --rm aquasec/kube-hunter --pod",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Scan remote cluster",
+        "command": "kube-hunter --remote 192.168.1.100",
+        "notes": [
+          "Scans external Kubernetes cluster",
+          "Requires network access"
+        ]
+      },
+      {
+        "description": "Scan from within cluster",
+        "command": "kube-hunter --pod",
+        "notes": [
+          "Runs inside a pod in the target cluster",
+          "More comprehensive view"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Kubernetes Security Assessment",
+        "steps": [
+          {
+            "title": "Configure access",
+            "details": "Set up kubeconfig or network access",
+            "command": "export KUBECONFIG=~/.kube/config"
+          },
+          {
+            "title": "Run reconnaissance",
+            "details": "Discover cluster components",
+            "command": "kube-hunter --list"
+          },
+          {
+            "title": "Execute penetration test",
+            "details": "Run comprehensive security scan",
+            "command": "kube-hunter --remote cluster-ip"
+          },
+          {
+            "title": "Analyze findings",
+            "details": "Review vulnerabilities and recommendations",
+            "command": "# Check report for high-severity issues"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Kubernetes Hardening Assessment",
+        "stages": [
+          {
+            "label": "External scanning",
+            "description": "Scan cluster from external network",
+            "command": "kube-hunter --remote cluster-endpoint"
+          },
+          {
+            "label": "Internal scanning",
+            "description": "Deploy pod for internal assessment",
+            "command": "kubectl apply -f https://raw.githubusercontent.com/aquasecurity/kube-hunter/master/job.yaml"
+          },
+          {
+            "label": "Compare results",
+            "description": "Analyze external vs internal findings",
+            "command": "# Correlate findings from both perspectives"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "HIGH: Exposed dashboard",
+        "meaning": "Kubernetes dashboard accessible without authentication",
+        "severity": "high"
+      },
+      {
+        "indicator": "MEDIUM: Privileged containers",
+        "meaning": "Containers running with elevated privileges",
+        "severity": "medium"
+      },
+      {
+        "indicator": "LOW: Outdated components",
+        "meaning": "Kubernetes components need updates",
+        "severity": "low"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom hunting modules",
+        "command": "kube-hunter --custom-modules /path/to/modules",
+        "scenario": "Add organization-specific tests",
+        "notes": [
+          "Write custom hunting modules",
+          "Extend framework capabilities"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "kube-hunter Documentation",
+        "url": "https://github.com/aquasecurity/kube-hunter",
+        "description": "Official documentation and usage guide"
+      },
+      {
+        "label": "Kubernetes Security",
+        "url": "https://kubernetes.io/docs/concepts/security/",
+        "description": "Kubernetes security best practices"
+      }
+    ]
+  },
+  {
+    "id": "workflow_cloud_security_assessment",
+    "name": "Cloud Security Assessment Workflow",
+    "summary": "Comprehensive methodology for assessing cloud security posture across multiple providers, covering IAM configurations, misconfigurations, and data exposure risks.",
+    "installation_guides": [],
+    "quick_examples": [],
+    "step_sequences": [
+      {
+        "title": "Cloud Security Assessment Methodology",
+        "steps": [
+          {
+            "title": "Reconnaissance and Discovery",
+            "details": "Identify cloud assets, accounts, and attack surface",
+            "command": "# Use cloud provider consoles and enumeration tools"
+          },
+          {
+            "title": "IAM and Access Control Analysis",
+            "details": "Review permissions, roles, and access patterns",
+            "command": "# Prowler, ScoutSuite for automated IAM analysis"
+          },
+          {
+            "title": "Misconfiguration Assessment",
+            "details": "Check for common security misconfigurations",
+            "command": "# Cloud-specific scanners and compliance checks"
+          },
+          {
+            "title": "Data Exposure Analysis",
+            "details": "Identify potential data leakage points",
+            "command": "# Review storage, databases, and data flows"
+          },
+          {
+            "title": "Network Security Review",
+            "details": "Analyze network configurations and flows",
+            "command": "# VPC, security groups, firewall rules"
+          },
+          {
+            "title": "Logging and Monitoring Assessment",
+            "details": "Evaluate audit capabilities and alerting",
+            "command": "# CloudTrail, Audit Logs, monitoring tools"
+          },
+          {
+            "title": "Container and Orchestration Security",
+            "details": "Assess container and Kubernetes security",
+            "command": "# Trivy, kube-hunter for container scanning"
+          },
+          {
+            "title": "Compliance and Governance Review",
+            "details": "Check compliance with standards and regulations",
+            "command": "# CIS benchmarks, industry standards"
+          },
+          {
+            "title": "Remediation Planning",
+            "details": "Prioritize findings and create remediation plan",
+            "command": "# Risk assessment and remediation roadmap"
+          },
+          {
+            "title": "Reporting and Documentation",
+            "details": "Generate comprehensive security assessment report",
+            "command": "# Executive summary and technical findings"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Multi-Provider Assessment Strategy",
+        "stages": [
+          {
+            "label": "Provider Selection",
+            "description": "Identify all cloud providers in use",
+            "command": "# Inventory AWS, Azure, GCP accounts"
+          },
+          {
+            "label": "Tool Deployment",
+            "description": "Deploy appropriate scanning tools",
+            "command": "# Prowler for AWS, ScoutSuite for multi-cloud"
+          },
+          {
+            "label": "Cross-Provider Analysis",
+            "description": "Identify cross-cloud security issues",
+            "command": "# Review inter-cloud connections and data flows"
+          },
+          {
+            "label": "Unified Reporting",
+            "description": "Consolidate findings across providers",
+            "command": "# Generate unified risk assessment"
+          }
+        ]
+      },
+      {
+        "name": "Continuous Cloud Security Monitoring",
+        "stages": [
+          {
+            "label": "Baseline Establishment",
+            "description": "Create security baseline for each environment",
+            "command": "# Initial comprehensive assessment"
+          },
+          {
+            "label": "Automated Scanning",
+            "description": "Set up regular automated scans",
+            "command": "# Schedule Prowler, ScoutSuite executions"
+          },
+          {
+            "label": "Change Detection",
+            "description": "Monitor for security configuration changes",
+            "command": "# CloudTrail, audit log analysis"
+          },
+          {
+            "label": "Alerting and Response",
+            "description": "Implement security alerting and response",
+            "command": "# SIEM integration, automated responses"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Critical: Public data exposure",
+        "meaning": "Sensitive data accessible from internet",
+        "severity": "critical"
+      },
+      {
+        "indicator": "High: Over-privileged IAM roles",
+        "meaning": "Excessive permissions granted to identities",
+        "severity": "high"
+      },
+      {
+        "indicator": "Medium: Missing encryption",
+        "meaning": "Data not encrypted at rest or in transit",
+        "severity": "medium"
+      },
+      {
+        "indicator": "Low: Inadequate logging",
+        "meaning": "Insufficient audit trail for security events",
+        "severity": "low"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Automated Remediation",
+        "command": "# Use cloud-native automation services",
+        "scenario": "Implement automatic fixes for common issues",
+        "notes": [
+          "AWS Lambda functions for auto-remediation",
+          "Azure Functions for automated responses",
+          "Cloud Functions for GCP automation"
+        ]
+      },
+      {
+        "title": "DevSecOps Integration",
+        "command": "# Integrate security into CI/CD pipelines",
+        "scenario": "Shift-left cloud security testing",
+        "notes": [
+          "Infrastructure as Code security scanning",
+          "Automated compliance checks",
+          "Security gate enforcement"
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Cloud Security Assessment Tools Comparison",
+      "columns": [
+        "Tool",
+        "Cloud Providers",
+        "Automation",
+        "Compliance",
+        "Customization"
+      ],
+      "rows": [
+        [
+          "Prowler",
+          "AWS, Azure, GCP",
+          "High",
+          "CIS, NIST, GDPR",
+          "Medium"
+        ],
+        [
+          "ScoutSuite",
+          "AWS, Azure, GCP, Oracle",
+          "Medium",
+          "Custom rules",
+          "High"
+        ],
+        [
+          "CloudMapper",
+          "AWS",
+          "Low",
+          "None",
+          "High"
+        ],
+        [
+          "Pacu",
+          "AWS",
+          "High",
+          "None",
+          "High"
+        ]
+      ]
+    },
+    "resources": [
+      {
+        "label": "Cloud Security Alliance",
+        "url": "https://cloudsecurityalliance.org/",
+        "description": "Cloud security best practices and guidance"
+      },
+      {
+        "label": "CIS Cloud Benchmarks",
+        "url": "https://www.cisecurity.org/cis-benchmarks/",
+        "description": "Center for Internet Security cloud benchmarks"
+      },
+      {
+        "label": "NIST Cloud Security",
+        "url": "https://www.nist.gov/cloud-computing",
+        "description": "NIST cloud security guidelines and standards"
+      }
+    ]
+  },
+  {
+    "id": "cloudmapper",
+    "name": "CloudMapper",
+    "summary": "CloudMapper helps you analyze your Amazon Web Services (AWS) environments. It was originally created by Duo Security and is now maintained by the community.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from pip",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "pip install cloudmapper",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/duo-labs/cloudmapper.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd cloudmapper",
+            "copyable": true
+          },
+          {
+            "detail": "pip install -r requirements.txt",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run from Docker",
+        "steps": [
+          {
+            "detail": "docker pull duosecurity/cloudmapper",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -it duosecurity/cloudmapper",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Collect AWS data",
+        "command": "cloudmapper.py collect --account 123456789012",
+        "notes": ["Collects configuration data from AWS account"]
+      },
+      {
+        "description": "Generate network diagram",
+        "command": "cloudmapper.py visualize --account 123456789012",
+        "notes": ["Creates interactive HTML network visualization"]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "AWS Network Visualization",
+        "steps": [
+          {
+            "title": "Configure AWS credentials",
+            "details": "Set up AWS CLI credentials",
+            "command": "aws configure"
+          },
+          {
+            "title": "Collect account data",
+            "details": "Gather configuration from AWS",
+            "command": "cloudmapper.py collect --account your-account"
+          },
+          {
+            "title": "Generate visualization",
+            "details": "Create network diagram",
+            "command": "cloudmapper.py visualize --account your-account"
+          },
+          {
+            "title": "Review findings",
+            "details": "Analyze network topology",
+            "command": "# Open web/index.html"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Multi-Account Analysis",
+        "stages": [
+          {
+            "label": "Data collection",
+            "description": "Collect data from all AWS accounts",
+            "command": "cloudmapper.py collect --all-profiles"
+          },
+          {
+            "label": "Visualization",
+            "description": "Generate network diagrams",
+            "command": "cloudmapper.py visualize --all-profiles"
+          },
+          {
+            "label": "Security review",
+            "description": "Analyze network security posture",
+            "command": "# Review network exposures and connections"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Public subnet exposed",
+        "meaning": "Subnet has direct internet access",
+        "severity": "medium"
+      },
+      {
+        "indicator": "VPC peering connection",
+        "meaning": "Network connection between VPCs",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom inventory filtering",
+        "command": "cloudmapper.py collect --filter-tag Environment:Production",
+        "scenario": "Focus on specific resources",
+        "notes": ["Filter by tags for targeted analysis"]
+      }
+    ],
+    "resources": [
+      {
+        "label": "CloudMapper GitHub",
+        "url": "https://github.com/duo-labs/cloudmapper",
+        "description": "Official repository and documentation"
+      }
+    ]
+  },
+  {
+    "id": "pacu",
+    "name": "Pacu",
+    "summary": "Pacu is an AWS exploitation framework, designed for testing the security of Amazon Web Services environments.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from source",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/RhinoSecurityLabs/pacu.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd pacu",
+            "copyable": true
+          },
+          {
+            "detail": "pip install -r requirements.txt",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from source with dependencies",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/RhinoSecurityLabs/pacu.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd pacu",
+            "copyable": true
+          },
+          {
+            "detail": "bash install.sh",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run from Docker container",
+        "steps": [
+          {
+            "detail": "docker pull rhinosecuritylabs/pacu",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -it rhinosecuritylabs/pacu",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Start Pacu interactive session",
+        "command": "python3 pacu.py",
+        "notes": ["Launches the Pacu exploitation framework"]
+      },
+      {
+        "description": "Run reconnaissance module",
+        "command": "run whoami",
+        "notes": ["Check current AWS identity and permissions"]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "AWS Penetration Testing",
+        "steps": [
+          {
+            "title": "Configure AWS credentials",
+            "details": "Set up target AWS credentials",
+            "command": "aws configure"
+          },
+          {
+            "title": "Start Pacu framework",
+            "details": "Launch the exploitation framework",
+            "command": "python3 pacu.py"
+          },
+          {
+            "title": "Run reconnaissance",
+            "details": "Identify attack surface",
+            "command": "run whoami"
+          },
+          {
+            "title": "Execute exploitation modules",
+            "details": "Run specific attack modules",
+            "command": "run ebs__download_snapshot"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Privilege Escalation Testing",
+        "stages": [
+          {
+            "label": "Enumerate permissions",
+            "description": "Check current IAM permissions",
+            "command": "run iam__enum_permissions"
+          },
+          {
+            "label": "Identify escalation paths",
+            "description": "Find privilege escalation opportunities",
+            "command": "run iam__privesc_scan"
+          },
+          {
+            "label": "Exploit vulnerabilities",
+            "description": "Execute privilege escalation",
+            "command": "run iam__backdoor_assume_role"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Admin access detected",
+        "meaning": "Current credentials have administrative privileges",
+        "severity": "high"
+      },
+      {
+        "indicator": "Privilege escalation possible",
+        "meaning": "Path to higher privileges identified",
+        "severity": "high"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom module development",
+        "command": "# Create modules in /pacu/modules/",
+        "scenario": "Develop custom exploitation modules",
+        "notes": ["Follow Pacu module development guidelines"]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Pacu GitHub",
+        "url": "https://github.com/RhinoSecurityLabs/pacu",
+        "description": "Official repository and documentation"
+      }
+    ]
+  },
+  {
+    "id": "microburst",
+    "name": "MicroBurst",
+    "summary": "MicroBurst is a collection of scripts for assessing Microsoft Azure security.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from source",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/NetSPI/MicroBurst.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd MicroBurst",
+            "copyable": true
+          },
+          {
+            "detail": "pip install -r requirements.txt",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install with PowerShell modules",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/NetSPI/MicroBurst.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd MicroBurst",
+            "copyable": true
+          },
+          {
+            "detail": "Import-Module .\\MicroBurst.psm1",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run in PowerShell environment",
+        "steps": [
+          {
+            "detail": "# Requires PowerShell Core",
+            "copyable": false
+          },
+          {
+            "detail": "pwsh -File MicroBurst.ps1",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Run Azure reconnaissance",
+        "command": "Invoke-AzureRecon",
+        "notes": ["Performs comprehensive Azure reconnaissance"]
+      },
+      {
+        "description": "Check for storage account access",
+        "command": "Get-AzureStorageInfo",
+        "notes": ["Enumerates accessible storage accounts"]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Azure Security Assessment",
+        "steps": [
+          {
+            "title": "Authenticate to Azure",
+            "details": "Connect to Azure subscription",
+            "command": "Connect-AzAccount"
+          },
+          {
+            "title": "Run reconnaissance",
+            "details": "Enumerate Azure resources",
+            "command": "Invoke-AzureRecon"
+          },
+          {
+            "title": "Analyze findings",
+            "details": "Review security issues",
+            "command": "# Check output for vulnerabilities"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Azure Tenant Assessment",
+        "stages": [
+          {
+            "label": "Tenant enumeration",
+            "description": "Discover Azure AD configuration",
+            "command": "Get-AzureDomainInfo"
+          },
+          {
+            "label": "Resource enumeration",
+            "description": "List all accessible resources",
+            "command": "Invoke-AzureRecon"
+          },
+          {
+            "label": "Security analysis",
+            "description": "Identify security misconfigurations",
+            "command": "# Review findings and recommendations"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Public storage account",
+        "meaning": "Storage account accessible from internet",
+        "severity": "high"
+      },
+      {
+        "indicator": "Weak authentication",
+        "meaning": "Authentication mechanism vulnerable",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom scripts",
+        "command": "# Extend MicroBurst with custom modules",
+        "scenario": "Develop organization-specific tests",
+        "notes": ["Follow PowerShell module patterns"]
+      }
+    ],
+    "resources": [
+      {
+        "label": "MicroBurst GitHub",
+        "url": "https://github.com/NetSPI/MicroBurst",
+        "description": "Official repository and documentation"
+      }
+    ]
+  },
+  {
+    "id": "gcp-enum",
+    "name": "GCP-Enum",
+    "summary": "GCP-Enum is a multi-threaded GCP security enumeration tool designed to make GCP security testing more efficient.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from source",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/RhinoSecurityLabs/GCPSecurityResearch.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd GCPSecurityResearch/GCP-Enum",
+            "copyable": true
+          },
+          {
+            "detail": "pip install -r requirements.txt",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install dependencies and run",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/RhinoSecurityLabs/GCPSecurityResearch.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd GCPSecurityResearch/GCP-Enum",
+            "copyable": true
+          },
+          {
+            "detail": "pip install -r requirements.txt",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run with gcloud CLI",
+        "steps": [
+          {
+            "detail": "gcloud auth login",
+            "copyable": true
+          },
+          {
+            "detail": "gcloud config set project your-project-id",
+            "copyable": true
+          },
+          {
+            "detail": "python3 gcp_enum.py",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Run GCP enumeration",
+        "command": "python3 gcp_enum.py",
+        "notes": ["Enumerates all accessible GCP resources"]
+      },
+      {
+        "description": "Check specific project",
+        "command": "python3 gcp_enum.py -p project-id",
+        "notes": ["Targets specific GCP project"]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "GCP Security Assessment",
+        "steps": [
+          {
+            "title": "Configure GCP credentials",
+            "details": "Set up GCP authentication",
+            "command": "gcloud auth login"
+          },
+          {
+            "title": "Set target project",
+            "details": "Specify GCP project to assess",
+            "command": "gcloud config set project project-id"
+          },
+          {
+            "title": "Run enumeration",
+            "details": "Enumerate GCP resources",
+            "command": "python3 gcp_enum.py"
+          },
+          {
+            "title": "Review findings",
+            "details": "Analyze security issues",
+            "command": "# Check output for vulnerabilities"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Multi-Project Analysis",
+        "stages": [
+          {
+            "label": "Project discovery",
+            "description": "List all accessible projects",
+            "command": "gcloud projects list"
+          },
+          {
+            "label": "Enumerate each project",
+            "description": "Run enumeration on all projects",
+            "command": "python3 gcp_enum.py -a"
+          },
+          {
+            "label": "Consolidate findings",
+            "description": "Aggregate security findings",
+            "command": "# Review combined output"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Public bucket",
+        "meaning": "Cloud Storage bucket publicly accessible",
+        "severity": "high"
+      },
+      {
+        "indicator": "Open firewall rule",
+        "meaning": "Firewall allows unrestricted access",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom service enumeration",
+        "command": "python3 gcp_enum.py -s compute",
+        "scenario": "Focus on specific GCP services",
+        "notes": ["Target specific services for deeper analysis"]
+      }
+    ],
+    "resources": [
+      {
+        "label": "GCP-Enum GitHub",
+        "url": "https://github.com/RhinoSecurityLabs/GCPSecurityResearch",
+        "description": "Official repository and documentation"
+      }
+    ]
+  },
+  {
+    "id": "grype",
+    "name": "Grype",
+    "summary": "Grype is a vulnerability scanner for container images and filesystems. It scans for known vulnerabilities in operating system packages and application dependencies.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from binary",
+        "steps": [
+          {
+            "detail": "curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin",
+            "copyable": true
+          },
+          {
+            "detail": "grype version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/anchore/grype.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd grype",
+            "copyable": true
+          },
+          {
+            "detail": "go build -o grype cmd/grype/main.go",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run from Docker",
+        "steps": [
+          {
+            "detail": "docker pull anchore/grype:latest",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock anchore/grype:latest image nginx:latest",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Scan container image",
+        "command": "grype nginx:latest",
+        "notes": ["Scans nginx image for vulnerabilities"]
+      },
+      {
+        "description": "Scan directory",
+        "command": "grype dir:/path/to/app",
+        "notes": ["Scans local directory for vulnerabilities"]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Container Vulnerability Scanning",
+        "steps": [
+          {
+            "title": "Pull target image",
+            "details": "Download container image",
+            "command": "docker pull application:latest"
+          },
+          {
+            "title": "Run vulnerability scan",
+            "details": "Scan for known vulnerabilities",
+            "command": "grype application:latest"
+          },
+          {
+            "title": "Review findings",
+            "details": "Analyze vulnerability results",
+            "command": "# Check severity levels and CVEs"
+          },
+          {
+            "title": "Generate report",
+            "details": "Export scan results",
+            "command": "grype application:latest -o json > report.json"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "CI/CD Integration",
+        "stages": [
+          {
+            "label": "Build image",
+            "description": "Build container image",
+            "command": "docker build -t app:${BUILD_NUMBER} ."
+          },
+          {
+            "label": "Security scan",
+            "description": "Run Grype vulnerability scan",
+            "command": "grype app:${BUILD_NUMBER} --fail-on high"
+          },
+          {
+            "label": "Deploy if safe",
+            "description": "Deploy if no high-severity issues",
+            "command": "docker push app:${BUILD_NUMBER}"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "CVE-2023-1234",
+        "meaning": "Specific vulnerability identified",
+        "severity": "high"
+      },
+      {
+        "indicator": "No vulnerabilities found",
+        "meaning": "Image appears secure",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom vulnerability database",
+        "command": "grype app:latest --db /path/to/custom-db",
+        "scenario": "Use custom vulnerability data",
+        "notes": ["Integrate with internal vulnerability feeds"]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Grype Documentation",
+        "url": "https://github.com/anchore/grype",
+        "description": "Official repository and documentation"
+      }
+    ]
+  },
+  {
+    "id": "clair",
+    "name": "Clair",
+    "summary": "Clair is an open source project for the static analysis of vulnerabilities in application containers.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Run with Docker Compose",
+        "steps": [
+          {
+            "detail": "docker-compose up -d",
+            "copyable": true
+          },
+          {
+            "detail": "# Uses pre-configured docker-compose.yml",
+            "copyable": false
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/quay/clair.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd clair",
+            "copyable": true
+          },
+          {
+            "detail": "go build -o clair ./cmd/clair",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Official Docker image",
+        "steps": [
+          {
+            "detail": "docker pull quay.io/coreos/clair:v4.4.0",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -d --name clair -p 6060:6060 quay.io/coreos/clair:v4.4.0",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Analyze container image",
+        "command": "clairctl analyze nginx:latest",
+        "notes": ["Analyzes image for vulnerabilities"]
+      },
+      {
+        "description": "Check Clair status",
+        "command": "curl http://localhost:6060/v1/namespaces",
+        "notes": ["Checks Clair API status"]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Container Security Analysis",
+        "steps": [
+          {
+            "title": "Start Clair service",
+            "details": "Launch Clair vulnerability scanner",
+            "command": "docker-compose up -d"
+          },
+          {
+            "title": "Analyze image",
+            "details": "Submit image for analysis",
+            "command": "clairctl analyze application:latest"
+          },
+          {
+            "title": "Review results",
+            "details": "Check vulnerability report",
+            "command": "clairctl report application:latest"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Enterprise Container Scanning",
+        "stages": [
+          {
+            "label": "Deploy Clair",
+            "description": "Set up Clair infrastructure",
+            "command": "kubectl apply -f clair-deployment.yaml"
+          },
+          {
+            "label": "Configure scanners",
+            "description": "Set up image scanning workflows",
+            "command": "# Configure registry webhooks"
+          },
+          {
+            "label": "Automate scanning",
+            "description": "Integrate with CI/CD pipeline",
+            "command": "# Add scanning stages to pipeline"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Vulnerability detected",
+        "meaning": "Security issue found in container",
+        "severity": "medium"
+      },
+      {
+        "indicator": "Analysis complete",
+        "meaning": "Container analysis finished",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom vulnerability sources",
+        "command": "# Configure additional vulnerability feeds",
+        "scenario": "Extend Clair with custom data sources",
+        "notes": ["Add internal vulnerability databases"]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Clair Documentation",
+        "url": "https://github.com/quay/clair",
+        "description": "Official repository and documentation"
+      }
+    ]
+  },
+  {
+    "id": "kubesploit",
+    "name": "Kubesploit",
+    "summary": "Kubesploit is a penetration testing framework for Kubernetes clusters, providing modules for various attack scenarios.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from source",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/cyberark/kubesploit.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd kubesploit",
+            "copyable": true
+          },
+          {
+            "detail": "pip install -r requirements.txt",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install dependencies",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/cyberark/kubesploit.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd kubesploit",
+            "copyable": true
+          },
+          {
+            "detail": "python3 kubesploit.py",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run from container",
+        "steps": [
+          {
+            "detail": "docker build -t kubesploit .",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -it kubesploit",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Start Kubesploit framework",
+        "command": "python3 kubesploit.py",
+        "notes": ["Launches the Kubernetes exploitation framework"]
+      },
+      {
+        "description": "List available modules",
+        "command": "show modules",
+        "notes": ["Displays all attack modules"]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Kubernetes Penetration Testing",
+        "steps": [
+          {
+            "title": "Configure access",
+            "details": "Set up Kubernetes access",
+            "command": "export KUBECONFIG=~/.kube/config"
+          },
+          {
+            "title": "Start framework",
+            "details": "Launch Kubesploit",
+            "command": "python3 kubesploit.py"
+          },
+          {
+            "title": "Enumerate cluster",
+            "details": "Discover cluster information",
+            "command": "use recon/cluster_enum"
+          },
+          {
+            "title": "Execute attacks",
+            "details": "Run exploitation modules",
+            "command": "run"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Cluster Compromise Testing",
+        "stages": [
+          {
+            "label": "Initial access",
+            "description": "Gain initial cluster access",
+            "command": "use attack/pod_escape"
+          },
+          {
+            "label": "Privilege escalation",
+            "description": "Escalate privileges",
+            "command": "use privesc/rbac_abuse"
+          },
+          {
+            "label": "Persistence",
+            "description": "Maintain access",
+            "command": "use persistence/backdoor"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Cluster compromised",
+        "meaning": "Successful cluster exploitation",
+        "severity": "critical"
+      },
+      {
+        "indicator": "Access denied",
+        "meaning": "Insufficient permissions",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom module development",
+        "command": "# Create modules in modules/",
+        "scenario": "Develop custom attack modules",
+        "notes": ["Follow Kubesploit module framework"]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Kubesploit GitHub",
+        "url": "https://github.com/cyberark/kubesploit",
+        "description": "Official repository and documentation"
+      }
+    ]
+  },
+  {
+    "id": "cloud-iam-enum",
+    "name": "Cloud IAM Enumerators",
+    "summary": "Collection of tools for enumerating cloud IAM permissions and identifying privilege escalation paths across multiple cloud providers.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install various IAM tools",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "pip install aws-iam-privesc",
+            "copyable": true
+          },
+          {
+            "detail": "pip install azurehound",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install IAM enumeration tools",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/RhinoSecurityLabs/pacu.git",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/BloodHoundAD/AzureHound.git",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run IAM tools in containers",
+        "steps": [
+          {
+            "detail": "docker pull python:3.9",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -it python:3.9 bash",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "AWS IAM privilege escalation check",
+        "command": "python3 aws_iam_privesc.py",
+        "notes": ["Checks for AWS IAM privilege escalation paths"]
+      },
+      {
+        "description": "Azure AD enumeration",
+        "command": "azurehound -u user@domain.com -p password",
+        "notes": ["Enumerates Azure AD relationships"]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Cloud IAM Analysis",
+        "steps": [
+          {
+            "title": "Configure cloud credentials",
+            "details": "Set up cloud provider credentials",
+            "command": "aws configure && az login"
+          },
+          {
+            "title": "Enumerate permissions",
+            "details": "Check current IAM permissions",
+            "command": "python3 aws_iam_privesc.py"
+          },
+          {
+            "title": "Identify escalation paths",
+            "details": "Find privilege escalation opportunities",
+            "command": "# Review tool output for escalation vectors"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Multi-Cloud IAM Assessment",
+        "stages": [
+          {
+            "label": "AWS IAM analysis",
+            "description": "Analyze AWS IAM permissions",
+            "command": "python3 aws_iam_privesc.py"
+          },
+          {
+            "label": "Azure AD analysis",
+            "description": "Map Azure AD relationships",
+            "command": "azurehound -c"
+          },
+          {
+            "label": "GCP IAM analysis",
+            "description": "Check GCP IAM permissions",
+            "command": "gcloud iam service-accounts list"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Privilege escalation possible",
+        "meaning": "Path to higher privileges identified",
+        "severity": "high"
+      },
+      {
+            "indicator": "Admin access detected",
+            "meaning": "Current credentials have administrative privileges",
+            "severity": "high"
+          }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Cross-cloud analysis",
+        "command": "# Combine results from multiple cloud providers",
+        "scenario": "Analyze permissions across cloud environments",
+        "notes": ["Identify cross-cloud security issues"]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Cloud IAM Security",
+        "url": "https://cloud.google.com/iam",
+        "description": "Cloud IAM best practices and documentation"
+      }
+    ]
+  },
+  {
+    "id": "registry-scanner",
+    "name": "Registry Scanners",
+    "summary": "Tools for scanning container registries for vulnerabilities, secrets, and security misconfigurations.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install registry scanning tools",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "pip install trufflehog",
+            "copyable": true
+          },
+          {
+            "detail": "pip install registry-scan",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install security scanning tools",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/aquasecurity/trivy.git",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/trufflesecurity/trufflehog.git",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run scanners in containers",
+        "steps": [
+          {
+            "detail": "docker pull aquasec/trivy",
+            "copyable": true
+          },
+          {
+            "detail": "docker pull trufflesecurity/trufflehog",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Scan Docker Hub repository",
+        "command": "trivy image nginx:latest",
+        "notes": ["Scans Docker Hub image for vulnerabilities"]
+      },
+      {
+        "description": "Scan for secrets",
+        "command": "trufflehog docker://nginx:latest",
+        "notes": ["Scans image for exposed secrets"]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Registry Security Assessment",
+        "steps": [
+          {
+            "title": "Identify registries",
+            "details": "List all container registries",
+            "command": "# Docker Hub, ECR, GCR, ACR"
+          },
+          {
+            "title": "Scan for vulnerabilities",
+            "details": "Check images for security issues",
+            "command": "trivy image registry/image:tag"
+          },
+          {
+            "title": "Scan for secrets",
+            "details": "Check for exposed credentials",
+            "command": "trufflehog docker://registry/image:tag"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Enterprise Registry Security",
+        "stages": [
+          {
+            "label": "Registry inventory",
+            "description": "Catalog all container registries",
+            "command": "# List private and public registries"
+          },
+          {
+            "label": "Vulnerability scanning",
+            "description": "Scan all images for vulnerabilities",
+            "command": "trivy image --severity HIGH,CRITICAL"
+          },
+          {
+            "label": "Secret detection",
+            "description": "Scan for exposed secrets",
+            "command": "trufflehog --entropy=false"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Critical vulnerability",
+        "meaning": "High-risk security issue found",
+        "severity": "critical"
+      },
+      {
+        "indicator": "Secret detected",
+        "meaning": "Potential credential exposure",
+        "severity": "high"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Automated registry monitoring",
+        "command": "# Set up webhook-based scanning",
+        "scenario": "Scan new images automatically",
+        "notes": ["Integrate with registry webhooks"]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Container Registry Security",
+        "url": "https://docs.docker.com/registry/",
+        "description": "Docker registry security best practices"
+      }
+    ]
   }
 ]

@@ -49,20 +49,34 @@ impl ToolExecutionPanel {
         let mut first_category: Option<String> = None;
         let mut first_tool_id: Option<String> = None;
 
-        for (idx, group) in groups.iter().enumerate() {
-            category_selector.append(Some(&group.name), &group.name);
-            if idx == 0 {
-                first_category = Some(group.name.clone());
+        // Find the category containing "nmap" if it exists, otherwise use the first category
+        let nmap_category = tool_instructions::manifest()
+            .iter()
+            .find(|entry| entry.id == "nmap")
+            .map(|entry| entry.category.clone());
+
+        if let Some(nmap_cat) = nmap_category {
+            first_category = Some(nmap_cat.clone());
+            if let Some(group) = groups.iter().find(|g| g.name == nmap_cat) {
                 if let Some(first_tool) = group.tools.first() {
+                    first_tool_id = Some(first_tool.id.clone());
+                }
+            }
+        } else {
+            // Fallback to first category
+            if let Some(first_group) = groups.first() {
+                first_category = Some(first_group.name.clone());
+                if let Some(first_tool) = first_group.tools.first() {
                     first_tool_id = Some(first_tool.id.clone());
                 }
             }
         }
 
-        if let Some(default_category) = first_category.clone() {
-            category_selector.set_active_id(Some(&default_category));
-        } else {
-            category_selector.set_sensitive(false);
+        for (idx, group) in groups.iter().enumerate() {
+            category_selector.append(Some(&group.name), &group.name);
+            if first_category.as_ref() == Some(&group.name) {
+                category_selector.set_active(Some(idx as u32));
+            }
         }
 
         category_box.append(&category_label);

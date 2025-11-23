@@ -22,16 +22,16 @@ pub fn manifest() -> &'static [ToolManifestEntry] {
 pub fn grouped_manifest() -> Vec<CategoryGroup> {
     let mut groups: Vec<CategoryGroup> = Vec::new();
     for entry in &registry().manifest {
-        if let Some(last) = groups.last_mut() {
-            if last.name == entry.category {
-                last.tools.push(entry.clone());
-                continue;
-            }
+        // Check if we already have a group for this category
+        let existing_group = groups.iter_mut().find(|g| g.name == entry.category);
+        if let Some(group) = existing_group {
+            group.tools.push(entry.clone());
+        } else {
+            groups.push(CategoryGroup {
+                name: entry.category.clone(),
+                tools: vec![entry.clone()],
+            });
         }
-        groups.push(CategoryGroup {
-            name: entry.category.clone(),
-            tools: vec![entry.clone()],
-        });
     }
     groups
 }
@@ -342,13 +342,36 @@ mod tests {
         let registry = ensure_registry_loaded();
         let groups = grouped_manifest();
         assert!(!groups.is_empty());
-        let mut idx = 0;
-        for group in groups {
-            for tool in group.tools {
-                assert_eq!(tool.category, group.name);
-                assert_eq!(tool.id, registry.manifest[idx].id);
-                idx += 1;
+
+        // Check that each category appears only once
+        let mut seen_categories = std::collections::HashSet::new();
+        for group in &groups {
+            assert!(!seen_categories.contains(&group.name), "Category '{}' appears multiple times", group.name);
+            seen_categories.insert(group.name.clone());
+        }
+
+        // Check that all tools are included and grouped correctly
+        let mut total_tools = 0;
+        for group in &groups {
+            for tool in &group.tools {
+                assert_eq!(tool.category, group.name, "Tool '{}' has wrong category", tool.id);
+                total_tools += 1;
             }
+        }
+        assert_eq!(total_tools, registry.manifest.len(), "Not all tools are included in groups");
+
+        // Check that tools within each category are in the order they appear in the manifest
+        for group in &groups {
+            let mut expected_order: Vec<_> = registry.manifest.iter()
+                .filter(|entry| entry.category == group.name)
+                .map(|entry| entry.id.clone())
+                .collect();
+
+            let actual_order: Vec<_> = group.tools.iter()
+                .map(|tool| tool.id.clone())
+                .collect();
+
+            assert_eq!(actual_order, expected_order, "Tools in category '{}' are not in manifest order", group.name);
         }
     }
 

@@ -43056,164 +43056,134 @@
     "details": "This workflow guides you through the complete process of Incident Response & Forensics Workflow",
     "step_sequences": [
       {
-        "title": "Phase 1: Planning & Scoping",
+        "title": "Incident Response Preparation",
         "steps": [
           {
-            "title": "Define objectives",
-            "details": "Establish clear goals for the assessment",
-            "command": "# Document assessment objectives"
+            "title": "Establish IR Team",
+            "details": "Assemble incident response team and define roles",
+            "command": "# Identify team members and assign responsibilities"
           },
           {
-            "title": "Identify scope",
-            "details": "Define systems and services in scope",
-            "command": "# Create scope documentation"
+            "title": "Gather Intelligence",
+            "details": "Collect information about the incident from various sources",
+            "command": "# Review logs, alerts, and user reports"
           },
           {
-            "title": "Obtain authorization",
-            "details": "Secure written approval for testing",
-            "command": "# Verify rules of engagement"
+            "title": "Contain the Incident",
+            "details": "Implement immediate containment measures",
+            "command": "# Isolate affected systems and stop the attack"
           }
         ]
       },
       {
-        "title": "Phase 2: Reconnaissance & Enumeration",
+        "title": "Evidence Collection",
         "steps": [
           {
-            "title": "Passive information gathering",
-            "details": "Collect information without system interaction",
-            "command": "# Execute passive reconnaissance"
+            "title": "Volatile Evidence",
+            "details": "Capture volatile data before it changes",
+            "command": "# Collect memory dumps, network connections, running processes"
           },
           {
-            "title": "Active enumeration",
-            "details": "Scan and enumerate systems within scope",
-            "command": "# Perform active scans"
+            "title": "Persistent Evidence",
+            "details": "Collect files, logs, and system configuration",
+            "command": "# Image drives and collect relevant files"
           },
           {
-            "title": "Identify services",
-            "details": "Document running services and versions",
-            "command": "# Map service landscape"
+            "title": "Chain of Custody",
+            "details": "Document evidence handling procedures",
+            "command": "# Maintain detailed evidence logs"
           }
         ]
       },
       {
-        "title": "Phase 3: Vulnerability Analysis",
+        "title": "Analysis Phase",
         "steps": [
           {
-            "title": "Automated scanning",
-            "details": "Run vulnerability scanners",
-            "command": "# Execute automated scans"
+            "title": "Timeline Reconstruction",
+            "details": "Reconstruct the sequence of events",
+            "command": "# Correlate logs and evidence to build timeline"
           },
           {
-            "title": "Manual testing",
-            "details": "Conduct manual vulnerability assessment",
-            "command": "# Perform manual testing"
+            "title": "Malware Analysis",
+            "details": "Analyze any malicious code or artifacts",
+            "command": "# Reverse engineer malware in isolated environment"
           },
           {
-            "title": "Verification",
-            "details": "Confirm and validate findings",
-            "command": "# Verify vulnerabilities"
+            "title": "Attack Vector Analysis",
+            "details": "Determine how the attack was initiated",
+            "command": "# Identify entry points and attack methods"
           }
         ]
       },
       {
-        "title": "Phase 4: Exploitation & Testing",
+        "title": "Recovery & Remediation",
         "steps": [
           {
-            "title": "Exploit research",
-            "details": "Research appropriate exploitation techniques",
-            "command": "# Identify suitable exploits"
+            "title": "System Recovery",
+            "details": "Restore affected systems to clean state",
+            "command": "# Rebuild or clean compromised systems"
           },
           {
-            "title": "Controlled exploitation",
-            "details": "Execute exploits with proper controls",
-            "command": "# Execute exploits carefully"
+            "title": "Vulnerability Mitigation",
+            "details": "Address root causes and vulnerabilities",
+            "command": "# Apply patches and security fixes"
           },
           {
-            "title": "Document impact",
-            "details": "Record business impact of successful exploitation",
-            "command": "# Document findings"
+            "title": "Monitoring Enhancement",
+            "details": "Improve detection and monitoring capabilities",
+            "command": "# Implement additional security controls"
           }
         ]
       },
       {
-        "title": "Phase 5: Post-Exploitation & Cleanup",
+        "title": "Reporting & Lessons Learned",
         "steps": [
           {
-            "title": "Assess persistence",
-            "details": "Evaluate potential persistence mechanisms",
-            "command": "# Check for persistence"
+            "title": "Incident Report",
+            "details": "Document the complete incident response process",
+            "command": "# Create detailed incident report"
           },
           {
-            "title": "Clean up artifacts",
-            "details": "Remove all testing artifacts and tools",
-            "command": "# Remove test artifacts"
+            "title": "Lessons Learned",
+            "details": "Identify improvements for future incidents",
+            "command": "# Conduct post-incident review and update procedures"
           },
           {
-            "title": "Verify restoration",
-            "details": "Ensure all systems are restored to baseline",
-            "command": "# Verify system restoration"
-          }
-        ]
-      },
-      {
-        "title": "Phase 6: Reporting & Remediation",
-        "steps": [
-          {
-            "title": "Compile findings",
-            "details": "Organize all vulnerabilities and findings",
-            "command": "# Consolidate findings"
-          },
-          {
-            "title": "Risk rating",
-            "details": "Rate findings by severity and impact",
-            "command": "# Assign severity ratings"
-          },
-          {
-            "title": "Generate report",
-            "details": "Create comprehensive assessment report",
-            "command": "# Generate report"
-          },
-          {
-            "title": "Remediation guidance",
-            "details": "Provide remediation recommendations",
-            "command": "# Document fixes"
+            "title": "Legal/Regulatory Compliance",
+            "details": "Ensure compliance with reporting requirements",
+            "command": "# File required reports and notifications"
           }
         ]
       }
     ],
     "workflow_guides": [
       {
-        "name": "Incident Response & Forensics Workflow decision matrix",
+        "name": "Incident Response & Forensics Timeline",
         "stages": [
           {
-            "label": "Assessment initiation",
-            "description": "Begin the assessment workflow",
-            "command": "# Start assessment"
+            "label": "Day 1: Preparation & Scoping",
+            "description": "Set up IR environment, define scope, and prepare tools",
+            "command": "# Prepare IR toolkit and evidence collection procedures"
           },
           {
-            "label": "Information collection",
-            "description": "Gather intelligence on target systems",
-            "command": "# Collect information"
+            "label": "Day 2: Evidence Collection",
+            "description": "Collect volatile and non-volatile evidence from affected systems",
+            "command": "# Execute evidence collection using FTK Imager or similar"
           },
           {
-            "label": "Vulnerability identification",
-            "description": "Identify and validate vulnerabilities",
-            "command": "# Find vulnerabilities"
+            "label": "Day 3: Timeline Analysis",
+            "description": "Analyze system timelines and correlate events",
+            "command": "# Use log2timeline and timeline analysis tools"
           },
           {
-            "label": "Exploitation execution",
-            "description": "Execute exploitation within scope",
-            "command": "# Execute exploits"
+            "label": "Day 4: Artifact Analysis",
+            "description": "Examine malware, logs, and system artifacts",
+            "command": "# Perform forensic analysis of collected evidence"
           },
           {
-            "label": "Results compilation",
-            "description": "Compile and validate all findings",
-            "command": "# Compile results"
-          },
-          {
-            "label": "Report generation",
-            "description": "Generate assessment report",
-            "command": "# Generate report"
+            "label": "Day 5: Reporting & Lessons Learned",
+            "description": "Document findings and provide remediation recommendations",
+            "command": "# Generate incident report and conduct debrief"
           }
         ]
       }
@@ -43271,164 +43241,154 @@
     "details": "This workflow guides you through the complete process of PCI-DSS Compliance Assessment",
     "step_sequences": [
       {
-        "title": "Phase 1: Planning & Scoping",
+        "title": "Planning & Scoping",
         "steps": [
           {
-            "title": "Define objectives",
-            "details": "Establish clear goals for the assessment",
-            "command": "# Document assessment objectives"
+            "title": "Define Assessment Scope",
+            "details": "Identify cardholder data environment and systems in scope",
+            "command": "# Map CDE boundaries and data flows"
           },
           {
-            "title": "Identify scope",
-            "details": "Define systems and services in scope",
-            "command": "# Create scope documentation"
+            "title": "Review Requirements",
+            "details": "Understand applicable PCI DSS requirements and testing procedures",
+            "command": "# Review PCI DSS requirements and SAQ type"
           },
           {
-            "title": "Obtain authorization",
-            "details": "Secure written approval for testing",
-            "command": "# Verify rules of engagement"
+            "title": "Obtain Authorization",
+            "details": "Secure written approval and establish rules of engagement",
+            "command": "# Verify assessment authorization and scope approval"
           }
         ]
       },
       {
-        "title": "Phase 2: Reconnaissance & Enumeration",
+        "title": "Security Requirements Assessment",
         "steps": [
           {
-            "title": "Passive information gathering",
-            "details": "Collect information without system interaction",
-            "command": "# Execute passive reconnaissance"
+            "title": "Build & Maintain Networks (Req 1-2)",
+            "details": "Assess firewall configurations and system passwords",
+            "command": "# Review firewall rules and password policies"
           },
           {
-            "title": "Active enumeration",
-            "details": "Scan and enumerate systems within scope",
-            "command": "# Perform active scans"
+            "title": "Protect Cardholder Data (Req 3-4)",
+            "details": "Evaluate data encryption and transmission security",
+            "command": "# Test encryption of stored and transmitted data"
           },
           {
-            "title": "Identify services",
-            "details": "Document running services and versions",
-            "command": "# Map service landscape"
+            "title": "Maintain Vulnerability Program (Req 5-6)",
+            "details": "Review antivirus and security patch management",
+            "command": "# Assess malware protection and patch management"
           }
         ]
       },
       {
-        "title": "Phase 3: Vulnerability Analysis",
+        "title": "Access Control & Monitoring",
         "steps": [
           {
-            "title": "Automated scanning",
-            "details": "Run vulnerability scanners",
-            "command": "# Execute automated scans"
+            "title": "Restrict Access (Req 7-8)",
+            "details": "Test access control mechanisms and user authentication",
+            "command": "# Review access controls and authentication methods"
           },
           {
-            "title": "Manual testing",
-            "details": "Conduct manual vulnerability assessment",
-            "command": "# Perform manual testing"
+            "title": "Monitor & Test Networks (Req 10-11)",
+            "details": "Assess logging and intrusion detection capabilities",
+            "command": "# Test logging mechanisms and IDS/IPS systems"
           },
           {
-            "title": "Verification",
-            "details": "Confirm and validate findings",
-            "command": "# Verify vulnerabilities"
+            "title": "Maintain Security Policy (Req 12)",
+            "details": "Review information security policy and procedures",
+            "command": "# Evaluate security policies and procedures"
           }
         ]
       },
       {
-        "title": "Phase 4: Exploitation & Testing",
+        "title": "Vulnerability Testing",
         "steps": [
           {
-            "title": "Exploit research",
-            "details": "Research appropriate exploitation techniques",
-            "command": "# Identify suitable exploits"
+            "title": "External Vulnerability Scans",
+            "details": "Conduct external network vulnerability scanning",
+            "command": "# Perform quarterly external vulnerability scans"
           },
           {
-            "title": "Controlled exploitation",
-            "details": "Execute exploits with proper controls",
-            "command": "# Execute exploits carefully"
+            "title": "Internal Vulnerability Scans",
+            "details": "Conduct internal network vulnerability scanning",
+            "command": "# Perform quarterly internal vulnerability scans"
           },
           {
-            "title": "Document impact",
-            "details": "Record business impact of successful exploitation",
-            "command": "# Document findings"
+            "title": "Penetration Testing",
+            "details": "Execute penetration testing of CDE systems",
+            "command": "# Conduct annual penetration testing"
           }
         ]
       },
       {
-        "title": "Phase 5: Post-Exploitation & Cleanup",
+        "title": "Remediation & Validation",
         "steps": [
           {
-            "title": "Assess persistence",
-            "details": "Evaluate potential persistence mechanisms",
-            "command": "# Check for persistence"
+            "title": "Address Findings",
+            "details": "Remediate identified security gaps and vulnerabilities",
+            "command": "# Implement corrective actions for findings"
           },
           {
-            "title": "Clean up artifacts",
-            "details": "Remove all testing artifacts and tools",
-            "command": "# Remove test artifacts"
+            "title": "Retest Controls",
+            "details": "Validate that remediation efforts are effective",
+            "command": "# Retest remediated controls and vulnerabilities"
           },
           {
-            "title": "Verify restoration",
-            "details": "Ensure all systems are restored to baseline",
-            "command": "# Verify system restoration"
+            "title": "Document Evidence",
+            "details": "Maintain evidence of compliance activities",
+            "command": "# Collect and organize compliance evidence"
           }
         ]
       },
       {
-        "title": "Phase 6: Reporting & Remediation",
+        "title": "Reporting & Compliance",
         "steps": [
           {
-            "title": "Compile findings",
-            "details": "Organize all vulnerabilities and findings",
-            "command": "# Consolidate findings"
+            "title": "Compile Assessment Report",
+            "details": "Document all findings, remediation, and compliance status",
+            "command": "# Generate comprehensive PCI DSS assessment report"
           },
           {
-            "title": "Risk rating",
-            "details": "Rate findings by severity and impact",
-            "command": "# Assign severity ratings"
+            "title": "Attestation of Compliance",
+            "details": "Prepare Attestation of Compliance (AOC) documentation",
+            "command": "# Complete AOC and submit to acquiring bank"
           },
           {
-            "title": "Generate report",
-            "details": "Create comprehensive assessment report",
-            "command": "# Generate report"
-          },
-          {
-            "title": "Remediation guidance",
-            "details": "Provide remediation recommendations",
-            "command": "# Document fixes"
+            "title": "Continuous Compliance",
+            "details": "Establish processes for maintaining ongoing compliance",
+            "command": "# Implement continuous monitoring and compliance processes"
           }
         ]
       }
     ],
     "workflow_guides": [
       {
-        "name": "PCI-DSS Compliance Assessment decision matrix",
+        "name": "PCI DSS Assessment Timeline",
         "stages": [
           {
-            "label": "Assessment initiation",
-            "description": "Begin the assessment workflow",
-            "command": "# Start assessment"
+            "label": "Week 1: Scoping & Planning",
+            "description": "Define assessment scope, review cardholder data flows",
+            "command": "# Map CDE boundaries and data flows"
           },
           {
-            "label": "Information collection",
-            "description": "Gather intelligence on target systems",
-            "command": "# Collect information"
+            "label": "Week 2: Security Requirements Review",
+            "description": "Assess Requirements 1-6 (network security, access control)",
+            "command": "# Review firewall configs, access controls, and encryption"
           },
           {
-            "label": "Vulnerability identification",
-            "description": "Identify and validate vulnerabilities",
-            "command": "# Find vulnerabilities"
+            "label": "Week 3: Vulnerability Management",
+            "description": "Test Requirements 6-11 (vulnerability management, monitoring)",
+            "command": "# Scan for vulnerabilities and review monitoring systems"
           },
           {
-            "label": "Exploitation execution",
-            "description": "Execute exploitation within scope",
-            "command": "# Execute exploits"
+            "label": "Week 4: Policy & Procedure Review",
+            "description": "Assess Requirements 12-13 (policies, testing procedures)",
+            "command": "# Review security policies and incident response procedures"
           },
           {
-            "label": "Results compilation",
-            "description": "Compile and validate all findings",
-            "command": "# Compile results"
-          },
-          {
-            "label": "Report generation",
-            "description": "Generate assessment report",
-            "command": "# Generate report"
+            "label": "Week 5: Reporting & Remediation",
+            "description": "Compile findings and provide remediation guidance",
+            "command": "# Generate PCI compliance report with remediation timeline"
           }
         ]
       }
@@ -43486,164 +43446,154 @@
     "details": "This workflow guides you through the complete process of HIPAA Compliance Assessment",
     "step_sequences": [
       {
-        "title": "Phase 1: Planning & Scoping",
+        "title": "Planning & Scoping",
         "steps": [
           {
-            "title": "Define objectives",
-            "details": "Establish clear goals for the assessment",
-            "command": "# Document assessment objectives"
+            "title": "Define Assessment Scope",
+            "details": "Identify covered entities, business associates, and protected health information",
+            "command": "# Map HIPAA covered entities and data flows"
           },
           {
-            "title": "Identify scope",
-            "details": "Define systems and services in scope",
-            "command": "# Create scope documentation"
+            "title": "Review HIPAA Rules",
+            "details": "Understand applicable HIPAA Security, Privacy, and Breach Notification Rules",
+            "command": "# Review HIPAA regulatory requirements"
           },
           {
-            "title": "Obtain authorization",
-            "details": "Secure written approval for testing",
-            "command": "# Verify rules of engagement"
+            "title": "Obtain Authorization",
+            "details": "Secure written approval and establish assessment boundaries",
+            "command": "# Verify HIPAA assessment authorization"
           }
         ]
       },
       {
-        "title": "Phase 2: Reconnaissance & Enumeration",
+        "title": "Administrative Safeguards",
         "steps": [
           {
-            "title": "Passive information gathering",
-            "details": "Collect information without system interaction",
-            "command": "# Execute passive reconnaissance"
+            "title": "Security Management (164.308(a)(1))",
+            "details": "Assess security management processes and risk analysis",
+            "command": "# Review security management policies and procedures"
           },
           {
-            "title": "Active enumeration",
-            "details": "Scan and enumerate systems within scope",
-            "command": "# Perform active scans"
+            "title": "Workforce Security (164.308(a)(3))",
+            "details": "Evaluate workforce training and access controls",
+            "command": "# Assess workforce security training and controls"
           },
           {
-            "title": "Identify services",
-            "details": "Document running services and versions",
-            "command": "# Map service landscape"
+            "title": "Information Access (164.308(a)(4))",
+            "details": "Review access management and authorization procedures",
+            "command": "# Test access management and authorization controls"
           }
         ]
       },
       {
-        "title": "Phase 3: Vulnerability Analysis",
+        "title": "Physical Safeguards",
         "steps": [
           {
-            "title": "Automated scanning",
-            "details": "Run vulnerability scanners",
-            "command": "# Execute automated scans"
+            "title": "Facility Access (164.310(a)(1))",
+            "details": "Assess physical access controls to facilities",
+            "command": "# Review facility access controls and procedures"
           },
           {
-            "title": "Manual testing",
-            "details": "Conduct manual vulnerability assessment",
-            "command": "# Perform manual testing"
+            "title": "Workstation Security (164.310(b))",
+            "details": "Evaluate workstation use and security measures",
+            "command": "# Assess workstation security and usage policies"
           },
           {
-            "title": "Verification",
-            "details": "Confirm and validate findings",
-            "command": "# Verify vulnerabilities"
+            "title": "Device Security (164.310(d))",
+            "details": "Review device and media controls and disposal procedures",
+            "command": "# Test device security and media disposal processes"
           }
         ]
       },
       {
-        "title": "Phase 4: Exploitation & Testing",
+        "title": "Technical Safeguards",
         "steps": [
           {
-            "title": "Exploit research",
-            "details": "Research appropriate exploitation techniques",
-            "command": "# Identify suitable exploits"
+            "title": "Access Control (164.312(a)(1))",
+            "details": "Test access control mechanisms and unique user identification",
+            "command": "# Review access control and user identification systems"
           },
           {
-            "title": "Controlled exploitation",
-            "details": "Execute exploits with proper controls",
-            "command": "# Execute exploits carefully"
+            "title": "Audit Controls (164.312(b))",
+            "details": "Assess audit logging and monitoring capabilities",
+            "command": "# Test audit controls and log review procedures"
           },
           {
-            "title": "Document impact",
-            "details": "Record business impact of successful exploitation",
-            "command": "# Document findings"
+            "title": "Integrity & Transmission (164.312(c)(1)-(2))",
+            "details": "Evaluate data integrity and transmission security",
+            "command": "# Assess data integrity and transmission security controls"
           }
         ]
       },
       {
-        "title": "Phase 5: Post-Exploitation & Cleanup",
+        "title": "Risk Analysis & Management",
         "steps": [
           {
-            "title": "Assess persistence",
-            "details": "Evaluate potential persistence mechanisms",
-            "command": "# Check for persistence"
+            "title": "Risk Assessment",
+            "details": "Conduct comprehensive risk analysis of ePHI systems",
+            "command": "# Perform HIPAA risk assessment and analysis"
           },
           {
-            "title": "Clean up artifacts",
-            "details": "Remove all testing artifacts and tools",
-            "command": "# Remove test artifacts"
+            "title": "Breach Response",
+            "details": "Review breach notification procedures and incident response",
+            "command": "# Test breach notification and response procedures"
           },
           {
-            "title": "Verify restoration",
-            "details": "Ensure all systems are restored to baseline",
-            "command": "# Verify system restoration"
+            "title": "Contingency Planning",
+            "details": "Assess data backup, disaster recovery, and emergency mode",
+            "command": "# Review contingency and disaster recovery plans"
           }
         ]
       },
       {
-        "title": "Phase 6: Reporting & Remediation",
+        "title": "Reporting & Compliance",
         "steps": [
           {
-            "title": "Compile findings",
-            "details": "Organize all vulnerabilities and findings",
-            "command": "# Consolidate findings"
+            "title": "Document Findings",
+            "details": "Compile assessment findings and compliance gaps",
+            "command": "# Generate HIPAA compliance assessment report"
           },
           {
-            "title": "Risk rating",
-            "details": "Rate findings by severity and impact",
-            "command": "# Assign severity ratings"
+            "title": "Remediation Planning",
+            "details": "Develop remediation plans for identified deficiencies",
+            "command": "# Create corrective action plans and timelines"
           },
           {
-            "title": "Generate report",
-            "details": "Create comprehensive assessment report",
-            "command": "# Generate report"
-          },
-          {
-            "title": "Remediation guidance",
-            "details": "Provide remediation recommendations",
-            "command": "# Document fixes"
+            "title": "Ongoing Compliance",
+            "details": "Establish processes for maintaining HIPAA compliance",
+            "command": "# Implement continuous compliance monitoring"
           }
         ]
       }
     ],
     "workflow_guides": [
       {
-        "name": "HIPAA Compliance Assessment decision matrix",
+        "name": "HIPAA Compliance Assessment Timeline",
         "stages": [
           {
-            "label": "Assessment initiation",
-            "description": "Begin the assessment workflow",
-            "command": "# Start assessment"
+            "label": "Week 1: Administrative Safeguards",
+            "description": "Assess security management, workforce training, and contingency planning",
+            "command": "# Review HIPAA administrative controls and policies"
           },
           {
-            "label": "Information collection",
-            "description": "Gather intelligence on target systems",
-            "command": "# Collect information"
+            "label": "Week 2: Physical Safeguards",
+            "description": "Evaluate facility access, workstation security, and device safeguards",
+            "command": "# Assess physical security controls for PHI protection"
           },
           {
-            "label": "Vulnerability identification",
-            "description": "Identify and validate vulnerabilities",
-            "command": "# Find vulnerabilities"
+            "label": "Week 3: Technical Safeguards",
+            "description": "Test access controls, audit controls, and integrity protections",
+            "command": "# Review technical controls for ePHI protection"
           },
           {
-            "label": "Exploitation execution",
-            "description": "Execute exploitation within scope",
-            "command": "# Execute exploits"
+            "label": "Week 4: Risk Analysis & Documentation",
+            "description": "Perform risk assessments and review breach notification procedures",
+            "command": "# Analyze HIPAA compliance risks and documentation"
           },
           {
-            "label": "Results compilation",
-            "description": "Compile and validate all findings",
-            "command": "# Compile results"
-          },
-          {
-            "label": "Report generation",
-            "description": "Generate assessment report",
-            "command": "# Generate report"
+            "label": "Week 5: Reporting & Remediation",
+            "description": "Document findings and provide HIPAA-specific remediation guidance",
+            "command": "# Generate HIPAA compliance report with corrective actions"
           }
         ]
       }
@@ -43701,164 +43651,154 @@
     "details": "This workflow guides you through the complete process of Cloud IAM Assessment Workflow",
     "step_sequences": [
       {
-        "title": "Phase 1: Planning & Scoping",
+        "title": "Account Discovery & Mapping",
         "steps": [
           {
-            "title": "Define objectives",
-            "details": "Establish clear goals for the assessment",
-            "command": "# Document assessment objectives"
+            "title": "Cloud Account Enumeration",
+            "details": "Identify all cloud accounts, subscriptions, and projects",
+            "command": "# Enumerate cloud accounts and organizational structure"
           },
           {
-            "title": "Identify scope",
-            "details": "Define systems and services in scope",
-            "command": "# Create scope documentation"
+            "title": "Identity Inventory",
+            "details": "Catalog all users, groups, roles, and service accounts",
+            "command": "# Create comprehensive identity inventory"
           },
           {
-            "title": "Obtain authorization",
-            "details": "Secure written approval for testing",
-            "command": "# Verify rules of engagement"
+            "title": "Resource Discovery",
+            "details": "Map cloud resources and their associated permissions",
+            "command": "# Identify cloud resources and access patterns"
           }
         ]
       },
       {
-        "title": "Phase 2: Reconnaissance & Enumeration",
+        "title": "Permission Analysis",
         "steps": [
           {
-            "title": "Passive information gathering",
-            "details": "Collect information without system interaction",
-            "command": "# Execute passive reconnaissance"
+            "title": "Policy Review",
+            "details": "Analyze IAM policies for excessive permissions",
+            "command": "# Review IAM policies and permission sets"
           },
           {
-            "title": "Active enumeration",
-            "details": "Scan and enumerate systems within scope",
-            "command": "# Perform active scans"
+            "title": "Role-Based Access Control",
+            "details": "Assess RBAC configurations and role assignments",
+            "command": "# Evaluate role definitions and assignments"
           },
           {
-            "title": "Identify services",
-            "details": "Document running services and versions",
-            "command": "# Map service landscape"
+            "title": "Privilege Escalation Paths",
+            "details": "Identify potential privilege escalation vectors",
+            "command": "# Map privilege escalation paths and risks"
           }
         ]
       },
       {
-        "title": "Phase 3: Vulnerability Analysis",
+        "title": "Authentication & Access Control",
         "steps": [
           {
-            "title": "Automated scanning",
-            "details": "Run vulnerability scanners",
-            "command": "# Execute automated scans"
+            "title": "MFA Assessment",
+            "details": "Review multi-factor authentication requirements and implementation",
+            "command": "# Test MFA requirements and bypass attempts"
           },
           {
-            "title": "Manual testing",
-            "details": "Conduct manual vulnerability assessment",
-            "command": "# Perform manual testing"
+            "title": "Password Policies",
+            "details": "Evaluate password complexity and lifecycle management",
+            "command": "# Assess password policies and rotation procedures"
           },
           {
-            "title": "Verification",
-            "details": "Confirm and validate findings",
-            "command": "# Verify vulnerabilities"
+            "title": "Access Key Management",
+            "details": "Review API keys, access tokens, and credential management",
+            "command": "# Audit access keys and credential security"
           }
         ]
       },
       {
-        "title": "Phase 4: Exploitation & Testing",
+        "title": "Misconfiguration Assessment",
         "steps": [
           {
-            "title": "Exploit research",
-            "details": "Research appropriate exploitation techniques",
-            "command": "# Identify suitable exploits"
+            "title": "Storage Security",
+            "details": "Assess cloud storage bucket and object permissions",
+            "command": "# Test storage bucket permissions and access controls"
           },
           {
-            "title": "Controlled exploitation",
-            "details": "Execute exploits with proper controls",
-            "command": "# Execute exploits carefully"
+            "title": "Network Security",
+            "details": "Review security groups, firewall rules, and network ACLs",
+            "command": "# Evaluate network security configurations"
           },
           {
-            "title": "Document impact",
-            "details": "Record business impact of successful exploitation",
-            "command": "# Document findings"
+            "title": "Logging & Monitoring",
+            "details": "Assess cloud logging and monitoring configurations",
+            "command": "# Review audit logging and monitoring setup"
           }
         ]
       },
       {
-        "title": "Phase 5: Post-Exploitation & Cleanup",
+        "title": "Compliance & Governance",
         "steps": [
           {
-            "title": "Assess persistence",
-            "details": "Evaluate potential persistence mechanisms",
-            "command": "# Check for persistence"
+            "title": "Compliance Frameworks",
+            "details": "Evaluate alignment with relevant compliance requirements",
+            "command": "# Assess compliance with regulatory frameworks"
           },
           {
-            "title": "Clean up artifacts",
-            "details": "Remove all testing artifacts and tools",
-            "command": "# Remove test artifacts"
+            "title": "Governance Controls",
+            "details": "Review organizational policies and governance mechanisms",
+            "command": "# Test governance and policy enforcement"
           },
           {
-            "title": "Verify restoration",
-            "details": "Ensure all systems are restored to baseline",
-            "command": "# Verify system restoration"
+            "title": "Incident Response",
+            "details": "Assess IAM incident response and recovery procedures",
+            "command": "# Evaluate IAM incident response capabilities"
           }
         ]
       },
       {
-        "title": "Phase 6: Reporting & Remediation",
+        "title": "Remediation & Hardening",
         "steps": [
           {
-            "title": "Compile findings",
-            "details": "Organize all vulnerabilities and findings",
-            "command": "# Consolidate findings"
+            "title": "Access Optimization",
+            "details": "Implement least privilege and remove excessive permissions",
+            "command": "# Apply least privilege principles and policy hardening"
           },
           {
-            "title": "Risk rating",
-            "details": "Rate findings by severity and impact",
-            "command": "# Assign severity ratings"
+            "title": "Security Enhancement",
+            "details": "Deploy additional security controls and monitoring",
+            "command": "# Implement advanced security features and monitoring"
           },
           {
-            "title": "Generate report",
-            "details": "Create comprehensive assessment report",
-            "command": "# Generate report"
-          },
-          {
-            "title": "Remediation guidance",
-            "details": "Provide remediation recommendations",
-            "command": "# Document fixes"
+            "title": "Documentation & Training",
+            "details": "Document findings and provide security awareness training",
+            "command": "# Generate IAM assessment report and training materials"
           }
         ]
       }
     ],
     "workflow_guides": [
       {
-        "name": "Cloud IAM Assessment Workflow decision matrix",
+        "name": "Cloud IAM Assessment Timeline",
         "stages": [
           {
-            "label": "Assessment initiation",
-            "description": "Begin the assessment workflow",
-            "command": "# Start assessment"
+            "label": "Day 1: Account Discovery",
+            "description": "Enumerate cloud accounts, users, roles, and permissions",
+            "command": "# Use cloud enumeration tools to map IAM landscape"
           },
           {
-            "label": "Information collection",
-            "description": "Gather intelligence on target systems",
-            "command": "# Collect information"
+            "label": "Day 2: Permission Analysis",
+            "description": "Analyze IAM policies, role assignments, and privilege escalation paths",
+            "command": "# Review IAM policies and identify over-privileged accounts"
           },
           {
-            "label": "Vulnerability identification",
-            "description": "Identify and validate vulnerabilities",
-            "command": "# Find vulnerabilities"
+            "label": "Day 3: Access Control Testing",
+            "description": "Test MFA requirements, password policies, and access control mechanisms",
+            "command": "# Test authentication and authorization controls"
           },
           {
-            "label": "Exploitation execution",
-            "description": "Execute exploitation within scope",
-            "command": "# Execute exploits"
+            "label": "Day 4: Misconfiguration Assessment",
+            "description": "Identify IAM misconfigurations and security gaps",
+            "command": "# Scan for common IAM misconfigurations and weaknesses"
           },
           {
-            "label": "Results compilation",
-            "description": "Compile and validate all findings",
-            "command": "# Compile results"
-          },
-          {
-            "label": "Report generation",
-            "description": "Generate assessment report",
-            "command": "# Generate report"
+            "label": "Day 5: Reporting & Recommendations",
+            "description": "Document findings and provide IAM hardening recommendations",
+            "command": "# Generate IAM security assessment report"
           }
         ]
       }
@@ -43916,164 +43856,154 @@
     "details": "This workflow guides you through the complete process of Supply Chain Security Assessment",
     "step_sequences": [
       {
-        "title": "Phase 1: Planning & Scoping",
+        "title": "Vendor & Dependency Assessment",
         "steps": [
           {
-            "title": "Define objectives",
-            "details": "Establish clear goals for the assessment",
-            "command": "# Document assessment objectives"
+            "title": "Third-Party Vendor Analysis",
+            "details": "Evaluate vendor security practices and risk profiles",
+            "command": "# Assess vendor security posture and risk management"
           },
           {
-            "title": "Identify scope",
-            "details": "Define systems and services in scope",
-            "command": "# Create scope documentation"
+            "title": "Supply Chain Mapping",
+            "details": "Map complete supply chain relationships and dependencies",
+            "command": "# Create comprehensive supply chain dependency map"
           },
           {
-            "title": "Obtain authorization",
-            "details": "Secure written approval for testing",
-            "command": "# Verify rules of engagement"
+            "title": "Contractual Obligations",
+            "details": "Review vendor contracts and security requirements",
+            "command": "# Analyze vendor contracts and security clauses"
           }
         ]
       },
       {
-        "title": "Phase 2: Reconnaissance & Enumeration",
+        "title": "Software Bill of Materials",
         "steps": [
           {
-            "title": "Passive information gathering",
-            "details": "Collect information without system interaction",
-            "command": "# Execute passive reconnaissance"
+            "title": "SBOM Generation",
+            "details": "Create comprehensive software bill of materials",
+            "command": "# Generate SBOM for all software components"
           },
           {
-            "title": "Active enumeration",
-            "details": "Scan and enumerate systems within scope",
-            "command": "# Perform active scans"
+            "title": "Dependency Analysis",
+            "details": "Analyze open source and third-party dependencies",
+            "command": "# Review dependency trees and vulnerability databases"
           },
           {
-            "title": "Identify services",
-            "details": "Document running services and versions",
-            "command": "# Map service landscape"
+            "title": "License Compliance",
+            "details": "Assess license compliance and compatibility",
+            "command": "# Audit software licenses and compliance"
           }
         ]
       },
       {
-        "title": "Phase 3: Vulnerability Analysis",
+        "title": "Build & CI/CD Security",
         "steps": [
           {
-            "title": "Automated scanning",
-            "details": "Run vulnerability scanners",
-            "command": "# Execute automated scans"
+            "title": "Build Pipeline Security",
+            "details": "Assess build environment and pipeline security",
+            "command": "# Review build pipeline security controls"
           },
           {
-            "title": "Manual testing",
-            "details": "Conduct manual vulnerability assessment",
-            "command": "# Perform manual testing"
+            "title": "Artifact Integrity",
+            "details": "Verify artifact integrity and signing mechanisms",
+            "command": "# Test artifact signing and integrity verification"
           },
           {
-            "title": "Verification",
-            "details": "Confirm and validate findings",
-            "command": "# Verify vulnerabilities"
+            "title": "Automated Security Testing",
+            "details": "Evaluate automated security testing in CI/CD",
+            "command": "# Assess automated security scanning and testing"
           }
         ]
       },
       {
-        "title": "Phase 4: Exploitation & Testing",
+        "title": "Runtime Security Assessment",
         "steps": [
           {
-            "title": "Exploit research",
-            "details": "Research appropriate exploitation techniques",
-            "command": "# Identify suitable exploits"
+            "title": "Container Security",
+            "details": "Assess container images and runtime security",
+            "command": "# Scan container images and runtime configurations"
           },
           {
-            "title": "Controlled exploitation",
-            "details": "Execute exploits with proper controls",
-            "command": "# Execute exploits carefully"
+            "title": "Deployment Security",
+            "details": "Evaluate deployment processes and security controls",
+            "command": "# Review deployment security and access controls"
           },
           {
-            "title": "Document impact",
-            "details": "Record business impact of successful exploitation",
-            "command": "# Document findings"
+            "title": "Runtime Monitoring",
+            "details": "Assess runtime security monitoring and detection",
+            "command": "# Test runtime security monitoring capabilities"
           }
         ]
       },
       {
-        "title": "Phase 5: Post-Exploitation & Cleanup",
+        "title": "Vulnerability & Threat Management",
         "steps": [
           {
-            "title": "Assess persistence",
-            "details": "Evaluate potential persistence mechanisms",
-            "command": "# Check for persistence"
+            "title": "Known Vulnerabilities",
+            "details": "Identify and assess known vulnerabilities in supply chain",
+            "command": "# Scan for known vulnerabilities in dependencies"
           },
           {
-            "title": "Clean up artifacts",
-            "details": "Remove all testing artifacts and tools",
-            "command": "# Remove test artifacts"
+            "title": "Zero-Day Assessment",
+            "details": "Evaluate protection against unknown threats",
+            "command": "# Assess zero-day threat protection measures"
           },
           {
-            "title": "Verify restoration",
-            "details": "Ensure all systems are restored to baseline",
-            "command": "# Verify system restoration"
+            "title": "Threat Intelligence",
+            "details": "Integrate supply chain threat intelligence",
+            "command": "# Review threat intelligence for supply chain risks"
           }
         ]
       },
       {
-        "title": "Phase 6: Reporting & Remediation",
+        "title": "Remediation & Compliance",
         "steps": [
           {
-            "title": "Compile findings",
-            "details": "Organize all vulnerabilities and findings",
-            "command": "# Consolidate findings"
+            "title": "Risk Mitigation",
+            "details": "Develop strategies to mitigate identified supply chain risks",
+            "command": "# Implement supply chain risk mitigation measures"
           },
           {
-            "title": "Risk rating",
-            "details": "Rate findings by severity and impact",
-            "command": "# Assign severity ratings"
+            "title": "Compliance Alignment",
+            "details": "Ensure compliance with supply chain security standards",
+            "command": "# Align with relevant security frameworks and standards"
           },
           {
-            "title": "Generate report",
-            "details": "Create comprehensive assessment report",
-            "command": "# Generate report"
-          },
-          {
-            "title": "Remediation guidance",
-            "details": "Provide remediation recommendations",
-            "command": "# Document fixes"
+            "title": "Continuous Monitoring",
+            "details": "Establish ongoing supply chain security monitoring",
+            "command": "# Generate supply chain security assessment report"
           }
         ]
       }
     ],
     "workflow_guides": [
       {
-        "name": "Supply Chain Security Assessment decision matrix",
+        "name": "Supply Chain Security Assessment Timeline",
         "stages": [
           {
-            "label": "Assessment initiation",
-            "description": "Begin the assessment workflow",
-            "command": "# Start assessment"
+            "label": "Week 1: Vendor Assessment",
+            "description": "Evaluate third-party vendors and supply chain dependencies",
+            "command": "# Map supply chain relationships and vendor landscape"
           },
           {
-            "label": "Information collection",
-            "description": "Gather intelligence on target systems",
-            "command": "# Collect information"
+            "label": "Week 2: Software Bill of Materials",
+            "description": "Analyze SBOMs, dependencies, and open source components",
+            "command": "# Review dependency trees and vulnerability databases"
           },
           {
-            "label": "Vulnerability identification",
-            "description": "Identify and validate vulnerabilities",
-            "command": "# Find vulnerabilities"
+            "label": "Week 3: Build Pipeline Security",
+            "description": "Assess CI/CD pipelines, artifact repositories, and build processes",
+            "command": "# Test build security and supply chain integrity"
           },
           {
-            "label": "Exploitation execution",
-            "description": "Execute exploitation within scope",
-            "command": "# Execute exploits"
+            "label": "Week 4: Runtime Security",
+            "description": "Evaluate container security, runtime monitoring, and deployment security",
+            "command": "# Assess runtime security controls and monitoring"
           },
           {
-            "label": "Results compilation",
-            "description": "Compile and validate all findings",
-            "command": "# Compile results"
-          },
-          {
-            "label": "Report generation",
-            "description": "Generate assessment report",
-            "command": "# Generate report"
+            "label": "Week 5: Remediation & Compliance",
+            "description": "Document findings and provide supply chain hardening recommendations",
+            "command": "# Generate supply chain security assessment report"
           }
         ]
       }
@@ -44131,164 +44061,154 @@
     "details": "This workflow guides you through the complete process of Evasion & Obfuscation Techniques",
     "step_sequences": [
       {
-        "title": "Phase 1: Planning & Scoping",
+        "title": "Preparation & Setup",
         "steps": [
           {
-            "title": "Define objectives",
-            "details": "Establish clear goals for the assessment",
-            "command": "# Document assessment objectives"
+            "title": "Environment Preparation",
+            "details": "Set up clean testing environments and anti-forensic tools",
+            "command": "# Prepare isolated testing environments and toolkits"
           },
           {
-            "title": "Identify scope",
-            "details": "Define systems and services in scope",
-            "command": "# Create scope documentation"
+            "title": "Target Analysis",
+            "details": "Analyze target security controls and detection capabilities",
+            "command": "# Map target security stack and detection mechanisms"
           },
           {
-            "title": "Obtain authorization",
-            "details": "Secure written approval for testing",
-            "command": "# Verify rules of engagement"
+            "title": "Baseline Establishment",
+            "details": "Establish normal behavior baselines for comparison",
+            "command": "# Create baseline measurements and monitoring"
           }
         ]
       },
       {
-        "title": "Phase 2: Reconnaissance & Enumeration",
+        "title": "Payload Development",
         "steps": [
           {
-            "title": "Passive information gathering",
-            "details": "Collect information without system interaction",
-            "command": "# Execute passive reconnaissance"
+            "title": "Code Obfuscation",
+            "details": "Apply code obfuscation techniques to evade static analysis",
+            "command": "# Implement code obfuscation and encryption"
           },
           {
-            "title": "Active enumeration",
-            "details": "Scan and enumerate systems within scope",
-            "command": "# Perform active scans"
+            "title": "Polymorphic Techniques",
+            "details": "Create polymorphic payloads that change signatures",
+            "command": "# Develop polymorphic malware variants"
           },
           {
-            "title": "Identify services",
-            "details": "Document running services and versions",
-            "command": "# Map service landscape"
+            "title": "Packers & Crypters",
+            "details": "Use packers and crypters to hide malicious code",
+            "command": "# Apply packers and encryption to payloads"
           }
         ]
       },
       {
-        "title": "Phase 3: Vulnerability Analysis",
+        "title": "Network Evasion",
         "steps": [
           {
-            "title": "Automated scanning",
-            "details": "Run vulnerability scanners",
-            "command": "# Execute automated scans"
+            "title": "Traffic Obfuscation",
+            "details": "Obfuscate network traffic patterns and signatures",
+            "command": "# Implement traffic obfuscation and encryption"
           },
           {
-            "title": "Manual testing",
-            "details": "Conduct manual vulnerability assessment",
-            "command": "# Perform manual testing"
+            "title": "Protocol Manipulation",
+            "details": "Manipulate protocols to evade network detection",
+            "command": "# Use protocol tunneling and manipulation techniques"
           },
           {
-            "title": "Verification",
-            "details": "Confirm and validate findings",
-            "command": "# Verify vulnerabilities"
+            "title": "C2 Channel Hiding",
+            "details": "Hide command and control communications",
+            "command": "# Establish covert C2 channels and communications"
           }
         ]
       },
       {
-        "title": "Phase 4: Exploitation & Testing",
+        "title": "Endpoint Evasion",
         "steps": [
           {
-            "title": "Exploit research",
-            "details": "Research appropriate exploitation techniques",
-            "command": "# Identify suitable exploits"
+            "title": "AV/EDR Bypass",
+            "details": "Bypass antivirus and endpoint detection systems",
+            "command": "# Test and implement AV/EDR evasion techniques"
           },
           {
-            "title": "Controlled exploitation",
-            "details": "Execute exploits with proper controls",
-            "command": "# Execute exploits carefully"
+            "title": "Process Injection",
+            "details": "Use process injection to hide malicious activity",
+            "command": "# Implement process injection and hollowing techniques"
           },
           {
-            "title": "Document impact",
-            "details": "Record business impact of successful exploitation",
-            "command": "# Document findings"
+            "title": "Memory Evasion",
+            "details": "Avoid detection in memory forensics",
+            "command": "# Apply memory-based evasion techniques"
           }
         ]
       },
       {
-        "title": "Phase 5: Post-Exploitation & Cleanup",
+        "title": "Testing & Validation",
         "steps": [
           {
-            "title": "Assess persistence",
-            "details": "Evaluate potential persistence mechanisms",
-            "command": "# Check for persistence"
+            "title": "Detection Testing",
+            "details": "Test evasion techniques against security controls",
+            "command": "# Validate evasion effectiveness against target controls"
           },
           {
-            "title": "Clean up artifacts",
-            "details": "Remove all testing artifacts and tools",
-            "command": "# Remove test artifacts"
+            "title": "Forensic Analysis",
+            "details": "Analyze artifacts and detection opportunities",
+            "command": "# Perform forensic analysis of evasion attempts"
           },
           {
-            "title": "Verify restoration",
-            "details": "Ensure all systems are restored to baseline",
-            "command": "# Verify system restoration"
+            "title": "Effectiveness Measurement",
+            "details": "Measure success rate of evasion techniques",
+            "command": "# Quantify evasion success and detection rates"
           }
         ]
       },
       {
-        "title": "Phase 6: Reporting & Remediation",
+        "title": "Documentation & Improvement",
         "steps": [
           {
-            "title": "Compile findings",
-            "details": "Organize all vulnerabilities and findings",
-            "command": "# Consolidate findings"
+            "title": "Technique Documentation",
+            "details": "Document successful and failed evasion techniques",
+            "command": "# Document evasion techniques and outcomes"
           },
           {
-            "title": "Risk rating",
-            "details": "Rate findings by severity and impact",
-            "command": "# Assign severity ratings"
+            "title": "Detection Enhancement",
+            "details": "Recommend improvements to detection capabilities",
+            "command": "# Provide recommendations for detection improvement"
           },
           {
-            "title": "Generate report",
-            "details": "Create comprehensive assessment report",
-            "command": "# Generate report"
-          },
-          {
-            "title": "Remediation guidance",
-            "details": "Provide remediation recommendations",
-            "command": "# Document fixes"
+            "title": "Technique Evolution",
+            "details": "Develop new evasion techniques based on findings",
+            "command": "# Generate evasion techniques assessment report"
           }
         ]
       }
     ],
     "workflow_guides": [
       {
-        "name": "Evasion & Obfuscation Techniques decision matrix",
+        "name": "Evasion & Obfuscation Techniques Timeline",
         "stages": [
           {
-            "label": "Assessment initiation",
-            "description": "Begin the assessment workflow",
-            "command": "# Start assessment"
+            "label": "Day 1: Anti-Forensic Preparation",
+            "description": "Set up clean environments and anti-forensic tools",
+            "command": "# Prepare evasion toolkit and test environments"
           },
           {
-            "label": "Information collection",
-            "description": "Gather intelligence on target systems",
-            "command": "# Collect information"
+            "label": "Day 2: Payload Obfuscation",
+            "description": "Create and test obfuscated payloads and malware",
+            "command": "# Develop and test evasion techniques"
           },
           {
-            "label": "Vulnerability identification",
-            "description": "Identify and validate vulnerabilities",
-            "command": "# Find vulnerabilities"
+            "label": "Day 3: Network Evasion",
+            "description": "Test traffic obfuscation and C2 channel hiding",
+            "command": "# Implement network-level evasion techniques"
           },
           {
-            "label": "Exploitation execution",
-            "description": "Execute exploitation within scope",
-            "command": "# Execute exploits"
+            "label": "Day 4: Detection Avoidance",
+            "description": "Bypass EDR, AV, and monitoring systems",
+            "command": "# Test against security controls and monitoring"
           },
           {
-            "label": "Results compilation",
-            "description": "Compile and validate all findings",
-            "command": "# Compile results"
-          },
-          {
-            "label": "Report generation",
-            "description": "Generate assessment report",
-            "command": "# Generate report"
+            "label": "Day 5: Cleanup & Analysis",
+            "description": "Document successful techniques and cleanup procedures",
+            "command": "# Analyze evasion effectiveness and document findings"
           }
         ]
       }
@@ -44346,164 +44266,154 @@
     "details": "This workflow guides you through the complete process of OSINT-Only Assessment Workflow",
     "step_sequences": [
       {
-        "title": "Phase 1: Planning & Scoping",
+        "title": "Planning & Intelligence Gathering",
         "steps": [
           {
-            "title": "Define objectives",
-            "details": "Establish clear goals for the assessment",
-            "command": "# Document assessment objectives"
+            "title": "Define OSINT Objectives",
+            "details": "Establish clear goals for open source intelligence collection",
+            "command": "# Define OSINT collection requirements and scope"
           },
           {
-            "title": "Identify scope",
-            "details": "Define systems and services in scope",
-            "command": "# Create scope documentation"
+            "title": "Source Identification",
+            "details": "Identify relevant OSINT sources and data repositories",
+            "command": "# Map available OSINT sources and tools"
           },
           {
-            "title": "Obtain authorization",
-            "details": "Secure written approval for testing",
-            "command": "# Verify rules of engagement"
+            "title": "Legal & Ethical Review",
+            "details": "Review legal boundaries and ethical considerations",
+            "command": "# Establish OSINT collection boundaries and guidelines"
           }
         ]
       },
       {
-        "title": "Phase 2: Reconnaissance & Enumeration",
+        "title": "Passive Reconnaissance",
         "steps": [
           {
-            "title": "Passive information gathering",
-            "details": "Collect information without system interaction",
-            "command": "# Execute passive reconnaissance"
+            "title": "Domain Intelligence",
+            "details": "Gather domain registration and DNS information",
+            "command": "# Collect domain registration and DNS intelligence"
           },
           {
-            "title": "Active enumeration",
-            "details": "Scan and enumerate systems within scope",
-            "command": "# Perform active scans"
+            "title": "Public Records Search",
+            "details": "Search public records and government databases",
+            "command": "# Query public records and government databases"
           },
           {
-            "title": "Identify services",
-            "details": "Document running services and versions",
-            "command": "# Map service landscape"
+            "title": "Network Footprinting",
+            "details": "Map public network infrastructure and services",
+            "command": "# Identify public-facing infrastructure and services"
           }
         ]
       },
       {
-        "title": "Phase 3: Vulnerability Analysis",
+        "title": "Social Media Analysis",
         "steps": [
           {
-            "title": "Automated scanning",
-            "details": "Run vulnerability scanners",
-            "command": "# Execute automated scans"
+            "title": "Profile Analysis",
+            "details": "Analyze social media profiles and public communications",
+            "command": "# Review social media profiles and communications"
           },
           {
-            "title": "Manual testing",
-            "details": "Conduct manual vulnerability assessment",
-            "command": "# Perform manual testing"
+            "title": "Relationship Mapping",
+            "details": "Map relationships and connections through social networks",
+            "command": "# Identify relationships and network connections"
           },
           {
-            "title": "Verification",
-            "details": "Confirm and validate findings",
-            "command": "# Verify vulnerabilities"
+            "title": "Content Analysis",
+            "details": "Analyze public content and information disclosure",
+            "command": "# Review public content for sensitive information"
           }
         ]
       },
       {
-        "title": "Phase 4: Exploitation & Testing",
+        "title": "Technical Intelligence",
         "steps": [
           {
-            "title": "Exploit research",
-            "details": "Research appropriate exploitation techniques",
-            "command": "# Identify suitable exploits"
+            "title": "Code Repository Analysis",
+            "details": "Review public code repositories and documentation",
+            "command": "# Analyze public code repositories and commits"
           },
           {
-            "title": "Controlled exploitation",
-            "details": "Execute exploits with proper controls",
-            "command": "# Execute exploits carefully"
+            "title": "Vulnerability Research",
+            "details": "Research known vulnerabilities and exposures",
+            "command": "# Search vulnerability databases and disclosures"
           },
           {
-            "title": "Document impact",
-            "details": "Record business impact of successful exploitation",
-            "command": "# Document findings"
+            "title": "Technology Stack Mapping",
+            "details": "Identify technologies and frameworks in use",
+            "command": "# Map technology stack from public sources"
           }
         ]
       },
       {
-        "title": "Phase 5: Post-Exploitation & Cleanup",
+        "title": "Threat Intelligence Correlation",
         "steps": [
           {
-            "title": "Assess persistence",
-            "details": "Evaluate potential persistence mechanisms",
-            "command": "# Check for persistence"
+            "title": "Indicator Correlation",
+            "details": "Correlate findings with threat intelligence feeds",
+            "command": "# Cross-reference findings with threat intelligence"
           },
           {
-            "title": "Clean up artifacts",
-            "details": "Remove all testing artifacts and tools",
-            "command": "# Remove test artifacts"
+            "title": "Risk Assessment",
+            "details": "Assess risks based on OSINT findings",
+            "command": "# Evaluate risks from collected intelligence"
           },
           {
-            "title": "Verify restoration",
-            "details": "Ensure all systems are restored to baseline",
-            "command": "# Verify system restoration"
+            "title": "Attack Vector Analysis",
+            "details": "Identify potential attack vectors from OSINT data",
+            "command": "# Analyze potential attack vectors and scenarios"
           }
         ]
       },
       {
-        "title": "Phase 6: Reporting & Remediation",
+        "title": "Reporting & Mitigation",
         "steps": [
           {
-            "title": "Compile findings",
-            "details": "Organize all vulnerabilities and findings",
-            "command": "# Consolidate findings"
+            "title": "Intelligence Synthesis",
+            "details": "Synthesize findings into actionable intelligence",
+            "command": "# Compile OSINT findings into intelligence report"
           },
           {
-            "title": "Risk rating",
-            "details": "Rate findings by severity and impact",
-            "command": "# Assign severity ratings"
+            "title": "Risk Communication",
+            "details": "Communicate risks and recommendations to stakeholders",
+            "command": "# Present OSINT-based risk assessment findings"
           },
           {
-            "title": "Generate report",
-            "details": "Create comprehensive assessment report",
-            "command": "# Generate report"
-          },
-          {
-            "title": "Remediation guidance",
-            "details": "Provide remediation recommendations",
-            "command": "# Document fixes"
+            "title": "Remediation Guidance",
+            "details": "Provide guidance for addressing identified risks",
+            "command": "# Generate OSINT assessment report with recommendations"
           }
         ]
       }
     ],
     "workflow_guides": [
       {
-        "name": "OSINT-Only Assessment Workflow decision matrix",
+        "name": "OSINT-Only Assessment Timeline",
         "stages": [
           {
-            "label": "Assessment initiation",
-            "description": "Begin the assessment workflow",
-            "command": "# Start assessment"
+            "label": "Day 1: Passive Reconnaissance",
+            "description": "Gather publicly available information about target",
+            "command": "# Execute passive OSINT gathering techniques"
           },
           {
-            "label": "Information collection",
-            "description": "Gather intelligence on target systems",
-            "command": "# Collect information"
+            "label": "Day 2: Social Media Analysis",
+            "description": "Analyze social media profiles and public communications",
+            "command": "# Review social media and public communications"
           },
           {
-            "label": "Vulnerability identification",
-            "description": "Identify and validate vulnerabilities",
-            "command": "# Find vulnerabilities"
+            "label": "Day 3: Technical Footprint Mapping",
+            "description": "Map technical infrastructure from public sources",
+            "command": "# Identify technical assets and infrastructure"
           },
           {
-            "label": "Exploitation execution",
-            "description": "Execute exploitation within scope",
-            "command": "# Execute exploits"
+            "label": "Day 4: Threat Intelligence Correlation",
+            "description": "Correlate findings with threat intelligence sources",
+            "command": "# Cross-reference with threat intelligence feeds"
           },
           {
-            "label": "Results compilation",
-            "description": "Compile and validate all findings",
-            "command": "# Compile results"
-          },
-          {
-            "label": "Report generation",
-            "description": "Generate assessment report",
-            "command": "# Generate report"
+            "label": "Day 5: Risk Assessment & Reporting",
+            "description": "Assess risks from OSINT findings and generate report",
+            "command": "# Document OSINT-based risk assessment"
           }
         ]
       }
@@ -44561,164 +44471,154 @@
     "details": "This workflow guides you through the complete process of Threat Hunting Lifecycle Workflow",
     "step_sequences": [
       {
-        "title": "Phase 1: Planning & Scoping",
+        "title": "Hypothesis Development",
         "steps": [
           {
-            "title": "Define objectives",
-            "details": "Establish clear goals for the assessment",
-            "command": "# Document assessment objectives"
+            "title": "Intelligence Analysis",
+            "details": "Analyze threat intelligence and develop hunting hypotheses",
+            "command": "# Review threat intelligence and develop hypotheses"
           },
           {
-            "title": "Identify scope",
-            "details": "Define systems and services in scope",
-            "command": "# Create scope documentation"
+            "title": "Hypothesis Formulation",
+            "details": "Create specific, testable threat hunting hypotheses",
+            "command": "# Formulate clear and actionable hunting hypotheses"
           },
           {
-            "title": "Obtain authorization",
-            "details": "Secure written approval for testing",
-            "command": "# Verify rules of engagement"
+            "title": "Resource Planning",
+            "details": "Plan required data sources and hunting resources",
+            "command": "# Identify data sources and required tools"
           }
         ]
       },
       {
-        "title": "Phase 2: Reconnaissance & Enumeration",
+        "title": "Investigation Planning",
         "steps": [
           {
-            "title": "Passive information gathering",
-            "details": "Collect information without system interaction",
-            "command": "# Execute passive reconnaissance"
+            "title": "Data Source Mapping",
+            "details": "Map available data sources and collection methods",
+            "command": "# Identify and validate data sources for hunting"
           },
           {
-            "title": "Active enumeration",
-            "details": "Scan and enumerate systems within scope",
-            "command": "# Perform active scans"
+            "title": "Query Development",
+            "details": "Develop search queries and hunting techniques",
+            "command": "# Create hunting queries and detection logic"
           },
           {
-            "title": "Identify services",
-            "details": "Document running services and versions",
-            "command": "# Map service landscape"
+            "title": "Timeline Planning",
+            "details": "Establish hunting timeline and milestones",
+            "command": "# Define hunting phases and timeline"
           }
         ]
       },
       {
-        "title": "Phase 3: Vulnerability Analysis",
+        "title": "Active Threat Hunting",
         "steps": [
           {
-            "title": "Automated scanning",
-            "details": "Run vulnerability scanners",
-            "command": "# Execute automated scans"
+            "title": "Initial Data Collection",
+            "details": "Execute initial data collection and baseline establishment",
+            "command": "# Collect baseline data and establish normal patterns"
           },
           {
-            "title": "Manual testing",
-            "details": "Conduct manual vulnerability assessment",
-            "command": "# Perform manual testing"
+            "title": "Hypothesis Testing",
+            "details": "Test hypotheses against collected data",
+            "command": "# Execute hunting queries and analyze results"
           },
           {
-            "title": "Verification",
-            "details": "Confirm and validate findings",
-            "command": "# Verify vulnerabilities"
+            "title": "Anomaly Investigation",
+            "details": "Investigate identified anomalies and suspicious activity",
+            "command": "# Investigate anomalies and suspicious indicators"
           }
         ]
       },
       {
-        "title": "Phase 4: Exploitation & Testing",
+        "title": "Detection Engineering",
         "steps": [
           {
-            "title": "Exploit research",
-            "details": "Research appropriate exploitation techniques",
-            "command": "# Identify suitable exploits"
+            "title": "Indicator Development",
+            "details": "Develop indicators of compromise and detection rules",
+            "command": "# Create IOCs and detection signatures"
           },
           {
-            "title": "Controlled exploitation",
-            "details": "Execute exploits with proper controls",
-            "command": "# Execute exploits carefully"
+            "title": "Alert Creation",
+            "details": "Implement alerts and monitoring for identified threats",
+            "command": "# Develop and deploy detection alerts"
           },
           {
-            "title": "Document impact",
-            "details": "Record business impact of successful exploitation",
-            "command": "# Document findings"
+            "title": "Validation Testing",
+            "details": "Test detection effectiveness and reduce false positives",
+            "command": "# Validate detections and tune alert thresholds"
           }
         ]
       },
       {
-        "title": "Phase 5: Post-Exploitation & Cleanup",
+        "title": "Response & Containment",
         "steps": [
           {
-            "title": "Assess persistence",
-            "details": "Evaluate potential persistence mechanisms",
-            "command": "# Check for persistence"
+            "title": "Incident Response",
+            "details": "Execute incident response procedures for confirmed threats",
+            "command": "# Initiate incident response for confirmed threats"
           },
           {
-            "title": "Clean up artifacts",
-            "details": "Remove all testing artifacts and tools",
-            "command": "# Remove test artifacts"
+            "title": "Containment Actions",
+            "details": "Implement containment measures to limit threat impact",
+            "command": "# Execute containment and eradication procedures"
           },
           {
-            "title": "Verify restoration",
-            "details": "Ensure all systems are restored to baseline",
-            "command": "# Verify system restoration"
+            "title": "Evidence Preservation",
+            "details": "Preserve evidence for forensic analysis and legal purposes",
+            "command": "# Collect and preserve threat evidence"
           }
         ]
       },
       {
-        "title": "Phase 6: Reporting & Remediation",
+        "title": "Analysis & Improvement",
         "steps": [
           {
-            "title": "Compile findings",
-            "details": "Organize all vulnerabilities and findings",
-            "command": "# Consolidate findings"
+            "title": "Findings Documentation",
+            "details": "Document hunting findings and threat intelligence",
+            "command": "# Document threat hunting findings and lessons learned"
           },
           {
-            "title": "Risk rating",
-            "details": "Rate findings by severity and impact",
-            "command": "# Assign severity ratings"
+            "title": "Process Enhancement",
+            "details": "Improve threat hunting processes and techniques",
+            "command": "# Update hunting methodologies and playbooks"
           },
           {
-            "title": "Generate report",
-            "details": "Create comprehensive assessment report",
-            "command": "# Generate report"
-          },
-          {
-            "title": "Remediation guidance",
-            "details": "Provide remediation recommendations",
-            "command": "# Document fixes"
+            "title": "Intelligence Sharing",
+            "details": "Share findings with relevant stakeholders and communities",
+            "command": "# Generate threat hunting assessment report"
           }
         ]
       }
     ],
     "workflow_guides": [
       {
-        "name": "Threat Hunting Lifecycle Workflow decision matrix",
+        "name": "Threat Hunting Lifecycle Timeline",
         "stages": [
           {
-            "label": "Assessment initiation",
-            "description": "Begin the assessment workflow",
-            "command": "# Start assessment"
+            "label": "Week 1: Hypothesis Development",
+            "description": "Develop threat hunting hypotheses based on intelligence",
+            "command": "# Create threat hunting hypotheses and objectives"
           },
           {
-            "label": "Information collection",
-            "description": "Gather intelligence on target systems",
-            "command": "# Collect information"
+            "label": "Week 2: Data Collection Planning",
+            "description": "Plan data sources and collection methods for hunting",
+            "command": "# Identify data sources and collection strategies"
           },
           {
-            "label": "Vulnerability identification",
-            "description": "Identify and validate vulnerabilities",
-            "command": "# Find vulnerabilities"
+            "label": "Week 3: Active Hunting Execution",
+            "description": "Execute threat hunting activities and analyze findings",
+            "command": "# Conduct active threat hunting across environment"
           },
           {
-            "label": "Exploitation execution",
-            "description": "Execute exploitation within scope",
-            "command": "# Execute exploits"
+            "label": "Week 4: Detection Engineering",
+            "description": "Develop detections and improve monitoring based on findings",
+            "command": "# Create new detection rules and alerts"
           },
           {
-            "label": "Results compilation",
-            "description": "Compile and validate all findings",
-            "command": "# Compile results"
-          },
-          {
-            "label": "Report generation",
-            "description": "Generate assessment report",
-            "command": "# Generate report"
+            "label": "Week 5: Reporting & Process Improvement",
+            "description": "Document findings and improve threat hunting processes",
+            "command": "# Generate threat hunting report and update procedures"
           }
         ]
       }

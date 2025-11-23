@@ -15,6 +15,7 @@ use vte::prelude::*;
 #[derive(Clone)]
 pub struct ToolExecutionPanel {
     pub container: GtkBox,
+    pub category_selector: ComboBoxText,
     pub tool_selector: ComboBoxText,
     pub info_button: Button,
     pub instructions_scroll: ScrolledWindow,
@@ -35,6 +36,39 @@ impl ToolExecutionPanel {
         header.add_css_class("title-3");
         container.append(&header);
 
+        // Category selector row
+        let category_box = GtkBox::new(Orientation::Horizontal, 8);
+        let category_label = Label::new(Some("Category:"));
+        category_label.set_width_chars(10);
+        category_label.set_xalign(0.0);
+
+        let category_selector = ComboBoxText::new();
+        category_selector.set_hexpand(true);
+
+        let groups = tool_instructions::grouped_manifest();
+        let mut first_category: Option<String> = None;
+        let mut first_tool_id: Option<String> = None;
+
+        for (idx, group) in groups.iter().enumerate() {
+            category_selector.append(Some(&group.name), &group.name);
+            if idx == 0 {
+                first_category = Some(group.name.clone());
+                if let Some(first_tool) = group.tools.first() {
+                    first_tool_id = Some(first_tool.id.clone());
+                }
+            }
+        }
+
+        if let Some(default_category) = first_category.clone() {
+            category_selector.set_active_id(Some(&default_category));
+        } else {
+            category_selector.set_sensitive(false);
+        }
+
+        category_box.append(&category_label);
+        category_box.append(&category_selector);
+        container.append(&category_box);
+
         // Tool selector row
         let tool_box = GtkBox::new(Orientation::Horizontal, 8);
         let tool_label = Label::new(Some("Tool:"));
@@ -44,14 +78,15 @@ impl ToolExecutionPanel {
         let tool_selector = ComboBoxText::new();
         tool_selector.set_hexpand(true);
 
-        let groups = tool_instructions::grouped_manifest();
-        let mut first_tool_id: Option<String> = None;
-        for group in groups {
-            for entry in group.tools {
-                if first_tool_id.is_none() {
-                    first_tool_id = Some(entry.id.clone());
+        // Populate tools for the initially selected category
+        if let Some(category) = first_category.clone() {
+            for group in &groups {
+                if group.name == category {
+                    for entry in &group.tools {
+                        tool_selector.append(Some(&entry.id), &entry.label);
+                    }
+                    break;
                 }
-                tool_selector.append(Some(&entry.id), &entry.label);
             }
         }
 
@@ -62,6 +97,8 @@ impl ToolExecutionPanel {
             .or_else(|| first_tool_id.clone())
         {
             tool_selector.set_active_id(Some(&default_id));
+        } else if tool_selector.model().unwrap().iter_n_children(None) > 0 {
+            tool_selector.set_active(Some(0));
         } else {
             tool_selector.set_sensitive(false);
         }
@@ -196,6 +233,7 @@ impl ToolExecutionPanel {
 
         let panel = Self {
             container,
+            category_selector,
             tool_selector,
             info_button,
             instructions_scroll,
@@ -204,6 +242,16 @@ impl ToolExecutionPanel {
 
         panel.render_inline_instructions();
 
+        // Category selector handler
+        let tool_clone = panel.tool_selector.clone();
+        let panel_category = panel.clone();
+        panel
+            .category_selector
+            .connect_changed(move |category_selector| {
+                panel_category.update_tools_for_category(category_selector, &tool_clone);
+            });
+
+        // Tool selector handler
         let selector_clone = panel.tool_selector.clone();
         let panel_clone = panel.clone();
         selector_clone.connect_changed(move |_| {
@@ -215,6 +263,41 @@ impl ToolExecutionPanel {
 
     pub fn get_selected_tool(&self) -> Option<String> {
         self.tool_selector.active_id().map(|s| s.to_string())
+    }
+
+    /// Update available tools when category selection changes
+    fn update_tools_for_category(
+        &self,
+        category_selector: &ComboBoxText,
+        tool_selector: &ComboBoxText,
+    ) {
+        let active_category = category_selector.active_id().map(|s| s.to_string());
+
+        if let Some(category) = active_category {
+            // Clear existing tools by removing all children
+            let item_count = tool_selector.model().unwrap().iter_n_children(None);
+            for _ in 0..item_count {
+                tool_selector.remove(0);
+            }
+
+            // Populate with tools from selected category
+            let groups = tool_instructions::grouped_manifest();
+            for group in groups {
+                if group.name == category {
+                    for entry in group.tools {
+                        tool_selector.append(Some(&entry.id), &entry.label);
+                    }
+                    break;
+                }
+            }
+
+            // Select first tool in the category
+            if tool_selector.model().unwrap().iter_n_children(None) > 0 {
+                tool_selector.set_active(Some(0));
+            }
+
+            self.render_inline_instructions();
+        }
     }
 
     /// Rebuild inline instructions whenever the selected tool changes

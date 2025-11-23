@@ -366,6 +366,7 @@ pub fn setup_notes_handlers(detail_panel: Rc<DetailPanel>, state: Rc<StateManage
 }
 
 /// Wire up file operation buttons (Open, Save, Save As)
+#[allow(clippy::too_many_arguments)]
 pub fn setup_file_handlers(
     btn_open: &Button,
     btn_save: &Button,
@@ -406,9 +407,9 @@ pub fn setup_file_handlers(
                 model.selected_step = None;
             }
 
-            glib::signal::signal_handler_block(&phase_combo_clone, &*handler_id_clone);
+            glib::signal::signal_handler_block(&phase_combo_clone, &handler_id_clone);
             phase_combo_clone.set_selected(0);
-            glib::signal::signal_handler_unblock(&phase_combo_clone, &*handler_id_clone);
+            glib::signal::signal_handler_unblock(&phase_combo_clone, &handler_id_clone);
 
             rebuild_steps_list(&steps_list_clone, &state_clone.model(), &detail_panel_clone);
         });

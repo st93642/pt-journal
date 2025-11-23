@@ -34,6 +34,6 @@ mod tests {
     #[test]
     fn test_module_compiles() {
         // This test ensures the module compiles correctly
-        assert!(true);
+        // No assertions needed - just checking that the module compiles
     }
 }

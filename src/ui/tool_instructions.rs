@@ -378,7 +378,7 @@ mod tests {
 
         // Check that tools within each category are in the order they appear in the manifest
         for group in &groups {
-            let mut expected_order: Vec<_> = registry.manifest.iter()
+            let expected_order: Vec<_> = registry.manifest.iter()
                 .filter(|entry| entry.category == group.name)
                 .map(|entry| entry.id.clone())
                 .collect();

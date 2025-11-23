@@ -281,7 +281,7 @@ fn test_concurrent_tool_configs() {
     let configs: Vec<_> = (0..10)
         .map(|i| {
             ToolConfig::builder()
-                .target(&format!("target{}.com", i))
+                .target(format!("target{}.com", i))
                 .argument("-p")
                 .argument("80,443")
                 .build()

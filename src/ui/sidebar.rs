@@ -35,11 +35,9 @@ pub fn create_sidebar(model: &Rc<RefCell<AppModel>>) -> (GtkBox, StringList, Dro
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     #[test]
     fn test_sidebar_creation() {
         // This test ensures the module compiles correctly
-        assert!(true);
+        // No assertions needed - just checking that the module compiles
     }
 }

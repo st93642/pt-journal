@@ -80,7 +80,7 @@ impl Dispatcher {
     pub fn register(&mut self, key: &str, handler: MessageHandler) {
         self.handlers
             .entry(key.to_string())
-            .or_insert_with(Vec::new)
+            .or_default()
             .push(handler);
     }
 

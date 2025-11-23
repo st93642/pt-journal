@@ -99,36 +99,31 @@ impl TestRunner {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+#[test]
+fn test_runner_creation() {
+    let runner = TestRunner::new(10);
+    assert_eq!(runner.total, 10);
+    assert_eq!(runner.passed, 0);
+    assert_eq!(runner.failed, 0);
+}
 
-    #[test]
-    fn test_runner_creation() {
-        let runner = TestRunner::new(10);
-        assert_eq!(runner.total, 10);
-        assert_eq!(runner.passed, 0);
-        assert_eq!(runner.failed, 0);
-    }
+#[test]
+fn test_successful_test() {
+    let mut runner = TestRunner::new(1);
+    runner.run_test("test", || {
+        assert_eq!(1 + 1, 2);
+    });
+    assert_eq!(runner.passed, 1);
+    assert_eq!(runner.failed, 0);
+}
 
-    #[test]
-    fn test_successful_test() {
-        let mut runner = TestRunner::new(1);
-        runner.run_test("test", || {
-            assert_eq!(1 + 1, 2);
-        });
-        assert_eq!(runner.passed, 1);
-        assert_eq!(runner.failed, 0);
-    }
-
-    #[test]
-    fn test_failed_test() {
-        let mut runner = TestRunner::new(1);
-        runner.run_test("test", || {
-            panic!("Test failed");
-        });
-        assert_eq!(runner.passed, 0);
-        assert_eq!(runner.failed, 1);
-        assert!(!runner.failures.is_empty());
-    }
+#[test]
+fn test_failed_test() {
+    let mut runner = TestRunner::new(1);
+    runner.run_test("test", || {
+        panic!("Test failed");
+    });
+    assert_eq!(runner.passed, 0);
+    assert_eq!(runner.failed, 1);
+    assert!(!runner.failures.is_empty());
 }

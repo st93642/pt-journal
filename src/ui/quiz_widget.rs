@@ -24,6 +24,12 @@ pub struct QuizWidget {
     pub current_question_index: Rc<RefCell<usize>>,
 }
 
+impl Default for QuizWidget {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl QuizWidget {
     /// Create a new quiz widget
     pub fn new() -> Self {
@@ -58,17 +64,13 @@ impl QuizWidget {
         answer_box.set_margin_bottom(8);
 
         let mut answer_buttons = Vec::new();
-        let labels = vec!["A", "B", "C", "D"];
+        let labels = ["A", "B", "C", "D"];
 
         for (i, label_text) in labels.iter().enumerate() {
             let button_box = GtkBox::new(Orientation::Horizontal, 8);
 
             // Create radio button (use CheckButton with group)
-            let check = if i == 0 {
-                CheckButton::new()
-            } else {
-                CheckButton::new()
-            };
+            let check = CheckButton::new();
 
             // Group all buttons together so only one can be selected
             if i > 0 {

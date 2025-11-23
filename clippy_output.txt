@@ -1,0 +1,759 @@
+    Checking libc v0.2.177
+    Checking memchr v2.7.6
+    Checking pin-project-lite v0.2.16
+    Checking futures-core v0.3.31
+    Checking glib-sys v0.20.10
+   Compiling equivalent v1.0.2
+    Checking bitflags v2.10.0
+    Checking gobject-sys v0.20.10
+    Checking futures-sink v0.3.31
+    Checking gio-sys v0.20.10
+   Compiling hashbrown v0.16.0
+    Checking futures-channel v0.3.31
+   Compiling indexmap v2.12.0
+    Checking slab v0.4.11
+    Checking futures-io v0.3.31
+    Checking futures-task v0.3.31
+   Compiling toml_edit v0.23.7
+    Checking pin-utils v0.1.0
+    Checking futures-util v0.3.31
+   Compiling proc-macro-crate v3.4.0
+    Checking cfg-if v1.0.4
+    Checking gdk-pixbuf-sys v0.20.10
+    Checking cairo-sys-rs v0.20.10
+    Checking pango-sys v0.20.10
+    Checking futures-executor v0.3.31
+   Compiling glib-macros v0.20.12
+    Checking smallvec v1.15.1
+    Checking gdk4-sys v0.9.6
+    Checking graphene-sys v0.20.10
+   Compiling getrandom v0.3.4
+    Checking gsk4-sys v0.9.6
+    Checking gtk4-sys v0.9.6
+    Checking once_cell v1.21.3
+    Checking memoffset v0.9.1
+    Checking serde_core v1.0.228
+    Checking glib v0.20.12
+    Checking field-offset v0.3.6
+    Checking crossbeam-utils v0.8.21
+   Compiling num-traits v0.2.19
+   Compiling gtk4-macros v0.9.5
+    Checking scopeguard v1.2.0
+    Checking lock_api v0.4.14
+    Checking serde v1.0.228
+    Checking concurrent-queue v2.5.0
+    Checking getrandom v0.2.16
+    Checking regex-syntax v0.8.8
+    Checking gio v0.20.12
+    Checking cairo-rs v0.20.12
+    Checking graphene-rs v0.20.10
+   Compiling zerocopy v0.8.27
+   Compiling rustix v1.1.2
+    Checking parking v2.2.1
+    Checking event-listener v5.4.1
+    Checking nanorand v0.7.0
+    Checking spin v0.9.8
+    Checking tracing-core v0.1.34
+    Checking rand_core v0.9.3
+    Checking aho-corasick v1.1.4
+    Checking itoa v1.0.15
+    Checking linux-raw-sys v0.11.0
+    Checking ryu v1.0.20
+    Checking unicode-width v0.2.2
+    Checking option-ext v0.2.0
+    Checking dirs-sys v0.4.1
+    Checking getopts v0.2.24
+    Checking pango v0.20.12
+    Checking gdk-pixbuf v0.20.10
+    Checking gdk4 v0.9.6
+    Checking tracing v0.1.41
+    Checking regex-automata v0.4.13
+    Checking flume v0.11.1
+    Checking libadwaita-sys v0.7.2
+    Checking gsk4 v0.9.6
+    Checking vte4-sys v0.8.0
+    Checking gtk4 v0.9.7
+    Checking io-lifetimes v2.0.4
+    Checking event-listener-strategy v0.5.4
+    Checking relm4-css v0.9.0
+    Checking futures v0.3.31
+    Checking tokio v1.48.0
+    Checking fastrand v2.3.0
+    Checking unicase v2.8.1
+    Checking unsafe-libyaml v0.2.11
+    Checking fragile v2.0.1
+    Checking iana-time-zone v0.1.64
+    Checking pulldown-cmark-escape v0.10.1
+    Checking pulldown-cmark v0.10.3
+    Checking chrono v0.4.42
+    Checking serde_yaml v0.9.34+deprecated
+    Checking tempfile v3.23.0
+    Checking thiserror v1.0.69
+    Checking async-channel v2.5.0
+    Checking ppv-lite86 v0.2.21
+    Checking regex v1.12.2
+    Checking anyhow v1.0.100
+    Checking serde_json v1.0.145
+    Checking directories v5.0.1
+    Checking uuid v1.18.1
+    Checking wait-timeout v0.2.1
+    Checking fnv v1.0.7
+    Checking bit-vec v0.8.0
+    Checking quick-error v1.2.3
+    Checking rusty-fork v0.3.1
+    Checking bit-set v0.8.0
+    Checking rand_chacha v0.9.0
+    Checking rand_xorshift v0.4.0
+    Checking rand v0.9.2
+    Checking unarray v0.1.4
+    Checking proptest v1.9.0
+    Checking assert_matches v1.5.0
+    Checking vte4 v0.8.0
+    Checking relm4 v0.9.1
+    Checking libadwaita v0.7.2
+    Checking pt-journal v0.1.0 (/home/engine/project)
+warning: unused import: `super::*`
+   --> src/ui/detail_panel.rs:194:9
+    |
+194 |     use super::*;
+    |         ^^^^^^^^
+    |
+    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `super::*`
+  --> src/ui/sidebar.rs:38:9
+   |
+38 |     use super::*;
+   |         ^^^^^^^^
+
+warning: use of deprecated method `vte4::ComboBoxExt::set_active_id`: Since 4.10
+   --> src/ui/tool_execution.rs:916:29
+    |
+916 |         panel.tool_selector.set_active_id(Some("gobuster"));
+    |                             ^^^^^^^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: variable does not need to be mutable
+   --> src/model.rs:503:13
+    |
+503 |         let mut step1 = Step::new_tutorial(
+    |             ----^^^^^
+    |             |
+    |             help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: use of `or_insert_with` to construct default value
+  --> src/dispatcher.rs:83:14
+   |
+83 |             .or_insert_with(Vec::new)
+   |              ^^^^^^^^^^^^^^^^^^^^^^^^ help: try: `or_default()`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#unwrap_or_default
+   = note: `#[warn(clippy::unwrap_or_default)]` on by default
+
+warning: this function has too many arguments (9/7)
+   --> src/ui/handlers.rs:369:1
+    |
+369 | / pub fn setup_file_handlers(
+370 | |     btn_open: &Button,
+371 | |     btn_save: &Button,
+372 | |     btn_save_as: &Button,
+...   |
+378 | |     steps_list: &ListBox,
+379 | | ) {
+    | |_^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#too_many_arguments
+    = note: `#[warn(clippy::too_many_arguments)]` on by default
+
+warning: deref which would be done by auto-deref
+   --> src/ui/handlers.rs:409:68
+    |
+409 |             glib::signal::signal_handler_block(&phase_combo_clone, &*handler_id_clone);
+    |                                                                    ^^^^^^^^^^^^^^^^^^ help: try: `&handler_id_clone`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#explicit_auto_deref
+    = note: `#[warn(clippy::explicit_auto_deref)]` on by default
+
+warning: deref which would be done by auto-deref
+   --> src/ui/handlers.rs:411:70
+    |
+411 |             glib::signal::signal_handler_unblock(&phase_combo_clone, &*handler_id_clone);
+    |                                                                      ^^^^^^^^^^^^^^^^^^ help: try: `&handler_id_clone`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#explicit_auto_deref
+
+warning: you should consider adding a `Default` implementation for `QuizWidget`
+   --> src/ui/quiz_widget.rs:29:5
+    |
+ 29 | /     pub fn new() -> Self {
+ 30 | |         let container = GtkBox::new(Orientation::Vertical, 12);
+ 31 | |         container.set_margin_top(8);
+ 32 | |         container.set_margin_bottom(8);
+...   |
+163 | |     }
+    | |_____^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#new_without_default
+    = note: `#[warn(clippy::new_without_default)]` on by default
+help: try adding this
+    |
+ 27 + impl Default for QuizWidget {
+ 28 +     fn default() -> Self {
+ 29 +         Self::new()
+ 30 +     }
+ 31 + }
+    |
+
+warning: this `if` has identical blocks
+  --> src/ui/quiz_widget.rs:67:35
+   |
+67 |               let check = if i == 0 {
+   |  ___________________________________^
+68 | |                 CheckButton::new()
+69 | |             } else {
+   | |_____________^
+   |
+note: same as this
+  --> src/ui/quiz_widget.rs:69:20
+   |
+69 |               } else {
+   |  ____________________^
+70 | |                 CheckButton::new()
+71 | |             };
+   | |_____________^
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#if_same_then_else
+   = note: `#[warn(clippy::if_same_then_else)]` on by default
+
+warning: useless use of `vec!`
+  --> src/ui/quiz_widget.rs:61:22
+   |
+61 |         let labels = vec!["A", "B", "C", "D"];
+   |                      ^^^^^^^^^^^^^^^^^^^^^^^^ help: you can use an array directly: `["A", "B", "C", "D"]`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#useless_vec
+   = note: `#[warn(clippy::useless_vec)]` on by default
+
+warning: variable does not need to be mutable
+   --> src/ui/tool_instructions.rs:381:17
+    |
+381 |             let mut expected_order: Vec<_> = registry.manifest.iter()
+    |                 ----^^^^^^^^^^^^^^
+    |                 |
+    |                 help: remove this `mut`
+
+warning: `pt-journal` (lib) generated 7 warnings (run `cargo clippy --fix --lib -p pt-journal` to apply 5 suggestions)
+warning: field assignment outside of initializer for an instance created with Default::default()
+   --> src/store.rs:140:9
+    |
+140 |         session.name = "Roundtrip Test".to_string();
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+note: consider initializing the variable with `model::Session { name: "Roundtrip Test".to_string(), notes_global: "Global test notes".to_string(), ..Default::default() }` and removing relevant reassignments
+   --> src/store.rs:139:9
+    |
+139 |         let mut session = Session::default();
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#field_reassign_with_default
+    = note: `#[warn(clippy::field_reassign_with_default)]` on by default
+
+warning: field assignment outside of initializer for an instance created with Default::default()
+   --> src/store.rs:184:9
+    |
+184 |         session.name = "Тест сессии 🚀".to_string();
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+note: consider initializing the variable with `model::Session { name: "Тест сессии 🚀".to_string(), notes_global: "Заметки с эмодзи 🎯 и unicode: ñáéíóú".to_string(), ..Default::default() }` and removing relevant reassignments
+   --> src/store.rs:183:9
+    |
+183 |         let mut session = Session::default();
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#field_reassign_with_default
+
+error: this comparison involving the minimum or maximum element for this type contains a case that is always true or always false
+   --> src/tools/registry.rs:293:17
+    |
+293 |         assert!(tools.len() >= 0);
+    |                 ^^^^^^^^^^^^^^^^
+    |
+    = help: because `0` is the minimum value for this type, this comparison is always true
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#absurd_extreme_comparisons
+    = note: `#[deny(clippy::absurd_extreme_comparisons)]` on by default
+
+warning: `assert!(true)` will be optimized out by the compiler
+   --> src/ui/detail_panel.rs:199:9
+    |
+199 |         assert!(true);
+    |         ^^^^^^^^^^^^^
+    |
+    = help: remove it
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#assertions_on_constants
+    = note: `#[warn(clippy::assertions_on_constants)]` on by default
+
+warning: field assignment outside of initializer for an instance created with Default::default()
+   --> src/ui/file_ops.rs:166:9
+    |
+166 |         model.current_path = Some(session_file.clone());
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+note: consider initializing the variable with `model::AppModel { current_path: Some(session_file.clone()), ..Default::default() }` and removing relevant reassignments
+   --> src/ui/file_ops.rs:165:9
+    |
+165 |         let mut model = AppModel::default();
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#field_reassign_with_default
+
+warning: `assert!(true)` will be optimized out by the compiler
+  --> src/ui/header_bar.rs:37:9
+   |
+37 |         assert!(true);
+   |         ^^^^^^^^^^^^^
+   |
+   = help: remove it
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#assertions_on_constants
+
+warning: `assert!(true)` will be optimized out by the compiler
+  --> src/ui/sidebar.rs:43:9
+   |
+43 |         assert!(true);
+   |         ^^^^^^^^^^^^^
+   |
+   = help: remove it
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#assertions_on_constants
+
+warning: unused import: `super::*`
+   --> tests/test_runner.rs:104:9
+    |
+104 |     use super::*;
+    |         ^^^^^^^^
+    |
+help: if this is a test module, consider adding a `#[cfg(test)]` to the containing module
+   --> tests/test_runner.rs:103:1
+    |
+103 | mod tests {
+    | ^^^^^^^^^
+    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: length comparison to zero
+  --> src/lib.rs:84:21
+   |
+84 |             assert!(bug_bounty_phase.steps.len() > 0); // Has steps
+   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: using `!is_empty` is clearer and more explicit: `!bug_bounty_phase.steps.is_empty()`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#len_zero
+   = note: `#[warn(clippy::len_zero)]` on by default
+
+warning: length comparison to zero
+   --> src/lib.rs:165:33
+    |
+165 | ...                   quiz_step.questions.len() > 0,
+    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: using `!is_empty` is clearer and more explicit: `!quiz_step.questions.is_empty()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#len_zero
+
+warning: field assignment outside of initializer for an instance created with Default::default()
+   --> src/lib.rs:222:13
+    |
+222 |             session.name = "Test Session".to_string();
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+note: consider initializing the variable with `model::Session { name: "Test Session".to_string(), notes_global: "Test notes".to_string(), ..Default::default() }` and removing relevant reassignments
+   --> src/lib.rs:221:13
+    |
+221 |             let mut session = Session::default();
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#field_reassign_with_default
+
+warning: accessing first element with `loaded_session.phases[0].steps.get(0)`
+   --> src/lib.rs:243:40
+    |
+243 |             if let Some(loaded_step) = loaded_session.phases[0].steps.get(0) {
+    |                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try: `loaded_session.phases[0].steps.first()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#get_first
+    = note: `#[warn(clippy::get_first)]` on by default
+
+warning: accessing first element with `session.phases[0].steps.get(0)`
+   --> src/lib.rs:244:46
+    |
+244 |                 if let Some(original_step) = session.phases[0].steps.get(0) {
+    |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try: `session.phases[0].steps.first()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#get_first
+
+warning: field assignment outside of initializer for an instance created with Default::default()
+   --> src/lib.rs:341:13
+    |
+341 |             session.notes_global = "Global test notes".to_string();
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+note: consider initializing the variable with `model::Session { notes_global: "Global test notes".to_string(), ..Default::default() }` and removing relevant reassignments
+   --> src/lib.rs:338:13
+    |
+338 |             let mut session = Session::default();
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#field_reassign_with_default
+
+warning: you seem to use `.enumerate()` and immediately discard the index
+   --> src/lib.rs:361:65
+    |
+361 |               for (_phase_idx, (original_phase, loaded_phase)) in session
+    |  _________________________________________________________________^
+362 | |                 .phases
+363 | |                 .iter()
+364 | |                 .zip(&loaded_session.phases)
+365 | |                 .enumerate()
+    | |____________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#unused_enumerate_index
+    = note: `#[warn(clippy::unused_enumerate_index)]` on by default
+help: remove the `.enumerate()` call
+    |
+361 ~             for (original_phase, loaded_phase) in session
+362 +                 .phases
+363 +                 .iter()
+364 +                 .zip(&loaded_session.phases)
+    |
+
+warning: you seem to use `.enumerate()` and immediately discard the index
+   --> src/lib.rs:370:66
+    |
+370 |                   for (_step_idx, (original_step, loaded_step)) in original_phase
+    |  __________________________________________________________________^
+371 | |                     .steps
+372 | |                     .iter()
+373 | |                     .zip(&loaded_phase.steps)
+374 | |                     .enumerate()
+    | |________________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#unused_enumerate_index
+help: remove the `.enumerate()` call
+    |
+370 ~                 for (original_step, loaded_step) in original_phase
+371 +                     .steps
+372 +                     .iter()
+373 +                     .zip(&loaded_phase.steps)
+    |
+
+warning: used `assert_eq!` with a literal bool
+   --> src/lib.rs:469:17
+    |
+469 |                 assert_eq!(progress_0.answered, true);
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#bool_assert_comparison
+    = note: `#[warn(clippy::bool_assert_comparison)]` on by default
+help: replace it with `assert!(..)`
+    |
+469 -                 assert_eq!(progress_0.answered, true);
+469 +                 assert!(progress_0.answered);
+    |
+
+warning: used `assert_eq!` with a literal bool
+   --> src/lib.rs:473:17
+    |
+473 |                 assert_eq!(progress_0.first_attempt_correct, true);
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#bool_assert_comparison
+help: replace it with `assert!(..)`
+    |
+473 -                 assert_eq!(progress_0.first_attempt_correct, true);
+473 +                 assert!(progress_0.first_attempt_correct);
+    |
+
+warning: used `assert_eq!` with a literal bool
+   --> src/lib.rs:474:17
+    |
+474 |                 assert_eq!(progress_0.explanation_viewed_before_answer, false);
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#bool_assert_comparison
+help: replace it with `assert!(..)`
+    |
+474 -                 assert_eq!(progress_0.explanation_viewed_before_answer, false);
+474 +                 assert!(!progress_0.explanation_viewed_before_answer);
+    |
+
+warning: used `assert_eq!` with a literal bool
+   --> src/lib.rs:479:17
+    |
+479 |                 assert_eq!(progress_1.answered, true);
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#bool_assert_comparison
+help: replace it with `assert!(..)`
+    |
+479 -                 assert_eq!(progress_1.answered, true);
+479 +                 assert!(progress_1.answered);
+    |
+
+warning: used `assert_eq!` with a literal bool
+   --> src/lib.rs:483:17
+    |
+483 |                 assert_eq!(progress_1.first_attempt_correct, false);
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#bool_assert_comparison
+help: replace it with `assert!(..)`
+    |
+483 -                 assert_eq!(progress_1.first_attempt_correct, false);
+483 +                 assert!(!progress_1.first_attempt_correct);
+    |
+
+warning: used `assert_eq!` with a literal bool
+   --> src/lib.rs:488:17
+    |
+488 |                 assert_eq!(progress_2.answered, false);
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#bool_assert_comparison
+help: replace it with `assert!(..)`
+    |
+488 -                 assert_eq!(progress_2.answered, false);
+488 +                 assert!(!progress_2.answered);
+    |
+
+warning: used `assert_eq!` with a literal bool
+   --> src/lib.rs:489:17
+    |
+489 |                 assert_eq!(progress_2.explanation_viewed_before_answer, true);
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#bool_assert_comparison
+help: replace it with `assert!(..)`
+    |
+489 -                 assert_eq!(progress_2.explanation_viewed_before_answer, true);
+489 +                 assert!(progress_2.explanation_viewed_before_answer);
+    |
+
+warning: field assignment outside of initializer for an instance created with Default::default()
+   --> src/lib.rs:521:13
+    |
+521 |             session.name = "Integration Test Session".to_string();
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+note: consider initializing the variable with `model::Session { name: "Integration Test Session".to_string(), ..Default::default() }` and removing relevant reassignments
+   --> src/lib.rs:520:13
+    |
+520 |             let mut session = Session::default();
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#field_reassign_with_default
+
+warning: length comparison to zero
+   --> src/lib.rs:585:21
+    |
+585 |             assert!(session.phases[5].steps.len() > 0);
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: using `!is_empty` is clearer and more explicit: `!session.phases[5].steps.is_empty()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#len_zero
+
+warning: field assignment outside of initializer for an instance created with Default::default()
+   --> src/lib.rs:672:13
+    |
+672 |             session.name = "Comprehensive Test Session".to_string();
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+note: consider initializing the variable with `model::Session { name: "Comprehensive Test Session".to_string(), notes_global: "This is a comprehensive test of all session features.".to_string(), ..Default::default() }` and removing relevant reassignments
+   --> src/lib.rs:671:13
+    |
+671 |             let mut session = Session::default();
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#field_reassign_with_default
+
+warning: you seem to use `.enumerate()` and immediately discard the index
+   --> src/lib.rs:726:17
+    |
+726 |                 session.phases.iter().zip(&loaded.phases).enumerate()
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#unused_enumerate_index
+help: remove the `.enumerate()` call
+    |
+725 ~             for (original_phase, loaded_phase) in
+726 ~                 session.phases.iter().zip(&loaded.phases)
+    |
+
+warning: you seem to use `.enumerate()` and immediately discard the index
+   --> src/lib.rs:733:66
+    |
+733 |                   for (_step_idx, (original_step, loaded_step)) in original_phase
+    |  __________________________________________________________________^
+734 | |                     .steps
+735 | |                     .iter()
+736 | |                     .zip(&loaded_phase.steps)
+737 | |                     .enumerate()
+    | |________________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#unused_enumerate_index
+help: remove the `.enumerate()` call
+    |
+733 ~                 for (original_step, loaded_step) in original_phase
+734 +                     .steps
+735 +                     .iter()
+736 +                     .zip(&loaded_phase.steps)
+    |
+
+warning: you seem to use `.enumerate()` and immediately discard the index
+   --> src/lib.rs:754:70
+    |
+754 |                           for (_evidence_idx, (orig_ev, loaded_ev)) in original_step
+    |  ______________________________________________________________________^
+755 | |                             .get_evidence()
+756 | |                             .iter()
+757 | |                             .zip(loaded_step.get_evidence())
+758 | |                             .enumerate()
+    | |________________________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#unused_enumerate_index
+help: remove the `.enumerate()` call
+    |
+754 ~                         for (orig_ev, loaded_ev) in original_step
+755 +                             .get_evidence()
+756 +                             .iter()
+757 +                             .zip(loaded_step.get_evidence())
+    |
+
+warning: length comparison to zero
+   --> src/lib.rs:792:33
+    |
+792 |                         assert!(step.get_quiz_step().unwrap().questions.len() > 0);
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: using `!is_empty` is clearer and more explicit: `!step.get_quiz_step().unwrap().questions.is_empty()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#len_zero
+
+warning: field assignment outside of initializer for an instance created with Default::default()
+   --> src/lib.rs:812:13
+    |
+812 |             session.name = "A".repeat(10000); // Very long name
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+note: consider initializing the variable with `model::Session { name: "A".repeat(10000), notes_global: "B".repeat(50000), ..Default::default() }` and removing relevant reassignments
+   --> src/lib.rs:811:13
+    |
+811 |             let mut session = Session::default();
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#field_reassign_with_default
+
+warning: field assignment outside of initializer for an instance created with Default::default()
+   --> src/lib.rs:851:13
+    |
+851 |             session1.name = "Session One".to_string();
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+note: consider initializing the variable with `model::Session { name: "Session One".to_string(), notes_global: "First session".to_string(), ..Default::default() }` and removing relevant reassignments
+   --> src/lib.rs:850:13
+    |
+850 |             let mut session1 = Session::default();
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#field_reassign_with_default
+
+warning: field assignment outside of initializer for an instance created with Default::default()
+   --> src/lib.rs:855:13
+    |
+855 |             session2.name = "Session Two".to_string();
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+note: consider initializing the variable with `model::Session { name: "Session Two".to_string(), notes_global: "Second session".to_string(), ..Default::default() }` and removing relevant reassignments
+   --> src/lib.rs:854:13
+    |
+854 |             let mut session2 = Session::default();
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#field_reassign_with_default
+
+warning: field assignment outside of initializer for an instance created with Default::default()
+    --> src/lib.rs:1032:17
+     |
+1032 |                 session.name = name.clone();
+     |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+note: consider initializing the variable with `model::Session { name: name.clone(), ..Default::default() }` and removing relevant reassignments
+    --> src/lib.rs:1031:17
+     |
+1031 |                 let mut session = Session::default();
+     |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#field_reassign_with_default
+
+warning: field assignment outside of initializer for an instance created with Default::default()
+    --> src/lib.rs:1047:17
+     |
+1047 |                 session.notes_global = notes.clone();
+     |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+note: consider initializing the variable with `model::Session { notes_global: notes.clone(), ..Default::default() }` and removing relevant reassignments
+    --> src/lib.rs:1046:17
+     |
+1046 |                 let mut session = Session::default();
+     |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#field_reassign_with_default
+
+warning: comparison is useless due to type limits
+   --> src/tools/registry.rs:293:17
+    |
+293 |         assert!(tools.len() >= 0);
+    |                 ^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(unused_comparisons)]` on by default
+
+warning: use of deprecated method `gtk4::prelude::ComboBoxExt::set_active_id`: Since 4.10
+   --> tests/integration_tests.rs:253:25
+    |
+253 |     panel.tool_selector.set_active_id(Some("gobuster"));
+    |                         ^^^^^^^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: unused variable: `phase_idx`
+  --> tests/integration_tests.rs:77:10
+   |
+77 |     for (phase_idx, phase) in session.phases.iter_mut().enumerate().take(5) {
+   |          ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_phase_idx`
+   |
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: `pt-journal` (lib test) generated 46 warnings (7 duplicates)
+error: could not compile `pt-journal` (lib test) due to 1 previous error; 46 warnings emitted
+warning: build failed, waiting for other jobs to finish...
+warning: field assignment outside of initializer for an instance created with Default::default()
+  --> tests/integration_tests.rs:51:5
+   |
+51 |     session.name = "Test Session".to_string();
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+note: consider initializing the variable with `pt_journal::model::Session { name: "Test Session".to_string(), notes_global: "Test notes".to_string(), ..Default::default() }` and removing relevant reassignments
+  --> tests/integration_tests.rs:50:5
+   |
+50 |     let mut session = Session::default();
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#field_reassign_with_default
+   = note: `#[warn(clippy::field_reassign_with_default)]` on by default
+
+warning: field assignment outside of initializer for an instance created with Default::default()
+  --> tests/integration_tests.rs:73:5
+   |
+73 |     session.notes_global = "Global test notes".to_string();
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+note: consider initializing the variable with `pt_journal::model::Session { notes_global: "Global test notes".to_string(), ..Default::default() }` and removing relevant reassignments
+  --> tests/integration_tests.rs:72:5
+   |
+72 |     let mut session = Session::default();
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#field_reassign_with_default
+
+warning: field assignment outside of initializer for an instance created with Default::default()
+   --> tests/integration_tests.rs:213:5
+    |
+213 |     session.name = "Workflow Test".to_string();
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+note: consider initializing the variable with `pt_journal::model::Session { name: "Workflow Test".to_string(), ..Default::default() }` and removing relevant reassignments
+   --> tests/integration_tests.rs:212:5
+    |
+212 |     let mut session = Session::default();
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#field_reassign_with_default
+
+warning: `pt-journal` (test "integration_tests") generated 6 warnings (run `cargo clippy --fix --test "integration_tests"` to apply 1 suggestion)

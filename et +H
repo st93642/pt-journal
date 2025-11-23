@@ -1,0 +1,404 @@
+[1mdiff --git a/src/dispatcher.rs b/src/dispatcher.rs[m
+[1mindex 3a009dd..566acd1 100644[m
+[1m--- a/src/dispatcher.rs[m
+[1m+++ b/src/dispatcher.rs[m
+[36m@@ -80,7 +80,7 @@[m [mimpl Dispatcher {[m
+     pub fn register(&mut self, key: &str, handler: MessageHandler) {[m
+         self.handlers[m
+             .entry(key.to_string())[m
+[31m-            .or_insert_with(Vec::new)[m
+[32m+[m[32m            .or_default()[m
+             .push(handler);[m
+     }[m
+ [m
+[1mdiff --git a/src/lib.rs b/src/lib.rs[m
+[1mindex 05c95a5..aff8344 100644[m
+[1m--- a/src/lib.rs[m
+[1m+++ b/src/lib.rs[m
+[36m@@ -81,7 +81,7 @@[m [mmod tests {[m
+             // Test Bug Bounty Hunting phase[m
+             let bug_bounty_phase = &session.phases[5];[m
+             assert_eq!(bug_bounty_phase.name, "Bug Bounty Hunting");[m
+[31m-            assert!(bug_bounty_phase.steps.len() > 0); // Has steps[m
+[32m+[m[32m            assert!(!bug_bounty_phase.steps.is_empty()); // Has steps[m
+ [m
+             // Test CompTIA Security+ phase[m
+             let comptia_phase = &session.phases[6];[m
+[36m@@ -162,7 +162,7 @@[m [mmod tests {[m
+                         // Quiz steps should have questions[m
+                         if let Some(quiz_step) = step.get_quiz_step() {[m
+                             assert!([m
+[31m-                                quiz_step.questions.len() > 0,[m
+[32m+[m[32m                                !quiz_step.questions.is_empty(),[m
+                                 "Quiz step has no questions: {}",[m
+                                 step.title[m
+                             );[m
+[36m@@ -240,8 +240,8 @@[m [mmod tests {[m
+             assert_eq!(loaded_session.phases.len(), session.phases.len());[m
+ [m
+             // Verify modified step[m
+[31m-            if let Some(loaded_step) = loaded_session.phases[0].steps.get(0) {[m
+[31m-                if let Some(original_step) = session.phases[0].steps.get(0) {[m
+[32m+[m[32m            if let Some(loaded_step) = loaded_session.phases[0].steps.first() {[m
+[32m+[m[32m                if let Some(original_step) = session.phases[0].steps.first() {[m
+                     assert_eq!(loaded_step.status, original_step.status);[m
+                     assert_eq!(loaded_step.get_notes(), original_step.get_notes());[m
+                     assert_eq!(loaded_step.title, original_step.title);[m
+[36m@@ -358,20 +358,18 @@[m [mmod tests {[m
+             assert_eq!(loaded_session.notes_global, session.notes_global);[m
+             assert_eq!(loaded_session.phases.len(), session.phases.len());[m
+ [m
+[31m-            for (_phase_idx, (original_phase, loaded_phase)) in session[m
+[32m+[m[32m            for (original_phase, loaded_phase) in session[m
+                 .phases[m
+                 .iter()[m
+                 .zip(&loaded_session.phases)[m
+[31m-                .enumerate()[m
+             {[m
+                 assert_eq!(loaded_phase.name, original_phase.name);[m
+                 assert_eq!(loaded_phase.steps.len(), original_phase.steps.len());[m
+ [m
+[31m-                for (_step_idx, (original_step, loaded_step)) in original_phase[m
+[32m+[m[32m                for (original_step, loaded_step) in original_phase[m
+                     .steps[m
+                     .iter()[m
+                     .zip(&loaded_phase.steps)[m
+[31m-                    .enumerate()[m
+                 {[m
+                     assert_eq!(loaded_step.title, original_step.title);[m
+                     assert_eq!(loaded_step.description, original_step.description);[m
+[36m@@ -466,27 +464,27 @@[m [mmod tests {[m
+ [m
+                 // Check question 0 progress (correct answer)[m
+                 let progress_0 = &loaded_quiz_step.progress[0];[m
+[31m-                assert_eq!(progress_0.answered, true);[m
+[32m+[m[32m                assert!(progress_0.answered);[m
+                 assert_eq!(progress_0.selected_answer_index, Some(0));[m
+                 assert_eq!(progress_0.is_correct, Some(true));[m
+                 assert_eq!(progress_0.attempts, 1);[m
+[31m-                assert_eq!(progress_0.first_attempt_correct, true);[m
+[31m-                assert_eq!(progress_0.explanation_viewed_before_answer, false);[m
+[32m+[m[32m                assert!(progress_0.first_attempt_correct);[m
+[32m+[m[32m                assert!(!progress_0.explanation_viewed_before_answer);[m
+                 assert!(progress_0.awards_points());[m
+ [m
+                 // Check question 1 progress (incorrect answer)[m
+                 let progress_1 = &loaded_quiz_step.progress[1];[m
+[31m-                assert_eq!(progress_1.answered, true);[m
+[32m+[m[32m                assert!(progress_1.answered);[m
+                 assert_eq!(progress_1.selected_answer_index, Some(1));[m
+                 assert_eq!(progress_1.is_correct, Some(false));[m
+                 assert_eq!(progress_1.attempts, 1);[m
+[31m-                assert_eq!(progress_1.first_attempt_correct, false);[m
+[32m+[m[32m                assert!(!progress_1.first_attempt_correct);[m
+                 assert!(!progress_1.awards_points());[m
+ [m
+                 // Check question 2 progress (viewed explanation)[m
+                 let progress_2 = &loaded_quiz_step.progress[2];[m
+[31m-                assert_eq!(progress_2.answered, false);[m
+[31m-                assert_eq!(progress_2.explanation_viewed_before_answer, true);[m
+[32m+[m[32m                assert!(!progress_2.answered);[m
+[32m+[m[32m                assert!(progress_2.explanation_viewed_before_answer);[m
+                 assert!(!progress_2.awards_points());[m
+ [m
+                 // Verify statistics calculation[m
+[36m@@ -582,7 +580,7 @@[m [mmod tests {[m
+             }[m
+ [m
+             // Bug Bounty Hunting phase should have steps[m
+[31m-            assert!(session.phases[5].steps.len() > 0);[m
+[32m+[m[32m            assert!(!session.phases[5].steps.is_empty());[m
+ [m
+             // CompTIA Security+ phase should have quiz steps[m
+             assert_eq!(session.phases[6].steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)[m
+[36m@@ -722,19 +720,18 @@[m [mmod tests {[m
+             assert_eq!(loaded.phases.len(), session.phases.len());[m
+ [m
+             // Verify each phase[m
+[31m-            for (_phase_idx, (original_phase, loaded_phase)) in[m
+[31m-                session.phases.iter().zip(&loaded.phases).enumerate()[m
+[32m+[m[32m            for (original_phase, loaded_phase) in[m
+[32m+[m[32m                session.phases.iter().zip(&loaded.phases)[m
+             {[m
+                 assert_eq!(loaded_phase.name, original_phase.name);[m
+                 assert_eq!(loaded_phase.notes, original_phase.notes);[m
+                 assert_eq!(loaded_phase.steps.len(), original_phase.steps.len());[m
+ [m
+                 // Verify each step[m
+[31m-                for (_step_idx, (original_step, loaded_step)) in original_phase[m
+[32m+[m[32m                for (original_step, loaded_step) in original_phase[m
+                     .steps[m
+                     .iter()[m
+                     .zip(&loaded_phase.steps)[m
+[31m-                    .enumerate()[m
+                 {[m
+                     assert_eq!(loaded_step.title, original_step.title);[m
+                     assert_eq!([m
+[36m@@ -751,11 +748,10 @@[m [mmod tests {[m
+ [m
+                     // Verify evidence (only for tutorial steps)[m
+                     if loaded_step.is_tutorial() {[m
+[31m-                        for (_evidence_idx, (orig_ev, loaded_ev)) in original_step[m
+[32m+[m[32m                        for (orig_ev, loaded_ev) in original_step[m
+                             .get_evidence()[m
+                             .iter()[m
+                             .zip(loaded_step.get_evidence())[m
+[31m-                            .enumerate()[m
+                         {[m
+                             assert_eq!(loaded_ev.path, orig_ev.path);[m
+                             assert_eq!(loaded_ev.kind, orig_ev.kind);[m
+[36m@@ -789,7 +785,7 @@[m [mmod tests {[m
+                     if step.is_tutorial() {[m
+                         assert!(!step.get_description().is_empty());[m
+                     } else if step.is_quiz() {[m
+[31m-                        assert!(step.get_quiz_step().unwrap().questions.len() > 0);[m
+[32m+[m[32m                        assert!(!step.get_quiz_step().unwrap().questions.is_empty());[m
+                     }[m
+                     assert!(step.id != Uuid::nil());[m
+                     assert!(!step.tags.is_empty()); // All steps should have at least one tag[m
+[1mdiff --git a/src/model.rs b/src/model.rs[m
+[1mindex 41c83fc..1b1d7b7 100644[m
+[1m--- a/src/model.rs[m
+[1m+++ b/src/model.rs[m
+[36m@@ -500,7 +500,7 @@[m [mmod tests {[m
+ [m
+     #[test][m
+     fn test_phase_with_steps() {[m
+[31m-        let mut step1 = Step::new_tutorial([m
+[32m+[m[32m        let step1 = Step::new_tutorial([m
+             Uuid::new_v4(),[m
+             "Step 1".to_string(),[m
+             "Description 1".to_string(),[m
+[1mdiff --git a/src/tools/registry.rs b/src/tools/registry.rs[m
+[1mindex f2ad739..e0a7d7c 100644[m
+[1m--- a/src/tools/registry.rs[m
+[1m+++ b/src/tools/registry.rs[m
+[36m@@ -290,6 +290,6 @@[m [mmod tests {[m
+         // At least 'echo' or 'which' should be available on most systems[m
+         let tools = discovered.unwrap();[m
+         // We can't assert specific tools without knowing the test environment[m
+[31m-        assert!(tools.len() >= 0);[m
+[32m+[m[32m        assert!(!tools.is_empty());[m
+     }[m
+ }[m
+[1mdiff --git a/src/ui/detail_panel.rs b/src/ui/detail_panel.rs[m
+[1mindex ff49ac2..acfecb8 100644[m
+[1m--- a/src/ui/detail_panel.rs[m
+[1m+++ b/src/ui/detail_panel.rs[m
+[36m@@ -191,7 +191,7 @@[m [mpub fn load_step_into_panel(panel: &DetailPanel, step: &Step) {[m
+ [m
+ #[cfg(test)][m
+ mod tests {[m
+[31m-    use super::*;[m
+[32m+[m[41m    [m
+ [m
+     #[test][m
+     fn test_detail_panel_creation() {[m
+[1mdiff --git a/src/ui/handlers.rs b/src/ui/handlers.rs[m
+[1mindex 15073e8..8543c89 100644[m
+[1m--- a/src/ui/handlers.rs[m
+[1m+++ b/src/ui/handlers.rs[m
+[36m@@ -406,9 +406,9 @@[m [mpub fn setup_file_handlers([m
+                 model.selected_step = None;[m
+             }[m
+ [m
+[31m-            glib::signal::signal_handler_block(&phase_combo_clone, &*handler_id_clone);[m
+[32m+[m[32m            glib::signal::signal_handler_block(&phase_combo_clone, &handler_id_clone);[m
+             phase_combo_clone.set_selected(0);[m
+[31m-            glib::signal::signal_handler_unblock(&phase_combo_clone, &*handler_id_clone);[m
+[32m+[m[32m            glib::signal::signal_handler_unblock(&phase_combo_clone, &handler_id_clone);[m
+ [m
+             rebuild_steps_list(&steps_list_clone, &state_clone.model(), &detail_panel_clone);[m
+         });[m
+[1mdiff --git a/src/ui/quiz_widget.rs b/src/ui/quiz_widget.rs[m
+[1mindex 8fb862c..db9d6ed 100644[m
+[1m--- a/src/ui/quiz_widget.rs[m
+[1m+++ b/src/ui/quiz_widget.rs[m
+[36m@@ -24,6 +24,12 @@[m [mpub struct QuizWidget {[m
+     pub current_question_index: Rc<RefCell<usize>>,[m
+ }[m
+ [m
+[32m+[m[32mimpl Default for QuizWidget {[m
+[32m+[m[32m    fn default() -> Self {[m
+[32m+[m[32m        Self::new()[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[32m+[m
+ impl QuizWidget {[m
+     /// Create a new quiz widget[m
+     pub fn new() -> Self {[m
+[36m@@ -58,7 +64,7 @@[m [mimpl QuizWidget {[m
+         answer_box.set_margin_bottom(8);[m
+ [m
+         let mut answer_buttons = Vec::new();[m
+[31m-        let labels = vec!["A", "B", "C", "D"];[m
+[32m+[m[32m        let labels = ["A", "B", "C", "D"];[m
+ [m
+         for (i, label_text) in labels.iter().enumerate() {[m
+             let button_box = GtkBox::new(Orientation::Horizontal, 8);[m
+[1mdiff --git a/src/ui/sidebar.rs b/src/ui/sidebar.rs[m
+[1mindex 02a9b62..f7d824b 100644[m
+[1m--- a/src/ui/sidebar.rs[m
+[1m+++ b/src/ui/sidebar.rs[m
+[36m@@ -35,11 +35,9 @@[m [mpub fn create_sidebar(model: &Rc<RefCell<AppModel>>) -> (GtkBox, StringList, Dro[m
+ [m
+ #[cfg(test)][m
+ mod tests {[m
+[31m-    use super::*;[m
+[31m-[m
+     #[test][m
+     fn test_sidebar_creation() {[m
+         // This test ensures the module compiles correctly[m
+[31m-        assert!(true);[m
+[32m+[m[32m        // No assertions needed - just checking that the module compiles[m
+     }[m
+ }[m
+[1mdiff --git a/src/ui/tool_execution.rs b/src/ui/tool_execution.rs[m
+[1mindex aac0b48..c6a3a33 100644[m
+[1m--- a/src/ui/tool_execution.rs[m
+[1m+++ b/src/ui/tool_execution.rs[m
+[36m@@ -104,13 +104,29 @@[m [mimpl ToolExecutionPanel {[m
+             }[m
+         }[m
+ [m
+[32m+[m[32m        // Find and select the default tool (nmap if available, otherwise first tool)[m
+         if let Some(default_id) = tool_instructions::manifest()[m
+             .iter()[m
+             .find(|entry| entry.id == "nmap")[m
+             .map(|entry| entry.id.clone())[m
+             .or_else(|| first_tool_id.clone())[m
+         {[m
+[31m-            tool_selector.set_active_id(Some(&default_id));[m
+[32m+[m[32m            // Find the index of the default tool in the current tool list[m
+[32m+[m[32m            let model = tool_selector.model().unwrap();[m
+[32m+[m[32m            let count = model.iter_n_children(None);[m
+[32m+[m[32m            let mut found = false;[m
+[32m+[m[32m            for idx in 0..count {[m
+[32m+[m[32m                tool_selector.set_active(Some(idx as u32));[m
+[32m+[m[32m                if tool_selector.active_id().map(|s| s.to_string()) == Some(default_id.clone()) {[m
+[32m+[m[32m                    found = true;[m
+[32m+[m[32m                    break;[m
+[32m+[m[32m                }[m
+[32m+[m[32m            }[m
+[32m+[m[32m            if !found && count > 0 {[m
+[32m+[m[32m                tool_selector.set_active(Some(0));[m
+[32m+[m[32m            } else if count == 0 {[m
+[32m+[m[32m                tool_selector.set_sensitive(false);[m
+[32m+[m[32m            }[m
+         } else if tool_selector.model().unwrap().iter_n_children(None) > 0 {[m
+             tool_selector.set_active(Some(0));[m
+         } else {[m
+[36m@@ -913,7 +929,17 @@[m [mmod tests {[m
+         }[m
+ [m
+         let panel = ToolExecutionPanel::new();[m
+[31m-        panel.tool_selector.set_active_id(Some("gobuster"));[m
+[32m+[m[32m        let model = panel.tool_selector.model().unwrap();[m
+[32m+[m[32m        let count = model.iter_n_children(None);[m
+[32m+[m[32m        let mut found = false;[m
+[32m+[m[32m        for idx in 0..count {[m
+[32m+[m[32m            panel.tool_selector.set_active(Some(idx as u32));[m
+[32m+[m[32m            if panel.get_selected_tool() == Some("gobuster".to_string()) {[m
+[32m+[m[32m                found = true;[m
+[32m+[m[32m                break;[m
+[32m+[m[32m            }[m
+[32m+[m[32m        }[m
+[32m+[m[32m        assert!(found, "gobuster should be selectable");[m
+         assert_eq!(panel.get_selected_tool(), Some("gobuster".to_string()));[m
+         assert!(panel.instructions_scroll.child().is_some());[m
+     }[m
+[1mdiff --git a/src/ui/tool_instructions.rs b/src/ui/tool_instructions.rs[m
+[1mindex d203a3e..14ccea3 100644[m
+[1m--- a/src/ui/tool_instructions.rs[m
+[1m+++ b/src/ui/tool_instructions.rs[m
+[36m@@ -378,7 +378,7 @@[m [mmod tests {[m
+ [m
+         // Check that tools within each category are in the order they appear in the manifest[m
+         for group in &groups {[m
+[31m-            let mut expected_order: Vec<_> = registry.manifest.iter()[m
+[32m+[m[32m            let expected_order: Vec<_> = registry.manifest.iter()[m
+                 .filter(|entry| entry.category == group.name)[m
+                 .map(|entry| entry.id.clone())[m
+                 .collect();[m
+[1mdiff --git a/tests/integration_tests.rs b/tests/integration_tests.rs[m
+[1mindex ed498b0..bd55b0b 100644[m
+[1m--- a/tests/integration_tests.rs[m
+[1m+++ b/tests/integration_tests.rs[m
+[36m@@ -74,7 +74,7 @@[m [mfn test_session_data_integrity() {[m
+ [m
+     // Only modify tutorial steps in first 5 phases (pentesting phases)[m
+     // Skip bug bounty (phase 5) and CompTIA (phase 6) as they may have quiz steps[m
+[31m-    for (phase_idx, phase) in session.phases.iter_mut().enumerate().take(5) {[m
+[32m+[m[32m    for (_phase_idx, phase) in session.phases.iter_mut().enumerate().take(5) {[m
+         for step in &mut phase.steps {[m
+             // Only set notes on tutorial steps, not quiz steps[m
+             if !step.is_quiz() {[m
+[36m@@ -249,8 +249,18 @@[m [mfn test_tool_selection() {[m
+     // Default should be nmap[m
+     assert_eq!(panel.get_selected_tool(), Some("nmap".to_string()));[m
+ [m
+[31m-    // Switch to gobuster[m
+[31m-    panel.tool_selector.set_active_id(Some("gobuster"));[m
+[32m+[m[32m    // Switch to gobuster - iterate until the desired tool is selected[m
+[32m+[m[32m    let model = panel.tool_selector.model().unwrap();[m
+[32m+[m[32m    let count = model.iter_n_children(None);[m
+[32m+[m[32m    let mut found = false;[m
+[32m+[m[32m    for idx in 0..count {[m
+[32m+[m[32m        panel.tool_selector.set_active(Some(idx as u32));[m
+[32m+[m[32m        if panel.get_selected_tool() == Some("gobuster".to_string()) {[m
+[32m+[m[32m            found = true;[m
+[32m+[m[32m            break;[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+[32m+[m[32m    assert!(found, "gobuster tool should exist");[m
+     assert_eq!(panel.get_selected_tool(), Some("gobuster".to_string()));[m
+ }[m
+ [m
+[1mdiff --git a/tests/test_runner.rs b/tests/test_runner.rs[m
+[1mindex 5e47dd3..8c33762 100644[m
+[1m--- a/tests/test_runner.rs[m
+[1m+++ b/tests/test_runner.rs[m
+[36m@@ -101,7 +101,7 @@[m [mimpl TestRunner {[m
+ [m
+ #[cfg(test)][m
+ mod tests {[m
+[31m-    use super::*;[m
+[32m+[m[32m    use super::TestRunner;[m
+ [m
+     #[test][m
+     fn test_runner_creation() {[m
+[1mdiff --git a/tests/tool_execution_integration_tests.rs b/tests/tool_execution_integration_tests.rs[m
+[1mindex 9a8a25a..809a6f5 100644[m
+[1m--- a/tests/tool_execution_integration_tests.rs[m
+[1m+++ b/tests/tool_execution_integration_tests.rs[m
+[36m@@ -281,7 +281,7 @@[m [mfn test_concurrent_tool_configs() {[m
+     let configs: Vec<_> = (0..10)[m
+         .map(|i| {[m
+             ToolConfig::builder()[m
+[31m-                .target(&format!("target{}.com", i))[m
+[32m+[m[32m                .target(format!("target{}.com", i))[m
+                 .argument("-p")[m
+                 .argument("80,443")[m
+                 .build()[m
+[1mdiff --git a/tests/ui_tests.rs b/tests/ui_tests.rs[m
+[1mindex 6bd72f2..9792a20 100644[m
+[1m--- a/tests/ui_tests.rs[m
+[1m+++ b/tests/ui_tests.rs[m
+[36m@@ -431,7 +431,7 @@[m [mmod text_input_tests {[m
+         }[m
+ [m
+         // Verify first step still has its text[m
+[31m-        if let Some(step) = model.session.phases[0].steps.get(0) {[m
+[32m+[m[32m        if let Some(step) = model.session.phases[0].steps.first() {[m
+             assert_eq!(step.notes, "Notes for step 0");[m
+             assert_eq!(step.description_notes, "Description notes for step 0");[m
+         }[m
+[36m@@ -520,7 +520,7 @@[m [mmod text_input_tests {[m
+ [m
+         // Switch back to first step - should still have evidence[m
+         model.selected_step = Some(0);[m
+[31m-        if let Some(step) = model.session.phases[0].steps.get(0) {[m
+[32m+[m[32m        if let Some(step) = model.session.phases[0].steps.first() {[m
+             assert_eq!(step.evidence.len(), 2);[m
+             assert_eq!(step.evidence[0].path, "/path/to/test_image1.png");[m
+             assert_eq!(step.evidence[1].path, "/path/to/test_image2.png");[m

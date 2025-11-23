@@ -500,7 +500,7 @@ mod tests {
 
     #[test]
     fn test_phase_with_steps() {
-        let mut step1 = Step::new_tutorial(
+        let step1 = Step::new_tutorial(
             Uuid::new_v4(),
             "Step 1".to_string(),
             "Description 1".to_string(),

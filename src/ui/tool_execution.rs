@@ -104,13 +104,29 @@ impl ToolExecutionPanel {
             }
         }
 
+        // Find and select the default tool (nmap if available, otherwise first tool)
         if let Some(default_id) = tool_instructions::manifest()
             .iter()
             .find(|entry| entry.id == "nmap")
             .map(|entry| entry.id.clone())
             .or_else(|| first_tool_id.clone())
         {
-            tool_selector.set_active_id(Some(&default_id));
+            // Find the index of the default tool in the current tool list
+            let model = tool_selector.model().unwrap();
+            let count = model.iter_n_children(None);
+            let mut found = false;
+            for idx in 0..count {
+                tool_selector.set_active(Some(idx as u32));
+                if tool_selector.active_id().map(|s| s.to_string()) == Some(default_id.clone()) {
+                    found = true;
+                    break;
+                }
+            }
+            if !found && count > 0 {
+                tool_selector.set_active(Some(0));
+            } else if count == 0 {
+                tool_selector.set_sensitive(false);
+            }
         } else if tool_selector.model().unwrap().iter_n_children(None) > 0 {
             tool_selector.set_active(Some(0));
         } else {
@@ -913,7 +929,17 @@ mod tests {
         }
 
         let panel = ToolExecutionPanel::new();
-        panel.tool_selector.set_active_id(Some("gobuster"));
+        let model = panel.tool_selector.model().unwrap();
+        let count = model.iter_n_children(None);
+        let mut found = false;
+        for idx in 0..count {
+            panel.tool_selector.set_active(Some(idx as u32));
+            if panel.get_selected_tool() == Some("gobuster".to_string()) {
+                found = true;
+                break;
+            }
+        }
+        assert!(found, "gobuster should be selectable");
         assert_eq!(panel.get_selected_tool(), Some("gobuster".to_string()));
         assert!(panel.instructions_scroll.child().is_some());
     }

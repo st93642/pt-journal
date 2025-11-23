@@ -81,7 +81,7 @@ mod tests {
             // Test Bug Bounty Hunting phase
             let bug_bounty_phase = &session.phases[5];
             assert_eq!(bug_bounty_phase.name, "Bug Bounty Hunting");
-            assert!(bug_bounty_phase.steps.len() > 0); // Has steps
+            assert!(!bug_bounty_phase.steps.is_empty()); // Has steps
 
             // Test CompTIA Security+ phase
             let comptia_phase = &session.phases[6];
@@ -162,7 +162,7 @@ mod tests {
                         // Quiz steps should have questions
                         if let Some(quiz_step) = step.get_quiz_step() {
                             assert!(
-                                quiz_step.questions.len() > 0,
+                                !quiz_step.questions.is_empty(),
                                 "Quiz step has no questions: {}",
                                 step.title
                             );
@@ -240,8 +240,8 @@ mod tests {
             assert_eq!(loaded_session.phases.len(), session.phases.len());
 
             // Verify modified step
-            if let Some(loaded_step) = loaded_session.phases[0].steps.get(0) {
-                if let Some(original_step) = session.phases[0].steps.get(0) {
+            if let Some(loaded_step) = loaded_session.phases[0].steps.first() {
+                if let Some(original_step) = session.phases[0].steps.first() {
                     assert_eq!(loaded_step.status, original_step.status);
                     assert_eq!(loaded_step.get_notes(), original_step.get_notes());
                     assert_eq!(loaded_step.title, original_step.title);
@@ -358,20 +358,18 @@ mod tests {
             assert_eq!(loaded_session.notes_global, session.notes_global);
             assert_eq!(loaded_session.phases.len(), session.phases.len());
 
-            for (_phase_idx, (original_phase, loaded_phase)) in session
+            for (original_phase, loaded_phase) in session
                 .phases
                 .iter()
                 .zip(&loaded_session.phases)
-                .enumerate()
             {
                 assert_eq!(loaded_phase.name, original_phase.name);
                 assert_eq!(loaded_phase.steps.len(), original_phase.steps.len());
 
-                for (_step_idx, (original_step, loaded_step)) in original_phase
+                for (original_step, loaded_step) in original_phase
                     .steps
                     .iter()
                     .zip(&loaded_phase.steps)
-                    .enumerate()
                 {
                     assert_eq!(loaded_step.title, original_step.title);
                     assert_eq!(loaded_step.description, original_step.description);
@@ -466,27 +464,27 @@ mod tests {
 
                 // Check question 0 progress (correct answer)
                 let progress_0 = &loaded_quiz_step.progress[0];
-                assert_eq!(progress_0.answered, true);
+                assert!(progress_0.answered);
                 assert_eq!(progress_0.selected_answer_index, Some(0));
                 assert_eq!(progress_0.is_correct, Some(true));
                 assert_eq!(progress_0.attempts, 1);
-                assert_eq!(progress_0.first_attempt_correct, true);
-                assert_eq!(progress_0.explanation_viewed_before_answer, false);
+                assert!(progress_0.first_attempt_correct);
+                assert!(!progress_0.explanation_viewed_before_answer);
                 assert!(progress_0.awards_points());
 
                 // Check question 1 progress (incorrect answer)
                 let progress_1 = &loaded_quiz_step.progress[1];
-                assert_eq!(progress_1.answered, true);
+                assert!(progress_1.answered);
                 assert_eq!(progress_1.selected_answer_index, Some(1));
                 assert_eq!(progress_1.is_correct, Some(false));
                 assert_eq!(progress_1.attempts, 1);
-                assert_eq!(progress_1.first_attempt_correct, false);
+                assert!(!progress_1.first_attempt_correct);
                 assert!(!progress_1.awards_points());
 
                 // Check question 2 progress (viewed explanation)
                 let progress_2 = &loaded_quiz_step.progress[2];
-                assert_eq!(progress_2.answered, false);
-                assert_eq!(progress_2.explanation_viewed_before_answer, true);
+                assert!(!progress_2.answered);
+                assert!(progress_2.explanation_viewed_before_answer);
                 assert!(!progress_2.awards_points());
 
                 // Verify statistics calculation
@@ -582,7 +580,7 @@ mod tests {
             }
 
             // Bug Bounty Hunting phase should have steps
-            assert!(session.phases[5].steps.len() > 0);
+            assert!(!session.phases[5].steps.is_empty());
 
             // CompTIA Security+ phase should have quiz steps
             assert_eq!(session.phases[6].steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
@@ -722,19 +720,18 @@ mod tests {
             assert_eq!(loaded.phases.len(), session.phases.len());
 
             // Verify each phase
-            for (_phase_idx, (original_phase, loaded_phase)) in
-                session.phases.iter().zip(&loaded.phases).enumerate()
+            for (original_phase, loaded_phase) in
+                session.phases.iter().zip(&loaded.phases)
             {
                 assert_eq!(loaded_phase.name, original_phase.name);
                 assert_eq!(loaded_phase.notes, original_phase.notes);
                 assert_eq!(loaded_phase.steps.len(), original_phase.steps.len());
 
                 // Verify each step
-                for (_step_idx, (original_step, loaded_step)) in original_phase
+                for (original_step, loaded_step) in original_phase
                     .steps
                     .iter()
                     .zip(&loaded_phase.steps)
-                    .enumerate()
                 {
                     assert_eq!(loaded_step.title, original_step.title);
                     assert_eq!(
@@ -751,11 +748,10 @@ mod tests {
 
                     // Verify evidence (only for tutorial steps)
                     if loaded_step.is_tutorial() {
-                        for (_evidence_idx, (orig_ev, loaded_ev)) in original_step
+                        for (orig_ev, loaded_ev) in original_step
                             .get_evidence()
                             .iter()
                             .zip(loaded_step.get_evidence())
-                            .enumerate()
                         {
                             assert_eq!(loaded_ev.path, orig_ev.path);
                             assert_eq!(loaded_ev.kind, orig_ev.kind);
@@ -789,7 +785,7 @@ mod tests {
                     if step.is_tutorial() {
                         assert!(!step.get_description().is_empty());
                     } else if step.is_quiz() {
-                        assert!(step.get_quiz_step().unwrap().questions.len() > 0);
+                        assert!(!step.get_quiz_step().unwrap().questions.is_empty());
                     }
                     assert!(step.id != Uuid::nil());
                     assert!(!step.tags.is_empty()); // All steps should have at least one tag

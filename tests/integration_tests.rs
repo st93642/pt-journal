@@ -74,7 +74,7 @@ fn test_session_data_integrity() {
 
     // Only modify tutorial steps in first 5 phases (pentesting phases)
     // Skip bug bounty (phase 5) and CompTIA (phase 6) as they may have quiz steps
-    for (phase_idx, phase) in session.phases.iter_mut().enumerate().take(5) {
+    for (_phase_idx, phase) in session.phases.iter_mut().enumerate().take(5) {
         for step in &mut phase.steps {
             // Only set notes on tutorial steps, not quiz steps
             if !step.is_quiz() {
@@ -249,8 +249,18 @@ fn test_tool_selection() {
     // Default should be nmap
     assert_eq!(panel.get_selected_tool(), Some("nmap".to_string()));
 
-    // Switch to gobuster
-    panel.tool_selector.set_active_id(Some("gobuster"));
+    // Switch to gobuster - iterate until the desired tool is selected
+    let model = panel.tool_selector.model().unwrap();
+    let count = model.iter_n_children(None);
+    let mut found = false;
+    for idx in 0..count {
+        panel.tool_selector.set_active(Some(idx as u32));
+        if panel.get_selected_tool() == Some("gobuster".to_string()) {
+            found = true;
+            break;
+        }
+    }
+    assert!(found, "gobuster tool should exist");
     assert_eq!(panel.get_selected_tool(), Some("gobuster".to_string()));
 }
 

@@ -110,7 +110,7 @@ mod image_utils_tests {
         // This test requires GTK initialization, so we'll skip it in unit tests
         // In a real GTK environment, this would test that paintables are inserted correctly
         // For now, we just ensure the function signature is correct
-        assert!(true); // Placeholder test
+        // Placeholder test - no assertions needed
     }
 }
 
@@ -127,7 +127,7 @@ mod ui_integration_tests {
 
         // For now, just ensure the function exists and can be called
         // (without GTK init, it would panic, so we skip actual execution)
-        assert!(true); // Placeholder test
+        // Placeholder test - no assertions needed
     }
 
     #[test]
@@ -140,7 +140,7 @@ mod ui_integration_tests {
         // 4. UI controller setup
 
         // Since GTK is required, this is a placeholder
-        assert!(true);
+        // Placeholder test - no assertions needed
     }
 
     #[test]
@@ -155,7 +155,7 @@ mod ui_integration_tests {
         // 1. Create the UI components
         // 2. Check that minimum sizes are set correctly
         // 3. Verify that panes cannot be resized below minimums
-        assert!(true);
+        // Placeholder test - no assertions needed
     }
 
     #[test]
@@ -167,7 +167,7 @@ mod ui_integration_tests {
         // 3. Text is properly loaded when switching steps
 
         // Since GTK is required, this is a placeholder
-        assert!(true);
+        // Placeholder test - no assertions needed
     }
 }
 
@@ -237,7 +237,7 @@ mod paste_tests {
         // 1. Mock clipboard with texture data
         // 2. Call handle_clipboard_paste
         // 3. Verify that texture is added to canvas
-        assert!(true);
+        // Placeholder test - no assertions needed
     }
 
     #[test]
@@ -248,7 +248,7 @@ mod paste_tests {
         // For now, verify that the key constants are accessible
         use gtk4::gdk::Key;
         assert_eq!(Key::v, Key::v); // Basic sanity check
-        assert!(true);
+        // Placeholder test - no additional assertions needed
     }
 
     #[test]
@@ -259,7 +259,7 @@ mod paste_tests {
         // 2. Fallback to pixbuf if texture fails
         // 3. Adding image to canvas without file path
         // Since GTK clipboard requires initialization, this is a placeholder
-        assert!(true);
+        // Placeholder test - no assertions needed
     }
 }
 
@@ -293,7 +293,7 @@ mod performance_tests {
             }
         }
 
-        assert!(true); // If we get here, performance is acceptable
+        // If we get here, performance is acceptable - no assertions needed
     }
 
     #[test]
@@ -307,7 +307,7 @@ mod performance_tests {
             let _ = image_utils::validate_image_file(temp_file.path());
         }
 
-        assert!(true);
+        // If we complete the loop, performance is acceptable
     }
 }
 
@@ -347,7 +347,7 @@ mod security_tests {
             }
         }
 
-        assert!(true);
+        // Test completed - no specific assertions needed for path validation
     }
 
     #[test]
@@ -431,7 +431,7 @@ mod text_input_tests {
         }
 
         // Verify first step still has its text
-        if let Some(step) = model.session.phases[0].steps.get(0) {
+        if let Some(step) = model.session.phases[0].steps.first() {
             assert_eq!(step.notes, "Notes for step 0");
             assert_eq!(step.description_notes, "Description notes for step 0");
         }
@@ -520,7 +520,7 @@ mod text_input_tests {
 
         // Switch back to first step - should still have evidence
         model.selected_step = Some(0);
-        if let Some(step) = model.session.phases[0].steps.get(0) {
+        if let Some(step) = model.session.phases[0].steps.first() {
             assert_eq!(step.evidence.len(), 2);
             assert_eq!(step.evidence[0].path, "/path/to/test_image1.png");
             assert_eq!(step.evidence[1].path, "/path/to/test_image2.png");

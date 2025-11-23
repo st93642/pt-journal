@@ -287,9 +287,8 @@ mod tests {
         let discovered = registry.discover_tools();
         assert!(discovered.is_ok());
 
-        // At least 'echo' or 'which' should be available on most systems
-        let tools = discovered.unwrap();
-        // We can't assert specific tools without knowing the test environment
-        assert!(tools.len() >= 0);
+        // The number of discovered tools depends on the test environment
+        // Just verify the method succeeds - it may find 0 or more tools
+        let _tools = discovered.unwrap();
     }
 }

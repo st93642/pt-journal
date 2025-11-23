@@ -191,7 +191,7 @@ pub fn load_step_into_panel(panel: &DetailPanel, step: &Step) {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    
 
     #[test]
     fn test_detail_panel_creation() {

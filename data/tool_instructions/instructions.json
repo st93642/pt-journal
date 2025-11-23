@@ -158,7 +158,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Passive \u2192 Active \u2192 Verification",
+        "name": "Passive → Active → Verification",
         "stages": [
           {
             "label": "Amass passive",
@@ -337,7 +337,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Subdomain discovery \u2192 HTTP probing",
+        "name": "Subdomain Discovery and HTTP Service Validation",
         "stages": [
           {
             "label": "Sublist3r enum",
@@ -512,7 +512,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "theHarvester \u2192 Email validation \u2192 Phishing prep",
+        "name": "theHarvester → Email validation → Phishing prep",
         "stages": [
           {
             "label": "Harvest emails",
@@ -687,7 +687,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "DNS recon \u2192 Certificate transparency \u2192 Amass",
+        "name": "DNS recon → Certificate transparency → Amass",
         "stages": [
           {
             "label": "DNSRecon std",
@@ -859,7 +859,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "DNSenum \u2192 Screenshot automation",
+        "name": "DNS Enumeration and Visual Reconnaissance Pipeline",
         "stages": [
           {
             "label": "DNS discovery",
@@ -1013,7 +1013,7 @@
           },
           {
             "title": "Run transforms",
-            "details": "Right-click domain \u2192 Run All Transforms \u2192 To DNS/Websites",
+            "details": "Right-click domain → Run All Transforms → To DNS/Websites",
             "command": "# Graphically expands relationships"
           },
           {
@@ -1026,7 +1026,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Maltego \u2192 Export \u2192 Recon-ng import",
+        "name": "Maltego → Export → Recon-ng import",
         "stages": [
           {
             "label": "Maltego graph",
@@ -1036,7 +1036,7 @@
           {
             "label": "Export entities",
             "description": "Save discovered entities to CSV/XML.",
-            "command": "# File \u2192 Export \u2192 Graph to CSV"
+            "command": "# File → Export → Graph to CSV"
           },
           {
             "label": "Recon-ng import",
@@ -1061,7 +1061,7 @@
     "advanced_usage": [
       {
         "title": "API-driven transforms",
-        "command": "# Configure API keys in Maltego \u2192 Transforms \u2192 Hub",
+        "command": "# Configure API keys in Maltego → Transforms → Hub",
         "scenario": "Enable premium transforms for deeper OSINT (Shodan, VirusTotal, PassiveTotal).",
         "notes": [
           "Automate with Maltego TRX framework for custom transforms."
@@ -1206,7 +1206,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Recon-ng \u2192 Database export \u2192 Report generation",
+        "name": "Recon-ng → Database export → Report generation",
         "stages": [
           {
             "label": "Module execution",
@@ -1389,7 +1389,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Photon \u2192 JS analysis \u2192 Endpoint discovery",
+        "name": "Photon → JS analysis → Endpoint discovery",
         "stages": [
           {
             "label": "Photon crawl",
@@ -1576,7 +1576,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "SpiderFoot \u2192 Vulnerability correlation",
+        "name": "OSINT Automation and Vulnerability Correlation",
         "stages": [
           {
             "label": "SpiderFoot scan",
@@ -2042,7 +2042,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Mass discovery \u2192 Nmap validation",
+        "name": "High-Speed Port Discovery and Service Validation",
         "stages": [
           {
             "label": "Masscan sweep",
@@ -2220,7 +2220,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Naabu \u2192 Nuclei pipeline",
+        "name": "Fast Port Scanning with Nuclei Vulnerability Integration",
         "stages": [
           {
             "label": "Port discovery",
@@ -2395,7 +2395,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Nikto \u2192 Manual verification \u2192 Exploit testing",
+        "name": "Web Vulnerability Scanning with Nikto and Manual Validation",
         "stages": [
           {
             "label": "Nikto scan",
@@ -2566,7 +2566,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Dirb \u2192 Content review \u2192 Nikto deep scan",
+        "name": "Dirb → Content review → Nikto deep scan",
         "stages": [
           {
             "label": "Directory discovery",
@@ -2759,7 +2759,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Gobuster \u2192 Feroxbuster \u2192 Manual verification",
+        "name": "Gobuster → Feroxbuster → Manual verification",
         "stages": [
           {
             "label": "Initial discovery",
@@ -2952,7 +2952,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "ffuf \u2192 Filter tuning \u2192 Export",
+        "name": "ffuf → Filter tuning → Export",
         "stages": [
           {
             "label": "Initial fuzzing",
@@ -3127,7 +3127,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Wfuzz \u2192 Response analysis \u2192 SQLi testing",
+        "name": "Web Parameter Fuzzing and SQL Injection Discovery with Wfuzz",
         "stages": [
           {
             "label": "Parameter discovery",
@@ -3306,7 +3306,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Enum4linux \u2192 SMBMap \u2192 Credential testing",
+        "name": "SMB Enumeration and Credential Harvesting Pipeline",
         "stages": [
           {
             "label": "Initial SMB recon",
@@ -3485,7 +3485,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "SMBMap \u2192 Download sensitive files \u2192 Credential extraction",
+        "name": "SMBMap → Download sensitive files → Credential extraction",
         "stages": [
           {
             "label": "Share discovery",
@@ -3660,7 +3660,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Onesixtyone \u2192 SNMPwalk \u2192 Analysis",
+        "name": "Onesixtyone → SNMPwalk → Analysis",
         "stages": [
           {
             "label": "Community string discovery",
@@ -3839,7 +3839,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Onesixtyone \u2192 SNMPwalk \u2192 Privilege escalation",
+        "name": "Onesixtyone → SNMPwalk → Privilege escalation",
         "stages": [
           {
             "label": "Discover community strings",
@@ -4237,7 +4237,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "SSLyze \u2192 Report generation \u2192 Remediation",
+        "name": "SSLyze → Report generation → Remediation",
         "stages": [
           {
             "label": "SSL audit",
@@ -4416,7 +4416,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "TestSSL \u2192 Vulnerability prioritization \u2192 Fix validation",
+        "name": "SSL/TLS Security Assessment and Hardening Workflow",
         "stages": [
           {
             "label": "Initial scan",
@@ -4604,7 +4604,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "WPScan \u2192 Credential brute force \u2192 Exploitation",
+        "name": "WPScan → Credential brute force → Exploitation",
         "stages": [
           {
             "label": "Enumerate users",
@@ -4783,7 +4783,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Joomscan \u2192 Manual verification \u2192 Exploitation",
+        "name": "Joomscan → Manual verification → Exploitation",
         "stages": [
           {
             "label": "Initial scan",
@@ -4970,7 +4970,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Subdomain enum \u2192 HTTP probing \u2192 Nuclei scanning",
+        "name": "Subdomain enum → HTTP probing → Nuclei scanning",
         "stages": [
           {
             "label": "Discover subdomains",
@@ -6415,7 +6415,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Custom wordlist \u2192 Hydra \u2192 Lateral movement",
+        "name": "Custom wordlist → Hydra → Lateral movement",
         "stages": [
           {
             "label": "Harvest candidate words",
@@ -6623,7 +6623,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "User discovery \u2192 Medusa spray \u2192 Impacket pivot",
+        "name": "User discovery → Medusa spray → Impacket pivot",
         "stages": [
           {
             "label": "Harvest usernames",
@@ -6831,7 +6831,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Port scan \u2192 ncrack \u2192 WinRM shell",
+        "name": "Port scan → ncrack → WinRM shell",
         "stages": [
           {
             "label": "Identify exposed hosts",
@@ -7035,7 +7035,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Wordlist prep \u2192 Patator \u2192 Credential reuse checks",
+        "name": "Wordlist prep → Patator → Credential reuse checks",
         "stages": [
           {
             "label": "Generate focused wordlist",
@@ -7063,7 +7063,7 @@
       },
       {
         "indicator": "code=302 size=0 time=0.31 req=17",
-        "meaning": "Redirects often signal a successful login\u2014replay the request to confirm.",
+        "meaning": "Redirects often signal a successful login—replay the request to confirm.",
         "severity": "medium"
       },
       {
@@ -7239,7 +7239,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Hash dump \u2192 John \u2192 Lateral movement",
+        "name": "Hash dump → John → Lateral movement",
         "stages": [
           {
             "label": "Harvest hashes",
@@ -7443,7 +7443,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Hash dump \u2192 Hashcat \u2192 Post-ex",
+        "name": "Hash dump → Hashcat → Post-ex",
         "stages": [
           {
             "label": "Collect hashes",
@@ -7647,7 +7647,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Wordlist creation \u2192 fcrackzip \u2192 Data review",
+        "name": "Wordlist creation → fcrackzip → Data review",
         "stages": [
           {
             "label": "Build custom list",
@@ -7851,7 +7851,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Wordlist harvest \u2192 pdfcrack \u2192 Data extraction",
+        "name": "Wordlist harvest → pdfcrack → Data extraction",
         "stages": [
           {
             "label": "Collect candidate words",
@@ -8051,7 +8051,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Credential harvest \u2192 Lateral movement \u2192 Privilege escalation",
+        "name": "Credential harvest → Lateral movement → Privilege escalation",
         "stages": [
           {
             "label": "Harvest",
@@ -8247,7 +8247,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "pspy \u2192 LinPEAS \u2192 Exploit suggester",
+        "name": "pspy → LinPEAS → Exploit suggester",
         "stages": [
           {
             "label": "Observe",
@@ -8843,7 +8843,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Reverse shell \u2192 Enumeration \u2192 Pivot",
+        "name": "Reverse shell → Enumeration → Pivot",
         "stages": [
           {
             "label": "Pwncat listener",
@@ -9043,7 +9043,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Credentials \u2192 Evil-WinRM \u2192 Post-ex",
+        "name": "Credentials → Evil-WinRM → Post-ex",
         "stages": [
           {
             "label": "Harvest creds",
@@ -9447,7 +9447,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Credential harvest \u2192 Impacket lateral \u2192 Privilege escalation",
+        "name": "Credential harvest → Impacket lateral → Privilege escalation",
         "stages": [
           {
             "label": "Harvest",
@@ -10031,7 +10031,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "linpeas \u2192 linux-smart-enumeration \u2192 exploit suggester",
+        "name": "linpeas → linux-smart-enumeration → exploit suggester",
         "stages": [
           {
             "label": "Baseline enumeration",
@@ -10227,7 +10227,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "winPEAS \u2192 Windows exploit suggester",
+        "name": "Windows Privilege Escalation Discovery and Exploit Suggestion",
         "stages": [
           {
             "label": "Baseline",
@@ -10423,7 +10423,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "LSE \u2192 LinPEAS cross-check",
+        "name": "Linux Enumeration Cross-Validation and Privilege Escalation",
         "stages": [
           {
             "label": "Lightweight checks",
@@ -10805,7 +10805,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "WinPEAS \u2192 Windows Exploit Suggester",
+        "name": "Windows Enumeration and Exploit Recommendation Pipeline",
         "stages": [
           {
             "label": "Run winPEAS",
@@ -11009,7 +11009,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "CeWL \u2192 Crunch \u2192 Credential attack",
+        "name": "CeWL → Crunch → Credential attack",
         "stages": [
           {
             "label": "Collect base words",
@@ -11213,7 +11213,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "OSINT \u2192 CeWL \u2192 Credential attacks",
+        "name": "OSINT → CeWL → Credential attacks",
         "stages": [
           {
             "label": "Collect targets",
@@ -11409,7 +11409,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Hash discovery \u2192 Identification \u2192 Cracking",
+        "name": "Hash discovery → Identification → Cracking",
         "stages": [
           {
             "label": "Collect hashes",
@@ -11812,7 +11812,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Kismet \u2192 Aircrack",
+        "name": "Wireless Network Discovery and WPA/WEP Cracking Workflow",
         "stages": [
           {
             "label": "Passive recon",
@@ -12015,7 +12015,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Kismet \u2192 Reaver \u2192 Credential reuse",
+        "name": "Kismet → Reaver → Credential reuse",
         "stages": [
           {
             "label": "Identify WPS targets",
@@ -12617,7 +12617,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Wireless stress test",
+        "name": "MDK4 Wireless Security Testing and Stress Testing Suite",
         "stages": [
           {
             "label": "Baseline",
@@ -12897,7 +12897,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "WhatWeb \u2192 Technology-specific testing",
+        "name": "Web Technology Identification and Targeted Testing Workflow",
         "stages": [
           {
             "label": "Technology detection",
@@ -13084,7 +13084,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Wappalyzer \u2192 Version research \u2192 Exploit selection",
+        "name": "Wappalyzer → Version research → Exploit selection",
         "stages": [
           {
             "label": "Detect stack",
@@ -13276,7 +13276,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Subdomain enum \u2192 Subjack \u2192 Exploitation",
+        "name": "Subdomain enum → Subjack → Exploitation",
         "stages": [
           {
             "label": "Gather subdomains",
@@ -13522,8 +13522,8 @@
           },
           {
             "title": "Configure attack positions",
-            "details": "Mark parameters to fuzz with \u00a7 symbols around target values.",
-            "command": "# Intruder > Positions - Clear \u00a7, then Add \u00a7 around parameters"
+            "details": "Mark parameters to fuzz with § symbols around target values.",
+            "command": "# Intruder > Positions - Clear §, then Add § around parameters"
           },
           {
             "title": "Load payloads",
@@ -13655,7 +13655,7 @@
         ]
       },
       {
-        "name": "API security testing",
+        "name": "Burp Suite API Security Testing with Repeater/Intruder",
         "stages": [
           {
             "label": "Import API definition",
@@ -13799,38 +13799,38 @@
       "rows": [
         [
           "Intercepting Proxy",
-          "\u2713",
-          "\u2713"
+          "✓",
+          "✓"
         ],
         [
           "Repeater & Intruder",
-          "\u2713 (throttled)",
-          "\u2713 (unlimited)"
+          "✓ (throttled)",
+          "✓ (unlimited)"
         ],
         [
           "Scanner",
-          "\u2717",
-          "\u2713"
+          "✗",
+          "✓"
         ],
         [
           "Collaborator",
-          "\u2717",
-          "\u2713"
+          "✗",
+          "✓"
         ],
         [
           "Save/restore state",
           "Temporary only",
-          "\u2713"
+          "✓"
         ],
         [
           "Extensions",
-          "\u2713",
-          "\u2713"
+          "✓",
+          "✓"
         ],
         [
           "REST API",
-          "\u2717",
-          "\u2713"
+          "✗",
+          "✓"
         ],
         [
           "Price",
@@ -14181,7 +14181,7 @@
         ]
       },
       {
-        "name": "API security testing",
+        "name": "OWASP ZAP API Security Testing with Automated Scanner",
         "stages": [
           {
             "label": "Import API definition",
@@ -14370,13 +14370,13 @@
         ],
         [
           "Intercepting Proxy",
-          "\u2713",
-          "\u2713"
+          "✓",
+          "✓"
         ],
         [
           "Automated Scanner",
-          "\u2713",
-          "\u2713"
+          "✓",
+          "✓"
         ],
         [
           "Active Scan Speed",
@@ -14385,8 +14385,8 @@
         ],
         [
           "API for Automation",
-          "\u2713 Full REST API",
-          "\u2713 REST API"
+          "✓ Full REST API",
+          "✓ REST API"
         ],
         [
           "Scripting",
@@ -14395,18 +14395,18 @@
         ],
         [
           "Fuzzer",
-          "\u2713 Built-in",
-          "\u2713 Intruder"
+          "✓ Built-in",
+          "✓ Intruder"
         ],
         [
           "HUD/In-browser",
-          "\u2713 ZAP HUD",
-          "\u2717"
+          "✓ ZAP HUD",
+          "✗"
         ],
         [
           "CI/CD Integration",
-          "\u2713 Automation Framework",
-          "\u2713 Enterprise/Cloud"
+          "✓ Automation Framework",
+          "✓ Enterprise/Cloud"
         ],
         [
           "Community",
@@ -15134,8 +15134,8 @@
         ],
         [
           "Real-time collaboration",
-          "\u2717",
-          "\u2713"
+          "✗",
+          "✓"
         ],
         [
           "Advanced reporting",
@@ -15447,7 +15447,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Complete penetration test workflow",
+        "name": "Faraday IDE Collaborative Penetration Testing Workflow",
         "stages": [
           {
             "label": "Workspace initialization",
@@ -15621,8 +15621,8 @@
         ],
         [
           "Multi-user support",
-          "\u2713",
-          "\u2713 Enhanced"
+          "✓",
+          "✓ Enhanced"
         ],
         [
           "Tool integrations",
@@ -15631,18 +15631,18 @@
         ],
         [
           "REST API",
-          "\u2713 Full",
-          "\u2713 Full"
+          "✓ Full",
+          "✓ Full"
         ],
         [
           "LDAP/SSO",
-          "\u2717",
-          "\u2713"
+          "✗",
+          "✓"
         ],
         [
           "Advanced analytics",
           "Basic",
-          "\u2713 Advanced dashboards"
+          "✓ Advanced dashboards"
         ],
         [
           "Compliance reports",
@@ -16140,33 +16140,33 @@
         ],
         [
           "Credential harvesting",
-          "\u2713",
-          "\u2713",
-          "\u2713"
+          "✓",
+          "✓",
+          "✓"
         ],
         [
           "Payload generation",
-          "\u2713 Metasploit",
+          "✓ Metasploit",
           "Limited",
           "Limited"
         ],
         [
           "Email templates",
           "Basic",
-          "\u2713 Rich editor",
-          "\u2713 Jinja2"
+          "✓ Rich editor",
+          "✓ Jinja2"
         ],
         [
           "Campaign tracking",
           "Basic",
-          "\u2713 Advanced",
-          "\u2713 Advanced"
+          "✓ Advanced",
+          "✓ Advanced"
         ],
         [
           "Infectious media",
-          "\u2713",
-          "\u2717",
-          "\u2717"
+          "✓",
+          "✗",
+          "✗"
         ],
         [
           "Best for",
@@ -24414,7 +24414,7 @@
           {
             "title": "Run collection",
             "details": "Execute entire collection with different environments and data.",
-            "command": "Collection Runner \u2192 Select collection \u2192 Run"
+            "command": "Collection Runner → Select collection → Run"
           }
         ]
       },
@@ -24429,39 +24429,39 @@
           {
             "title": "Generate documentation",
             "details": "Export collection as HTML or publish to Postman workspace.",
-            "command": "Export \u2192 Collection Documentation \u2192 HTML"
+            "command": "Export → Collection Documentation → HTML"
           },
           {
             "title": "Share with team",
             "details": "Publish to team workspace for collaborative documentation.",
-            "command": "Share \u2192 Generate embed link \u2192 Copy to documentation"
+            "command": "Share → Generate embed link → Copy to documentation"
           }
         ]
       }
     ],
     "workflow_guides": [
       {
-        "name": "API Discovery \u2192 Testing \u2192 Documentation",
+        "name": "API Discovery → Testing → Documentation",
         "stages": [
           {
             "label": "Import OpenAPI/Swagger",
             "description": "Import existing API specification to generate collection.",
-            "command": "Import \u2192 Raw text \u2192 Paste OpenAPI JSON"
+            "command": "Import → Raw text → Paste OpenAPI JSON"
           },
           {
             "label": "Environment Configuration",
             "description": "Set up environments for different API deployment stages.",
-            "command": "Environment \u2192 Add variable \u2192 base_url = https://dev-api.example.com"
+            "command": "Environment → Add variable → base_url = https://dev-api.example.com"
           },
           {
             "label": "Authentication Setup",
             "description": "Configure OAuth2 flow or API key authentication.",
-            "command": "Authorization \u2192 OAuth 2.0 \u2192 Configure flow"
+            "command": "Authorization → OAuth 2.0 → Configure flow"
           },
           {
             "label": "Test Implementation",
             "description": "Add comprehensive test scripts for each endpoint.",
-            "command": "Tests \u2192 pm.test(\"Schema validation\", () => {...});"
+            "command": "Tests → pm.test(\"Schema validation\", () => {...});"
           },
           {
             "label": "Automated Execution",
@@ -24676,7 +24676,7 @@
           {
             "title": "Export collection",
             "details": "Export Postman collection and environment from GUI.",
-            "command": "Postman \u2192 Export \u2192 Collection \u2192 Save as collection.json"
+            "command": "Postman → Export → Collection → Save as collection.json"
           },
           {
             "title": "Install Newman",
@@ -24723,22 +24723,22 @@
     ],
     "workflow_guides": [
       {
-        "name": "API Testing \u2192 CI Integration \u2192 Reporting",
+        "name": "API Testing → CI Integration → Reporting",
         "stages": [
           {
             "label": "Local Development",
             "description": "Test APIs locally with Postman GUI",
-            "command": "Postman Desktop \u2192 Create and validate requests"
+            "command": "Postman Desktop → Create and validate requests"
           },
           {
             "label": "Collection Export",
             "description": "Export validated collection for automation",
-            "command": "Export Collection \u2192 Save as API-Tests.json"
+            "command": "Export Collection → Save as API-Tests.json"
           },
           {
             "label": "Environment Setup",
             "description": "Create environment files for each deployment stage",
-            "command": "Environment Variables \u2192 Export \u2192 staging.json, prod.json"
+            "command": "Environment Variables → Export → staging.json, prod.json"
           },
           {
             "label": "CI Pipeline",
@@ -24755,17 +24755,17 @@
     ],
     "output_notes": [
       {
-        "indicator": "\u2713 GET /api/users (200 OK)",
+        "indicator": "✓ GET /api/users (200 OK)",
         "meaning": "Request successful, all tests passed",
         "severity": "info"
       },
       {
-        "indicator": "\u2717 POST /api/users (401 Unauthorized)",
+        "indicator": "✗ POST /api/users (401 Unauthorized)",
         "meaning": "Authentication failed, check credentials or token",
         "severity": "error"
       },
       {
-        "indicator": "\u250c\u2500\u252c\u2500\u252c\u2500\u252c\u2500\u252c\u2500\u252c\u2500\u252c\u2500\u252c\u2500\u2510",
+        "indicator": "┌─┬─┬─┬─┬─┬─┬─┬─┐",
         "meaning": "Progress indicator showing test execution",
         "severity": "info"
       },
@@ -24992,29 +24992,29 @@
           {
             "title": "Install extension",
             "details": "Load InQL as Burp Suite extension.",
-            "command": "Extender \u2192 Extensions \u2192 Add \u2192 inql-burp.jar"
+            "command": "Extender → Extensions → Add → inql-burp.jar"
           },
           {
             "title": "Configure target",
             "details": "Set target GraphQL endpoint in InQL tab.",
-            "command": "InQL tab \u2192 Target \u2192 https://api.example.com/graphql"
+            "command": "InQL tab → Target → https://api.example.com/graphql"
           },
           {
             "title": "Extract schema",
             "details": "Use InQL to extract and analyze GraphQL schema.",
-            "command": "Introspection \u2192 Extract Schema"
+            "command": "Introspection → Extract Schema"
           },
           {
             "title": "Generate queries",
             "details": "Generate test queries for security testing.",
-            "command": "Query Generator \u2192 Select operations \u2192 Generate"
+            "command": "Query Generator → Select operations → Generate"
           }
         ]
       }
     ],
     "workflow_guides": [
       {
-        "name": "Schema Discovery \u2192 Query Generation \u2192 Security Testing",
+        "name": "Schema Discovery → Query Generation → Security Testing",
         "stages": [
           {
             "label": "Endpoint Discovery",
@@ -25291,7 +25291,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Discovery \u2192 Analysis \u2192 Testing \u2192 Documentation",
+        "name": "Discovery → Analysis → Testing → Documentation",
         "stages": [
           {
             "label": "Service Discovery",
@@ -25532,7 +25532,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Discovery \u2192 Enumeration \u2192 Testing \u2192 Validation",
+        "name": "Discovery → Enumeration → Testing → Validation",
         "stages": [
           {
             "label": "API Discovery",
@@ -25800,7 +25800,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Code Analysis \u2192 Rule Tuning \u2192 CI Integration",
+        "name": "Code Analysis → Rule Tuning → CI Integration",
         "stages": [
           {
             "label": "Initial Scan",
@@ -26028,12 +26028,12 @@
           {
             "title": "Create project",
             "details": "Create new project in SonarQube web interface.",
-            "command": "Web UI \u2192 Projects \u2192 Create project"
+            "command": "Web UI → Projects → Create project"
           },
           {
             "title": "Generate token",
             "details": "Create authentication token for project.",
-            "command": "My Account \u2192 Security \u2192 Generate token"
+            "command": "My Account → Security → Generate token"
           },
           {
             "title": "Configure scanner",
@@ -26053,7 +26053,7 @@
           {
             "title": "Quality Gate Setup",
             "details": "Configure quality gates for project standards.",
-            "command": "Quality Gates \u2192 Create new gate \u2192 Set conditions"
+            "command": "Quality Gates → Create new gate → Set conditions"
           },
           {
             "title": "GitHub Actions",
@@ -26063,19 +26063,19 @@
           {
             "title": "Pull Request Decoration",
             "details": "Enable PR analysis for automated code review.",
-            "command": "Project Settings \u2192 Pull Request Decoration \u2192 Enable"
+            "command": "Project Settings → Pull Request Decoration → Enable"
           }
         ]
       }
     ],
     "workflow_guides": [
       {
-        "name": "Local Development \u2192 CI Integration \u2192 Quality Gates",
+        "name": "Local Development → CI Integration → Quality Gates",
         "stages": [
           {
             "label": "IDE Integration",
             "description": "Install SonarLint for real-time code analysis",
-            "command": "IDE Extensions \u2192 Install SonarLint"
+            "command": "IDE Extensions → Install SonarLint"
           },
           {
             "label": "Local Scanning",
@@ -26085,7 +26085,7 @@
           {
             "label": "CI Pipeline",
             "description": "Automated analysis in CI/CD",
-            "command": "GitHub Actions \u2192 sonarqube-scan-action"
+            "command": "GitHub Actions → sonarqube-scan-action"
           },
           {
             "label": "Quality Gate",
@@ -26095,7 +26095,7 @@
           {
             "label": "Portfolio Management",
             "description": "Track quality across organization",
-            "command": "Portfolio \u2192 Create portfolio \u2192 Add projects"
+            "command": "Portfolio → Create portfolio → Add projects"
           }
         ]
       }
@@ -26352,12 +26352,12 @@
     ],
     "workflow_guides": [
       {
-        "name": "Development \u2192 Testing \u2192 Monitoring \u2192 Remediation",
+        "name": "Development → Testing → Monitoring → Remediation",
         "stages": [
           {
             "label": "IDE Integration",
             "description": "Install Snyk plugin for real-time vulnerability detection",
-            "command": "VS Code \u2192 Extensions \u2192 Install Snyk"
+            "command": "VS Code → Extensions → Install Snyk"
           },
           {
             "label": "Pre-commit Hook",
@@ -26367,12 +26367,12 @@
           {
             "label": "CI Pipeline",
             "description": "Integrate Snyk scanning in CI/CD",
-            "command": "GitHub Actions \u2192 uses: snyk/actions/node@master"
+            "command": "GitHub Actions → uses: snyk/actions/node@master"
           },
           {
             "label": "PR Comments",
             "description": "Enable Snyk PR comments for vulnerability discussion",
-            "command": "Snyk \u2192 Integrations \u2192 GitHub \u2192 Enable PR comments"
+            "command": "Snyk → Integrations → GitHub → Enable PR comments"
           },
           {
             "label": "Continuous Monitoring",
@@ -26384,12 +26384,12 @@
     ],
     "output_notes": [
       {
-        "indicator": "\u2717 High severity vulnerability found in lodash < 4.17.21",
+        "indicator": "✗ High severity vulnerability found in lodash < 4.17.21",
         "meaning": "Critical dependency vulnerability requiring immediate update",
         "severity": "error"
       },
       {
-        "indicator": "\u2713 Tested 256 dependencies",
+        "indicator": "✓ Tested 256 dependencies",
         "meaning": "Successfully scanned all project dependencies",
         "severity": "info"
       },
@@ -26601,7 +26601,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Database Update \u2192 Project Scan \u2192 Report Analysis",
+        "name": "Database Update → Project Scan → Report Analysis",
         "stages": [
           {
             "label": "Database Update",
@@ -26873,7 +26873,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Discovery \u2192 Verification \u2192 Remediation \u2192 Prevention",
+        "name": "Discovery → Verification → Remediation → Prevention",
         "stages": [
           {
             "label": "Comprehensive Scan",
@@ -26893,7 +26893,7 @@
           {
             "label": "Automated Monitoring",
             "description": "Set up continuous monitoring for new secrets",
-            "command": "GitHub Actions \u2192 trufflesecurity/trufflehog@main"
+            "command": "GitHub Actions → trufflesecurity/trufflehog@main"
           },
           {
             "label": "Secret Management",
@@ -27110,7 +27110,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Discovery \u2192 Extraction \u2192 Analysis \u2192 Validation",
+        "name": "Discovery → Extraction → Analysis → Validation",
         "stages": [
           {
             "label": "Endpoint Discovery",
@@ -27268,21 +27268,21 @@
       },
       {
         "description": "Import proto file",
-        "command": "File \u2192 Import Proto \u2192 Select service.proto",
+        "command": "File → Import Proto → Select service.proto",
         "notes": [
           "Load gRPC service definition"
         ]
       },
       {
         "description": "Connect to server",
-        "command": "Add Server \u2192 localhost:50051 \u2192 Connect",
+        "command": "Add Server → localhost:50051 → Connect",
         "notes": [
           "Connect to gRPC server endpoint"
         ]
       },
       {
         "description": "Make request",
-        "command": "Select method \u2192 Enter JSON data \u2192 Call",
+        "command": "Select method → Enter JSON data → Call",
         "notes": [
           "Execute gRPC method call"
         ]
@@ -27324,29 +27324,29 @@
           {
             "title": "Import proto",
             "details": "Import service definition file.",
-            "command": "File \u2192 Import \u2192 service.proto"
+            "command": "File → Import → service.proto"
           },
           {
             "title": "Configure server",
             "details": "Set up gRPC server connection.",
-            "command": "Add Server \u2192 localhost:50051 \u2192 Test Connection"
+            "command": "Add Server → localhost:50051 → Test Connection"
           },
           {
             "title": "Test methods",
             "details": "Execute various gRPC methods.",
-            "command": "Select method \u2192 Enter parameters \u2192 Call"
+            "command": "Select method → Enter parameters → Call"
           },
           {
             "title": "Save requests",
             "details": "Save successful requests for later use.",
-            "command": "File \u2192 Save Collection \u2192 grpc-tests.json"
+            "command": "File → Save Collection → grpc-tests.json"
           }
         ]
       }
     ],
     "workflow_guides": [
       {
-        "name": "Discovery \u2192 Configuration \u2192 Testing \u2192 Documentation",
+        "name": "Discovery → Configuration → Testing → Documentation",
         "stages": [
           {
             "label": "Service Discovery",
@@ -27356,12 +27356,12 @@
           {
             "label": "Proto Analysis",
             "description": "Import and analyze proto definitions",
-            "command": "BloomRPC \u2192 Import Proto \u2192 Analyze methods"
+            "command": "BloomRPC → Import Proto → Analyze methods"
           },
           {
             "label": "Interactive Testing",
             "description": "Test methods with GUI interface",
-            "command": "Configure calls \u2192 Execute \u2192 Analyze responses"
+            "command": "Configure calls → Execute → Analyze responses"
           },
           {
             "label": "Collection Management",
@@ -27404,7 +27404,7 @@
       },
       {
         "title": "Request Collection Export",
-        "command": "File \u2192 Export Collection \u2192 grpc-tests.postman_collection.json",
+        "command": "File → Export Collection → grpc-tests.postman_collection.json",
         "scenario": "Export test cases for automation",
         "notes": [
           "Compatible with Postman for automated testing"
@@ -27582,7 +27582,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Reconnaissance \u2192 Configuration \u2192 Fuzzing \u2192 Analysis",
+        "name": "Reconnaissance → Configuration → Fuzzing → Analysis",
         "stages": [
           {
             "label": "Service Discovery",
@@ -27814,7 +27814,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Configuration \u2192 Scanning \u2192 Analysis \u2192 Reporting",
+        "name": "Bandit Python Static Analysis Pipeline",
         "stages": [
           {
             "label": "Setup Configuration",
@@ -28046,7 +28046,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Configuration \u2192 Scanning \u2192 Analysis \u2192 Reporting",
+        "name": "Brakeman Ruby on Rails Security Scanning Workflow",
         "stages": [
           {
             "label": "Rails Application Setup",
@@ -28278,7 +28278,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Specification \u2192 Generation \u2192 Build \u2192 Integration",
+        "name": "Specification → Generation → Build → Integration",
         "stages": [
           {
             "label": "API Specification",
@@ -28514,7 +28514,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Specification Analysis \u2192 Security Testing \u2192 Reporting",
+        "name": "Specification Analysis → Security Testing → Reporting",
         "stages": [
           {
             "label": "API Specification",
@@ -28746,7 +28746,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Configuration \u2192 Analysis \u2192 Fixing \u2192 Validation",
+        "name": "Configuration → Analysis → Fixing → Validation",
         "stages": [
           {
             "label": "ESLint Setup",
@@ -28978,7 +28978,7 @@
     ],
     "workflow_guides": [
       {
-        "name": "Database Update \u2192 Scanning \u2192 Analysis \u2192 Remediation",
+        "name": "Database Update → Scanning → Analysis → Remediation",
         "stages": [
           {
             "label": "Vulnerability Database",

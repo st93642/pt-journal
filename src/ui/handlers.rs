@@ -366,6 +366,7 @@ pub fn setup_notes_handlers(detail_panel: Rc<DetailPanel>, state: Rc<StateManage
 }
 
 /// Wire up file operation buttons (Open, Save, Save As)
+#[allow(clippy::too_many_arguments)]
 pub fn setup_file_handlers(
     btn_open: &Button,
     btn_save: &Button,

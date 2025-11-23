@@ -70,11 +70,7 @@ impl QuizWidget {
             let button_box = GtkBox::new(Orientation::Horizontal, 8);
 
             // Create radio button (use CheckButton with group)
-            let check = if i == 0 {
-                CheckButton::new()
-            } else {
-                CheckButton::new()
-            };
+            let check = CheckButton::new();
 
             // Group all buttons together so only one can be selected
             if i > 0 {

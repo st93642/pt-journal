@@ -1,3 +1,5 @@
+#![allow(clippy::field_reassign_with_default)]
+
 use pt_journal::model::*;
 use pt_journal::ui::image_utils;
 use std::fs;

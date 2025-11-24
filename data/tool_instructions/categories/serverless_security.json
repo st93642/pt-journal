@@ -1,0 +1,667 @@
+[
+  {
+    "id": "serverless-framework",
+    "name": "Serverless Framework",
+    "summary": "Serverless Framework is an open-source CLI tool and ecosystem for building, deploying, and managing serverless applications across AWS Lambda, Azure Functions, Google Cloud Functions, and other providers.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via npm",
+        "steps": [
+          {
+            "detail": "sudo apt-get update && sudo apt-get install -y nodejs npm",
+            "copyable": true
+          },
+          {
+            "detail": "sudo npm install -g serverless",
+            "copyable": true
+          },
+          {
+            "detail": "serverless --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from npm",
+        "steps": [
+          {
+            "detail": "npm install -g serverless",
+            "copyable": true
+          },
+          {
+            "detail": "serverless --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Use Docker image",
+        "steps": [
+          {
+            "detail": "docker pull serverless/serverless:latest",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -it -v ~/.aws:/root/.aws serverless/serverless:latest deploy",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Create new serverless project",
+        "command": "serverless create --template aws-python3 --path my-service",
+        "notes": [
+          "Scaffolds new serverless application",
+          "Multiple templates available"
+        ]
+      },
+      {
+        "description": "Deploy to cloud provider",
+        "command": "serverless deploy",
+        "notes": [
+          "Deploys function and dependencies"
+        ]
+      },
+      {
+        "description": "List deployed functions",
+        "command": "serverless list functions",
+        "notes": [
+          "Show deployed serverless functions"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Serverless Security Assessment",
+        "steps": [
+          {
+            "title": "Review serverless.yml",
+            "details": "Examine configuration for security issues",
+            "command": "cat serverless.yml"
+          },
+          {
+            "title": "Check IAM permissions",
+            "details": "Review function execution role",
+            "command": "cat serverless.yml | grep -A 10 'iamRoleStatements'"
+          },
+          {
+            "title": "Inspect environment variables",
+            "details": "Check for exposed secrets",
+            "command": "grep -E 'SECRET|TOKEN|PASSWORD' serverless.yml"
+          },
+          {
+            "title": "Deploy to staging",
+            "details": "Test configuration before production",
+            "command": "serverless deploy --stage staging"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Serverless Deployment Workflow",
+        "stages": [
+          {
+            "label": "Initialize",
+            "description": "Create serverless project",
+            "command": "serverless create --template aws-python3"
+          },
+          {
+            "label": "Configure IAM",
+            "description": "Set least-privilege permissions",
+            "command": "# Edit iamRoleStatements in serverless.yml"
+          },
+          {
+            "label": "Deploy",
+            "description": "Deploy function to cloud",
+            "command": "serverless deploy --stage prod"
+          },
+          {
+            "label": "Test",
+            "description": "Invoke function after deployment",
+            "command": "serverless invoke -f myFunction --stage prod"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Deployment succeeded",
+        "meaning": "Serverless function deployed successfully",
+        "severity": "info"
+      },
+      {
+        "indicator": "Permission denied",
+        "meaning": "IAM role lacks necessary permissions",
+        "severity": "high"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Multi-environment deployment",
+        "command": "serverless deploy --stage ${ENVIRONMENT}",
+        "scenario": "Deploy to different environments with parameter",
+        "notes": [
+          "Manage dev, staging, prod separately",
+          "Use environment-specific configurations"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Serverless Framework Documentation",
+        "url": "https://www.serverless.com/framework/docs",
+        "description": "Official Serverless Framework documentation"
+      },
+      {
+        "label": "Serverless Plugins",
+        "url": "https://www.serverless.com/plugins",
+        "description": "Community plugins for extending functionality"
+      }
+    ]
+  },
+  {
+    "id": "aws-sam-cli",
+    "name": "AWS SAM CLI",
+    "summary": "AWS Serverless Application Model (SAM) CLI is a command-line tool for building, testing, and deploying serverless applications on AWS Lambda with infrastructure-as-code templates.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via pip",
+        "steps": [
+          {
+            "detail": "sudo apt-get update && sudo apt-get install -y python3-pip",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install --user aws-sam-cli",
+            "copyable": true
+          },
+          {
+            "detail": "sam --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from pip",
+        "steps": [
+          {
+            "detail": "pip3 install aws-sam-cli",
+            "copyable": true
+          },
+          {
+            "detail": "sam --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run with Docker",
+        "steps": [
+          {
+            "detail": "docker pull amazon/aws-sam-cli-build-image-python3.11",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -v ~/.aws:/root/.aws -v $(pwd):/root/app amazon/aws-sam-cli-build-image-python3.11 sam deploy",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Create new SAM application",
+        "command": "sam init --name my-app --runtime python3.11",
+        "notes": [
+          "Scaffolds serverless application",
+          "Includes template.yaml and code"
+        ]
+      },
+      {
+        "description": "Build SAM application",
+        "command": "sam build",
+        "notes": [
+          "Packages dependencies"
+        ]
+      },
+      {
+        "description": "Deploy to AWS",
+        "command": "sam deploy --guided",
+        "notes": [
+          "Interactive deployment wizard"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "SAM Security Assessment",
+        "steps": [
+          {
+            "title": "Review template.yaml",
+            "details": "Check CloudFormation template security",
+            "command": "cat template.yaml"
+          },
+          {
+            "title": "Inspect function policies",
+            "details": "Review IAM permissions",
+            "command": "sam validate --template template.yaml"
+          },
+          {
+            "title": "Check environment variables",
+            "details": "Look for hardcoded secrets",
+            "command": "grep -E 'Environment|Password|Token' template.yaml"
+          },
+          {
+            "title": "Local testing",
+            "details": "Test function locally before deployment",
+            "command": "sam local start-api"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "SAM Deployment Workflow",
+        "stages": [
+          {
+            "label": "Initialize",
+            "description": "Create SAM project structure",
+            "command": "sam init"
+          },
+          {
+            "label": "Local test",
+            "description": "Test API locally",
+            "command": "sam local start-api"
+          },
+          {
+            "label": "Build",
+            "description": "Package dependencies",
+            "command": "sam build"
+          },
+          {
+            "label": "Deploy",
+            "description": "Deploy to AWS",
+            "command": "sam deploy"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Lambda layer created",
+        "meaning": "Dependency layer deployed successfully",
+        "severity": "info"
+      },
+      {
+        "indicator": "Invalid function signature",
+        "meaning": "Handler function format incorrect",
+        "severity": "high"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Testing with SAM local",
+        "command": "sam local invoke MyFunction -e events/event.json",
+        "scenario": "Test Lambda function locally with test event",
+        "notes": [
+          "Test without AWS deployment",
+          "Quick development iteration"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "AWS SAM Documentation",
+        "url": "https://docs.aws.amazon.com/serverless-application-model/",
+        "description": "Official AWS SAM documentation"
+      },
+      {
+        "label": "SAM CLI Reference",
+        "url": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-command-reference.html",
+        "description": "CLI command reference guide"
+      }
+    ]
+  },
+  {
+    "id": "azure-functions-core-tools",
+    "name": "Azure Functions Core Tools",
+    "summary": "Azure Functions Core Tools is a command-line tool for developing and testing Azure Functions locally before deploying to Azure. Supports multiple languages and runtime versions.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from Microsoft repository",
+        "steps": [
+          {
+            "detail": "sudo apt-get update && sudo apt-get install -y curl",
+            "copyable": true
+          },
+          {
+            "detail": "curl -L https://aka.ms/install-azfunc-linux.sh -o install-azfunc-linux.sh",
+            "copyable": true
+          },
+          {
+            "detail": "bash install-azfunc-linux.sh",
+            "copyable": true
+          },
+          {
+            "detail": "func --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from binary",
+        "steps": [
+          {
+            "detail": "wget https://functionscdn.azureedge.net/public/4.0.6455/linux-x64/func",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x func && sudo mv func /usr/local/bin/",
+            "copyable": true
+          },
+          {
+            "detail": "func --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run with Docker",
+        "steps": [
+          {
+            "detail": "docker pull mcr.microsoft.com/azure-functions/python:4",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -it -v $(pwd):/workspace mcr.microsoft.com/azure-functions/python:4 func new",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Create new Azure Function project",
+        "command": "func init MyProject --python",
+        "notes": [
+          "Scaffolds function project",
+          "Multiple language support"
+        ]
+      },
+      {
+        "description": "Create new function",
+        "command": "func new --name MyHttpTrigger --template 'HTTP trigger'",
+        "notes": [
+          "Add new function to project"
+        ]
+      },
+      {
+        "description": "Run locally",
+        "command": "func start",
+        "notes": [
+          "Start local runtime environment"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Azure Function Security Assessment",
+        "steps": [
+          {
+            "title": "Review local.settings.json",
+            "details": "Check configuration and secrets",
+            "command": "cat local.settings.json"
+          },
+          {
+            "title": "Check function.json",
+            "details": "Review function bindings",
+            "command": "cat function.json"
+          },
+          {
+            "title": "Run locally",
+            "details": "Test function in development environment",
+            "command": "func start"
+          },
+          {
+            "title": "Verify authentication",
+            "details": "Check authorization level",
+            "command": "grep -E 'authLevel|authorization' function.json"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Azure Function Deployment Workflow",
+        "stages": [
+          {
+            "label": "Initialize project",
+            "description": "Create function project",
+            "command": "func init --python"
+          },
+          {
+            "label": "Add function",
+            "description": "Create new function",
+            "command": "func new --template 'HTTP trigger'"
+          },
+          {
+            "label": "Test locally",
+            "description": "Run local development server",
+            "command": "func start"
+          },
+          {
+            "label": "Publish to Azure",
+            "description": "Deploy to Azure Function App",
+            "command": "func azure functionapp publish <FunctionAppName>"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Function started successfully",
+        "meaning": "Local runtime running and ready",
+        "severity": "info"
+      },
+      {
+        "indicator": "AuthorizationLevel: Anonymous",
+        "meaning": "Function accessible without authentication",
+        "severity": "high"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Debugging with VS Code",
+        "command": "func start",
+        "scenario": "Debug functions in VS Code with Azure Functions extension",
+        "notes": [
+          "Set breakpoints for debugging",
+          "Step through function execution"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Azure Functions Core Tools Documentation",
+        "url": "https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local",
+        "description": "Official Azure Functions documentation"
+      },
+      {
+        "label": "Azure Functions Python Guide",
+        "url": "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-python",
+        "description": "Python-specific Azure Functions guide"
+      }
+    ]
+  },
+  {
+    "id": "gcp-functions-framework",
+    "name": "GCP Functions Framework",
+    "summary": "Google Cloud Functions Framework is a Python library that helps build serverless functions for Google Cloud Functions and other FaaS platforms with local development support.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via pip",
+        "steps": [
+          {
+            "detail": "sudo apt-get update && sudo apt-get install -y python3-pip",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install functions-framework",
+            "copyable": true
+          },
+          {
+            "detail": "functions-framework --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from pip",
+        "steps": [
+          {
+            "detail": "pip3 install functions-framework",
+            "copyable": true
+          },
+          {
+            "detail": "functions-framework --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Use with Docker",
+        "steps": [
+          {
+            "detail": "docker pull google/cloud-functions-emulator:latest",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -p 8080:8080 google/cloud-functions-emulator:latest",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Create HTTP function",
+        "command": "functions-framework --target=my_http_function --debug",
+        "notes": [
+          "Runs function locally on port 8080",
+          "Debug mode for development"
+        ]
+      },
+      {
+        "description": "Test HTTP function",
+        "command": "curl http://localhost:8080 -X POST -H 'Content-Type: application/json' -d '{\"test\": \"data\"}'",
+        "notes": [
+          "POST request to local function"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "GCP Function Security Assessment",
+        "steps": [
+          {
+            "title": "Review requirements.txt",
+            "details": "Check dependencies",
+            "command": "cat requirements.txt"
+          },
+          {
+            "title": "Inspect main.py",
+            "details": "Review function code for vulnerabilities",
+            "command": "cat main.py"
+          },
+          {
+            "title": "Run locally",
+            "details": "Test function with Functions Framework",
+            "command": "functions-framework --target=my_function --debug"
+          },
+          {
+            "title": "Check authentication",
+            "details": "Review authentication requirements",
+            "command": "grep -E 'auth|credential|secret' main.py"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "GCP Serverless Development Workflow",
+        "stages": [
+          {
+            "label": "Initialize",
+            "description": "Set up project structure",
+            "command": "mkdir my-function && cd my-function && touch main.py requirements.txt"
+          },
+          {
+            "label": "Write function",
+            "description": "Create serverless function code",
+            "command": "cat > main.py << 'EOF'\nimport functions_framework\n@functions_framework.http\ndef hello(request):\n    return 'Hello World!'\nEOF"
+          },
+          {
+            "label": "Test locally",
+            "description": "Run with Functions Framework",
+            "command": "functions-framework --target=hello --debug"
+          },
+          {
+            "label": "Deploy to GCP",
+            "description": "Deploy to Google Cloud Functions",
+            "command": "gcloud functions deploy hello --runtime python311 --trigger-http"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Function loaded successfully",
+        "meaning": "Framework ready to serve requests",
+        "severity": "info"
+      },
+      {
+        "indicator": "Module not found",
+        "meaning": "Missing dependency in requirements.txt",
+        "severity": "high"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Event-driven function",
+        "command": "functions-framework --target=cloud_event_function --debug",
+        "scenario": "Test Cloud Events functions locally",
+        "notes": [
+          "Pub/Sub and storage trigger functions",
+          "Event payload simulation"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Functions Framework Documentation",
+        "url": "https://cloud.google.com/functions/docs/functions-framework",
+        "description": "Official Google Cloud Functions Framework guide"
+      },
+      {
+        "label": "Google Cloud Functions Runtime Guide",
+        "url": "https://cloud.google.com/functions/docs/runtime/python/developing-locally",
+        "description": "Local development with Cloud Functions"
+      }
+    ]
+  }
+]

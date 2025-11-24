@@ -1048,5 +1048,85 @@
     "id": "ml-pipeline-audit",
     "label": "ML Pipeline Audit Toolkit - ML Security Assessment",
     "category": "AI & LLM Security"
+  },
+  {
+    "id": "docker",
+    "label": "Docker - Container Orchestration",
+    "category": "Container & Kubernetes"
+  },
+  {
+    "id": "kubectl",
+    "label": "kubectl - Kubernetes CLI",
+    "category": "Container & Kubernetes"
+  },
+  {
+    "id": "helm",
+    "label": "Helm - Kubernetes Package Manager",
+    "category": "Container & Kubernetes"
+  },
+  {
+    "id": "kube-bench",
+    "label": "kube-bench - CIS Kubernetes Benchmark",
+    "category": "Container & Kubernetes"
+  },
+  {
+    "id": "kubeaudit",
+    "label": "kubeaudit - Kubernetes Security Auditor",
+    "category": "Container & Kubernetes"
+  },
+  {
+    "id": "falco",
+    "label": "Falco - Runtime Security Monitor",
+    "category": "Container & Kubernetes"
+  },
+  {
+    "id": "serverless-framework",
+    "label": "Serverless Framework - Serverless Deployment",
+    "category": "Serverless Security"
+  },
+  {
+    "id": "aws-sam-cli",
+    "label": "AWS SAM CLI - Serverless Application Model",
+    "category": "Serverless Security"
+  },
+  {
+    "id": "azure-functions-core-tools",
+    "label": "Azure Functions Core Tools - Azure Serverless",
+    "category": "Serverless Security"
+  },
+  {
+    "id": "gcp-functions-framework",
+    "label": "GCP Functions Framework - Google Cloud Serverless",
+    "category": "Serverless Security"
+  },
+  {
+    "id": "burp-api-scanner",
+    "label": "Burp Suite API Scanner - REST/GraphQL Testing",
+    "category": "API & Service Testing"
+  },
+  {
+    "id": "insomnia",
+    "label": "Insomnia - API Client & Testing",
+    "category": "API & Service Testing"
+  },
+  {
+    "id": "graphqlmap",
+    "label": "GraphQLMap - GraphQL Security Testing",
+    "category": "API & Service Testing"
+  },
+  {
+    "id": "llmguard",
+    "label": "LLMGuard - LLM Input/Output Security",
+    "category": "AI & LLM Security"
+  },
+  {
+    "id": "lakera-guard",
+    "label": "Lakera Guard - LLM Threat Detection",
+    "category": "AI & LLM Security"
+  },
+  {
+    "id": "promptfoo",
+    "label": "Promptfoo - LLM Testing & Validation",
+    "category": "AI & LLM Security"
   }
 ]

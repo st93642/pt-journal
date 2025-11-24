@@ -2946,5 +2946,530 @@
         "description": "Comprehensive gRPC security testing resources"
       }
     ]
+  },
+  {
+    "id": "burp-api-scanner",
+    "name": "Burp Suite API Scanner",
+    "summary": "Burp Suite's API Scanner mode is a specialized component for identifying API vulnerabilities including broken authentication, injection flaws, and business logic vulnerabilities in REST and GraphQL APIs.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install Burp Suite Community",
+        "steps": [
+          {
+            "detail": "sudo apt-get update && sudo apt-get install -y burpsuite",
+            "copyable": true
+          },
+          {
+            "detail": "# Or download from https://portswigger.net/burp/communitydownload",
+            "copyable": false
+          },
+          {
+            "detail": "burpsuite &",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Pre-installed or install from Kali repository",
+        "steps": [
+          {
+            "detail": "sudo apt-get install -y burpsuite",
+            "copyable": true
+          },
+          {
+            "detail": "burpsuite &",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run Burp in Docker (Professional only)",
+        "steps": [
+          {
+            "detail": "# Burp professional can run in Docker",
+            "copyable": false
+          },
+          {
+            "detail": "docker run -it -v $(pwd):/work portswigger/burp-suite-professional:latest",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Launch Burp Suite",
+        "command": "burpsuite",
+        "notes": [
+          "Launches GUI application",
+          "Start new project"
+        ]
+      },
+      {
+        "description": "Configure proxy",
+        "command": "# Burp typically listens on 127.0.0.1:8080",
+        "notes": [
+          "Configure browser proxy settings",
+          "Set to localhost:8080"
+        ]
+      },
+      {
+        "description": "Create API scan",
+        "command": "# In Burp: Tools → API Scanner → Start scan",
+        "notes": [
+          "Select API endpoints to scan",
+          "Customize scan options"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "API Vulnerability Scanning with Burp",
+        "steps": [
+          {
+            "title": "Configure Burp",
+            "details": "Set up proxy and scope",
+            "command": "# Launch Burp Suite and configure proxy settings"
+          },
+          {
+            "title": "Import API specification",
+            "details": "Load OpenAPI/Swagger file",
+            "command": "# Dashboard → Import API → Select OpenAPI file"
+          },
+          {
+            "title": "Configure authentication",
+            "details": "Set up API credentials",
+            "command": "# Scanner → Authentication → Configure API keys/tokens"
+          },
+          {
+            "title": "Run API scan",
+            "details": "Execute comprehensive API security test",
+            "command": "# Start scan on imported API definition"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Burp API Security Assessment",
+        "stages": [
+          {
+            "label": "Setup",
+            "description": "Configure Burp Suite",
+            "command": "burpsuite"
+          },
+          {
+            "label": "Import API",
+            "description": "Import OpenAPI specification",
+            "command": "# Tools → API Scanner → Import API definition"
+          },
+          {
+            "label": "Configure scan",
+            "description": "Set scan parameters",
+            "command": "# Set authentication, scope, and options"
+          },
+          {
+            "label": "Execute scan",
+            "description": "Run full API vulnerability scan",
+            "command": "# Start scan and monitor progress"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Missing authentication on endpoint",
+        "meaning": "API endpoint accessible without credentials",
+        "severity": "high"
+      },
+      {
+        "indicator": "SQL injection possible",
+        "meaning": "Parameter accepts SQL injection payloads",
+        "severity": "critical"
+      },
+      {
+        "indicator": "Insecure deserialization",
+        "meaning": "Object deserialization vulnerability",
+        "severity": "critical"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Headless scanning with Burp Enterprise",
+        "command": "# burp-scanner --config-file api-config.json",
+        "scenario": "Automated CI/CD API scanning",
+        "notes": [
+          "Requires Burp Enterprise",
+          "Integrate with deployment pipelines"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Burp Suite API Scanner",
+        "url": "https://portswigger.net/burp/documentation/desktop/scan-types/api",
+        "description": "Official API Scanner documentation"
+      },
+      {
+        "label": "Burp Suite Community Edition",
+        "url": "https://portswigger.net/burp/communitydownload",
+        "description": "Free Burp Suite version"
+      }
+    ]
+  },
+  {
+    "id": "insomnia",
+    "name": "Insomnia",
+    "summary": "Insomnia is an API client and testing platform for REST, GraphQL, and gRPC APIs. It provides tools for designing, testing, debugging, and managing APIs with security capabilities.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via Snap or AppImage",
+        "steps": [
+          {
+            "detail": "sudo snap install insomnia",
+            "copyable": true
+          },
+          {
+            "detail": "# Alternative: Download AppImage",
+            "copyable": false
+          },
+          {
+            "detail": "wget https://github.com/Kong/insomnia/releases/download/core-2023.5.8/Insomnia.Core-2023.5.8.AppImage",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x Insomnia.Core-*.AppImage && ./Insomnia.Core-*.AppImage",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install via package manager or AppImage",
+        "steps": [
+          {
+            "detail": "sudo apt-get update && sudo apt-get install -y insomnia",
+            "copyable": true
+          },
+          {
+            "detail": "insomnia &",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run in Docker container",
+        "steps": [
+          {
+            "detail": "docker pull kong/insomnia:latest",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -it -v ~/.config/insomnia:/root/.config/insomnia kong/insomnia:latest",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Launch Insomnia",
+        "command": "insomnia",
+        "notes": [
+          "Opens GUI application",
+          "Create new workspace"
+        ]
+      },
+      {
+        "description": "Test API endpoint",
+        "command": "curl -X GET http://api.example.com/endpoint",
+        "notes": [
+          "Test via command line first",
+          "Then import to Insomnia"
+        ]
+      },
+      {
+        "description": "Send API request",
+        "command": "# In Insomnia: Create new request → Select method → Enter URL → Send",
+        "notes": [
+          "Visual request builder",
+          "Auto-formatting and syntax highlighting"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "API Testing with Insomnia",
+        "steps": [
+          {
+            "title": "Create workspace",
+            "details": "Set up project workspace",
+            "command": "# File → Create new workspace"
+          },
+          {
+            "title": "Import API definition",
+            "details": "Load OpenAPI/Swagger",
+            "command": "# Import → OpenAPI specification"
+          },
+          {
+            "title": "Configure authentication",
+            "details": "Set API credentials",
+            "command": "# Request → Auth → Select method (API Key, Bearer, etc.)"
+          },
+          {
+            "title": "Test endpoints",
+            "details": "Execute API requests",
+            "command": "# Send requests and review responses"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "API Security Testing with Insomnia",
+        "stages": [
+          {
+            "label": "Create project",
+            "description": "Start new workspace",
+            "command": "insomnia"
+          },
+          {
+            "label": "Import API",
+            "description": "Load API specification",
+            "command": "# Ctrl+Shift+O to import"
+          },
+          {
+            "label": "Configure security",
+            "description": "Set authentication methods",
+            "command": "# Right-click request → Auth → Configure"
+          },
+          {
+            "label": "Test security",
+            "description": "Run security tests",
+            "command": "# Test auth bypass, injection, etc."
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "401 Unauthorized",
+        "meaning": "Authentication failed or missing",
+        "severity": "info"
+      },
+      {
+        "indicator": "400 Bad Request",
+        "meaning": "Malformed request or invalid parameters",
+        "severity": "medium"
+      },
+      {
+        "indicator": "500 Internal Server Error",
+        "meaning": "Server-side error or unhandled exception",
+        "severity": "high"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Test suites and CI/CD integration",
+        "command": "# Insomnia CLI for headless testing",
+        "scenario": "Run API tests in CI/CD pipeline",
+        "notes": [
+          "Export test suites",
+          "Integrate with Jenkins/GitLab CI"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Insomnia Documentation",
+        "url": "https://insomnia.rest/",
+        "description": "Official Insomnia REST client documentation"
+      },
+      {
+        "label": "API Testing Best Practices",
+        "url": "https://insomnia.rest/blog",
+        "description": "API testing guides and best practices"
+      }
+    ]
+  },
+  {
+    "id": "graphqlmap",
+    "name": "GraphQLMap",
+    "summary": "GraphQLMap is a security testing tool for GraphQL APIs. It helps identify vulnerabilities such as introspection leaks, query complexity issues, and authentication bypasses in GraphQL endpoints.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from GitHub",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/swisskyrepo/GraphQLmap.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd GraphQLmap && pip3 install -r requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "python3 graphqlmap.py --help",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from source",
+        "steps": [
+          {
+            "detail": "sudo apt-get install -y git python3-pip",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/swisskyrepo/GraphQLmap.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd GraphQLmap && pip3 install -r requirements.txt",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run with Docker",
+        "steps": [
+          {
+            "detail": "docker build -t graphqlmap https://github.com/swisskyrepo/GraphQLmap.git",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -it graphqlmap python3 graphqlmap.py -h",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Scan GraphQL endpoint",
+        "command": "python3 graphqlmap.py -e http://target.com/graphql",
+        "notes": [
+          "Enumerate GraphQL schema",
+          "Discover exposed types"
+        ]
+      },
+      {
+        "description": "Test introspection",
+        "command": "python3 graphqlmap.py -e http://target.com/graphql --introspection",
+        "notes": [
+          "Check if introspection enabled"
+        ]
+      },
+      {
+        "description": "Query complexity testing",
+        "command": "python3 graphqlmap.py -e http://target.com/graphql --complexity",
+        "notes": [
+          "Identify DoS vectors"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "GraphQL Security Assessment",
+        "steps": [
+          {
+            "title": "Identify endpoint",
+            "details": "Locate GraphQL API endpoint",
+            "command": "curl http://target.com/graphql"
+          },
+          {
+            "title": "Test introspection",
+            "details": "Check if schema introspection enabled",
+            "command": "python3 graphqlmap.py -e http://target.com/graphql --introspection"
+          },
+          {
+            "title": "Enumerate schema",
+            "details": "Extract GraphQL type definitions",
+            "command": "python3 graphqlmap.py -e http://target.com/graphql"
+          },
+          {
+            "title": "Test mutations",
+            "details": "Identify dangerous mutations",
+            "command": "python3 graphqlmap.py -e http://target.com/graphql --mutation"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "GraphQL API Vulnerability Assessment",
+        "stages": [
+          {
+            "label": "Reconnaissance",
+            "description": "Identify GraphQL endpoints",
+            "command": "python3 graphqlmap.py -e http://target.com/graphql --introspection"
+          },
+          {
+            "label": "Schema extraction",
+            "description": "Dump complete schema",
+            "command": "python3 graphqlmap.py -e http://target.com/graphql -o schema.json"
+          },
+          {
+            "label": "Query testing",
+            "description": "Test for query bypass",
+            "command": "python3 graphqlmap.py -e http://target.com/graphql --query"
+          },
+          {
+            "label": "Mutation testing",
+            "description": "Identify dangerous mutations",
+            "command": "python3 graphqlmap.py -e http://target.com/graphql --mutation"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Introspection enabled",
+        "meaning": "Schema introspection publicly accessible",
+        "severity": "medium"
+      },
+      {
+        "indicator": "Query complexity: unlimited",
+        "meaning": "Vulnerable to query complexity DoS",
+        "severity": "high"
+      },
+      {
+        "indicator": "Sensitive mutation found",
+        "meaning": "Dangerous mutation without auth check",
+        "severity": "high"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom query injection",
+        "command": "python3 graphqlmap.py -e http://target.com/graphql --inject 'custom payload'",
+        "scenario": "Test for GraphQL injection vulnerabilities",
+        "notes": [
+          "SQLi in GraphQL resolvers",
+          "NoSQL injection testing"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "GraphQLmap GitHub",
+        "url": "https://github.com/swisskyrepo/GraphQLmap",
+        "description": "GraphQL security testing tool"
+      },
+      {
+        "label": "GraphQL Security Vulnerabilities",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/GraphQL_Cheat_Sheet.html",
+        "description": "OWASP GraphQL security guide"
+      }
+    ]
   }
 ]

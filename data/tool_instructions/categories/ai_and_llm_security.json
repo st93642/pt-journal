@@ -599,5 +599,501 @@
         "description": "Research paper on adversarial attacks"
       }
     ]
+  },
+  {
+    "id": "llmguard",
+    "name": "LLMGuard",
+    "summary": "LLMGuard is a security library for LLM input and output sanitization. It provides defenses against prompt injection, jailbreaks, and ensures LLM outputs comply with safety policies.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via pip",
+        "steps": [
+          {
+            "detail": "sudo apt-get update && sudo apt-get install -y python3-pip",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install llmguard",
+            "copyable": true
+          },
+          {
+            "detail": "python3 -c \"import llmguard; print(llmguard.__version__)\"",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from pip",
+        "steps": [
+          {
+            "detail": "pip3 install llmguard",
+            "copyable": true
+          },
+          {
+            "detail": "python3 -c \"import llmguard; print(llmguard.__version__)\"",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Use Docker image",
+        "steps": [
+          {
+            "detail": "docker pull llmguard:latest",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -it llmguard:latest python3 -m llmguard --help",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Validate user input",
+        "command": "python3 -c \"from llmguard import LLMGuard; guard = LLMGuard(); print(guard.validate_input(\\\"test\\\"))\"",
+        "notes": [
+          "Check user input for safety"
+        ]
+      },
+      {
+        "description": "Sanitize LLM output",
+        "command": "python3 -c \"from llmguard import LLMGuard; guard = LLMGuard(); print(guard.sanitize_output(\\\"response\\\"))\"",
+        "notes": [
+          "Ensure model output is safe"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "LLM Input/Output Security",
+        "steps": [
+          {
+            "title": "Initialize LLMGuard",
+            "details": "Set up security layer",
+            "command": "from llmguard import LLMGuard\nguard = LLMGuard()"
+          },
+          {
+            "title": "Validate input",
+            "details": "Check for prompt injection",
+            "command": "result = guard.validate_input(user_input)"
+          },
+          {
+            "title": "Process with LLM",
+            "details": "Send safe input to model",
+            "command": "response = model.generate(result)"
+          },
+          {
+            "title": "Sanitize output",
+            "details": "Clean model response",
+            "command": "safe_output = guard.sanitize_output(response)"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "LLM Application Security Workflow",
+        "stages": [
+          {
+            "label": "Setup guards",
+            "description": "Initialize LLMGuard",
+            "command": "guard = LLMGuard(policies=['no-sql-injection', 'no-prompt-injection'])"
+          },
+          {
+            "label": "Process input",
+            "description": "Validate and sanitize user input",
+            "command": "safe_input = guard.validate_input(user_input)"
+          },
+          {
+            "label": "Query LLM",
+            "description": "Send to language model",
+            "command": "response = llm.generate(safe_input)"
+          },
+          {
+            "label": "Secure output",
+            "description": "Sanitize before returning",
+            "command": "return guard.sanitize_output(response)"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "INJECTION DETECTED",
+        "meaning": "Prompt injection pattern found in input",
+        "severity": "high"
+      },
+      {
+        "indicator": "JAILBREAK ATTEMPT",
+        "meaning": "Attempt to bypass safety mechanisms",
+        "severity": "high"
+      },
+      {
+        "indicator": "POLICY VIOLATION",
+        "meaning": "Output violates defined safety policy",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom policy definition",
+        "command": "guard = LLMGuard(custom_policies=['ban-harmful-keywords', 'rate-limit-requests'])",
+        "scenario": "Implement custom security policies",
+        "notes": [
+          "Define organization-specific rules",
+          "Policy scoring and weighting"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "LLMGuard Documentation",
+        "url": "https://github.com/protectai/llmguard",
+        "description": "Official LLMGuard repository and documentation"
+      },
+      {
+        "label": "LLM Security Best Practices",
+        "url": "https://owasp.org/www-project-top-10-for-large-language-model-applications/",
+        "description": "OWASP Top 10 for LLM Applications"
+      }
+    ]
+  },
+  {
+    "id": "lakera-guard",
+    "name": "Lakera Guard",
+    "summary": "Lakera Guard is an API-based security service for detecting and preventing LLM attacks including prompt injection, jailbreaks, and PII leakage. Provides real-time threat detection.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install SDK via pip",
+        "steps": [
+          {
+            "detail": "sudo apt-get update && sudo apt-get install -y python3-pip",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install lakera-guard",
+            "copyable": true
+          },
+          {
+            "detail": "python3 -c \"import lakera; print(lakera.__version__)\"",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from pip",
+        "steps": [
+          {
+            "detail": "pip3 install lakera-guard",
+            "copyable": true
+          },
+          {
+            "detail": "export LAKERA_API_KEY='your-api-key'",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Docker deployment",
+        "steps": [
+          {
+            "detail": "docker pull lakera/guard:latest",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -e LAKERA_API_KEY=your-api-key lakera/guard:latest",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Check input for attacks",
+        "command": "python3 -c \"from lakera import Guard; client = Guard(api_key='key'); result = client.detect.prompt_injection('test')\"",
+        "notes": [
+          "Real-time attack detection"
+        ]
+      },
+      {
+        "description": "Detect PII in text",
+        "command": "python3 -c \"from lakera import Guard; client = Guard(); result = client.detect.pii('text with email@example.com')\"",
+        "notes": [
+          "Identify sensitive information"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Lakera Guard Integration",
+        "steps": [
+          {
+            "title": "Set up API key",
+            "details": "Configure Lakera credentials",
+            "command": "export LAKERA_API_KEY='your-api-key'"
+          },
+          {
+            "title": "Initialize client",
+            "details": "Create Guard instance",
+            "command": "from lakera import Guard\nclient = Guard()"
+          },
+          {
+            "title": "Check input",
+            "details": "Scan for prompt injections",
+            "command": "result = client.detect.prompt_injection(user_input)"
+          },
+          {
+            "title": "Take action",
+            "details": "Block or allow based on risk",
+            "command": "if result.is_attack: block_request()"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "LLM Threat Detection Workflow",
+        "stages": [
+          {
+            "label": "Initialize",
+            "description": "Set up Lakera Guard client",
+            "command": "client = Guard(api_key=os.getenv('LAKERA_API_KEY'))"
+          },
+          {
+            "label": "Receive request",
+            "description": "Get user input",
+            "command": "user_input = request.json()['text']"
+          },
+          {
+            "label": "Scan for threats",
+            "description": "Check for multiple attack types",
+            "command": "threats = client.detect.multiple_threats(user_input)"
+          },
+          {
+            "label": "Block if needed",
+            "description": "Prevent malicious requests",
+            "command": "if threats.risk_level == 'HIGH': return error_response()"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Prompt injection: HIGH confidence",
+        "meaning": "Strong indicator of injection attack",
+        "severity": "critical"
+      },
+      {
+        "indicator": "PII detected: SSN, email",
+        "meaning": "Sensitive personal information found",
+        "severity": "high"
+      },
+      {
+        "indicator": "Jailbreak pattern: Known technique",
+        "meaning": "Recognized jailbreak attempt",
+        "severity": "high"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom threat model",
+        "command": "client = Guard(custom_models=['harmful-content', 'data-theft'])",
+        "scenario": "Deploy custom threat detection models",
+        "notes": [
+          "Organization-specific threat models",
+          "Fine-tuned detection algorithms"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Lakera Guard Documentation",
+        "url": "https://docs.lakera.ai/",
+        "description": "Official Lakera Guard API documentation"
+      },
+      {
+        "label": "LLM Security Research",
+        "url": "https://www.lakera.ai/blog",
+        "description": "Latest LLM security research and findings"
+      }
+    ]
+  },
+  {
+    "id": "promptfoo",
+    "name": "Promptfoo",
+    "summary": "Promptfoo is an LLM testing framework for evaluating and validating LLM prompts, outputs, and model behaviors. Helps identify prompt weaknesses, jailbreaks, and ensure consistent performance.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via npm",
+        "steps": [
+          {
+            "detail": "sudo apt-get update && sudo apt-get install -y nodejs npm",
+            "copyable": true
+          },
+          {
+            "detail": "npm install -g promptfoo",
+            "copyable": true
+          },
+          {
+            "detail": "promptfoo --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from npm",
+        "steps": [
+          {
+            "detail": "npm install -g promptfoo",
+            "copyable": true
+          },
+          {
+            "detail": "promptfoo --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run with Docker",
+        "steps": [
+          {
+            "detail": "docker pull promptfoo:latest",
+            "copyable": true
+          },
+          {
+            "detail": "docker run -it promptfoo:latest promptfoo --help",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Initialize test suite",
+        "command": "promptfoo init",
+        "notes": [
+          "Create promptfooconfig.yaml"
+        ]
+      },
+      {
+        "description": "Run tests",
+        "command": "promptfoo eval",
+        "notes": [
+          "Execute all configured tests"
+        ]
+      },
+      {
+        "description": "View results",
+        "command": "promptfoo view",
+        "notes": [
+          "Open test results in browser"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "LLM Prompt Evaluation",
+        "steps": [
+          {
+            "title": "Set up test suite",
+            "details": "Initialize Promptfoo project",
+            "command": "promptfoo init"
+          },
+          {
+            "title": "Define test cases",
+            "details": "Create test scenarios",
+            "command": "# Edit promptfooconfig.yaml with test cases"
+          },
+          {
+            "title": "Configure prompts",
+            "details": "Add prompts to test",
+            "command": "# Define prompt variants for evaluation"
+          },
+          {
+            "title": "Execute tests",
+            "details": "Run evaluation suite",
+            "command": "promptfoo eval"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Prompt Testing Workflow",
+        "stages": [
+          {
+            "label": "Initialize",
+            "description": "Set up test environment",
+            "command": "promptfoo init --model openai:gpt-4"
+          },
+          {
+            "label": "Define tests",
+            "description": "Create test cases",
+            "command": "cat > promptfooconfig.yaml << 'EOF'\nprompts: ['prompts/*.txt']\ntest: 'tests.txt'\nEOF"
+          },
+          {
+            "label": "Run evaluation",
+            "description": "Execute test suite",
+            "command": "promptfoo eval"
+          },
+          {
+            "label": "Analyze results",
+            "description": "Review test results",
+            "command": "promptfoo view"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "PASS: Prompt behaves as expected",
+        "meaning": "Test case passed successfully",
+        "severity": "info"
+      },
+      {
+        "indicator": "FAIL: Unexpected output format",
+        "meaning": "Output doesn't match expected format",
+        "severity": "high"
+      },
+      {
+        "indicator": "JAILBREAK: Prompt bypassed restrictions",
+        "meaning": "Prompt injection or jailbreak successful",
+        "severity": "critical"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Multi-model comparison",
+        "command": "promptfoo eval --models 'openai:gpt-4,openai:gpt-3.5-turbo,anthropic:claude-3'",
+        "scenario": "Compare prompt performance across models",
+        "notes": [
+          "Test prompt compatibility",
+          "Identify model-specific vulnerabilities"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Promptfoo Documentation",
+        "url": "https://www.promptfoo.dev/",
+        "description": "Official Promptfoo documentation and guides"
+      },
+      {
+        "label": "LLM Prompt Engineering",
+        "url": "https://github.com/promptfoo/promptfoo",
+        "description": "Prompt engineering best practices and examples"
+      }
+    ]
   }
 ]

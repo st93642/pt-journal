@@ -1,5 +1,6 @@
 pub mod bug_bounty_hunting;
 pub mod ceh;
+pub mod cloud_identity;
 pub mod comptia_secplus;
 pub mod exploitation;
 pub mod pentest_exam;
@@ -18,6 +19,7 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         create_vulnerability_analysis_phase(),
         create_exploitation_phase(),
         create_post_exploitation_phase(),
+        create_cloud_identity_security_phase(),
         create_reporting_phase(),
         create_bug_bounty_hunting_phase(),
         create_comptia_secplus_phase(),
@@ -105,6 +107,17 @@ fn create_post_exploitation_phase() -> Phase {
     Phase {
         id: Uuid::new_v4(),
         name: "Post-Exploitation".to_string(),
+        steps,
+        notes: String::new(),
+    }
+}
+
+fn create_cloud_identity_security_phase() -> Phase {
+    let steps = cloud_identity::get_cloud_identity_steps();
+
+    Phase {
+        id: Uuid::new_v4(),
+        name: "Cloud & Identity Security Fundamentals".to_string(),
         steps,
         notes: String::new(),
     }

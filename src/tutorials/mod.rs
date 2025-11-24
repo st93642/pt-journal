@@ -1,3 +1,4 @@
+pub mod ai_security;
 pub mod bug_bounty_hunting;
 pub mod ceh;
 pub mod cloud_identity;
@@ -43,6 +44,7 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         create_artifact_integrity_phase(),
         create_red_team_tradecraft_phase(),
         create_purple_team_threat_hunting_phase(),
+        create_ai_security_phase(),
     ]
 }
 
@@ -354,6 +356,55 @@ fn create_purple_team_threat_hunting_phase() -> Phase {
     Phase {
         id: Uuid::new_v4(),
         name: "Purple Team/Threat Hunting".to_string(),
+        steps,
+        notes: String::new(),
+    }
+}
+
+fn create_ai_security_phase() -> Phase {
+    let mut steps = Vec::new();
+
+    // Add Prompt Injection & Jailbreaks steps
+    for (title, description) in ai_security::PROMPT_INJECTION_STEPS.iter() {
+        steps.push(Step::new_tutorial(
+            Uuid::new_v4(),
+            title.to_string(),
+            description.to_string(),
+            vec![
+                "ai".to_string(),
+                "llm".to_string(),
+                "prompt-injection".to_string(),
+            ],
+        ));
+    }
+
+    // Add LLM Data Exfiltration steps
+    for (title, description) in ai_security::LLM_DATA_EXFILTRATION_STEPS.iter() {
+        steps.push(Step::new_tutorial(
+            Uuid::new_v4(),
+            title.to_string(),
+            description.to_string(),
+            vec![
+                "ai".to_string(),
+                "llm".to_string(),
+                "data-exfiltration".to_string(),
+            ],
+        ));
+    }
+
+    // Add ML Pipeline Threats steps
+    for (title, description) in ai_security::ML_PIPELINE_THREATS_STEPS.iter() {
+        steps.push(Step::new_tutorial(
+            Uuid::new_v4(),
+            title.to_string(),
+            description.to_string(),
+            vec!["ai".to_string(), "ml".to_string(), "mlsec".to_string()],
+        ));
+    }
+
+    Phase {
+        id: Uuid::new_v4(),
+        name: "AI & LLM Security".to_string(),
         steps,
         notes: String::new(),
     }

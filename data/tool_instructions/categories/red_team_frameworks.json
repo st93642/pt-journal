@@ -643,6 +643,42 @@
             "copyable": false
           }
         ]
+      },
+      {
+        "platform": "MITRE ATT&CK Navigator",
+        "summary": "Interactive tool for ATT&CK technique mapping",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/mitre-attack/attack-navigator.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd attack-navigator && npm install && npm start",
+            "copyable": true
+          },
+          {
+            "detail": "Navigate to http://localhost:4200",
+            "copyable": false
+          }
+        ]
+      },
+      {
+        "platform": "Atomic Red Team",
+        "summary": "Install Atomic Red Team for technique testing",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/redcanaryco/atomic-red-team.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd atomic-red-team && Install-AtomicRedTeam.ps1",
+            "copyable": true
+          },
+          {
+            "detail": "Import-Module 'PathToAtomicRedTeam\\Invoke-AtomicTest'",
+            "copyable": true
+          }
+        ]
       }
     ],
     "quick_examples": [
@@ -833,6 +869,42 @@
           {
             "detail": "Document bypass techniques and limitations",
             "copyable": false
+          }
+        ]
+      },
+      {
+        "platform": "PowerShell Evasion Tools",
+        "summary": "Install PowerShell security assessment tools",
+        "steps": [
+          {
+            "detail": "Install-Module -Name Posh-SSH, Posh-Registry",
+            "copyable": true
+          },
+          {
+            "detail": "Import-Module Invoke-Obfuscation",
+            "copyable": true
+          },
+          {
+            "detail": "Test AMSI bypass techniques",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Process Injection Tools",
+        "summary": "Tools for testing process injection techniques",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/monoxgas/sRDI.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd sRDI && python sRDI.py -f beacon.dll",
+            "copyable": true
+          },
+          {
+            "detail": "Test reflective DLL injection",
+            "copyable": true
           }
         ]
       }

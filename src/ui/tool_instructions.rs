@@ -568,4 +568,18 @@ mod tests {
             assert_instruction_has_required_sections(doc, id);
         }
     }
+
+    #[test]
+    fn ai_llm_security_tools_have_populated_sections() {
+        let registry = load_registry().expect("instructions should load");
+        let tools = ["garak", "llm-guard", "ml-pipeline-audit"];
+
+        for id in tools {
+            let doc = registry
+                .instructions
+                .get(id)
+                .unwrap_or_else(|| panic!("missing instructions for {id}"));
+            assert_instruction_has_required_sections(doc, id);
+        }
+    }
 }

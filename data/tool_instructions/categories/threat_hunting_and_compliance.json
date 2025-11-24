@@ -772,6 +772,50 @@
             "copyable": false
           }
         ]
+      },
+      {
+        "platform": "SIEM Integration",
+        "summary": "Set up centralized logging for correlation",
+        "steps": [
+          {
+            "detail": "Install ELK Stack: docker-compose up -d",
+            "copyable": true
+          },
+          {
+            "detail": "Configure log shippers (Filebeat, Fluentd)",
+            "copyable": true
+          },
+          {
+            "detail": "Set up correlation rules and alerts",
+            "copyable": true
+          },
+          {
+            "detail": "Import threat hunting queries",
+            "copyable": false
+          }
+        ]
+      },
+      {
+        "platform": "Threat Hunting Tools",
+        "summary": "Install specialized threat hunting utilities",
+        "steps": [
+          {
+            "detail": "pip install sigma-cli yara-python",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/Neo23x0/sigma.git",
+            "copyable": true
+          },
+          {
+            "detail": "Configure YARA rules for cloud artifacts",
+            "copyable": true
+          },
+          {
+            "detail": "Set up automated hunting pipelines",
+            "copyable": false
+          }
+        ]
       }
     ],
     "quick_examples": [

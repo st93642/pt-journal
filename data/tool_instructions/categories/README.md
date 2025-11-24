@@ -38,6 +38,7 @@ The files are named using the category name converted to lowercase with spaces a
 - `lateral_movement_and_directory.json` - Lateral movement and directory services tools
 - `red_team_frameworks.json` - Red teaming frameworks
 - `threat_hunting_and_compliance.json` - Threat hunting and compliance tools
+- `ai_and_llm_security.json` - AI and Large Language Model security tools
 
 ## Loading
 

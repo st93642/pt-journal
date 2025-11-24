@@ -950,6 +950,11 @@
     "category": "Red Team Frameworks"
   },
   {
+    "id": "sliver",
+    "label": "Sliver - Implant Framework",
+    "category": "Red Team Frameworks"
+  },
+  {
     "id": "yara",
     "label": "YARA - Pattern Matching Engine",
     "category": "Threat Hunting & Compliance"
@@ -1023,5 +1028,25 @@
     "id": "workflow_threat_hunting_lifecycle",
     "label": "Threat Hunting Lifecycle Workflow",
     "category": "Workflow Guides"
+  },
+  {
+    "id": "workflow_osint_assessment",
+    "label": "OSINT Assessment Workflow",
+    "category": "Workflow Guides"
+  },
+  {
+    "id": "garak",
+    "label": "Garak - AI Model Vulnerability Scanner",
+    "category": "AI & LLM Security"
+  },
+  {
+    "id": "llm-guard",
+    "label": "LLM Guard - AI Input Sanitization & Security",
+    "category": "AI & LLM Security"
+  },
+  {
+    "id": "ml-pipeline-audit",
+    "label": "ML Pipeline Audit Toolkit - ML Security Assessment",
+    "category": "AI & LLM Security"
   }
 ]

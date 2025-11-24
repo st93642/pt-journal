@@ -1,0 +1,603 @@
+[
+  {
+    "id": "garak",
+    "name": "Garak",
+    "summary": "Garak is an LLM vulnerability scanner that probes for prompt injection, jailbreaks, data exfiltration, and other AI security issues. It provides systematic testing of AI model safety and robustness.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via pip with Python 3.10+",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y python3-pip python3-venv",
+            "copyable": true
+          },
+          {
+            "detail": "python3 -m pip install --user garak",
+            "copyable": true
+          },
+          {
+            "detail": "garak --help",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Pre-installed or install via pip",
+        "steps": [
+          {
+            "detail": "sudo apt install -y python3-pip",
+            "copyable": true
+          },
+          {
+            "detail": "python3 -m pip install --user garak",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Official containerized deployment",
+        "steps": [
+          {
+            "detail": "docker pull ghcr.io/leondz/garak:latest",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm ghcr.io/leondz/garak:latest --help",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic prompt injection test",
+        "command": "garak --model_type huggingface --model_name microsoft/DialoGPT-medium --probes promptinject",
+        "notes": []
+      },
+      {
+        "description": "Test multiple generators",
+        "command": "garak --generators openai gpt-3.5-turbo,huggingface microsoft/DialoGPT-medium --probes all",
+        "notes": []
+      },
+      {
+        "description": "Custom probe execution",
+        "command": "garak --model_type openai --model_name gpt-4 --probes dan_11.0",
+        "notes": []
+      },
+      {
+        "description": "Generate HTML report",
+        "command": "garak --model_type openai --model_name gpt-3.5-turbo --probes promptinject --report_formats html",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--model_type",
+        "description": "Type of model to test (openai, huggingface, etc.)"
+      },
+      {
+        "flag": "--model_name",
+        "description": "Specific model identifier"
+      },
+      {
+        "flag": "--probes",
+        "description": "Security probes to run (promptinject, dan_11.0, etc.)"
+      },
+      {
+        "flag": "--generators",
+        "description": "Model generators to test"
+      },
+      {
+        "flag": "--report_formats",
+        "description": "Output formats (html, json)"
+      }
+    ],
+    "operational_tips": [
+      "Configure API keys for cloud models (OpenAI, Anthropic) in environment variables",
+      "Use --parallel option for faster scanning of multiple models",
+      "Start with basic probes before running comprehensive test suites",
+      "Review HTML reports for detailed vulnerability analysis"
+    ],
+    "step_sequences": [
+      {
+        "title": "AI Model Security Assessment",
+        "steps": [
+          {
+            "title": "Configure API access",
+            "details": "Set up API keys for target models",
+            "command": "export OPENAI_API_KEY=your_key_here"
+          },
+          {
+            "title": "Run prompt injection tests",
+            "details": "Test for prompt injection vulnerabilities",
+            "command": "garak --model_type openai --model_name gpt-4 --probes promptinject"
+          },
+          {
+            "title": "Execute jailbreak probes",
+            "details": "Test resistance to jailbreaking attempts",
+            "command": "garak --model_type openai --model_name gpt-4 --probes dan_11.0"
+          },
+          {
+            "title": "Generate security report",
+            "details": "Create comprehensive assessment report",
+            "command": "garak --model_type openai --model_name gpt-4 --probes all --report_formats html"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Comprehensive AI Security Testing Pipeline",
+        "stages": [
+          {
+            "label": "Model enumeration",
+            "description": "Identify all AI models and APIs in scope",
+            "command": "# Manual discovery of AI endpoints"
+          },
+          {
+            "label": "Garak baseline scan",
+            "description": "Run standard security probes",
+            "command": "garak --model_type openai --model_name gpt-4 --probes promptinject,dan_11.0,encoding"
+          },
+          {
+            "label": "Custom probe development",
+            "description": "Create organization-specific test cases",
+            "command": "# Develop custom garak probes"
+          },
+          {
+            "label": "Report generation",
+            "description": "Compile findings and recommendations",
+            "command": "garak --report_formats html,json"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "PASS: probe_name",
+        "meaning": "Model successfully resisted the security probe",
+        "severity": "info"
+      },
+      {
+        "indicator": "FAIL: probe_name",
+        "meaning": "Model vulnerable to the tested attack vector",
+        "severity": "warning"
+      },
+      {
+        "indicator": "SCORE: 0.85",
+        "meaning": "Vulnerability score (higher = more vulnerable)",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom probe development",
+        "command": "garak --model_type openai --model_name gpt-4 --probes custom_probe.py",
+        "scenario": "Create and test custom security probes for specific AI applications",
+        "notes": [
+          "Extend garak with custom probe classes",
+          "Test organization-specific attack patterns"
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "Garak Documentation",
+        "url": "https://github.com/leondz/garak",
+        "description": "Official documentation and probe reference"
+      },
+      {
+        "label": "AI Security Testing Guide",
+        "url": "https://owasp.org/www-project-ai-security-and-privacy-guide/",
+        "description": "OWASP AI security testing methodology"
+      }
+    ]
+  },
+  {
+    "id": "llm-guard",
+    "name": "LLM Guard",
+    "summary": "LLM Guard is a comprehensive security toolkit for protecting Large Language Models against prompt injections, toxic content, and data exfiltration attacks.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via pip with Python dependencies",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y python3-pip python3-dev",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install llm-guard",
+            "copyable": true
+          },
+          {
+            "detail": "llm-guard --help",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Containerized deployment with all dependencies",
+        "steps": [
+          {
+            "detail": "docker pull quay.io/lavalliere/llm-guard",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm quay.io/lavalliere/llm-guard --help",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "macOS",
+        "summary": "Install via Homebrew or pip",
+        "steps": [
+          {
+            "detail": "brew install python3",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install llm-guard",
+            "copyable": true
+          },
+          {
+            "detail": "llm-guard --help",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic input sanitization",
+        "command": "echo \"malicious prompt\" | llm-guard sanitize",
+        "notes": []
+      },
+      {
+        "description": "Scan for prompt injections",
+        "command": "llm-guard scan --input-file prompts.txt --scanner prompt_injection",
+        "notes": []
+      },
+      {
+        "description": "Test content safety",
+        "command": "llm-guard scan --text \"unsafe content\" --scanner toxicity",
+        "notes": []
+      },
+      {
+        "description": "Batch processing",
+        "command": "llm-guard scan --input-file batch.txt --output-file results.json",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--scanner",
+        "description": "Security scanner to use (prompt_injection, toxicity, etc.)"
+      },
+      {
+        "flag": "--input-file",
+        "description": "File containing text to scan"
+      },
+      {
+        "flag": "--output-file",
+        "description": "File to save scan results"
+      },
+      {
+        "flag": "--text",
+        "description": "Direct text input for scanning"
+      }
+    ],
+    "operational_tips": [
+      "Use multiple scanners for comprehensive protection",
+      "Implement LLM Guard as middleware in AI pipelines",
+      "Regularly update scanner models for latest threats",
+      "Monitor false positive rates and adjust thresholds"
+    ],
+    "step_sequences": [
+      {
+        "title": "AI Input Validation Pipeline",
+        "steps": [
+          {
+            "title": "Install and configure",
+            "details": "Set up LLM Guard with required models",
+            "command": "pip3 install llm-guard"
+          },
+          {
+            "title": "Test prompt injection detection",
+            "details": "Validate injection detection capabilities",
+            "command": "llm-guard scan --text \"ignore previous instructions\" --scanner prompt_injection"
+          },
+          {
+            "title": "Implement in application",
+            "details": "Integrate as preprocessing step",
+            "command": "# Add to AI application pipeline"
+          },
+          {
+            "title": "Monitor and tune",
+            "details": "Track performance and adjust parameters",
+            "command": "# Review logs and metrics"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Defensive AI Pipeline with LLM Guard",
+        "stages": [
+          {
+            "label": "Input validation",
+            "description": "Sanitize and validate all user inputs",
+            "command": "llm-guard scan --input-file user_inputs.txt --scanner prompt_injection,toxicity"
+          },
+          {
+            "label": "Content filtering",
+            "description": "Block harmful or inappropriate content",
+            "command": "llm-guard sanitize --input-file filtered_inputs.txt"
+          },
+          {
+            "label": "Response validation",
+            "description": "Check AI outputs for safety",
+            "command": "llm-guard scan --input-file ai_responses.txt --scanner output_safety"
+          },
+          {
+            "label": "Logging and monitoring",
+            "description": "Track security events and incidents",
+            "command": "# Implement comprehensive logging"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "SAFE",
+        "meaning": "Content passed all security checks",
+        "severity": "info"
+      },
+      {
+        "indicator": "UNSAFE: prompt_injection",
+        "meaning": "Prompt injection detected in input",
+        "severity": "warning"
+      },
+      {
+        "indicator": "SCORE: 0.92",
+        "meaning": "Confidence score for detected vulnerability",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom scanner development",
+        "command": "llm-guard scan --custom-scanner my_scanner.py --input-file test_data.txt",
+        "scenario": "Develop organization-specific security scanners",
+        "notes": [
+          "Extend LLM Guard with custom detection logic",
+          "Train models on organization-specific threat patterns"
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "LLM Guard Documentation",
+        "url": "https://github.com/lavalliere/llm-guard",
+        "description": "Official documentation and usage examples"
+      }
+    ]
+  },
+  {
+    "id": "ml-pipeline-audit",
+    "name": "ML Pipeline Audit Toolkit",
+    "summary": "Comprehensive toolkit for auditing Machine Learning pipelines against data poisoning, adversarial examples, and model exfiltration attacks.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via pip with ML dependencies",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y python3-pip python3-dev",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install ml-pipeline-audit scikit-learn torch",
+            "copyable": true
+          },
+          {
+            "detail": "ml-audit --help",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Container with GPU support for ML workloads",
+        "steps": [
+          {
+            "detail": "docker pull mlsec/ml-pipeline-audit",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm mlsec/ml-pipeline-audit --help",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Conda Environment",
+        "summary": "Isolated ML environment with conda",
+        "steps": [
+          {
+            "detail": "conda create -n ml-audit python=3.9",
+            "copyable": true
+          },
+          {
+            "detail": "conda activate ml-audit",
+            "copyable": true
+          },
+          {
+            "detail": "pip install ml-pipeline-audit scikit-learn torch",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Data poisoning detection",
+        "command": "ml-audit detect-poisoning --dataset training_data.csv --model classifier.pkl",
+        "notes": []
+      },
+      {
+        "description": "Generate adversarial examples",
+        "command": "ml-audit generate-adversarial --model target_model.h5 --input sample.jpg",
+        "notes": []
+      },
+      {
+        "description": "Model vulnerability assessment",
+        "command": "ml-audit assess-vulnerabilities --model model.pkl --test-data test.csv",
+        "notes": []
+      },
+      {
+        "description": "Membership inference test",
+        "command": "ml-audit test-membership --model model.pkl --candidate-data candidates.csv",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--dataset",
+        "description": "Path to training/validation dataset"
+      },
+      {
+        "flag": "--model",
+        "description": "Path to trained model file"
+      },
+      {
+        "flag": "--test-data",
+        "description": "Test data for vulnerability assessment"
+      },
+      {
+        "flag": "--output-dir",
+        "description": "Directory for saving results and reports"
+      }
+    ],
+    "operational_tips": [
+      "Use GPU acceleration for large model testing",
+      "Validate results with multiple attack types",
+      "Implement findings in CI/CD security gates",
+      "Regular auditing as part of ML lifecycle"
+    ],
+    "step_sequences": [
+      {
+        "title": "ML Pipeline Security Audit",
+        "steps": [
+          {
+            "title": "Data integrity check",
+            "details": "Test for data poisoning and tampering",
+            "command": "ml-audit detect-poisoning --dataset data.csv --model model.pkl"
+          },
+          {
+            "title": "Adversarial robustness test",
+            "details": "Generate and test adversarial examples",
+            "command": "ml-audit generate-adversarial --model model.pkl --input test_samples/"
+          },
+          {
+            "title": "Privacy assessment",
+            "details": "Check for data exfiltration vulnerabilities",
+            "command": "ml-audit test-membership --model model.pkl --candidate-data candidates.csv"
+          },
+          {
+            "title": "Generate audit report",
+            "details": "Compile findings and recommendations",
+            "command": "ml-audit generate-report --output-dir audit_results/"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "ML Security Assessment Framework",
+        "stages": [
+          {
+            "label": "Data validation",
+            "description": "Audit training data integrity",
+            "command": "ml-audit detect-poisoning --dataset training.csv"
+          },
+          {
+            "label": "Model testing",
+            "description": "Test model against known attacks",
+            "command": "ml-audit assess-vulnerabilities --model model.pkl"
+          },
+          {
+            "label": "Adversarial evaluation",
+            "description": "Generate and test adversarial inputs",
+            "command": "ml-audit generate-adversarial --model model.pkl"
+          },
+          {
+            "label": "Risk assessment",
+            "description": "Calculate overall security risk score",
+            "command": "ml-audit calculate-risk --audit-results results/"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "POISONING DETECTED: 85% confidence",
+        "meaning": "Data poisoning identified with confidence score",
+        "severity": "warning"
+      },
+      {
+        "indicator": "ADVERSARIAL SUCCESS: 92%",
+        "meaning": "Percentage of successful adversarial attacks",
+        "severity": "warning"
+      },
+      {
+        "indicator": "MEMBERSHIP LEAK: HIGH",
+        "meaning": "Significant risk of membership inference",
+        "severity": "critical"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom attack simulation",
+        "command": "ml-audit simulate-attack --custom-attack my_attack.py --model target.pkl",
+        "scenario": "Develop and test custom attack vectors",
+        "notes": [
+          "Create custom attack modules for specific ML architectures",
+          "Test novel threat models and scenarios"
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "ML Pipeline Audit Documentation",
+        "url": "https://github.com/mlsec/ml-pipeline-audit",
+        "description": "Official toolkit documentation and examples"
+      },
+      {
+        "label": "Adversarial ML Research",
+        "url": "https://arxiv.org/abs/2002.08619",
+        "description": "Research paper on adversarial attacks"
+      }
+    ]
+  }
+]

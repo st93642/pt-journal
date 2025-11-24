@@ -5,7 +5,7 @@
 /*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
 /*                                                          TT         SS II */
 /*  Created: Nov 21 2025 23:42 st93642                      TT    SSSSSSS II */
-/*  Updated: Nov 24 2025 15:23 st93642                                       */
+/*  Updated: Nov 24 2025 23:36 st93642                                       */
 /*                                                                           */
 /*   Transport and Telecommunication Institute - Riga, Latvia                */
 /*                       https://tsi.lv                                      */
@@ -38,14 +38,14 @@ mod tests {
             assert_eq!(model.selected_phase, 0);
             assert_eq!(model.selected_step, Some(0));
             assert!(model.current_path.is_none());
-            assert_eq!(model.session.phases.len(), 18); // 18 phases (12 core + 6 advanced)
+            assert_eq!(model.session.phases.len(), 24); // 24 phases (18 core + 6 advanced)
         }
 
         #[test]
         fn test_session_creation() {
             let session = Session::default();
             assert!(!session.name.is_empty());
-            assert_eq!(session.phases.len(), 18); // 18 phases
+            assert_eq!(session.phases.len(), 24); // 24 phases
             assert!(session.notes_global.is_empty());
         }
 
@@ -79,17 +79,17 @@ mod tests {
             assert!(!cloud_iam_phase.steps.is_empty()); // Has tutorial and quiz steps
 
             // Test Reporting phase
-            let report_phase = &session.phases[7];
+            let report_phase = &session.phases[10];
             assert_eq!(report_phase.name, "Reporting");
             assert_eq!(report_phase.steps.len(), 4); // 4 reporting steps
 
             // Test Bug Bounty Hunting phase
-            let bug_bounty_phase = &session.phases[8];
+            let bug_bounty_phase = &session.phases[11];
             assert_eq!(bug_bounty_phase.name, "Bug Bounty Hunting");
             assert!(!bug_bounty_phase.steps.is_empty()); // Has steps
 
             // Test CompTIA Security+ phase
-            let comptia_phase = &session.phases[9];
+            let comptia_phase = &session.phases[12];
             assert_eq!(comptia_phase.name, "CompTIA Security+");
             assert_eq!(comptia_phase.steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
         }
@@ -564,7 +564,7 @@ mod tests {
         fn test_phase_progression_workflow() {
             let session = Session::default();
 
-            // Verify logical phase progression (first 7 phases are pentesting methodology, next are specialized)
+            // Verify logical phase progression (first 10 phases are pentesting methodology, next are specialized)
             let phase_names = [
                 "Reconnaissance",
                 "Vulnerability Analysis",
@@ -581,13 +581,24 @@ mod tests {
                 "CompTIA Security+",
                 "CompTIA PenTest+",
                 "Certified Ethical Hacker (CEH)",
+                "Container Breakout Playbook",
+                "Kubernetes Pod-to-Cluster Attacks",
+                "CI-CD Pipeline Attacks",
+                "SBOM Generation & Analysis",
+                "Dependency Confusion & Typosquatting",
+                "Artifact Integrity Checks",
+                "Red Team Tradecraft",
+                "Purple Team/Threat Hunting",
+                "AI & LLM Security",
             ];
             for (idx, expected_name) in phase_names.iter().enumerate() {
                 assert_eq!(session.phases[idx].name, *expected_name);
             }
 
             // Verify step counts are reasonable for the core pentesting phases
-            let expected_step_counts = [16, 5, 4, 4, 3, 3, 3, 4, 3, 3]; // Recon, Vuln, Exploit, Post, Cloud IAM, OAuth, SSO, Modern API, JWT/SPA, WebSocket, Reporting, Bug Bounty, Sec+, PenTest+, CEH
+            let expected_step_counts = [
+                16, 5, 4, 4, 2, 1, 1, 3, 3, 3, 4, 8, 23, 32, 24, 1, 1, 1, 1, 1, 1, 10, 10, 7,
+            ]; // Updated for all phases including AI security
             for (idx, &expected_count) in expected_step_counts.iter().enumerate() {
                 assert_eq!(session.phases[idx].steps.len(), expected_count);
             }
@@ -596,10 +607,10 @@ mod tests {
             assert!(session.phases[4].steps.len() >= 2);
 
             // Bug Bounty Hunting phase should have steps
-            assert!(!session.phases[6].steps.is_empty());
+            assert!(!session.phases[11].steps.is_empty());
 
             // CompTIA Security+ phase should have quiz steps
-            assert_eq!(session.phases[9].steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
+            assert_eq!(session.phases[12].steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
         }
 
         #[test]
@@ -607,10 +618,14 @@ mod tests {
             let session = Session::default();
 
             // Cloud Identity Security tutorials have a different structure
-            const CLOUD_IDENTITY_PHASES: [&str; 3] = [
+            const CLOUD_IDENTITY_PHASES: [&str; 7] = [
                 "Cloud IAM Abuse 101",
                 "Practical OAuth/OIDC Abuse",
                 "SSO & Federation Misconfigurations",
+                "Modern API & GraphQL Testing Playbook",
+                "JWT & SPA Security",
+                "Real-Time/WebSocket Testing",
+                "AI & LLM Security",
             ];
 
             for phase in &session.phases {
@@ -804,10 +819,14 @@ mod tests {
             let session = Session::default();
 
             // Cloud Identity Security tutorials have a different structure
-            const CLOUD_IDENTITY_PHASES: [&str; 3] = [
+            const CLOUD_IDENTITY_PHASES: [&str; 7] = [
                 "Cloud IAM Abuse 101",
                 "Practical OAuth/OIDC Abuse",
                 "SSO & Federation Misconfigurations",
+                "Modern API & GraphQL Testing Playbook",
+                "JWT & SPA Security",
+                "Real-Time/WebSocket Testing",
+                "AI & LLM Security",
             ];
 
             // Test that all required fields are present

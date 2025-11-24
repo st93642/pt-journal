@@ -1,12 +1,14 @@
 pub mod bug_bounty_hunting;
 pub mod ceh;
 pub mod cloud_identity;
+pub mod cloud_native;
 pub mod comptia_secplus;
 pub mod exploitation;
 pub mod pentest_exam;
 pub mod post_exploitation;
 pub mod reconnaissance;
 pub mod reporting;
+pub mod supply_chain;
 pub mod vulnerability_analysis;
 
 use crate::model::{Phase, Step};
@@ -27,6 +29,12 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         create_comptia_secplus_phase(),
         create_pentest_exam_phase(),
         create_ceh_phase(),
+        create_container_breakout_phase(),
+        create_kubernetes_attacks_phase(),
+        create_cicd_pipeline_attacks_phase(),
+        create_sbom_analysis_phase(),
+        create_dependency_confusion_phase(),
+        create_artifact_integrity_phase(),
     ]
 }
 
@@ -142,6 +150,72 @@ fn create_sso_federation_phase() -> Phase {
     Phase {
         id: Uuid::new_v4(),
         name: "SSO & Federation Misconfigurations".to_string(),
+        steps,
+        notes: String::new(),
+    }
+}
+
+fn create_container_breakout_phase() -> Phase {
+    let steps = vec![cloud_native::container_breakout_phase()];
+
+    Phase {
+        id: Uuid::new_v4(),
+        name: "Container Breakout Playbook".to_string(),
+        steps,
+        notes: String::new(),
+    }
+}
+
+fn create_kubernetes_attacks_phase() -> Phase {
+    let steps = vec![cloud_native::kubernetes_attacks_phase()];
+
+    Phase {
+        id: Uuid::new_v4(),
+        name: "Kubernetes Pod-to-Cluster Attacks".to_string(),
+        steps,
+        notes: String::new(),
+    }
+}
+
+fn create_cicd_pipeline_attacks_phase() -> Phase {
+    let steps = vec![cloud_native::cicd_pipeline_attacks_phase()];
+
+    Phase {
+        id: Uuid::new_v4(),
+        name: "CI-CD Pipeline Attacks".to_string(),
+        steps,
+        notes: String::new(),
+    }
+}
+
+fn create_sbom_analysis_phase() -> Phase {
+    let steps = vec![supply_chain::sbom_analysis_phase()];
+
+    Phase {
+        id: Uuid::new_v4(),
+        name: "SBOM Generation & Analysis".to_string(),
+        steps,
+        notes: String::new(),
+    }
+}
+
+fn create_dependency_confusion_phase() -> Phase {
+    let steps = vec![supply_chain::dependency_confusion_phase()];
+
+    Phase {
+        id: Uuid::new_v4(),
+        name: "Dependency Confusion & Typosquatting".to_string(),
+        steps,
+        notes: String::new(),
+    }
+}
+
+fn create_artifact_integrity_phase() -> Phase {
+    let steps = vec![supply_chain::artifact_integrity_phase()];
+
+    Phase {
+        id: Uuid::new_v4(),
+        name: "Artifact Integrity Checks".to_string(),
         steps,
         notes: String::new(),
     }

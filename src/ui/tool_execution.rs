@@ -902,6 +902,15 @@ mod tests {
 
     fn ensure_gtk_init() -> bool {
         *GTK_AVAILABLE.get_or_init(|| {
+            // Only run GTK-dependent tests when the RUN_GTK_TESTS env var is set.
+            // Running GTK tests in headless or multi-threaded test runners causes
+            // "GTK may only be used from the main thread" panics. Require an
+            // explicit opt-in to avoid CI/test flakiness on developer machines.
+            if std::env::var("RUN_GTK_TESTS").is_err() {
+                eprintln!("Skipping GTK tests: set RUN_GTK_TESTS=1 to enable");
+                return false;
+            }
+
             if let Err(err) = gtk4::init() {
                 eprintln!("Failed to initialize GTK - tests will be skipped: {err}");
                 false

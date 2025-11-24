@@ -607,6 +607,43 @@ pub fn load_step_into_panel(model: &Rc<RefCell<AppModel>>, detail_panel: &Rc<Det
     }
 }
 
+/// Helper function to rebuild the phase combo when phases change
+pub fn rebuild_phase_combo(
+    phase_combo: &gtk4::DropDown,
+    model: &Rc<RefCell<AppModel>>,
+) {
+    let new_model = gtk4::StringList::new(&[]);
+
+    // Add new phase names
+    for phase in &model.borrow().session.phases {
+        new_model.append(&phase.name);
+    }
+
+    // Temporarily set model to None to force refresh
+    phase_combo.set_model(None::<&gtk4::StringList>);
+    phase_combo.set_model(Some(&new_model));
+
+    // Force popup refresh by temporarily changing selection
+    let current_selected = phase_combo.selected();
+    phase_combo.set_selected(0);
+    if current_selected != 0 {
+        phase_combo.set_selected(current_selected);
+    }
+
+    // Ensure selected phase is still valid
+    let selected = model.borrow().selected_phase;
+    if selected < new_model.n_items() as usize {
+        phase_combo.set_selected(selected as u32);
+    } else {
+        // Fallback to first phase
+        phase_combo.set_selected(0);
+        model.borrow_mut().selected_phase = 0;
+    }
+
+    phase_combo.queue_allocate();
+    phase_combo.queue_draw();
+}
+
 /// Helper function to clear the detail panel
 pub fn clear_detail_panel(detail_panel: &Rc<DetailPanel>) {
     detail_panel.checkbox.set_active(false);

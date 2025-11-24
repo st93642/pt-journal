@@ -328,22 +328,6 @@ impl StateManager {
                 question_idx,
             ));
     }
-
-    /// Get quiz statistics for a step
-    pub fn get_quiz_statistics(
-        &self,
-        phase_idx: usize,
-        step_idx: usize,
-    ) -> Option<crate::model::QuizStatistics> {
-        let model = self.model.borrow();
-        let step = model
-            .session
-            .phases
-            .get(phase_idx)
-            .and_then(|p| p.steps.get(step_idx))?;
-
-        step.get_quiz_step().map(|quiz_step| quiz_step.statistics())
-    }
 }
 
 #[cfg(test)]

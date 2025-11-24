@@ -5,7 +5,7 @@
 /*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
 /*                                                          TT         SS II */
 /*  Created: Nov 21 2025 23:42 st93642                      TT    SSSSSSS II */
-/*  Updated: Nov 24 2025 13:39 st93642                                       */
+/*  Updated: Nov 24 2025 15:23 st93642                                       */
 /*                                                                           */
 /*   Transport and Telecommunication Institute - Riga, Latvia                */
 /*                       https://tsi.lv                                      */
@@ -38,14 +38,14 @@ mod tests {
             assert_eq!(model.selected_phase, 0);
             assert_eq!(model.selected_step, Some(0));
             assert!(model.current_path.is_none());
-            assert_eq!(model.session.phases.len(), 12); // 12 phases (added Bug Bounty + CompTIA Security+ + PenTest+ + CEH + 3 Cloud Identity phases)
+            assert_eq!(model.session.phases.len(), 18); // 18 phases (12 core + 6 advanced)
         }
 
         #[test]
         fn test_session_creation() {
             let session = Session::default();
             assert!(!session.name.is_empty());
-            assert_eq!(session.phases.len(), 12); // 12 phases
+            assert_eq!(session.phases.len(), 18); // 18 phases
             assert!(session.notes_global.is_empty());
         }
 

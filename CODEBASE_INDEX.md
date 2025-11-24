@@ -146,7 +146,7 @@ pt-journal/
 
 **Factory Methods**:
 
-- `Session::default()` - Creates session with 9 tutorial phases
+- `Session::default()` - Creates session with 18 tutorial phases
 - `Step::new_tutorial()` - Creates tutorial step
 - `Step::new_quiz()` - Creates quiz step
 
@@ -301,6 +301,15 @@ dispatcher.dispatch(Message::SessionLoaded { session });
 7. **CompTIA Security+** (23 quiz steps) - comptia_secplus.rs
 8. **PenTest+** (quiz-based) - pentest_exam.rs
 9. **CEH** (quiz-based) - ceh.rs
+10. **Cloud Identity** (quiz-based) - cloud_identity.rs
+11. **CEH - Ethical Hacking** (26 directories) - ceh.rs
+12. **CEH - Footprinting Reconnaissance** (varies) - ceh.rs
+13. **CEH - Scanning Networks** (varies) - ceh.rs
+14. **CEH - Enumeration** (varies) - ceh.rs
+15. **CEH - Vulnerability Analysis** (varies) - ceh.rs
+16. **CEH - System Hacking** (varies) - ceh.rs
+17. **CEH - Malware Threats** (varies) - ceh.rs
+18. **CEH - Sniffing** (varies) - ceh.rs
 
 **Content Structure**:
 
@@ -466,7 +475,7 @@ pub enum StepContent {
 Session and step creation:
 
 ```rust
-let session = Session::default(); // 9 phases pre-loaded
+let session = Session::default(); // 18 phases pre-loaded
 let step = Step::new_tutorial(id, title, description, tags);
 ```
 

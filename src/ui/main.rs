@@ -1,5 +1,5 @@
 use gtk4::prelude::*;
-use gtk4::{gdk, Application, ApplicationWindow, Frame, Paned};
+use gtk4::{gdk, glib, Application, ApplicationWindow, Frame, Paned};
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -48,7 +48,7 @@ pub fn build_ui(app: &Application, model: AppModel) {
     window.set_titlebar(Some(&header));
 
     // Left panel: phase selector + steps list
-    let (left_box, _phase_model, phase_combo, steps_list) =
+    let (left_box, phase_combo, steps_list) =
         crate::ui::sidebar::create_sidebar(&model);
 
     // Center panel: detail view with checkbox, title, description, notes, canvas
@@ -147,4 +147,9 @@ pub fn build_ui(app: &Application, model: AppModel) {
     crate::ui::handlers::rebuild_steps_list(&steps_list, &state.model(), &detail_panel_ref);
 
     window.present();
+
+    // Rebuild phase combo after window is presented to ensure proper refresh
+    glib::idle_add_local_once(move || {
+        crate::ui::handlers::rebuild_phase_combo(&phase_combo, &state.model());
+    });
 }

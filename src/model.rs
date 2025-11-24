@@ -5,7 +5,7 @@
 /*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
 /*                                                          TT         SS II */
 /*  Created: Nov 21 2025 23:42 st93642                      TT    SSSSSSS II */
-/*  Updated: Nov 21 2025 23:42 st93642                                       */
+/*  Updated: Nov 24 2025 15:23 st93642                                       */
 /*                                                                           */
 /*   Transport and Telecommunication Institute - Riga, Latvia                */
 /*                       https://tsi.lv                                      */
@@ -444,10 +444,6 @@ impl Default for AppModel {
         }
     }
 }
-
-// UI messages were removed in favor of a direct GTK setup.
-
-// UI wiring is provided by the Relm4 component in `ui.rs`.
 
 #[cfg(test)]
 mod tests {

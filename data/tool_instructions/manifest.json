@@ -760,6 +760,21 @@
     "category": "Cloud & Identity Security"
   },
   {
+    "id": "awscli",
+    "label": "AWS CLI - Amazon Web Services Command Line",
+    "category": "Cloud Platform Security"
+  },
+  {
+    "id": "azcli",
+    "label": "Azure CLI - Microsoft Azure Command Line",
+    "category": "Cloud Platform Security"
+  },
+  {
+    "id": "gcloud",
+    "label": "Google Cloud CLI - GCP Command Line",
+    "category": "Cloud Platform Security"
+  },
+  {
     "id": "trivy",
     "label": "Trivy - Container & VM Scanner",
     "category": "Container & Kubernetes"

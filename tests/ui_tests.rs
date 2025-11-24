@@ -250,7 +250,7 @@ mod paste_tests {
         // For now, verify that the key constants are accessible
         use gtk4::gdk::Key;
         assert_eq!(Key::v, Key::v); // Basic sanity check
-        // Placeholder test - no additional assertions needed
+                                    // Placeholder test - no additional assertions needed
     }
 
     #[test]

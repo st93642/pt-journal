@@ -1098,5 +1098,674 @@
         "description": "Cloud IAM best practices and documentation"
       }
     ]
+  },
+  {
+    "id": "awscli",
+    "name": "AWS CLI",
+    "summary": "The AWS Command Line Interface (CLI) is a unified tool to manage AWS services from the command line and automate them through scripts.",
+    "installation_guides": [
+      {
+        "platform": "Linux",
+        "summary": "Install via official installer script",
+        "steps": [
+          {
+            "detail": "curl \"https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip\" -o \"awscliv2.zip\"",
+            "copyable": true
+          },
+          {
+            "detail": "unzip awscliv2.zip",
+            "copyable": true
+          },
+          {
+            "detail": "sudo ./aws/install",
+            "copyable": true
+          },
+          {
+            "detail": "aws --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "macOS",
+        "summary": "Install via Homebrew or installer",
+        "steps": [
+          {
+            "detail": "brew install awscli",
+            "copyable": true
+          },
+          {
+            "detail": "aws --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Windows",
+        "summary": "Download and run MSI installer",
+        "steps": [
+          {
+            "detail": "Download AWS CLI MSI from https://awscli.amazonaws.com/AWSCLIV2.msi",
+            "copyable": false
+          },
+          {
+            "detail": "Run the MSI installer",
+            "copyable": false
+          },
+          {
+            "detail": "aws --version",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Configure AWS credentials",
+        "command": "aws configure",
+        "notes": [
+          "Enter access key, secret key, region, and output format"
+        ]
+      },
+      {
+        "description": "List S3 buckets",
+        "command": "aws s3 ls",
+        "notes": [
+          "Requires s3:ListAllMyBuckets permission"
+        ]
+      },
+      {
+        "description": "Get current IAM user info",
+        "command": "aws sts get-caller-identity",
+        "notes": [
+          "Shows account ID, user ARN, and username"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "IAM Enumeration",
+        "steps": [
+          {
+            "title": "List all users",
+            "details": "Enumerate IAM users in the account",
+            "command": "aws iam list-users"
+          },
+          {
+            "title": "Get account authorization details",
+            "details": "Comprehensive IAM configuration dump",
+            "command": "aws iam get-account-authorization-details"
+          },
+          {
+            "title": "List roles",
+            "details": "Discover assumable roles",
+            "command": "aws iam list-roles"
+          }
+        ]
+      },
+      {
+        "title": "Privilege Escalation Testing",
+        "steps": [
+          {
+            "title": "Check current permissions",
+            "details": "List attached policies for current user",
+            "command": "aws iam list-attached-user-policies --user-name $USER"
+          },
+          {
+            "title": "Test role assumption",
+            "details": "Attempt to assume a privileged role",
+            "command": "aws sts assume-role --role-arn arn:aws:iam::123456789012:role/AdminRole --role-session-name test"
+          }
+        ]
+      },
+      {
+        "title": "Storage Security Assessment",
+        "steps": [
+          {
+            "title": "List all buckets",
+            "details": "Discover S3 buckets",
+            "command": "aws s3 ls --recursive"
+          },
+          {
+            "title": "Check bucket ACLs",
+            "details": "Examine bucket access controls",
+            "command": "aws s3api get-bucket-acl --bucket my-bucket"
+          },
+          {
+            "title": "Test public access",
+            "details": "Check for publicly accessible objects",
+            "command": "aws s3 ls s3://my-bucket --no-sign-request"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Cloud IAM Assessment Workflow",
+        "stages": [
+          {
+            "label": "Initial Access",
+            "description": "Establish AWS credentials and verify access"
+          },
+          {
+            "label": "Enumeration",
+            "description": "Map IAM users, roles, policies, and permissions"
+          },
+          {
+            "label": "Privilege Analysis",
+            "description": "Identify privilege escalation paths"
+          },
+          {
+            "label": "Storage Assessment",
+            "description": "Check S3 buckets and other storage for misconfigurations"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "AccessDenied",
+        "meaning": "Insufficient permissions for the requested operation",
+        "severity": "info"
+      },
+      {
+        "indicator": "NoSuchBucket",
+        "meaning": "The specified S3 bucket does not exist",
+        "severity": "info"
+      },
+      {
+        "indicator": "InvalidAccessKeyId",
+        "meaning": "The AWS access key ID is invalid",
+        "severity": "error"
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--profile",
+        "description": "Specify AWS profile to use"
+      },
+      {
+        "flag": "--region",
+        "description": "Specify AWS region"
+      },
+      {
+        "flag": "--output",
+        "description": "Output format (json, text, table)"
+      }
+    ],
+    "operational_tips": [
+      "Use --no-sign-request for testing public resources",
+      "Configure multiple profiles for different accounts",
+      "Use aws-vault for secure credential management",
+      "Enable CLI output paging with aws configure set cli_pager \"\""
+    ],
+    "advanced_usage": [
+      {
+        "title": "Multi-account enumeration script",
+        "scenario": "Enumerate IAM across multiple AWS accounts",
+        "command": "for profile in $(aws configure list-profiles); do echo \"=== $profile ===\"; aws --profile $profile iam list-users --query 'Users[*].UserName'; done",
+        "notes": [
+          "Requires configured profiles for each account",
+          "Use jq for better JSON parsing"
+        ]
+      },
+      {
+        "title": "Privilege escalation path finder",
+        "scenario": "Identify potential privilege escalation vectors",
+        "command": "aws iam list-attached-user-policies --user-name $USER | jq -r '.AttachedPolicies[].PolicyArn' | xargs -I {} aws iam list-policy-versions --policy-arn {} --query 'Versions[?IsDefaultVersion==`true`].Document' | jq '.Statement[] | select(.Effect==\"Allow\") | .Action[]'",
+        "notes": [
+          "Parses policy documents to find allowed actions",
+          "Focus on iam:*, sts:*, and ec2:* permissions"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "AWS CLI Documentation",
+        "url": "https://docs.aws.amazon.com/cli/",
+        "description": "Official AWS CLI documentation and guides"
+      },
+      {
+        "label": "AWS IAM Best Practices",
+        "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html",
+        "description": "AWS Identity and Access Management best practices"
+      }
+    ]
+  },
+  {
+    "id": "azcli",
+    "name": "Azure CLI",
+    "summary": "The Azure Command-Line Interface (CLI) is a cross-platform command-line tool to connect to Azure and execute administrative commands on Azure resources.",
+    "installation_guides": [
+      {
+        "platform": "Linux",
+        "summary": "Install via package manager or script",
+        "steps": [
+          {
+            "detail": "curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash",
+            "copyable": true
+          },
+          {
+            "detail": "az --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "macOS",
+        "summary": "Install via Homebrew",
+        "steps": [
+          {
+            "detail": "brew update && brew install azure-cli",
+            "copyable": true
+          },
+          {
+            "detail": "az --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Windows",
+        "summary": "Install via MSI or PowerShell",
+        "steps": [
+          {
+            "detail": "Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'; rm .\\AzureCLI.msi",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Login to Azure",
+        "command": "az login",
+        "notes": [
+          "Opens browser for interactive authentication"
+        ]
+      },
+      {
+        "description": "List subscriptions",
+        "command": "az account list --output table",
+        "notes": [
+          "Shows available Azure subscriptions"
+        ]
+      },
+      {
+        "description": "Get current user info",
+        "command": "az ad signed-in-user show",
+        "notes": [
+          "Displays information about the signed-in user"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Azure AD Enumeration",
+        "steps": [
+          {
+            "title": "List users",
+            "details": "Enumerate Azure AD users",
+            "command": "az ad user list --query '[].{UPN:userPrincipalName, DisplayName:displayName}'"
+          },
+          {
+            "title": "List groups",
+            "details": "Discover Azure AD groups",
+            "command": "az ad group list --query '[].{Name:displayName, ID:id}'"
+          },
+          {
+            "title": "List service principals",
+            "details": "Find service principals and applications",
+            "command": "az ad sp list --query '[].{Name:displayName, AppId:appId}'"
+          }
+        ]
+      },
+      {
+        "title": "RBAC Assessment",
+        "steps": [
+          {
+            "title": "List role assignments",
+            "details": "Discover role assignments at subscription level",
+            "command": "az role assignment list --all --query '[].{Principal:principalName, Role:roleDefinitionName, Scope:scope}'"
+          },
+          {
+            "title": "List role definitions",
+            "details": "See available roles",
+            "command": "az role definition list --query '[].{Name:roleName, Type:roleType}'"
+          }
+        ]
+      },
+      {
+        "title": "Resource Discovery",
+        "steps": [
+          {
+            "title": "List resource groups",
+            "details": "Discover resource groups",
+            "command": "az group list --query '[].{Name:name, Location:location}'"
+          },
+          {
+            "title": "List storage accounts",
+            "details": "Find storage accounts",
+            "command": "az storage account list --query '[].{Name:name, Kind:kind}'"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Azure Security Assessment Workflow",
+        "stages": [
+          {
+            "label": "Authentication",
+            "description": "Login and verify access to Azure tenant"
+          },
+          {
+            "label": "Identity Enumeration",
+            "description": "Map Azure AD users, groups, and service principals"
+          },
+          {
+            "label": "Access Analysis",
+            "description": "Review role assignments and permissions"
+          },
+          {
+            "label": "Resource Assessment",
+            "description": "Check storage, VMs, and other resources"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "AuthorizationFailed",
+        "meaning": "Insufficient permissions for the operation",
+        "severity": "error"
+      },
+      {
+        "indicator": "ResourceNotFound",
+        "meaning": "The specified resource does not exist",
+        "severity": "info"
+      },
+      {
+        "indicator": "BadRequest",
+        "meaning": "Invalid request parameters or syntax",
+        "severity": "warning"
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--subscription",
+        "description": "Specify Azure subscription ID"
+      },
+      {
+        "flag": "--query",
+        "description": "JMESPath query for filtering output"
+      },
+      {
+        "flag": "--output",
+        "description": "Output format (json, jsonc, table, tsv)"
+      }
+    ],
+    "operational_tips": [
+      "Use az account set --subscription to switch contexts",
+      "Configure default output format with az configure",
+      "Use --query for powerful output filtering",
+      "Enable Azure CLI extensions for additional functionality"
+    ],
+    "advanced_usage": [
+      {
+        "title": "Comprehensive RBAC enumeration",
+        "scenario": "Map all role assignments across subscriptions",
+        "command": "for sub in $(az account list --query '[].id' -o tsv); do echo \"=== Subscription: $sub ===\"; az role assignment list --subscription $sub --all --query '[].{Principal:principalName, Role:roleDefinitionName}'; done",
+        "notes": [
+          "Requires access to multiple subscriptions",
+          "Use jq for complex JSON processing"
+        ]
+      },
+      {
+        "title": "Azure AD user privilege analysis",
+        "scenario": "Identify users with high-privilege roles",
+        "command": "az role assignment list --all --query \"[?roleDefinitionName=='Owner' || roleDefinitionName=='Contributor'].{User:principalName, Role:roleDefinitionName, Scope:scope}\"",
+        "notes": [
+          "Focus on Owner and Contributor roles",
+          "Check scope to understand assignment level"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Azure CLI Documentation",
+        "url": "https://docs.microsoft.com/en-us/cli/azure/",
+        "description": "Official Azure CLI documentation"
+      },
+      {
+        "label": "Azure RBAC Best Practices",
+        "url": "https://docs.microsoft.com/en-us/azure/role-based-access-control/best-practices",
+        "description": "Azure Role-Based Access Control best practices"
+      }
+    ]
+  },
+  {
+    "id": "gcloud",
+    "name": "Google Cloud CLI",
+    "summary": "The Google Cloud CLI is a set of tools to create and manage Google Cloud resources from the command line.",
+    "installation_guides": [
+      {
+        "platform": "Linux",
+        "summary": "Install via package manager or tarball",
+        "steps": [
+          {
+            "detail": "curl https://sdk.cloud.google.com | bash",
+            "copyable": true
+          },
+          {
+            "detail": "exec -l $SHELL",
+            "copyable": true
+          },
+          {
+            "detail": "gcloud --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "macOS",
+        "summary": "Install via Homebrew or tarball",
+        "steps": [
+          {
+            "detail": "brew install --cask google-cloud-sdk",
+            "copyable": true
+          },
+          {
+            "detail": "gcloud --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Windows",
+        "summary": "Download and run installer",
+        "steps": [
+          {
+            "detail": "Download from https://cloud.google.com/sdk/docs/install#windows",
+            "copyable": false
+          },
+          {
+            "detail": "Run the installer",
+            "copyable": false
+          },
+          {
+            "detail": "gcloud --version",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Initialize gcloud",
+        "command": "gcloud init",
+        "notes": [
+          "Sets up authentication and default project"
+        ]
+      },
+      {
+        "description": "List projects",
+        "command": "gcloud projects list",
+        "notes": [
+          "Shows accessible GCP projects"
+        ]
+      },
+      {
+        "description": "Get current account info",
+        "command": "gcloud auth list",
+        "notes": [
+          "Displays authenticated accounts"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "GCP IAM Enumeration",
+        "steps": [
+          {
+            "title": "List service accounts",
+            "details": "Discover service accounts in project",
+            "command": "gcloud iam service-accounts list"
+          },
+          {
+            "title": "Get IAM policy",
+            "details": "View project-level IAM bindings",
+            "command": "gcloud projects get-iam-policy PROJECT_ID"
+          },
+          {
+            "title": "List roles",
+            "details": "See available IAM roles",
+            "command": "gcloud iam roles list"
+          }
+        ]
+      },
+      {
+        "title": "Service Account Analysis",
+        "steps": [
+          {
+            "title": "Check service account keys",
+            "details": "List keys for a service account",
+            "command": "gcloud iam service-accounts keys list --iam-account SERVICE_ACCOUNT_EMAIL"
+          },
+          {
+            "title": "Test impersonation",
+            "details": "Attempt to impersonate a service account",
+            "command": "gcloud auth activate-service-account --key-file=key.json"
+          }
+        ]
+      },
+      {
+        "title": "Storage Assessment",
+        "steps": [
+          {
+            "title": "List buckets",
+            "details": "Discover Cloud Storage buckets",
+            "command": "gsutil ls"
+          },
+          {
+            "title": "Check bucket IAM",
+            "details": "View bucket permissions",
+            "command": "gsutil iam get gs://BUCKET_NAME"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "GCP Security Assessment Workflow",
+        "stages": [
+          {
+            "label": "Setup",
+            "description": "Authenticate and configure gcloud"
+          },
+          {
+            "label": "Project Discovery",
+            "description": "Identify accessible GCP projects"
+          },
+          {
+            "label": "IAM Mapping",
+            "description": "Enumerate service accounts, roles, and permissions"
+          },
+          {
+            "label": "Resource Analysis",
+            "description": "Assess storage, compute, and other resources"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "PERMISSION_DENIED",
+        "meaning": "Insufficient IAM permissions for the operation",
+        "severity": "error"
+      },
+      {
+        "indicator": "NOT_FOUND",
+        "meaning": "The requested resource does not exist",
+        "severity": "info"
+      },
+      {
+        "indicator": "INVALID_ARGUMENT",
+        "meaning": "Invalid request parameters",
+        "severity": "warning"
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--project",
+        "description": "Specify GCP project ID"
+      },
+      {
+        "flag": "--format",
+        "description": "Output format (json, yaml, table, etc.)"
+      },
+      {
+        "flag": "--filter",
+        "description": "Filter results using expressions"
+      }
+    ],
+    "operational_tips": [
+      "Use gcloud config set project to set default project",
+      "Enable command completion with gcloud components install",
+      "Use --format for structured output",
+      "Configure multiple configurations for different projects"
+    ],
+    "advanced_usage": [
+      {
+        "title": "Multi-project IAM enumeration",
+        "scenario": "Scan IAM across all accessible projects",
+        "command": "for project in $(gcloud projects list --format='value(projectId)'); do echo \"=== Project: $project ===\"; gcloud projects get-iam-policy $project --format='table(bindings.role,bindings.members)'; done",
+        "notes": [
+          "Requires access to multiple projects",
+          "Use --flatten for detailed member analysis"
+        ]
+      },
+      {
+        "title": "Service account privilege analysis",
+        "scenario": "Identify service accounts with high privileges",
+        "command": "gcloud projects get-iam-policy PROJECT_ID --flatten='bindings[].members[]' --filter='bindings.role:roles/owner OR bindings.role:roles/editor' --format='table(bindings.role,bindings.members)'",
+        "notes": [
+          "Focus on owner and editor roles",
+          "Check for service accounts with broad permissions"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Google Cloud CLI Documentation",
+        "url": "https://cloud.google.com/sdk/docs",
+        "description": "Official Google Cloud CLI documentation"
+      },
+      {
+        "label": "GCP IAM Best Practices",
+        "url": "https://cloud.google.com/iam/docs/using-iam-securely",
+        "description": "Google Cloud Identity and Access Management best practices"
+      }
+    ]
   }
 ]

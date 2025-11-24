@@ -1,4 +1,4 @@
-/// Cloud IAM Abuse 101 tutorial phase
+/// Cloud & Identity Security Fundamentals tutorial phase
 ///
 /// This module provides foundational cloud security and identity testing methodology,
 /// covering IAM privilege escalation, cloud storage misconfigurations, and SSO/OAuth/Federation attacks.
@@ -11,12 +11,12 @@ use std::fs;
 use std::path::Path;
 use uuid::Uuid;
 
-pub const DOMAIN_CLOUD_IAM: &str = "Cloud IAM Abuse 101";
+pub const DOMAIN_CLOUD_IDENTITY: &str = "Cloud & Identity Security";
 const QUIZ_FILE_PATH: &str = "data/cloud_identity/cloud-iam-quiz.txt";
 
-pub const CLOUD_IAM_STEPS: &[(&str, &str)] = &[
+pub const CLOUD_IDENTITY_STEPS: &[(&str, &str)] = &[
     (
-        "Cloud IAM Fundamentals",
+        "Cloud IAM Abuse 101",
         "OBJECTIVE: Understand cloud Identity and Access Management (IAM) principles and identify common privilege escalation patterns across AWS, Azure, and GCP.
 
 ACADEMIC BACKGROUND:
@@ -282,15 +282,320 @@ REFERENCES:
 
 For hands-on lab instructions and automated tooling, refer to the 'cloud-iam-priv-esc-playbook' in the Tool Instructions panel."
     ),
-];
-
-pub const PRACTICAL_OAUTH_STEPS: &[(&str, &str)] = &[
     (
-        "Practical OAuth/OIDC Abuse",
-        "OBJECTIVE: Test modern authentication protocols (OAuth 2.0, OpenID Connect) for common misconfigurations including redirect URI validation, token handling, scope abuse, and session management issues.
+        "Cloud Storage Misconfigurations",
+        "OBJECTIVE: Identify and safely validate exposed cloud storage resources (AWS S3, Azure Blob, Google Cloud Storage) while documenting impact without causing data loss.
 
 ACADEMIC BACKGROUND:
-OAuth 2.0 enables secure delegated access without sharing credentials, while OpenID Connect adds identity verification. According to RFC 6819 (OAuth 2.0 Threat Model) and OWASP, common vulnerabilities include:
+Cloud object storage services are designed for scalability and programmatic access, which often leads to security misconfiguration. According to the Cloud Security Alliance, misconfigured storage is among the top cloud threats due to:
+- Default-public or overly permissive access controls
+- Confusion between authenticated-user and public access
+- Lack of encryption at rest
+- Public listing enabling reconnaissance
+
+MITRE ATT&CK maps storage enumeration to:
+- T1580: Cloud Infrastructure Discovery
+- T1530: Data from Cloud Storage Object
+- T1213: Data from Information Repositories
+
+STEP-BY-STEP PROCESS:
+
+1. CLOUD STORAGE FUNDAMENTALS:
+
+   a) AWS S3 (Simple Storage Service):
+      - Buckets: Global namespace containers (must be unique)
+      - Objects: Files stored in buckets with keys (paths)
+      - ACLs: Legacy access control lists (per-bucket or per-object)
+      - Bucket Policies: JSON policies similar to IAM
+      - Block Public Access: Org/account/bucket-level overrides
+      - Signed URLs: Time-limited presigned URLs for temporary access
+      
+      Permission Levels:
+      - FULL_CONTROL: All permissions
+      - READ: List objects
+      - WRITE: Create/overwrite objects
+      - READ_ACP/WRITE_ACP: Read/modify ACLs
+      
+      Common Misconfigurations:
+      - Principal: * in bucket policy
+      - Public READ permission via ACL
+      - Block Public Access disabled
+      - Objects individually set to public
+
+   b) Azure Blob Storage:
+      - Storage Accounts: Parent resource
+      - Containers: Collections of blobs (similar to S3 buckets)
+      - Blobs: Block, Append, or Page blobs
+      - Access Tiers: Hot, Cool, Archive
+      - SAS (Shared Access Signature): Delegated access tokens
+      
+      Access Levels:
+      - Private: No anonymous access
+      - Blob: Public read access to blobs only
+      - Container: Public read access to container and blobs
+      
+      Common Misconfigurations:
+      - Container set to public access
+      - Overly permissive SAS tokens with long expiry
+      - Allow Blob Public Access enabled at storage account level
+
+   c) Google Cloud Storage:
+      - Buckets: Globally unique containers
+      - Objects: Files with metadata
+      - IAM: Unified permission model
+      - ACLs: Legacy (not recommended)
+      - Signed URLs: Time-limited access
+      - Uniform bucket-level access: Disables ACLs, enforces IAM only
+      
+      Special Members:
+      - allUsers: Anyone on the internet
+      - allAuthenticatedUsers: Any authenticated Google account
+      
+      Common Misconfigurations:
+      - Bindings with allUsers or allAuthenticatedUsers
+      - Legacy ACLs with public access
+      - Uniform bucket-level access not enabled
+
+2. ENUMERATION TECHNIQUES:
+
+   a) Passive Reconnaissance:
+      ```bash
+      # Certificate Transparency for storage domains
+      curl -s \"https://crt.sh/?q=%.target.com&output=json\" | jq -r '.[].name_value' | grep -E 's3|blob|storage'
+      
+      # Google dorking
+      site:s3.amazonaws.com \"target\"
+      site:blob.core.windows.net \"target\"
+      site:storage.googleapis.com \"target\"
+      
+      # GitHub code search
+      org:target \"s3.amazonaws.com\" OR \"blob.core.windows.net\"
+      ```
+
+   b) DNS Enumeration:
+      ```bash
+      # Check for S3 bucket DNS records
+      dig target-backups.s3.amazonaws.com
+      dig target-logs.s3-us-west-2.amazonaws.com
+      
+      # Check Azure storage endpoints
+      dig targetdata.blob.core.windows.net
+      
+      # Check GCS buckets
+      dig storage.googleapis.com
+      # Note: GCS uses storage.googleapis.com/bucket-name URL pattern
+      ```
+
+   c) Active Probing:
+      ```bash
+      # Install cloud storage scanners
+      pip install s3scanner
+      go install github.com/sa7mon/S3Scanner@latest
+      
+      # Test S3 bucket access
+      aws s3 ls s3://target-bucket --no-sign-request
+      aws s3api get-bucket-acl --bucket target-bucket
+      
+      # Test Azure blob container
+      az storage blob list --account-name targetaccount --container-name public --auth-mode login
+      
+      # Test GCS bucket
+      gsutil ls gs://target-bucket
+      gsutil ls -L -b gs://target-bucket  # Get bucket metadata
+      ```
+
+3. MISCONFIGURATION DETECTION:
+
+   AWS S3 Tests:
+   ```bash
+   # Check if bucket allows listing without credentials
+   aws s3 ls s3://target-bucket --no-sign-request
+   
+   # Get bucket ACL
+   aws s3api get-bucket-acl --bucket target-bucket --no-sign-request
+   
+   # Get bucket policy
+   aws s3api get-bucket-policy --bucket target-bucket --no-sign-request
+   
+   # Check block public access settings
+   aws s3api get-public-access-block --bucket target-bucket
+   
+   # Attempt to list objects
+   curl -I https://target-bucket.s3.amazonaws.com/
+   
+   # Try to access known object
+   curl -I https://target-bucket.s3.amazonaws.com/config.json
+   ```
+
+   Azure Blob Tests:
+   ```bash
+   # Check container public access (unauthenticated)
+   curl -I https://targetaccount.blob.core.windows.net/public?restype=container&comp=list
+   
+   # Try to list blobs
+   az storage blob list --account-name targetaccount --container-name public --auth-mode key
+   
+   # Check storage account properties
+   az storage account show --name targetaccount --resource-group targetrg
+   ```
+
+   GCS Tests:
+   ```bash
+   # Attempt unauthenticated listing
+   curl -I https://storage.googleapis.com/target-bucket/
+   
+   # Get bucket IAM policy
+   gsutil iam get gs://target-bucket
+   
+   # Check for allUsers or allAuthenticatedUsers
+   gsutil iam ch allUsers:objectViewer gs://target-bucket  # This would grant access (don't run on real targets!)
+   ```
+
+4. SAFE VALIDATION METHODOLOGY:
+
+   Authorization Requirements:
+   - Written permission to test specific buckets/containers
+   - Documented scope (read-only vs. read-write testing)
+   - Approval to download sample files for evidence
+   - Agreement on data handling and destruction
+
+   Read-Only Testing:
+   ```bash
+   # List objects without downloading
+   aws s3api list-objects-v2 --bucket target-bucket --max-items 10 --no-sign-request
+   
+   # Get object metadata only
+   aws s3api head-object --bucket target-bucket --key path/to/file.txt --no-sign-request
+   
+   # Count objects
+   aws s3 ls s3://target-bucket --recursive --no-sign-request | wc -l
+   ```
+
+   Evidence Collection:
+   ```bash
+   # Screenshot CLI output
+   script -c 'aws s3 ls s3://target-bucket --no-sign-request' evidence_s3_listing.txt
+   
+   # Download benign sample files only if authorized
+   aws s3 cp s3://target-bucket/README.md ./evidence/ --no-sign-request
+   
+   # Generate hash for reference
+   sha256sum evidence/README.md > evidence/file-hashes.txt
+   ```
+
+5. IMPACT ASSESSMENT:
+
+   Data Classification:
+   - Public: No sensitivity (marketing materials, public docs)
+   - Internal: Not public but low sensitivity (internal docs)
+   - Confidential: Business-critical data (financials, strategies)
+   - Restricted: PII, PHI, PCI data requiring compliance
+
+   Risk Matrix:
+   | Data Type | Public Read | Public Write | Risk Level |
+   |-----------|-------------|--------------|------------|
+   | Public    | Expected    | High         | Low/Medium |
+   | Internal  | High        | Critical     | Medium/High|
+   | Confidential | Critical | Critical     | High       |
+   | Restricted | Critical   | Critical     | Critical   |
+
+   Example Findings:
+   - S3 bucket with 10,000 objects, 500 containing PII → Critical
+   - Azure container with backups of production database → High
+   - GCS bucket with public marketing images → Low (if intended)
+
+6. LAB SCENARIO - Controlled Storage Exposure Test:
+
+   Setup:
+   ```bash
+   # Create intentionally misconfigured S3 bucket in lab account
+   aws s3 mb s3://lab-public-test-$RANDOM
+   aws s3api put-bucket-acl --bucket lab-public-test --acl public-read
+   
+   # Upload sample data
+   echo \"Lab Test Data - Not Sensitive\" > lab-sample.txt
+   aws s3 cp lab-sample.txt s3://lab-public-test/
+   ```
+
+   Testing:
+   ```bash
+   # Test from different network without credentials
+   aws s3 ls s3://lab-public-test --no-sign-request
+   
+   # Validate anonymous access
+   curl https://lab-public-test.s3.amazonaws.com/lab-sample.txt
+   ```
+
+   Remediation:
+   ```bash
+   # Enable block public access
+   aws s3api put-public-access-block --bucket lab-public-test --public-access-block-configuration BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
+   
+   # Remove public ACL
+   aws s3api put-bucket-acl --bucket lab-public-test --acl private
+   
+   # Verify closure
+   aws s3 ls s3://lab-public-test --no-sign-request  # Should fail
+   ```
+
+   Cleanup:
+   ```bash
+   aws s3 rb s3://lab-public-test --force
+   ```
+
+7. REMEDIATION GUIDANCE:
+
+   AWS S3:
+   - Enable Block Public Access at account and bucket levels
+   - Use bucket policies with explicit principals (not *)
+   - Enable access logging to track who accessed what
+   - Use S3 Access Analyzer to identify publicly accessible buckets
+   - Implement least-privilege IAM policies
+   - Enable versioning and MFA delete for critical buckets
+
+   Azure Blob:
+   - Set containers to private access
+   - Disable \"Allow Blob Public Access\" at storage account level
+   - Use short-lived SAS tokens with minimal permissions
+   - Enable storage account logging
+   - Implement network restrictions (firewall, VNet service endpoints)
+   - Enable soft delete for recovery
+
+   GCS:
+   - Enable uniform bucket-level access (disables ACLs)
+   - Remove allUsers and allAuthenticatedUsers bindings
+   - Use signed URLs with short expiry
+   - Enable Cloud Storage audit logging
+   - Implement Organization Policies to enforce security
+   - Use customer-managed encryption keys (CMEK)
+
+TOOLS AND RESOURCES:
+- S3Scanner: https://github.com/sa7mon/S3Scanner
+- cloud_enum: https://github.com/initstring/cloud_enum
+- ScoutSuite: Multi-cloud security auditing
+- Prowler: AWS-specific checks including S3
+- Azure Storage Explorer: GUI tool for Azure storage
+- gsutil: Google Cloud Storage CLI
+
+REFERENCES:
+- AWS S3 Security Best Practices: https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-best-practices.html
+- Azure Storage Security Guide: https://learn.microsoft.com/azure/storage/blobs/security-recommendations
+- GCP Cloud Storage Security: https://cloud.google.com/storage/docs/best-practices
+- OWASP Cloud Security: https://owasp.org/www-project-cloud-security/
+
+For detailed workflow and automation scripts, refer to the 'cloud-storage-misconfig-playbook' in the Tool Instructions panel."
+    ),
+    (
+        "SSO, OAuth 2.0 & OIDC Misconfigurations",
+        "OBJECTIVE: Test modern authentication protocols (OAuth 2.0, OpenID Connect, SAML) for common misconfigurations including redirect URI validation, token handling, scope abuse, and session management issues.
+
+ACADEMIC BACKGROUND:
+Single Sign-On (SSO) and federated authentication enable users to access multiple applications with one set of credentials. The two dominant protocols are:
+- OAuth 2.0: Authorization framework for API access
+- OpenID Connect (OIDC): Identity layer on top of OAuth 2.0
+- SAML 2.0: XML-based federation protocol (covered in federation-attack-scenarios)
+
+According to the OAuth 2.0 Threat Model (RFC 6819) and OWASP, common vulnerabilities include:
 - Open redirects via redirect_uri parameter
 - Missing or weak state parameter (CSRF)
 - Token leakage through referrer headers
@@ -384,7 +689,7 @@ STEP-BY-STEP PROCESS:
    # - token_endpoint: Where to exchange code for token
    # - jwks_uri: Public keys for token verification
    # - scopes_supported: Available scopes
-   - grant_types_supported: Supported OAuth flows
+   # - grant_types_supported: Supported OAuth flows
    ```
 
    Manual Testing Setup:
@@ -558,7 +863,7 @@ STEP-BY-STEP PROCESS:
    # Required flags:
    # - Secure: Only sent over HTTPS
    # - HttpOnly: Not accessible via JavaScript (XSS protection)
-   - SameSite: CSRF protection
+   # - SameSite: CSRF protection
    ```
 
    Logout Testing:
@@ -652,330 +957,33 @@ REFERENCES:
 - OWASP OAuth 2.0 Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/OAuth2_Security_Cheat_Sheet.html
 - PortSwigger OAuth Testing: https://portswigger.net/web-security/oauth
 
-For detailed testing methodology and automation scripts, refer to the 'sso-oauth-oidc-misconfig-playbook' in the Tool Instructions panel."
+For detailed testing methodology and automation scripts, refer to the 'sso-oauth-oidc-misconfig-playbook' and 'federation-attack-scenarios' in the Tool Instructions panel."
     ),
 ];
 
-pub const SSO_FEDERATION_STEPS: &[(&str, &str)] = &[
-    (
-        "SSO & Federation Misconfigurations",
-        "OBJECTIVE: Test SAML, WS-Federation, and other federation protocols for common misconfigurations including metadata poisoning, signature validation bypass, and trust relationship abuse.
-
-ACADEMIC BACKGROUND:
-Single Sign-On (SSO) enables users to access multiple applications with one authentication. SAML 2.0 is the most common protocol, followed by WS-Federation and OAuth/OIDC. According to OWASP and SAML Security Cheat Sheet, common vulnerabilities include:
-- XML Signature Wrapping attacks
-- Metadata poisoning
-- Weak certificate validation
-- NameID spoofing
-- XXE (XML External Entity) injection
-
-MITRE ATT&CK mappings:
-- T1078: Valid Accounts (federated identities)
-- T1550: Use Alternate Authentication Material (SAML tokens)
-- T1600: Weaken Encryption (downgrade attacks)
-
-STEP-BY-STEP PROCESS:
-
-1. FEDERATION PROTOCOL FUNDAMENTALS:
-
-   SAML 2.0 Core Concepts:
-   - Identity Provider (IdP): Authenticates users
-   - Service Provider (SP): Application being accessed
-   - Assertion: XML document containing user identity/attributes
-   - Metadata: XML document describing IdP/SP capabilities
-   - Bindings: How SAML messages are transported (HTTP-POST, HTTP-Redirect, SOAP)
-   
-   Key SAML Components:
-   - AuthnRequest: SP requests authentication from IdP
-   - Response: IdP sends assertion to SP
-   - LogoutRequest/Response: Single logout functionality
-   - Metadata Exchange: Automatic configuration sharing
-
-   WS-Federation Concepts:
-   - Similar to SAML but uses JSON instead of XML
-   - Uses RST/RSTR (Request Security Token) messages
-   - Integrated with Microsoft technologies
-
-2. CRITICAL SECURITY CONTROLS:
-
-   XML Signature Validation:
-   - Signatures prevent message tampering
-   - Must validate entire XML document
-   - Vulnerable to signature wrapping attacks
-   
-   Certificate Validation:
-   - Verify certificate chain and revocation
-   - Check certificate dates and purposes
-   - Pin expected certificates
-   
-   Metadata Security:
-   - Metadata contains endpoint URLs and certificates
-   - Should be signed and validated
-   - Vulnerable to poisoning attacks
-
-3. COMMON VULNERABILITIES AND TESTING:
-
-   a) XML Signature Wrapping:
-      
-      Attack: Inject malicious content into signed SAML response
-      ```xml
-      <!-- Original signed assertion -->
-      <saml:Assertion ID=\"original\">
-        <saml:Subject>
-          <saml:NameID>user@example.com</saml:NameID>
-        </saml:Subject>
-      </saml:Assertion>
-      
-      <!-- Attacker injects new assertion with same ID -->
-      <saml:Assertion ID=\"original\">
-        <saml:Subject>
-          <saml:NameID>admin@example.com</saml:NameID>
-        </saml:Subject>
-      </saml:Assertion>
-      ```
-      
-      Testing:
-      - Modify SAML responses in proxy
-      - Test if signature validation catches wrapping
-      - Check for duplicate ID handling
-
-   b) Metadata Poisoning:
-      
-      Attack: Replace legitimate metadata with malicious endpoints
-      ```xml
-      <!-- Poisoned metadata -->
-      <EntityDescriptor entityID=\"https://sp.example.com\">
-        <SPSSODescriptor>
-          <AssertionConsumerService
-            Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST\"
-            Location=\"https://attacker.com/saml\"/>
-        </SPSSODescriptor>
-      </EntityDescriptor>
-      ```
-      
-      Testing:
-      - Check if metadata is signed
-      - Test metadata refresh mechanisms
-      - Verify endpoint validation
-
-   c) XXE (XML External Entity) Injection:
-      
-      Attack: Exploit XML parser to read local files or make requests
-      ```xml
-      <?xml version=\"1.0\" encoding=\"UTF-8\"?>
-      <!DOCTYPE foo [ <!ENTITY xxe SYSTEM \"file:///etc/passwd\"> ]>
-      <samlp:AuthnRequest xmlns:samlp=\"urn:oasis:names:tc:SAML:2.0:protocol\">
-        <saml:Issuer xmlns:saml=\"urn:oasis:names:tc:SAML:2.0:assertion\">&xxe;</saml:Issuer>
-      </samlp:AuthnRequest>
-      ```
-      
-      Testing:
-      - Inject XXE payloads in SAML messages
-      - Check for external entity resolution
-      - Verify XML parser security settings
-
-   d) NameID Spoofing:
-      
-      Attack: Manipulate user identity in SAML assertion
-      ```xml
-      <saml:NameID Format=\"urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress\">
-        admin@example.com
-      </saml:NameID>
-      ```
-      
-      Testing:
-      - Modify NameID values in responses
-      - Test NameID policy enforcement
-      - Check for NameID encryption
-
-4. SAML ASSERTION ANALYSIS:
-
-   Assertion Structure:
-   ```xml
-   <saml:Assertion>
-     <saml:Issuer>IdP Entity ID</saml:Issuer>
-     <saml:Subject>
-       <saml:NameID>user@domain.com</saml:NameID>
-       <saml:SubjectConfirmation>
-         <saml:SubjectConfirmationData NotOnOrAfter=\"...\" Recipient=\"...\"/>
-       </saml:SubjectConfirmation>
-     </saml:Subject>
-     <saml:Conditions NotBefore=\"...\" NotOnOrAfter=\"...\">
-       <saml:AudienceRestriction>
-         <saml:Audience>SP Entity ID</saml:Audience>
-       </saml:AudienceRestriction>
-     </saml:Conditions>
-     <saml:AuthnStatement>
-       <saml:AuthnContext>
-         <saml:AuthnContextClassRef>Password</saml:AuthnContextClassRef>
-       </saml:AuthnContext>
-     </saml:AuthnStatement>
-     <saml:AttributeStatement>
-       <saml:Attribute Name=\"groups\">
-         <saml:AttributeValue>admin</saml:AttributeValue>
-       </saml:Attribute>
-     </saml:AttributeStatement>
-   </saml:Assertion>
-   ```
-
-   Key Security Checks:
-   - Issuer validation
-   - Audience restriction
-   - Time conditions (NotBefore/NotOnOrAfter)
-   - Subject confirmation data
-   - Signature validation
-
-5. FEDERATION TRUST RELATIONSHIPS:
-
-   Trust Establishment:
-   - Certificate exchange
-   - Metadata sharing
-   - Manual configuration
-   
-   Trust Attacks:
-   - Certificate spoofing
-   - Man-in-the-middle
-   - DNS poisoning
-   - Metadata manipulation
-
-6. TESTING METHODOLOGY:
-
-   Passive Testing:
-   ```bash
-   # Capture SAML traffic
-   tcpdump -i eth0 -w saml_traffic.pcap port 443
-   
-   # Extract SAML messages
-   # Use Burp Suite SAML extension or manual extraction
-   ```
-
-   Active Testing:
-   ```bash
-   # Modify SAML responses in Burp
-   # Test signature validation bypass
-   # Attempt privilege escalation via attribute manipulation
-   ```
-
-   Automated Testing:
-   ```bash
-   # Use SAML testing tools
-   # python-saml for testing
-   # SAML Raider Burp extension
-   ```
-
-7. LAB SCENARIO - SAML Testing Environment:
-
-   Setup:
-   ```bash
-   # Deploy test IdP and SP
-   # Use Shibboleth or SimpleSAMLphp
-   
-   # Configure intentional vulnerabilities:
-   # - Weak signature validation
-   # - Unsigned metadata
-   # - Permissive redirect URIs
-   ```
-
-   Testing Workflow:
-   ```bash
-   # 1. Baseline authentication flow
-   # 2. Capture and analyze SAML messages
-   # 3. Test signature wrapping attacks
-   # 4. Attempt metadata poisoning
-   # 5. Test XXE injection
-   # 6. Validate remediation
-   ```
-
-8. REMEDIATION GUIDANCE:
-
-   SAML Implementation:
-   - Use secure XML parsers (disable entity resolution)
-   - Implement strict signature validation
-   - Sign all SAML messages
-   - Encrypt sensitive data (NameID, attributes)
-   - Use short assertion lifetimes
-   - Implement proper logout handling
-
-   Infrastructure:
-   - Use HTTPS for all SAML endpoints
-   - Implement HSTS headers
-   - Regular certificate rotation
-   - Monitor for anomalous SAML traffic
-
-TOOLS AND RESOURCES:
-- SAML Raider: Burp Suite extension for SAML testing
-- saml2aws: CLI tool for SAML authentication
-- python-saml: SAML toolkit for Python
-- Shibboleth: Open-source SAML implementation
-- SimpleSAMLphp: PHP SAML toolkit
-
-REFERENCES:
-- SAML Security Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/SAML_Security_Cheat_Sheet.html
-- SAML 2.0 Specification: https://docs.oasis-open.org/security/saml/v2.0/
-- WS-Federation Specification: https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wsfed/
-- SAML Metadata Interoperability Profile: https://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-metadata-errata-2.0-wd-04.html
-
-For detailed testing methodology and automation scripts, refer to the 'federation-attack-scenarios' in the Tool Instructions panel."
-    ),
-];
-
-/// Build Cloud IAM Abuse 101 steps
-pub fn get_cloud_iam_steps() -> Vec<Step> {
-    let mut steps: Vec<Step> = CLOUD_IAM_STEPS
+/// Build all Cloud & Identity Security steps, including the quiz step if available.
+pub fn get_cloud_identity_steps() -> Vec<Step> {
+    let mut steps: Vec<Step> = CLOUD_IDENTITY_STEPS
         .iter()
         .map(|(title, description)| {
             Step::new_tutorial(
                 Uuid::new_v4(),
-                title.to_string(),
-                description.to_string(),
-                vec!["cloud".to_string(), "iam".to_string(), "abuse".to_string()],
+                (*title).to_string(),
+                (*description).to_string(),
+                vec!["cloud".to_string(), "identity".to_string()],
             )
         })
         .collect();
 
-    match create_cloud_iam_quiz_step() {
+    match create_cloud_identity_quiz_step() {
         Ok(quiz_step) => steps.push(quiz_step),
-        Err(err) => eprintln!("Warning: Failed to load Cloud IAM quiz: {err}"),
+        Err(err) => eprintln!("Warning: Failed to load Cloud & Identity quiz: {err}"),
     }
 
     steps
 }
 
-/// Build Practical OAuth/OIDC Abuse steps
-pub fn get_practical_oauth_steps() -> Vec<Step> {
-    PRACTICAL_OAUTH_STEPS
-        .iter()
-        .map(|(title, description)| {
-            Step::new_tutorial(
-                Uuid::new_v4(),
-                title.to_string(),
-                description.to_string(),
-                vec!["cloud".to_string(), "oauth".to_string(), "oidc".to_string()],
-            )
-        })
-        .collect()
-}
-
-/// Build SSO & Federation Misconfigurations steps
-pub fn get_sso_federation_steps() -> Vec<Step> {
-    SSO_FEDERATION_STEPS
-        .iter()
-        .map(|(title, description)| {
-            Step::new_tutorial(
-                Uuid::new_v4(),
-                title.to_string(),
-                description.to_string(),
-                vec![
-                    "cloud".to_string(),
-                    "sso".to_string(),
-                    "federation".to_string(),
-                ],
-            )
-        })
-        .collect()
-}
-
-fn create_cloud_iam_quiz_step() -> Result<Step, String> {
+fn create_cloud_identity_quiz_step() -> Result<Step, String> {
     let path = Path::new(QUIZ_FILE_PATH);
     if !path.exists() {
         return Err(format!("Quiz file not found: {}", path.display()));
@@ -996,15 +1004,19 @@ fn create_cloud_iam_quiz_step() -> Result<Step, String> {
 
     let quiz_step = QuizStep::new(
         Uuid::new_v4(),
-        "Cloud IAM Security Quiz".to_string(),
-        DOMAIN_CLOUD_IAM.to_string(),
+        "Cloud & Identity Security Quiz".to_string(),
+        DOMAIN_CLOUD_IDENTITY.to_string(),
         questions,
     );
 
     Ok(Step::new_quiz(
         Uuid::new_v4(),
-        "Cloud IAM Security Quiz".to_string(),
-        vec!["quiz".to_string(), "cloud".to_string(), "iam".to_string()],
+        "Cloud & Identity Security Quiz".to_string(),
+        vec![
+            "quiz".to_string(),
+            "cloud".to_string(),
+            "identity".to_string(),
+        ],
         quiz_step,
     ))
 }

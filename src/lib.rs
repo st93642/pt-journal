@@ -5,7 +5,7 @@
 /*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
 /*                                                          TT         SS II */
 /*  Created: Nov 21 2025 23:42 st93642                      TT    SSSSSSS II */
-/*  Updated: Nov 21 2025 23:42 st93642                                       */
+/*  Updated: Nov 24 2025 13:39 st93642                                       */
 /*                                                                           */
 /*   Transport and Telecommunication Institute - Riga, Latvia                */
 /*                       https://tsi.lv                                      */
@@ -38,14 +38,14 @@ mod tests {
             assert_eq!(model.selected_phase, 0);
             assert_eq!(model.selected_step, Some(0));
             assert!(model.current_path.is_none());
-            assert_eq!(model.session.phases.len(), 10); // 10 phases (added Bug Bounty + CompTIA Security+ + PenTest+ + CEH + Cloud & Identity Security)
+            assert_eq!(model.session.phases.len(), 12); // 12 phases (added Bug Bounty + CompTIA Security+ + PenTest+ + CEH + 3 Cloud Identity phases)
         }
 
         #[test]
         fn test_session_creation() {
             let session = Session::default();
             assert!(!session.name.is_empty());
-            assert_eq!(session.phases.len(), 10); // 10 phases
+            assert_eq!(session.phases.len(), 12); // 12 phases
             assert!(session.notes_global.is_empty());
         }
 
@@ -73,26 +73,23 @@ mod tests {
             assert_eq!(post_phase.name, "Post-Exploitation");
             assert_eq!(post_phase.steps.len(), 4); // 4 post-exploitation steps
 
-            // Test Cloud & Identity Security phase
-            let cloud_identity_phase = &session.phases[4];
-            assert_eq!(
-                cloud_identity_phase.name,
-                "Cloud & Identity Security Fundamentals"
-            );
-            assert!(!cloud_identity_phase.steps.is_empty()); // Has tutorial and quiz steps
+            // Test Cloud IAM Abuse 101 phase
+            let cloud_iam_phase = &session.phases[4];
+            assert_eq!(cloud_iam_phase.name, "Cloud IAM Abuse 101");
+            assert!(!cloud_iam_phase.steps.is_empty()); // Has tutorial and quiz steps
 
             // Test Reporting phase
-            let report_phase = &session.phases[5];
+            let report_phase = &session.phases[7];
             assert_eq!(report_phase.name, "Reporting");
             assert_eq!(report_phase.steps.len(), 4); // 4 reporting steps
 
             // Test Bug Bounty Hunting phase
-            let bug_bounty_phase = &session.phases[6];
+            let bug_bounty_phase = &session.phases[8];
             assert_eq!(bug_bounty_phase.name, "Bug Bounty Hunting");
             assert!(!bug_bounty_phase.steps.is_empty()); // Has steps
 
             // Test CompTIA Security+ phase
-            let comptia_phase = &session.phases[7];
+            let comptia_phase = &session.phases[9];
             assert_eq!(comptia_phase.name, "CompTIA Security+");
             assert_eq!(comptia_phase.steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
         }
@@ -567,13 +564,15 @@ mod tests {
         fn test_phase_progression_workflow() {
             let session = Session::default();
 
-            // Verify logical phase progression (first 5 phases are pentesting methodology)
+            // Verify logical phase progression (first 7 phases are pentesting methodology)
             let phase_names = [
                 "Reconnaissance",
                 "Vulnerability Analysis",
                 "Exploitation",
                 "Post-Exploitation",
-                "Cloud & Identity Security Fundamentals",
+                "Cloud IAM Abuse 101",
+                "Practical OAuth/OIDC Abuse",
+                "SSO & Federation Misconfigurations",
                 "Reporting",
                 "Bug Bounty Hunting",
                 "CompTIA Security+",
@@ -590,22 +589,26 @@ mod tests {
                 assert_eq!(session.phases[idx].steps.len(), expected_count);
             }
 
-            // Cloud & Identity phase should include tutorial + quiz steps
-            assert!(session.phases[4].steps.len() >= 4);
+            // Cloud IAM Abuse 101 phase should include tutorial + quiz steps
+            assert!(session.phases[4].steps.len() >= 2);
 
             // Bug Bounty Hunting phase should have steps
             assert!(!session.phases[6].steps.is_empty());
 
             // CompTIA Security+ phase should have quiz steps
-            assert_eq!(session.phases[7].steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
+            assert_eq!(session.phases[9].steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
         }
 
         #[test]
         fn test_step_content_completeness() {
             let session = Session::default();
 
-            // Cloud & Identity Security tutorials have a different structure
-            const CLOUD_IDENTITY_PHASE: &str = "Cloud & Identity Security Fundamentals";
+            // Cloud Identity Security tutorials have a different structure
+            const CLOUD_IDENTITY_PHASES: [&str; 3] = [
+                "Cloud IAM Abuse 101",
+                "Practical OAuth/OIDC Abuse",
+                "SSO & Federation Misconfigurations",
+            ];
 
             for phase in &session.phases {
                 for step in &phase.steps {
@@ -627,8 +630,8 @@ mod tests {
                             step.title
                         );
 
-                        // Cloud & Identity tutorials have different structure
-                        if phase.name == CLOUD_IDENTITY_PHASE {
+                        // Cloud Identity tutorials have different structure
+                        if CLOUD_IDENTITY_PHASES.contains(&phase.name.as_str()) {
                             // Cloud tutorials should have detection, remediation, or resources sections
                             assert!(
                                 description.contains("DETECTION")
@@ -797,6 +800,13 @@ mod tests {
         fn test_session_data_validation() {
             let session = Session::default();
 
+            // Cloud Identity Security tutorials have a different structure
+            const CLOUD_IDENTITY_PHASES: [&str; 3] = [
+                "Cloud IAM Abuse 101",
+                "Practical OAuth/OIDC Abuse",
+                "SSO & Federation Misconfigurations",
+            ];
+
             // Test that all required fields are present
             assert!(!session.name.is_empty());
             assert!(session.id != Uuid::nil());
@@ -826,7 +836,7 @@ mod tests {
                         let description = step.get_description();
                         assert!(description.contains("OBJECTIVE"));
                         assert!(description.contains("STEP-BY-STEP"));
-                        if phase.name == "Cloud & Identity Security Fundamentals" {
+                        if CLOUD_IDENTITY_PHASES.contains(&phase.name.as_str()) {
                             assert!(
                                 description.contains("DETECTION")
                                     || description.contains("REMEDIATION")

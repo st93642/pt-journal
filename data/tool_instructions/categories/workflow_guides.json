@@ -2454,211 +2454,6 @@
     ]
   },
   {
-    "id": "workflow_cloud_iam_assessment",
-    "name": "Cloud IAM Assessment Workflow",
-    "summary": "Comprehensive workflow for Cloud IAM Assessment Workflow",
-    "details": "This workflow guides you through the complete process of Cloud IAM Assessment Workflow",
-    "step_sequences": [
-      {
-        "title": "Account Discovery & Mapping",
-        "steps": [
-          {
-            "title": "Cloud Account Enumeration",
-            "details": "Identify all cloud accounts, subscriptions, and projects",
-            "command": "# Enumerate cloud accounts and organizational structure"
-          },
-          {
-            "title": "Identity Inventory",
-            "details": "Catalog all users, groups, roles, and service accounts",
-            "command": "# Create comprehensive identity inventory"
-          },
-          {
-            "title": "Resource Discovery",
-            "details": "Map cloud resources and their associated permissions",
-            "command": "# Identify cloud resources and access patterns"
-          }
-        ]
-      },
-      {
-        "title": "Permission Analysis",
-        "steps": [
-          {
-            "title": "Policy Review",
-            "details": "Analyze IAM policies for excessive permissions",
-            "command": "# Review IAM policies and permission sets"
-          },
-          {
-            "title": "Role-Based Access Control",
-            "details": "Assess RBAC configurations and role assignments",
-            "command": "# Evaluate role definitions and assignments"
-          },
-          {
-            "title": "Privilege Escalation Paths",
-            "details": "Identify potential privilege escalation vectors",
-            "command": "# Map privilege escalation paths and risks"
-          }
-        ]
-      },
-      {
-        "title": "Authentication & Access Control",
-        "steps": [
-          {
-            "title": "MFA Assessment",
-            "details": "Review multi-factor authentication requirements and implementation",
-            "command": "# Test MFA requirements and bypass attempts"
-          },
-          {
-            "title": "Password Policies",
-            "details": "Evaluate password complexity and lifecycle management",
-            "command": "# Assess password policies and rotation procedures"
-          },
-          {
-            "title": "Access Key Management",
-            "details": "Review API keys, access tokens, and credential management",
-            "command": "# Audit access keys and credential security"
-          }
-        ]
-      },
-      {
-        "title": "Misconfiguration Assessment",
-        "steps": [
-          {
-            "title": "Storage Security",
-            "details": "Assess cloud storage bucket and object permissions",
-            "command": "# Test storage bucket permissions and access controls"
-          },
-          {
-            "title": "Network Security",
-            "details": "Review security groups, firewall rules, and network ACLs",
-            "command": "# Evaluate network security configurations"
-          },
-          {
-            "title": "Logging & Monitoring",
-            "details": "Assess cloud logging and monitoring configurations",
-            "command": "# Review audit logging and monitoring setup"
-          }
-        ]
-      },
-      {
-        "title": "Compliance & Governance",
-        "steps": [
-          {
-            "title": "Compliance Frameworks",
-            "details": "Evaluate alignment with relevant compliance requirements",
-            "command": "# Assess compliance with regulatory frameworks"
-          },
-          {
-            "title": "Governance Controls",
-            "details": "Review organizational policies and governance mechanisms",
-            "command": "# Test governance and policy enforcement"
-          },
-          {
-            "title": "Incident Response",
-            "details": "Assess IAM incident response and recovery procedures",
-            "command": "# Evaluate IAM incident response capabilities"
-          }
-        ]
-      },
-      {
-        "title": "Remediation & Hardening",
-        "steps": [
-          {
-            "title": "Access Optimization",
-            "details": "Implement least privilege and remove excessive permissions",
-            "command": "# Apply least privilege principles and policy hardening"
-          },
-          {
-            "title": "Security Enhancement",
-            "details": "Deploy additional security controls and monitoring",
-            "command": "# Implement advanced security features and monitoring"
-          },
-          {
-            "title": "Documentation & Training",
-            "details": "Document findings and provide security awareness training",
-            "command": "# Generate IAM assessment report and training materials"
-          }
-        ]
-      }
-    ],
-    "workflow_guides": [
-      {
-        "name": "Cloud IAM Assessment Timeline",
-        "stages": [
-          {
-            "label": "Day 1: Account Discovery",
-            "description": "Enumerate cloud accounts, users, roles, and permissions",
-            "command": "# Use cloud enumeration tools to map IAM landscape"
-          },
-          {
-            "label": "Day 2: Permission Analysis",
-            "description": "Analyze IAM policies, role assignments, and privilege escalation paths",
-            "command": "# Review IAM policies and identify over-privileged accounts"
-          },
-          {
-            "label": "Day 3: Access Control Testing",
-            "description": "Test MFA requirements, password policies, and access control mechanisms",
-            "command": "# Test authentication and authorization controls"
-          },
-          {
-            "label": "Day 4: Misconfiguration Assessment",
-            "description": "Identify IAM misconfigurations and security gaps",
-            "command": "# Scan for common IAM misconfigurations and weaknesses"
-          },
-          {
-            "label": "Day 5: Reporting & Recommendations",
-            "description": "Document findings and provide IAM hardening recommendations",
-            "command": "# Generate IAM security assessment report"
-          }
-        ]
-      }
-    ],
-    "output_notes": [
-      {
-        "indicator": "Assessment completed successfully",
-        "meaning": "All phases of the workflow completed without critical issues",
-        "severity": "info"
-      },
-      {
-        "indicator": "Critical findings identified",
-        "meaning": "Critical severity vulnerabilities discovered requiring immediate attention",
-        "severity": "critical"
-      }
-    ],
-    "advanced_usage": [
-      {
-        "title": "Custom workflow adaptation",
-        "scenario": "Adapting workflow for specific client requirements",
-        "command": "# Customize workflow phases",
-        "notes": [
-          "Adapt phases of Cloud IAM Assessment Workflow to match client requirements",
-          "Document any deviations from standard workflow"
-        ]
-      }
-    ],
-    "resources": [
-      {
-        "label": "MITRE ATT&CK Framework",
-        "url": "https://attack.mitre.org",
-        "description": "Framework for understanding adversary tactics and techniques"
-      },
-      {
-        "label": "OWASP Top 10",
-        "url": "https://owasp.org/Top10/",
-        "description": "Most critical web application security risks"
-      },
-      {
-        "label": "PTES Guidelines",
-        "url": "http://www.pentest-standard.org/",
-        "description": "Penetration Testing Execution Standard"
-      },
-      {
-        "label": "CIS Controls",
-        "url": "https://www.cisecurity.org/cis-controls/",
-        "description": "Center for Internet Security critical controls"
-      }
-    ]
-  },
-  {
     "id": "workflow_supply_chain_security",
     "name": "Supply Chain Security Assessment",
     "summary": "Comprehensive workflow for Supply Chain Security Assessment",
@@ -3475,6 +3270,297 @@
         "label": "CIS Controls",
         "url": "https://www.cisecurity.org/cis-controls/",
         "description": "Center for Internet Security critical controls"
+      }
+    ]
+  },
+  {
+    "id": "workflow_cloud_iam_assessment",
+    "name": "Cloud IAM Assessment Workflow",
+    "summary": "Vendor-neutral methodology for assessing cloud Identity and Access Management configurations across AWS, Azure, and GCP environments.",
+    "details": "This workflow provides a systematic approach to cloud IAM security assessment, covering enumeration, privilege analysis, misconfiguration detection, and remediation guidance. It follows cloud security best practices and focuses on common attack vectors like privilege escalation and resource exposure.",
+    "installation_guides": [
+      {
+        "platform": "Prerequisites",
+        "summary": "Required tools and access for cloud IAM assessment",
+        "steps": [
+          {
+            "detail": "Install cloud CLIs: awscli, azcli, gcloud",
+            "copyable": false
+          },
+          {
+            "detail": "Configure authentication for target cloud environments",
+            "copyable": false
+          },
+          {
+            "detail": "Install analysis tools: ScoutSuite, Prowler, or custom scripts",
+            "copyable": false
+          },
+          {
+            "detail": "Set up secure credential management (aws-vault, Azure Key Vault, etc.)",
+            "copyable": false
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "AWS IAM enumeration",
+        "command": "aws iam get-account-authorization-details > iam-dump.json",
+        "notes": [
+          "Comprehensive IAM configuration export",
+          "Requires iam:GetAccountAuthorizationDetails permission"
+        ]
+      },
+      {
+        "description": "Azure RBAC discovery",
+        "command": "az role assignment list --all --include-inherited",
+        "notes": [
+          "Maps all role assignments across scopes",
+          "Use --query for filtering high-privilege roles"
+        ]
+      },
+      {
+        "description": "GCP IAM policy analysis",
+        "command": "gcloud projects get-iam-policy PROJECT_ID --format=json",
+        "notes": [
+          "Exports project IAM bindings",
+          "Focus on roles/owner and roles/editor assignments"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Phase 1: Environment Setup & Access Validation",
+        "steps": [
+          {
+            "title": "Configure cloud CLI tools",
+            "details": "Set up authentication and verify access to target environments",
+            "command": "aws configure && az login && gcloud init"
+          },
+          {
+            "title": "Validate permissions",
+            "details": "Test basic read permissions before full enumeration",
+            "command": "aws sts get-caller-identity && az account show && gcloud auth list"
+          },
+          {
+            "title": "Document assessment scope",
+            "details": "Record target accounts, projects, and subscriptions",
+            "command": "aws organizations list-accounts && az account list && gcloud projects list"
+          }
+        ]
+      },
+      {
+        "title": "Phase 2: Identity & Access Enumeration",
+        "steps": [
+          {
+            "title": "Enumerate users and service accounts",
+            "details": "Discover all identities in the environment",
+            "command": "aws iam list-users && az ad user list && gcloud iam service-accounts list"
+          },
+          {
+            "title": "Map role and permission assignments",
+            "details": "Identify what permissions are assigned to which identities",
+            "command": "aws iam get-account-authorization-details && az role assignment list --all && gcloud projects get-iam-policy PROJECT_ID"
+          },
+          {
+            "title": "Discover trust relationships",
+            "details": "Find cross-account and cross-service trust configurations",
+            "command": "aws iam list-roles --query 'Roles[?AssumeRolePolicyDocument]' && az ad sp list && gcloud iam service-accounts list --filter='email~@PROJECT_ID.iam.gserviceaccount.com'"
+          }
+        ]
+      },
+      {
+        "title": "Phase 3: Privilege Escalation Analysis",
+        "steps": [
+          {
+            "title": "Identify privilege escalation vectors",
+            "details": "Look for permissions that enable privilege escalation",
+            "command": "grep -i 'iam:\\*\\|sts:AssumeRole\\|iam:PassRole' iam-dump.json"
+          },
+          {
+            "title": "Test role assumption capabilities",
+            "details": "Attempt to assume discovered roles (safely)",
+            "command": "aws sts assume-role --role-arn arn:aws:iam::ACCOUNT:role/ROLE --role-session-name test"
+          },
+          {
+            "title": "Analyze service account keys",
+            "details": "Check for exposed or overly privileged service account keys",
+            "command": "gcloud iam service-accounts keys list --iam-account SERVICE_ACCOUNT"
+          }
+        ]
+      },
+      {
+        "title": "Phase 4: Resource Access Assessment",
+        "steps": [
+          {
+            "title": "Enumerate storage resources",
+            "details": "Find buckets, containers, and storage accounts",
+            "command": "aws s3 ls && az storage account list && gsutil ls"
+          },
+          {
+            "title": "Check storage permissions",
+            "details": "Identify publicly accessible or misconfigured storage",
+            "command": "aws s3api get-bucket-acl --bucket BUCKET && az storage blob list --account-name ACCOUNT --container CONTAINER && gsutil iam get gs://BUCKET"
+          },
+          {
+            "title": "Assess compute resource access",
+            "details": "Check VM and container permissions",
+            "command": "aws ec2 describe-instances && az vm list && gcloud compute instances list"
+          }
+        ]
+      },
+      {
+        "title": "Phase 5: Reporting & Remediation",
+        "steps": [
+          {
+            "title": "Document findings",
+            "details": "Record all identified misconfigurations and risks",
+            "command": "Create detailed report with evidence screenshots and commands"
+          },
+          {
+            "title": "Prioritize remediation actions",
+            "details": "Rank findings by risk level and impact",
+            "command": "Focus on critical privilege escalation paths first"
+          },
+          {
+            "title": "Provide remediation guidance",
+            "details": "Suggest specific configuration changes and best practices",
+            "command": "Reference CIS benchmarks and cloud provider security guides"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Privilege Escalation Graphing",
+        "stages": [
+          {
+            "label": "Identity Discovery",
+            "description": "Map all users, roles, and service accounts"
+          },
+          {
+            "label": "Permission Analysis",
+            "description": "Analyze assigned permissions and policies"
+          },
+          {
+            "label": "Trust Relationship Mapping",
+            "description": "Document cross-account and cross-service trusts"
+          },
+          {
+            "label": "Attack Path Identification",
+            "description": "Find chains of permissions enabling escalation"
+          },
+          {
+            "label": "Risk Prioritization",
+            "description": "Rank escalation paths by exploitability and impact"
+          }
+        ]
+      },
+      {
+        "name": "Storage Triage Methodology",
+        "stages": [
+          {
+            "label": "Resource Enumeration",
+            "description": "Discover all storage buckets/containers"
+          },
+          {
+            "label": "Access Control Review",
+            "description": "Check permissions and public access settings"
+          },
+          {
+            "label": "Data Classification",
+            "description": "Assess sensitivity of stored data"
+          },
+          {
+            "label": "Misconfiguration Analysis",
+            "description": "Identify insecure configurations"
+          },
+          {
+            "label": "Impact Assessment",
+            "description": "Evaluate potential data exposure risks"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "AccessDenied / AuthorizationFailed / PERMISSION_DENIED",
+        "meaning": "Insufficient permissions - may indicate proper security controls",
+        "severity": "info"
+      },
+      {
+        "indicator": "Public access / allUsers / allAuthenticatedUsers",
+        "meaning": "Potentially dangerous public access to resources",
+        "severity": "high"
+      },
+      {
+        "indicator": "iam:* / roles/owner / Owner role",
+        "meaning": "Overly permissive permissions found",
+        "severity": "critical"
+      },
+      {
+        "indicator": "AssumeRole / roles/iam.serviceAccountTokenCreator",
+        "meaning": "Privilege escalation vector identified",
+        "severity": "high"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Automated multi-cloud IAM assessment",
+        "scenario": "Comprehensive IAM scanning across AWS, Azure, and GCP",
+        "command": "# Use ScoutSuite or Prowler for automated assessment\nscoutsuite --provider aws --profile audit\nscoutsuite --provider azure --user-account\nscoutsuite --provider gcp --project PROJECT_ID",
+        "notes": [
+          "Requires appropriate cloud access and tool installation",
+          "Generate HTML reports for detailed analysis",
+          "Focus on IAM-related findings in the reports"
+        ]
+      },
+      {
+        "title": "Privilege escalation path analysis",
+        "scenario": "Graph and analyze potential privilege escalation chains",
+        "command": "# Use custom scripts or BloodHound for cloud\npython3 -c \"\nimport boto3\niam = boto3.client('iam')\nroles = iam.list_roles()\nfor role in roles['Roles']:\n    print(f\"Role: {role['RoleName']}\")\n    # Analyze trust policies and permissions\n\"",
+        "notes": [
+          "Develop custom scripts for specific cloud environments",
+          "Use graph databases like Neo4j for complex relationship mapping",
+          "Consider using tools like Principal Mapper for AWS"
+        ]
+      },
+      {
+        "title": "Storage misconfiguration hunting",
+        "scenario": "Systematic discovery of exposed cloud storage",
+        "command": "# Use storage enumeration tools\npython3 s3scanner.py --bucket-file buckets.txt\naz storage account list --query '[].{Name:name, AllowBlobPublicAccess:allowBlobPublicAccess}'\ngsutil ls -p PROJECT_ID",
+        "notes": [
+          "Combine with public access testing",
+          "Document findings with screenshots and commands",
+          "Assess data sensitivity and business impact"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "AWS IAM Security Best Practices",
+        "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html",
+        "description": "Official AWS IAM security guidance"
+      },
+      {
+        "label": "Azure RBAC Best Practices",
+        "url": "https://docs.microsoft.com/en-us/azure/role-based-access-control/best-practices",
+        "description": "Microsoft Azure RBAC security recommendations"
+      },
+      {
+        "label": "GCP IAM Best Practices",
+        "url": "https://cloud.google.com/iam/docs/using-iam-securely",
+        "description": "Google Cloud IAM security best practices"
+      },
+      {
+        "label": "MITRE ATT&CK Cloud Matrix",
+        "url": "https://attack.mitre.org/matrices/enterprise/cloud/",
+        "description": "Cloud-focused ATT&CK framework"
+      },
+      {
+        "label": "Cloud Security Alliance IAM Guidance",
+        "url": "https://cloudsecurityalliance.org/research/guidance/",
+        "description": "CSA research and guidance on cloud IAM"
       }
     ]
   }

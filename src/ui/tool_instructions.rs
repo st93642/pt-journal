@@ -522,16 +522,11 @@ mod tests {
     }
 
     #[test]
-    fn cloud_identity_playbooks_have_populated_sections() {
+    fn cloud_cli_tools_have_populated_sections() {
         let registry = load_registry().expect("instructions should load");
-        let playbooks = [
-            "cloud-iam-priv-esc-playbook",
-            "cloud-storage-misconfig-playbook",
-            "sso-oauth-oidc-misconfig-playbook",
-            "federation-attack-scenarios",
-        ];
+        let tools = ["awscli", "azcli", "gcloud"];
 
-        for id in playbooks {
+        for id in tools {
             let doc = registry
                 .instructions
                 .get(id)

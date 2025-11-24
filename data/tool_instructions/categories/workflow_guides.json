@@ -3563,5 +3563,358 @@
         "description": "CSA research and guidance on cloud IAM"
       }
     ]
+  },
+  {
+    "id": "workflow_modern_api_testing",
+    "name": "Modern API Security Testing Workflow",
+    "summary": "End-to-end methodology for testing modern APIs including REST, GraphQL, gRPC, WebSocket, and JWT-based authentication systems with OWASP API Top 10 2023 coverage.",
+    "details": "This comprehensive workflow covers the complete lifecycle of modern API security testing, from initial discovery through exploitation and reporting. It addresses REST APIs, GraphQL endpoints, gRPC services, WebSocket connections, and JWT authentication mechanisms. The methodology follows OWASP API Top 10 2023 guidelines and includes specialized testing techniques for each API type.",
+    "installation_guides": [
+      {
+        "platform": "Core Tooling Setup",
+        "summary": "Essential tools for modern API testing",
+        "steps": [
+          {
+            "detail": "Install API discovery tools: ffuf, gobuster, dirsearch",
+            "copyable": true
+          },
+          {
+            "detail": "Setup proxy tools with API support: burpsuite, owasp-zap",
+            "copyable": true
+          },
+          {
+            "detail": "Install GraphQL tools: graphqlmap, inql, graphql-introspector",
+            "copyable": true
+          },
+          {
+            "detail": "Setup gRPC tools: grpcurl, grpcui, protoc",
+            "copyable": true
+          },
+          {
+            "detail": "Install WebSocket tools: wscat, websocat",
+            "copyable": true
+          },
+          {
+            "detail": "Setup JWT tools: jwt-cracker, jwt.io, jwt-cli",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "API endpoint discovery",
+        "command": "ffuf -w api-wordlist.txt -u https://target.com/FUZZ -mc 200",
+        "notes": [
+          "Discover REST API endpoints and GraphQL paths"
+        ]
+      },
+      {
+        "description": "GraphQL schema extraction",
+        "command": "curl -X POST https://target.com/graphql -H \"Content-Type: application/json\" -d '{\"query\":\"{__schema{types{name}}}\"}'",
+        "notes": [
+          "Extract complete GraphQL schema via introspection"
+        ]
+      },
+      {
+        "description": "gRPC service enumeration",
+        "command": "grpcurl -plaintext target:50051 list",
+        "notes": [
+          "List all available gRPC services"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Phase 1: API Discovery & Reconnaissance",
+        "steps": [
+          {
+            "title": "REST API Discovery",
+            "details": "Identify REST endpoints using directory enumeration and traffic analysis.",
+            "command": "ffuf -w api-paths.txt -u https://target.com/FUZZ -mc 200"
+          },
+          {
+            "title": "GraphQL Endpoint Discovery",
+            "details": "Find GraphQL endpoints through reconnaissance and common path testing.",
+            "command": "ffuf -w graphql-paths.txt -u https://target.com/FUZZ -mc 200"
+          },
+          {
+            "title": "OpenAPI/Swagger Enumeration",
+            "details": "Locate API documentation files for endpoint discovery.",
+            "command": "curl -s https://target.com/swagger.json | jq '.paths | keys[]'"
+          },
+          {
+            "title": "gRPC Service Discovery",
+            "details": "Discover gRPC endpoints and enumerate available services.",
+            "command": "grpcurl -plaintext target:50051 list"
+          },
+          {
+            "title": "WebSocket Discovery",
+            "details": "Identify WebSocket connections through JavaScript analysis and traffic monitoring.",
+            "command": "# Monitor for ws:// and wss:// patterns in JavaScript files"
+          }
+        ]
+      },
+      {
+        "title": "Phase 2: Authentication & Authorization Testing",
+        "steps": [
+          {
+            "title": "JWT Token Analysis",
+            "details": "Capture and analyze JWT tokens for cryptographic weaknesses.",
+            "command": "# Extract tokens from Authorization headers and decode with jwt.io"
+          },
+          {
+            "title": "Algorithm Confusion Testing",
+            "details": "Test for alg=None attacks and algorithm swapping vulnerabilities.",
+            "command": "# Modify JWT header to use 'none' algorithm"
+          },
+          {
+            "title": "OAuth 2.0 Testing",
+            "details": "Test OAuth flows for redirect URI manipulation and scope abuse.",
+            "command": "# Test redirect_uri parameter and scope elevation"
+          },
+          {
+            "title": "API Key Testing",
+            "details": "Test API key validation and enumeration vulnerabilities.",
+            "command": "# Test with invalid keys, missing keys, and key enumeration"
+          },
+          {
+            "title": "Rate Limiting Analysis",
+            "details": "Test rate limiting mechanisms and bypass opportunities.",
+            "command": "# Send burst requests and test for rate limit bypasses"
+          }
+        ]
+      },
+      {
+        "title": "Phase 3: GraphQL Security Testing",
+        "steps": [
+          {
+            "title": "GraphQL Introspection Testing",
+            "details": "Test for enabled introspection and extract complete schema.",
+            "command": "curl -X POST https://target.com/graphql -H \"Content-Type: application/json\" -d '{\"query\":\"{__schema{types{name}}}\"}'"
+          },
+          {
+            "title": "Query Complexity Testing",
+            "details": "Test for DoS through complex nested queries and aliases.",
+            "command": "# Craft deeply nested queries with multiple aliases"
+          },
+          {
+            "title": "GraphQL BOLA Testing",
+            "details": "Test for broken object level authorization in GraphQL operations.",
+            "command": "# Manipulate object IDs in queries and mutations"
+          },
+          {
+            "title": "GraphQL Injection Testing",
+            "details": "Test for injection vulnerabilities in GraphQL arguments.",
+            "command": "# Test SQLi, XSS, and command injection in GraphQL parameters"
+          }
+        ]
+      },
+      {
+        "title": "Phase 4: gRPC Security Testing",
+        "steps": [
+          {
+            "title": "gRPC Reflection Testing",
+            "details": "Test for gRPC reflection service and extract service definitions.",
+            "command": "grpcurl -plaintext target:50051 describe"
+          },
+          {
+            "title": "Protocol Buffer Analysis",
+            "details": "Analyze Protocol Buffer definitions for security issues.",
+            "command": "# Review .proto files for sensitive fields and weak validation"
+          },
+          {
+            "title": "gRPC Authentication Testing",
+            "details": "Test gRPC authentication mechanisms and token validation.",
+            "command": "# Test with invalid/missing authentication tokens"
+          },
+          {
+            "title": "gRPC Authorization Testing",
+            "details": "Test authorization controls for different gRPC methods.",
+            "command": "# Test unauthorized access to privileged methods"
+          }
+        ]
+      },
+      {
+        "title": "Phase 5: WebSocket Security Testing",
+        "steps": [
+          {
+            "title": "WebSocket Authentication Testing",
+            "details": "Test WebSocket authentication mechanisms and token validation.",
+            "command": "# Connect with invalid/missing auth tokens"
+          },
+          {
+            "title": "Message Injection Testing",
+            "details": "Test for injection vulnerabilities in WebSocket messages.",
+            "command": "# Send XSS, SQLi, and command injection payloads"
+          },
+          {
+            "title": "WebSocket Authorization Testing",
+            "details": "Test authorization controls for WebSocket operations.",
+            "command": "# Test unauthorized channel access and message sending"
+          },
+          {
+            "title": "DoS Testing",
+            "details": "Test for denial of service through message flooding.",
+            "command": "# Send large messages and rapid message bursts"
+          }
+        ]
+      },
+      {
+        "title": "Phase 6: Business Logic & BOLA Testing",
+        "steps": [
+          {
+            "title": "Object ID Manipulation",
+            "details": "Test for BOLA vulnerabilities by manipulating object IDs.",
+            "command": "# Modify sequential IDs, UUIDs, and hash-based IDs"
+          },
+          {
+            "title": "Mass Assignment Testing",
+            "details": "Test for mass assignment vulnerabilities in API endpoints.",
+            "command": "# Send additional parameters not expected by endpoint"
+          },
+          {
+            "title": "Business Logic Flaws",
+            "details": "Test for business logic vulnerabilities in API workflows.",
+            "command": "# Test race conditions, price manipulation, workflow bypasses"
+          },
+          {
+            "title": "Batch Operation Testing",
+            "details": "Test batch operations for authorization bypasses.",
+            "command": "# Test batch requests with mixed authorization contexts"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Complete Modern API Security Assessment",
+        "stages": [
+          {
+            "label": "Discovery & Mapping",
+            "description": "Comprehensive API endpoint and service discovery",
+            "command": "ffuf + graphql-introspector + grpcurl for complete mapping"
+          },
+          {
+            "label": "Authentication Analysis",
+            "description": "Test JWT, OAuth, and API key authentication mechanisms",
+            "command": "JWT analysis + OAuth flow testing + key enumeration"
+          },
+          {
+            "label": "Protocol-Specific Testing",
+            "description": "Test GraphQL, gRPC, and WebSocket-specific vulnerabilities",
+            "command": "GraphQL BOLA + gRPC reflection + WebSocket injection testing"
+          },
+          {
+            "label": "Authorization & Business Logic",
+            "description": "Test BOLA, mass assignment, and business logic flaws",
+            "command": "Object ID manipulation + parameter injection + workflow testing"
+          },
+          {
+            "label": "Documentation & Reporting",
+            "description": "Document findings and create remediation recommendations",
+            "command": "Generate comprehensive API security report"
+          }
+        ]
+      },
+      {
+        "name": "OWASP API Top 10 2023 Compliance Testing",
+        "stages": [
+          {
+            "label": "BOLA (API01) Testing",
+            "description": "Test for broken object property level authorization",
+            "command": "Object ID manipulation and unauthorized data access testing"
+          },
+          {
+            "label": "BFLA (API02) Testing",
+            "description": "Test for broken function level authorization",
+            "command": "Function access testing and privilege escalation attempts"
+          },
+          {
+            "label": "Excessive Data Exposure (API03)",
+            "description": "Test for excessive data exposure in API responses",
+            "command": "Response analysis for sensitive data leakage"
+          },
+          {
+            "label": "Mass Assignment (API09)",
+            "description": "Test for mass assignment vulnerabilities",
+            "command": "Parameter injection and object property testing"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "GraphQL introspection enabled",
+        "meaning": "Complete API schema exposed - information disclosure risk",
+        "severity": "medium"
+      },
+      {
+        "indicator": "gRPC reflection enabled",
+        "meaning": "Complete service definition exposed - reconnaissance risk",
+        "severity": "medium"
+      },
+      {
+        "indicator": "JWT algorithm confusion possible",
+        "meaning": "Algorithm swapping vulnerability - token forgery risk",
+        "severity": "critical"
+      },
+      {
+        "indicator": "BOLA vulnerability confirmed",
+        "meaning": "Unauthorized data access through object manipulation",
+        "severity": "critical"
+      },
+      {
+        "indicator": "WebSocket injection possible",
+        "meaning": "Injection vulnerabilities in WebSocket message handling",
+        "severity": "high"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Automated API Security Testing Pipeline",
+        "command": "for api in $(cat api-targets.txt); do\\n  echo \"Testing $api\"\\n  ffuf -w api-wordlist.txt -u $api/FUZZ -mc 200\\n  curl -X POST $api/graphql -d '{\"query\":\"{__schema{types{name}}\"}'\\n  grpcurl -plaintext $api:50051 list\\ndone",
+        "scenario": "Automated testing of multiple API endpoints",
+        "notes": [
+          "Combine with authentication headers for authenticated testing"
+        ]
+      },
+      {
+        "title": "Multi-Protocol API Testing",
+        "command": "# Simultaneous testing of REST, GraphQL, gRPC, and WebSocket endpoints",
+        "scenario": "Comprehensive API security assessment across protocols",
+        "notes": [
+          "Use parallel execution for efficient testing of large API surfaces"
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "OWASP API Top 10 2023",
+        "url": "https://owasp.org/www-project-api-security/",
+        "description": "Official OWASP API Security Top 10 documentation"
+      },
+      {
+        "label": "GraphQL Security Testing Guide",
+        "url": "https://graphql.org/learn/security/",
+        "description": "Official GraphQL security guidelines"
+      },
+      {
+        "label": "gRPC Security Best Practices",
+        "url": "https://grpc.io/docs/guides/auth/",
+        "description": "gRPC authentication and security documentation"
+      },
+      {
+        "label": "JWT Security Handbook",
+        "url": "https://auth0.com/blog/jwt-security-best-practices/",
+        "description": "Comprehensive JWT security guidelines"
+      },
+      {
+        "label": "WebSocket Security Testing",
+        "url": "https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/10-Client-side_Testing/09-Testing_WebSockets/",
+        "description": "OWASP WebSocket security testing guide"
+      }
+    ]
   }
 ]

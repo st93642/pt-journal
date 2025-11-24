@@ -535,6 +535,16 @@
     "category": "API & Service Testing"
   },
   {
+    "id": "graphql-testing",
+    "label": "GraphQL Testing Methodology",
+    "category": "API & Service Testing"
+  },
+  {
+    "id": "grpc-security",
+    "label": "gRPC Security Testing Methodology",
+    "category": "API & Service Testing"
+  },
+  {
     "id": "ffuf-api",
     "label": "ffuf API Mode - REST API Fuzzing",
     "category": "API & Service Testing"
@@ -623,6 +633,11 @@
     "id": "bugbounty_api_testing",
     "label": "Bug Bounty - API Testing",
     "category": "Bug Bounty Workflows"
+  },
+  {
+    "id": "workflow_modern_api_testing",
+    "label": "Modern API Security Testing Workflow",
+    "category": "Workflow Guides"
   },
   {
     "id": "bugbounty_owasp_top10",

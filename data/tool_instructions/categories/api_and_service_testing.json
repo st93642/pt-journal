@@ -2534,5 +2534,417 @@
         "description": "OWASP API Security guidelines and testing"
       }
     ]
+  },
+  {
+    "id": "graphql-testing",
+    "name": "GraphQL Testing Methodology",
+    "summary": "Comprehensive GraphQL security testing methodology covering introspection, query analysis, BOLA testing, and injection vulnerabilities specific to GraphQL APIs.",
+    "installation_guides": [
+      {
+        "platform": "Conceptual Methodology",
+        "summary": "Testing approach and methodology rather than a specific tool",
+        "steps": [
+          {
+            "detail": "Understand GraphQL security fundamentals",
+            "copyable": false
+          },
+          {
+            "detail": "Study OWASP GraphQL Top 10 vulnerabilities",
+            "copyable": false
+          },
+          {
+            "detail": "Learn GraphQL query structure and syntax",
+            "copyable": false
+          }
+        ]
+      },
+      {
+        "platform": "Tooling Requirements",
+        "summary": "Essential tools for GraphQL security testing",
+        "steps": [
+          {
+            "detail": "Install GraphQL introspection tools (InQL, GraphQLmap)",
+            "copyable": true
+          },
+          {
+            "detail": "Setup proxy tools with GraphQL support (Burp, ZAP)",
+            "copyable": true
+          },
+          {
+            "detail": "Prepare GraphQL payload collections and wordlists",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "GraphQL endpoint discovery",
+        "command": "ffuf -w graphql-paths.txt -u https://target.com/FUZZ -mc 200",
+        "notes": [
+          "Common GraphQL paths: /graphql, /api/graphql, /v1/graphql"
+        ]
+      },
+      {
+        "description": "Schema introspection query",
+        "command": "POST /graphql HTTP/1.1\\nContent-Type: application/json\\n\\n{\"query\":\"{__schema{types{name}}}\"}",
+        "notes": [
+          "Extract complete schema structure"
+        ]
+      },
+      {
+        "description": "Query depth testing",
+        "command": "{\"query\":\"query{user{id posts{comments{author{id}}}}\"}",
+        "notes": [
+          "Test for DoS through nested queries"
+        ]
+      }
+    ],
+    "common_flags": [],
+    "operational_tips": [
+      "Always test GraphQL introspection first to understand the API surface",
+      "Look for disabled introspection bypasses using alternative queries",
+      "Test query complexity and depth limits to prevent DoS attacks",
+      "Use GraphQL aliases to bypass rate limiting mechanisms",
+      "Test mutations for authorization bypasses and privilege escalation",
+      "Analyze subscription endpoints for data exfiltration opportunities",
+      "Test for BOLA vulnerabilities by manipulating object IDs in queries",
+      "Use batch queries to test for business logic flaws",
+      "Monitor for GraphQL-specific error messages that leak information",
+      "Test GraphQL-specific authorization patterns and access controls"
+    ],
+    "step_sequences": [
+      {
+        "title": "GraphQL Security Assessment Workflow",
+        "steps": [
+          {
+            "title": "Endpoint Discovery",
+            "details": "Identify GraphQL endpoints through reconnaissance and traffic analysis.",
+            "command": "ffuf -w graphql-wordlist.txt -u https://target.com/FUZZ -mc 200"
+          },
+          {
+            "title": "Introspection Testing",
+            "details": "Test for enabled introspection and extract complete schema.",
+            "command": "curl -X POST https://target.com/graphql -H \"Content-Type: application/json\" -d '{\"query\":\"{__schema{types{name}}}\"}'"
+          },
+          {
+            "title": "Schema Analysis",
+            "details": "Analyze discovered schema for attack surface and sensitive operations.",
+            "command": "# Review queries, mutations, subscriptions for security implications"
+          },
+          {
+            "title": "Authorization Testing",
+            "details": "Test BOLA and authorization bypasses in GraphQL operations.",
+            "command": "# Modify object IDs and test unauthorized data access"
+          },
+          {
+            "title": "Injection Testing",
+            "details": "Test for injection vulnerabilities in GraphQL arguments and variables.",
+            "command": "# Test SQLi, XSS, command injection in GraphQL parameters"
+          },
+          {
+            "title": "DoS Testing",
+            "details": "Test for denial of service through complex queries and aliases.",
+            "command": "# Craft deeply nested queries with multiple aliases"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Complete GraphQL Security Assessment",
+        "stages": [
+          {
+            "label": "Discovery & Reconnaissance",
+            "description": "Find GraphQL endpoints and test for introspection",
+            "command": "ffuf + curl for endpoint discovery and schema extraction"
+          },
+          {
+            "label": "Schema Analysis",
+            "description": "Analyze GraphQL schema for attack surface",
+            "command": "Review queries, mutations, and business logic patterns"
+          },
+          {
+            "label": "Authorization Testing",
+            "description": "Test BOLA and access control vulnerabilities",
+            "command": "Object ID manipulation and privilege escalation testing"
+          },
+          {
+            "label": "Injection & DoS Testing",
+            "description": "Test for injection and denial of service vulnerabilities",
+            "command": "Parameter injection and query complexity testing"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "GraphQL introspection enabled",
+        "meaning": "Complete API schema exposed - information disclosure risk",
+        "severity": "medium"
+      },
+      {
+        "indicator": "Query depth limit not enforced",
+        "meaning": "Potential for DoS through complex nested queries",
+        "severity": "high"
+      },
+      {
+        "indicator": "BOLA vulnerability confirmed",
+        "meaning": "Unauthorized data access through object ID manipulation",
+        "severity": "critical"
+      },
+      {
+        "indicator": "GraphQL injection possible",
+        "meaning": "SQL injection or XSS through GraphQL parameters",
+        "severity": "critical"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Automated GraphQL Security Testing",
+        "command": "for endpoint in $(cat graphql-endpoints.txt); do\\n  echo \"Testing $endpoint\"\\n  graphqlmap -t $endpoint\\ndone",
+        "scenario": "Automated testing of multiple GraphQL endpoints",
+        "notes": [
+          "Combine with authentication headers for authenticated testing"
+        ]
+      },
+      {
+        "title": "GraphQL Fuzzing with Custom Payloads",
+        "command": "ffuf -x POST -H \"Content-Type: application/json\" -d '{\"query\":\"FUZZ\"}' -w graphql-payloads.txt -u https://target.com/graphql",
+        "scenario": "Fuzz GraphQL queries with custom payloads",
+        "notes": [
+          "Include injection, BOLA, and DoS payloads in wordlist"
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "OWASP GraphQL Top 10",
+        "url": "https://github.com/escape-technology/OWASP-GraphQL-Top-10",
+        "description": "Comprehensive GraphQL vulnerability classification"
+      },
+      {
+        "label": "GraphQL Security Testing Guide",
+        "url": "https://graphql.org/learn/security/",
+        "description": "Official GraphQL security guidelines"
+      },
+      {
+        "label": "GraphQLmap Tool",
+        "url": "https://github.com/swisskyrepo/GraphQLmap",
+        "description": "GraphQL testing and exploitation tool"
+      },
+      {
+        "label": "InQL Scanner",
+        "url": "https://github.com/doyensec/inql",
+        "description": "Burp Suite extension for GraphQL security"
+      }
+    ]
+  },
+  {
+    "id": "grpc-security",
+    "name": "gRPC Security Testing Methodology",
+    "summary": "Comprehensive gRPC security testing methodology covering service discovery, reflection attacks, authentication bypasses, and Protocol Buffer manipulation.",
+    "installation_guides": [
+      {
+        "platform": "Conceptual Methodology",
+        "summary": "Testing approach and methodology rather than a specific tool",
+        "steps": [
+          {
+            "detail": "Understand gRPC protocol and Protocol Buffers",
+            "copyable": false
+          },
+          {
+            "detail": "Study gRPC security best practices",
+            "copyable": false
+          },
+          {
+            "detail": "Learn Protocol Buffer message structure",
+            "copyable": false
+          }
+        ]
+      },
+      {
+        "platform": "Tooling Requirements",
+        "summary": "Essential tools for gRPC security testing",
+        "steps": [
+          {
+            "detail": "Install gRPC client tools (grpcurl, grpcui)",
+            "copyable": true
+          },
+          {
+            "detail": "Setup Protocol Buffer compiler (protoc)",
+            "copyable": true
+          },
+          {
+            "detail": "Prepare gRPC testing environment and certificates",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "gRPC service discovery",
+        "command": "grpcurl -plaintext target:50051 list",
+        "notes": [
+          "List all available gRPC services"
+        ]
+      },
+      {
+        "description": "Service method enumeration",
+        "command": "grpcurl -plaintext target:50051 describe myservice.MyService",
+        "notes": [
+          "Get detailed method descriptions"
+        ]
+      },
+      {
+        "description": "Reflection attack testing",
+        "command": "grpcurl -plaintext target:50051 describe",
+        "notes": [
+          "Extract complete service definitions via reflection"
+        ]
+      }
+    ],
+    "common_flags": [],
+    "operational_tips": [
+      "Always test for gRPC reflection service in production environments",
+      "Use Protocol Buffer analysis to understand message structures",
+      "Test both plaintext and TLS-secured gRPC endpoints",
+      "Analyze gRPC authentication mechanisms and token validation",
+      "Test for authorization bypasses in service methods",
+      "Use gRPC streaming to test for resource exhaustion",
+      "Test Protocol Buffer message manipulation for injection vulnerabilities",
+      "Analyze gRPC load balancing and service discovery configurations",
+      "Test for insecure gRPC configurations (plaintext, weak ciphers)",
+      "Monitor gRPC traffic for sensitive data exposure"
+    ],
+    "step_sequences": [
+      {
+        "title": "gRPC Security Assessment Workflow",
+        "steps": [
+          {
+            "title": "Service Discovery",
+            "details": "Discover gRPC endpoints and enumerate available services.",
+            "command": "grpcurl -plaintext target:50051 list"
+          },
+          {
+            "title": "Reflection Testing",
+            "details": "Test for gRPC reflection service and extract service definitions.",
+            "command": "grpcurl -plaintext target:50051 describe"
+          },
+          {
+            "title": "Proto Analysis",
+            "details": "Analyze Protocol Buffer definitions for message structures.",
+            "command": "# Review .proto files or reflection output for sensitive fields"
+          },
+          {
+            "title": "Authentication Testing",
+            "details": "Test gRPC authentication mechanisms and token validation.",
+            "command": "# Test with invalid/missing authentication tokens"
+          },
+          {
+            "title": "Authorization Testing",
+            "details": "Test authorization controls for different service methods.",
+            "command": "# Test unauthorized access to privileged methods"
+          },
+          {
+            "title": "Message Manipulation",
+            "details": "Test Protocol Buffer message manipulation vulnerabilities.",
+            "command": "# Test injection and buffer overflow in messages"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Complete gRPC Security Assessment",
+        "stages": [
+          {
+            "label": "Discovery & Enumeration",
+            "description": "Find gRPC endpoints and enumerate services",
+            "command": "grpcurl for service discovery and reflection testing"
+          },
+          {
+            "label": "Proto Analysis",
+            "description": "Analyze Protocol Buffer definitions",
+            "command": "Review message structures and business logic"
+          },
+          {
+            "label": "Authentication & Authorization",
+            "description": "Test security controls and access mechanisms",
+            "command": "Test token validation and method authorization"
+          },
+          {
+            "label": "Message & Protocol Testing",
+            "description": "Test Protocol Buffer manipulation and protocol security",
+            "command": "Test injection, DoS, and protocol vulnerabilities"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "gRPC reflection enabled",
+        "meaning": "Complete service definition exposed - reconnaissance risk",
+        "severity": "medium"
+      },
+      {
+        "indicator": "Plaintext gRPC communication",
+        "meaning": "Unencrypted communication - eavesdropping risk",
+        "severity": "high"
+      },
+      {
+        "indicator": "No authentication required",
+        "meaning": "Unauthenticated access to gRPC services",
+        "severity": "high"
+      },
+      {
+        "indicator": "Authorization bypass possible",
+        "meaning": "Unauthorized access to privileged gRPC methods",
+        "severity": "critical"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Automated gRPC Security Testing",
+        "command": "for target in $(cat grpc-targets.txt); do\\n  echo \"Testing $target\"\\n  grpcurl -plaintext $target:50051 list\\ndone",
+        "scenario": "Automated testing of multiple gRPC services",
+        "notes": [
+          "Combine with TLS certificate testing for secure endpoints"
+        ]
+      },
+      {
+        "title": "gRPC Fuzzing with Custom Messages",
+        "command": "grpcurl -plaintext -d @fuzz-message.json target:50051 myservice.MyService/TestMethod",
+        "scenario": "Fuzz gRPC methods with malformed Protocol Buffer messages",
+        "notes": [
+          "Generate fuzzing payloads based on .proto definitions"
+        ]
+      }
+    ],
+    "comparison_table": null,
+    "resources": [
+      {
+        "label": "gRPC Security Best Practices",
+        "url": "https://grpc.io/docs/guides/auth/",
+        "description": "Official gRPC authentication and security documentation"
+      },
+      {
+        "label": "Protocol Buffers Documentation",
+        "url": "https://developers.google.com/protocol-buffers",
+        "description": "Protocol Buffer specification and guidelines"
+      },
+      {
+        "label": "grpcurl Tool",
+        "url": "https://github.com/fullstorydev/grpcurl",
+        "description": "Command-line tool for interacting with gRPC servers"
+      },
+      {
+        "label": "gRPC Security Testing Guide",
+        "url": "https://github.com/golang/protobuf",
+        "description": "Comprehensive gRPC security testing resources"
+      }
+    ]
   }
 ]

@@ -1023,6 +1023,126 @@
             "command": "# Scanner will now handle authentication automatically"
           }
         ]
+      },
+      {
+        "name": "JWT Token Security Audit",
+        "stages": [
+          {
+            "label": "Capture JWT tokens",
+            "description": "Intercept authentication responses to extract JWT tokens.",
+            "command": "# Proxy > HTTP history > Filter for Authorization header or Set-Cookie"
+          },
+          {
+            "label": "Analyze token structure",
+            "description": "Use JWT Editor extension to decode and analyze token components.",
+            "command": "# JWT Editor > Paste token > Analyze header, payload, signature"
+          },
+          {
+            "label": "Test algorithm confusion",
+            "description": "Test alg=None attacks and algorithm swapping vulnerabilities.",
+            "command": "# JWT Editor > Change algorithm to 'none' > Test token acceptance"
+          },
+          {
+            "label": "Token manipulation",
+            "description": "Modify claims to test privilege escalation and authorization bypass.",
+            "command": "# JWT Editor > Edit payload > Change role/admin claims > Generate new token"
+          },
+          {
+            "label": "Signature cracking",
+            "description": "Attempt to crack weak JWT secrets using common password lists.",
+            "command": "# JWT Editor > Cracker tab > Load wordlist > Start cracking"
+          }
+        ]
+      },
+      {
+        "name": "GraphQL Schema Harvesting & Testing",
+        "stages": [
+          {
+            "label": "Discover GraphQL endpoints",
+            "description": "Identify GraphQL endpoints through reconnaissance and traffic analysis.",
+            "command": "# Proxy > HTTP history > Filter for /graphql, POST with Content-Type: application/json"
+          },
+          {
+            "label": "Test introspection",
+            "description": "Extract complete schema using introspection queries.",
+            "command": "# Send to Repeater > POST /graphql > Query: {__schema {types {name}}}"
+          },
+          {
+            "label": "Schema analysis",
+            "description": "Analyze discovered types, fields, and relationships for attack surface.",
+            "command": "# Use GraphQL Voyager extension or online schema visualizer"
+          },
+          {
+            "label": "Query depth testing",
+            "description": "Test for DoS through deeply nested queries.",
+            "command": "# Repeater > Craft nested query > Observe response time/errors"
+          },
+          {
+            "label": "BOLA testing",
+            "description": "Test for broken object level authorization in GraphQL queries/mutations.",
+            "command": "# Extract object IDs from responses > Modify in subsequent queries"
+          }
+        ]
+      },
+      {
+        "name": "Single Page Application Security Testing",
+        "stages": [
+          {
+            "label": "Bundle analysis",
+            "description": "Intercept and analyze JavaScript bundles for exposed endpoints and secrets.",
+            "command": "# Proxy > HTTP history > Filter for .js, .bundle, .chunk files > Save and analyze"
+          },
+          {
+            "label": "Client-side routing testing",
+            "description": "Test client-side routes for authorization bypasses.",
+            "command": "# Repeater > Access /#/admin, /#/dashboard directly without authentication"
+          },
+          {
+            "label": "Local storage inspection",
+            "description": "Monitor localStorage and sessionStorage for sensitive data storage.",
+            "command": "# Browser DevTools > Application > Local Storage > Review for tokens, user data"
+          },
+          {
+            "label": "CORS misconfiguration testing",
+            "description": "Test Cross-Origin Resource Sharing policies for bypass opportunities.",
+            "command": "# Repeater > Modify Origin header to malicious domain > Check Access-Control-Allow-Origin"
+          },
+          {
+            "label": "State manipulation",
+            "description": "Test client-side state management for security-relevant data exposure.",
+            "command": "# Browser DevTools > Redux/Vuex devtools > Modify state > Test application behavior"
+          }
+        ]
+      },
+      {
+        "name": "WebSocket Security Testing & Replay",
+        "stages": [
+          {
+            "label": "WebSocket discovery",
+            "description": "Identify WebSocket connections during application interaction.",
+            "command": "# Proxy > WebSocket history > Look for Upgrade: websocket headers"
+          },
+          {
+            "label": "Message interception",
+            "description": "Capture and analyze WebSocket message patterns and protocols.",
+            "command": "# WebSocket tab > Monitor messages > Export message sequences"
+          },
+          {
+            "label": "Authentication testing",
+            "description": "Test WebSocket authentication mechanisms and token validation.",
+            "command": "# Repeater > Send WebSocket messages with invalid/missing auth tokens"
+          },
+          {
+            "label": "Message replay attacks",
+            "description": "Replay captured messages in different contexts to test authorization.",
+            "command": "# WebSocket Repeater > Modify and replay messages from different user sessions"
+          },
+          {
+            "label": "Injection testing",
+            "description": "Test for injection vulnerabilities in WebSocket message content.",
+            "command": "# WebSocket Repeater > Send messages with XSS, SQLi, command injection payloads"
+          }
+        ]
       }
     ],
     "output_notes": [
@@ -1582,6 +1702,126 @@
             "label": "Scan as authenticated user",
             "description": "Run spider and active scan with forced user mode.",
             "command": "# Enable Force User Mode > Attack > Spider and Active Scan"
+          }
+        ]
+      },
+      {
+        "name": "JWT Token Analysis with ZAP",
+        "stages": [
+          {
+            "label": "Capture JWT tokens",
+            "description": "Intercept authentication responses to extract JWT tokens from headers/cookies.",
+            "command": "# History tab > Filter for Authorization: Bearer or Set-Cookie with JWT"
+          },
+          {
+            "label": "Token decoding",
+            "description": "Use ZAP's built-in JWT decoder or online tools to analyze token structure.",
+            "command": "# Select request > Right-click > Decode JWT Token"
+          },
+          {
+            "label": "Algorithm confusion testing",
+            "description": "Test for alg=None and algorithm swapping vulnerabilities.",
+            "command": "# Requester tab > Modify JWT header to 'none' > Send request"
+          },
+          {
+            "label": "Token manipulation",
+            "description": "Modify JWT claims to test privilege escalation and authorization bypass.",
+            "command": "# Requester tab > Edit JWT payload > Change role/admin claims"
+          },
+          {
+            "label": "Fuzz JWT parameters",
+            "description": "Use Fuzzer to test various JWT attack patterns and malformed tokens.",
+            "command": "# Send to Fuzzer > Add JWT payload fuzzing positions"
+          }
+        ]
+      },
+      {
+        "name": "GraphQL Security Testing with ZAP",
+        "stages": [
+          {
+            "label": "Discover GraphQL endpoints",
+            "description": "Identify GraphQL endpoints through traffic analysis and reconnaissance.",
+            "command": "# History tab > Filter for /graphql endpoints and Content-Type: application/json"
+          },
+          {
+            "label": "Test introspection",
+            "description": "Extract GraphQL schema using introspection queries.",
+            "command": "# Requester tab > POST /graphql > Query: {__schema {types {name}}}"
+          },
+          {
+            "label": "Schema analysis",
+            "description": "Analyze discovered schema for attack surface and sensitive operations.",
+            "command": "# Use GraphQL IDE extensions or online schema visualizer"
+          },
+          {
+            "label": "Query complexity testing",
+            "description": "Test for DoS through complex nested queries and aliases.",
+            "command": "# Requester tab > Craft complex GraphQL queries > Monitor response times"
+          },
+          {
+            "label": "BOLA testing",
+            "description": "Test for broken object level authorization in GraphQL operations.",
+            "command": "# Extract object IDs from responses > Modify in subsequent queries"
+          }
+        ]
+      },
+      {
+        "name": "Single Page Application Testing with ZAP",
+        "stages": [
+          {
+            "label": "SPA bundle analysis",
+            "description": "Intercept and analyze JavaScript bundles for exposed endpoints and secrets.",
+            "command": "# History tab > Filter for .js, .bundle, .chunk files > Save and analyze"
+          },
+          {
+            "label": "Client-side routing testing",
+            "description": "Test client-side routes for authorization bypasses and exposed functionality.",
+            "command": "# Requester tab > Access /#/admin, /#/api routes directly"
+          },
+          {
+            "label": "CORS misconfiguration testing",
+            "description": "Test Cross-Origin Resource Sharing policies for bypass opportunities.",
+            "command": "# Requester tab > Modify Origin header > Check Access-Control-Allow-Origin"
+          },
+          {
+            "label": "Local storage monitoring",
+            "description": "Monitor browser storage for sensitive data and authentication tokens.",
+            "command": "# Use browser DevTools > Application tab > Review localStorage/sessionStorage"
+          },
+          {
+            "label": "AJAX endpoint testing",
+            "description": "Test AJAX endpoints for authentication bypass and data exposure.",
+            "command": "# History tab > Filter for XHR/Fetch requests > Test with modified headers"
+          }
+        ]
+      },
+      {
+        "name": "WebSocket Security Testing with ZAP",
+        "stages": [
+          {
+            "label": "WebSocket discovery",
+            "description": "Identify WebSocket connections during application interaction.",
+            "command": "# Enable WebSocket proxy > Look for Upgrade: websocket in History"
+          },
+          {
+            "label": "Message interception",
+            "description": "Capture and analyze WebSocket message patterns and protocols.",
+            "command": "# WebSocket tab > Monitor messages > Export message sequences"
+          },
+          {
+            "label": "Authentication testing",
+            "description": "Test WebSocket authentication mechanisms and token validation.",
+            "command": "# WebSocket tab > Send messages with invalid/missing auth"
+          },
+          {
+            "label": "Message fuzzing",
+            "description": "Use WebSocket fuzzer to test for injection and protocol vulnerabilities.",
+            "command": "# WebSocket tab > Fuzzer > Add payload positions > Start fuzzing"
+          },
+          {
+            "label": "Connection abuse testing",
+            "description": "Test for DoS conditions through connection flooding and large messages.",
+            "command": "# WebSocket tab > Send rapid messages/large payloads > Monitor server response"
           }
         ]
       }

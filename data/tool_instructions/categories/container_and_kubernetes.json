@@ -944,5 +944,1059 @@
         "description": "Docker registry security best practices"
       }
     ]
+  },
+  {
+    "id": "docker",
+    "name": "Docker",
+    "summary": "Docker is a containerization platform that packages applications and their dependencies into isolated containers. Essential for building, shipping, and running containerized applications securely.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from official repository",
+        "steps": [
+          {
+            "detail": "sudo apt-get update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release",
+            "copyable": true
+          },
+          {
+            "detail": "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg",
+            "copyable": true
+          },
+          {
+            "detail": "echo \"deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt-get update && sudo apt-get install -y docker-ce docker-ce-cli containerd.io",
+            "copyable": true
+          },
+          {
+            "detail": "sudo usermod -aG docker $USER",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from Kali repository",
+        "steps": [
+          {
+            "detail": "sudo apt-get update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt-get install -y docker.io",
+            "copyable": true
+          },
+          {
+            "detail": "sudo systemctl start docker",
+            "copyable": true
+          },
+          {
+            "detail": "sudo usermod -aG docker $USER",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Docker Desktop for Desktop Environments",
+        "steps": [
+          {
+            "detail": "# Download Docker Desktop",
+            "copyable": false
+          },
+          {
+            "detail": "wget https://desktop.docker.com/linux/main/amd64/docker-desktop-4.25.0-amd64.deb",
+            "copyable": true
+          },
+          {
+            "detail": "sudo dpkg -i docker-desktop-*.deb",
+            "copyable": true
+          },
+          {
+            "detail": "docker --version",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Build container image",
+        "command": "docker build -t myapp:1.0 .",
+        "notes": [
+          "Creates image from Dockerfile",
+          "Tag with repository/name:version format"
+        ]
+      },
+      {
+        "description": "Run container",
+        "command": "docker run -d --name mycontainer myapp:1.0",
+        "notes": [
+          "Runs container in detached mode",
+          "Assign name for easier management"
+        ]
+      },
+      {
+        "description": "List running containers",
+        "command": "docker ps -a",
+        "notes": [
+          "Show all containers including stopped ones"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Container Security Assessment",
+        "steps": [
+          {
+            "title": "Inspect Dockerfile",
+            "details": "Review Dockerfile for security issues",
+            "command": "cat Dockerfile"
+          },
+          {
+            "title": "Build image with security context",
+            "details": "Build image following security best practices",
+            "command": "docker build --build-arg BUILDKIT_INLINE_CACHE=1 -t app:scan ."
+          },
+          {
+            "title": "Scan for vulnerabilities",
+            "details": "Run security scanners on the image",
+            "command": "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image app:scan"
+          },
+          {
+            "title": "Check runtime configuration",
+            "details": "Review running container privileges",
+            "command": "docker inspect app:scan | grep -E 'Privileged|CapAdd|CapDrop'"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Secure Container Build & Deployment",
+        "stages": [
+          {
+            "label": "Development",
+            "description": "Build and test container locally",
+            "command": "docker build -t myapp:dev . && docker run --rm myapp:dev npm test"
+          },
+          {
+            "label": "Security scan",
+            "description": "Scan image for vulnerabilities",
+            "command": "trivy image myapp:dev"
+          },
+          {
+            "label": "Registry push",
+            "description": "Push to registry after scanning",
+            "command": "docker tag myapp:dev registry.example.com/myapp:dev && docker push registry.example.com/myapp:dev"
+          },
+          {
+            "label": "Deploy",
+            "description": "Deploy to production",
+            "command": "kubectl set image deployment/myapp myapp=registry.example.com/myapp:dev"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "RUN as root",
+        "meaning": "Container runs with root privileges - security risk",
+        "severity": "high"
+      },
+      {
+        "indicator": "Privileged: true",
+        "meaning": "Container has elevated privileges",
+        "severity": "high"
+      },
+      {
+        "indicator": "No health check",
+        "meaning": "Container lacks health monitoring",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Multi-stage builds for reduced image size",
+        "command": "docker build --target prod -t myapp:prod .",
+        "scenario": "Minimize container image size for security",
+        "notes": [
+          "Reduces attack surface",
+          "Faster deployment"
+        ]
+      },
+      {
+        "title": "Rootless containers",
+        "command": "docker run --user appuser -v /etc/passwd:/etc/passwd:ro myapp:latest",
+        "scenario": "Run container without root access",
+        "notes": [
+          "Limits damage if container is compromised",
+          "More restrictive security model"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Docker Security Best Practices",
+        "url": "https://docs.docker.com/engine/security/",
+        "description": "Official Docker security documentation"
+      },
+      {
+        "label": "CIS Docker Benchmark",
+        "url": "https://www.cisecurity.org/benchmark/docker",
+        "description": "Docker security benchmark and hardening guide"
+      }
+    ]
+  },
+  {
+    "id": "kubectl",
+    "name": "kubectl",
+    "summary": "kubectl is the command-line tool for interacting with Kubernetes clusters. It allows users to deploy applications, inspect resources, manage deployments, and access cluster services.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from official repository",
+        "steps": [
+          {
+            "detail": "curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg",
+            "copyable": true
+          },
+          {
+            "detail": "echo \"deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main\" | sudo tee /etc/apt/sources.list.d/kubernetes.list",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt-get update && sudo apt-get install -y kubectl",
+            "copyable": true
+          },
+          {
+            "detail": "kubectl version --client",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from binary",
+        "steps": [
+          {
+            "detail": "curl -LO \"https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl\"",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x kubectl && sudo mv kubectl /usr/local/bin/",
+            "copyable": true
+          },
+          {
+            "detail": "kubectl version --client",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Docker image for kubectl",
+        "steps": [
+          {
+            "detail": "docker pull bitnami/kubectl:latest",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v ~/.kube/config:/root/.kube/config bitnami/kubectl:latest get nodes",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Get cluster nodes",
+        "command": "kubectl get nodes",
+        "notes": [
+          "Lists all nodes in the cluster"
+        ]
+      },
+      {
+        "description": "Create deployment",
+        "command": "kubectl create deployment nginx --image=nginx:latest",
+        "notes": [
+          "Quick deployment creation"
+        ]
+      },
+      {
+        "description": "Port forward to pod",
+        "command": "kubectl port-forward pod/nginx-5d8dcd7d9-w6z4f 8080:80",
+        "notes": [
+          "Access pod service locally"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Kubernetes Cluster Assessment",
+        "steps": [
+          {
+            "title": "Configure kubeconfig",
+            "details": "Set up cluster access",
+            "command": "export KUBECONFIG=~/.kube/config && kubectl cluster-info"
+          },
+          {
+            "title": "Enumerate cluster resources",
+            "details": "List all resources",
+            "command": "kubectl get all --all-namespaces"
+          },
+          {
+            "title": "Check RBAC permissions",
+            "details": "Identify role-based access controls",
+            "command": "kubectl get rolebindings,clusterrolebindings -A"
+          },
+          {
+            "title": "Inspect pod security policies",
+            "details": "Review pod security restrictions",
+            "command": "kubectl get psp"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Kubernetes Deployment Workflow",
+        "stages": [
+          {
+            "label": "Prepare manifest",
+            "description": "Create deployment YAML",
+            "command": "cat > deployment.yaml << EOF\napiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: myapp\nspec:\n  replicas: 3\n  selector:\n    matchLabels:\n      app: myapp\n  template:\n    metadata:\n      labels:\n        app: myapp\n    spec:\n      containers:\n      - name: myapp\n        image: myapp:latest\nEOF"
+          },
+          {
+            "label": "Deploy to cluster",
+            "description": "Apply deployment",
+            "command": "kubectl apply -f deployment.yaml"
+          },
+          {
+            "label": "Verify deployment",
+            "description": "Check pod status",
+            "command": "kubectl get pods -l app=myapp"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "CrashLoopBackOff",
+        "meaning": "Pod repeatedly crashing and restarting",
+        "severity": "high"
+      },
+      {
+        "indicator": "Pending",
+        "meaning": "Pod waiting for resources or scheduling",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "API discovery and permission testing",
+        "command": "kubectl auth can-i get pods --as=system:serviceaccount:default:attacker",
+        "scenario": "Test RBAC permissions for service accounts",
+        "notes": [
+          "Check what permissions an account has",
+          "Useful for privilege escalation assessment"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Kubernetes Documentation",
+        "url": "https://kubernetes.io/docs/",
+        "description": "Official Kubernetes documentation"
+      },
+      {
+        "label": "kubectl Cheat Sheet",
+        "url": "https://kubernetes.io/docs/reference/kubectl/cheatsheet/",
+        "description": "kubectl common commands"
+      }
+    ]
+  },
+  {
+    "id": "helm",
+    "name": "Helm",
+    "summary": "Helm is a package manager for Kubernetes that helps define, install, and upgrade complex Kubernetes applications. It uses templates and values files to manage configurations.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from script",
+        "steps": [
+          {
+            "detail": "curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash",
+            "copyable": true
+          },
+          {
+            "detail": "helm version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from binary",
+        "steps": [
+          {
+            "detail": "wget https://get.helm.sh/helm-v3.12.0-linux-amd64.tar.gz",
+            "copyable": true
+          },
+          {
+            "detail": "tar -zxvf helm-v3.12.0-linux-amd64.tar.gz && sudo mv linux-amd64/helm /usr/local/bin/",
+            "copyable": true
+          },
+          {
+            "detail": "helm version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Docker image for Helm",
+        "steps": [
+          {
+            "detail": "docker pull alpine/helm:latest",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v ~/.kube/config:/root/.kube/config alpine/helm:latest list",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "List installed releases",
+        "command": "helm list",
+        "notes": [
+          "Shows all Helm releases in default namespace"
+        ]
+      },
+      {
+        "description": "Search Helm repositories",
+        "command": "helm search repo nginx",
+        "notes": [
+          "Find available charts"
+        ]
+      },
+      {
+        "description": "Install chart",
+        "command": "helm install my-nginx stable/nginx-ingress",
+        "notes": [
+          "Deploy application from chart"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Helm Chart Security Audit",
+        "steps": [
+          {
+            "title": "Examine chart structure",
+            "details": "Review chart files",
+            "command": "helm template my-release ./chart"
+          },
+          {
+            "title": "Check values defaults",
+            "details": "Review default configurations",
+            "command": "helm show values ./chart"
+          },
+          {
+            "title": "Verify template rendering",
+            "details": "Test manifest generation",
+            "command": "helm template my-release ./chart --values values.yaml"
+          },
+          {
+            "title": "Check for hardcoded secrets",
+            "details": "Search for exposed credentials",
+            "command": "grep -r 'password\\|secret\\|token' ./chart/"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Helm Chart Deployment Workflow",
+        "stages": [
+          {
+            "label": "Add repository",
+            "description": "Add Helm chart repository",
+            "command": "helm repo add myrepo https://charts.example.com && helm repo update"
+          },
+          {
+            "label": "Create values file",
+            "description": "Customize chart values",
+            "command": "helm show values myrepo/myapp > values.yaml"
+          },
+          {
+            "label": "Template validation",
+            "description": "Validate chart before deployment",
+            "command": "helm template my-release myrepo/myapp -f values.yaml"
+          },
+          {
+            "label": "Install release",
+            "description": "Deploy application",
+            "command": "helm install my-release myrepo/myapp -f values.yaml"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "STATUS: pending-upgrade",
+        "meaning": "Release upgrade in progress",
+        "severity": "info"
+      },
+      {
+        "indicator": "STATUS: failed",
+        "meaning": "Release deployment failed",
+        "severity": "high"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom chart development",
+        "command": "helm create mychart && helm lint mychart",
+        "scenario": "Create and validate custom Helm chart",
+        "notes": [
+          "Scaffold new chart structure",
+          "Lint for template errors"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Helm Official Documentation",
+        "url": "https://helm.sh/docs/",
+        "description": "Helm package manager documentation"
+      },
+      {
+        "label": "Helm Hub",
+        "url": "https://artifacthub.io/",
+        "description": "Artifact Hub for discovering charts"
+      }
+    ]
+  },
+  {
+    "id": "kube-bench",
+    "name": "kube-bench",
+    "summary": "kube-bench is a Go application that checks whether Kubernetes is deployed securely by running the checks documented in the CIS Kubernetes Benchmark.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from binary",
+        "steps": [
+          {
+            "detail": "curl -L https://github.com/aquasecurity/kube-bench/releases/download/v0.7.0/kube-bench_0.7.0_linux_amd64.tar.gz -o kube-bench_0.7.0_linux_amd64.tar.gz",
+            "copyable": true
+          },
+          {
+            "detail": "tar -xzf kube-bench_0.7.0_linux_amd64.tar.gz",
+            "copyable": true
+          },
+          {
+            "detail": "sudo mv kube-bench /usr/local/bin/",
+            "copyable": true
+          },
+          {
+            "detail": "kube-bench --version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/aquasecurity/kube-bench.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd kube-bench && go build -o kube-bench .",
+            "copyable": true
+          },
+          {
+            "detail": "sudo mv kube-bench /usr/local/bin/",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run from Docker container",
+        "steps": [
+          {
+            "detail": "docker pull aquasec/kube-bench:latest",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --pid=host -v /etc:/etc:ro -v /lib:/lib:ro -v /sys:/sys:ro -v /var:/var:ro --rm aquasec/kube-bench:latest",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Run CIS Kubernetes benchmark",
+        "command": "kube-bench",
+        "notes": [
+          "Runs all CIS checks on local node"
+        ]
+      },
+      {
+        "description": "Run specific check",
+        "command": "kube-bench --check 1.1",
+        "notes": [
+          "Run specific benchmark check"
+        ]
+      },
+      {
+        "description": "Generate JSON report",
+        "command": "kube-bench -o json > report.json",
+        "notes": [
+          "Export results in JSON format"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "CIS Kubernetes Benchmark Assessment",
+        "steps": [
+          {
+            "title": "Run kube-bench",
+            "details": "Execute CIS checks",
+            "command": "kube-bench"
+          },
+          {
+            "title": "Review FAIL findings",
+            "details": "Analyze failed checks",
+            "command": "kube-bench | grep FAIL"
+          },
+          {
+            "title": "Export detailed report",
+            "details": "Generate structured output",
+            "command": "kube-bench -o json | jq '.[] | select(.status==\"FAIL\")'"
+          },
+          {
+            "title": "Implement remediation",
+            "details": "Address identified gaps",
+            "command": "# Review CIS documentation for remediation steps"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Kubernetes Compliance Audit",
+        "stages": [
+          {
+            "label": "Benchmark assessment",
+            "description": "Run CIS checks",
+            "command": "kube-bench --noremediations"
+          },
+          {
+            "label": "Generate findings",
+            "description": "Extract failures",
+            "command": "kube-bench -o json | jq '.[] | select(.status==\"FAIL\") | {number, description, results}'"
+          },
+          {
+            "label": "Document remediation",
+            "description": "Create remediation plan",
+            "command": "kube-bench | grep -A 5 FAIL"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "FAIL: 1.1.1",
+        "meaning": "Critical API server configuration issue",
+        "severity": "critical"
+      },
+      {
+        "indicator": "WARN: Node permissions",
+        "meaning": "Node kubelet configuration needs review",
+        "severity": "high"
+      },
+      {
+        "indicator": "PASS: 4.2.1",
+        "meaning": "Security check passed",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom benchmark checks",
+        "command": "kube-bench --kubernetes-version 1.24 --check 1.3",
+        "scenario": "Run version-specific checks",
+        "notes": [
+          "Supports multiple Kubernetes versions",
+          "Check-specific execution"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "kube-bench Documentation",
+        "url": "https://github.com/aquasecurity/kube-bench",
+        "description": "Official GitHub repository"
+      },
+      {
+        "label": "CIS Kubernetes Benchmark",
+        "url": "https://www.cisecurity.org/benchmark/kubernetes",
+        "description": "CIS benchmark details and requirements"
+      }
+    ]
+  },
+  {
+    "id": "kubeaudit",
+    "name": "kubeaudit",
+    "summary": "kubeaudit is a tool to audit Kubernetes clusters for common security misconfigurations, including image pull policies, privileged containers, and missing security contexts.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from binary",
+        "steps": [
+          {
+            "detail": "wget https://github.com/shopify/kubeaudit/releases/download/v0.22.0/kubeaudit-linux-amd64",
+            "copyable": true
+          },
+          {
+            "detail": "chmod +x kubeaudit-linux-amd64 && sudo mv kubeaudit-linux-amd64 /usr/local/bin/kubeaudit",
+            "copyable": true
+          },
+          {
+            "detail": "kubeaudit version",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from source",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/shopify/kubeaudit.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd kubeaudit && make && sudo cp ./kubeaudit /usr/local/bin/",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Official Docker image",
+        "steps": [
+          {
+            "detail": "docker pull shopify/kubeaudit:latest",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -v ~/.kube/config:/root/.kube/config shopify/kubeaudit:latest all",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Audit all resources",
+        "command": "kubeaudit all",
+        "notes": [
+          "Comprehensive security audit"
+        ]
+      },
+      {
+        "description": "Audit specific namespace",
+        "command": "kubeaudit all -n production",
+        "notes": [
+          "Scoped audit for namespace"
+        ]
+      },
+      {
+        "description": "Export JSON report",
+        "command": "kubeaudit all -o json",
+        "notes": [
+          "Machine-readable output"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Kubernetes Pod Security Audit",
+        "steps": [
+          {
+            "title": "Run pod security audit",
+            "details": "Check for security misconfigurations",
+            "command": "kubeaudit pod"
+          },
+          {
+            "title": "Check container security contexts",
+            "details": "Verify security constraints",
+            "command": "kubeaudit securitycontext"
+          },
+          {
+            "title": "Review privilege settings",
+            "details": "Check for privileged containers",
+            "command": "kubeaudit privileged"
+          },
+          {
+            "title": "Generate report",
+            "details": "Export findings",
+            "command": "kubeaudit all -o json > audit-report.json"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Pod Security Compliance Workflow",
+        "stages": [
+          {
+            "label": "Initial scan",
+            "description": "Run full cluster audit",
+            "command": "kubeaudit all"
+          },
+          {
+            "label": "Filter by severity",
+            "description": "Focus on critical issues",
+            "command": "kubeaudit all -o json | jq '.[] | select(.level==\"error\")'"
+          },
+          {
+            "label": "Document findings",
+            "description": "Export detailed report",
+            "command": "kubeaudit all -o json > findings.json"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "PrivilegeEscalation true",
+        "meaning": "Container allows privilege escalation",
+        "severity": "high"
+      },
+      {
+        "indicator": "Runasnonroot missing",
+        "meaning": "Container may run as root",
+        "severity": "high"
+      },
+      {
+        "indicator": "ImagePullPolicy not Always",
+        "meaning": "Image caching may use outdated version",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom audit rules",
+        "command": "kubeaudit all --kubeauditrc .kubeaudit.yaml",
+        "scenario": "Apply organization-specific audit policies",
+        "notes": [
+          "Configure custom audit rules",
+          "Suppress/enable specific checks"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "kubeaudit GitHub",
+        "url": "https://github.com/shopify/kubeaudit",
+        "description": "Official repository and documentation"
+      },
+      {
+        "label": "Kubernetes Pod Security Standards",
+        "url": "https://kubernetes.io/docs/concepts/security/pod-security-standards/",
+        "description": "Pod security policy guidelines"
+      }
+    ]
+  },
+  {
+    "id": "falco",
+    "name": "Falco",
+    "summary": "Falco is a runtime security tool that uses system calls to detect unexpected application behavior and security issues. It provides real-time alerting for suspicious activities in containers and Kubernetes.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install from official repository",
+        "steps": [
+          {
+            "detail": "curl -s https://falco.org/repo/falcosecurity-3672BA8F.asc | apt-key add -",
+            "copyable": true
+          },
+          {
+            "detail": "echo \"deb https://download.falco.org/packages/deb stable main\" | sudo tee /etc/apt/sources.list.d/falcosecurity.list",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt-get update && sudo apt-get install -y falco",
+            "copyable": true
+          },
+          {
+            "detail": "sudo systemctl start falco",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install from source or binary",
+        "steps": [
+          {
+            "detail": "wget https://github.com/falcosecurity/falco/releases/download/0.36.0/falco-0.36.0-x86_64.rpm",
+            "copyable": true
+          },
+          {
+            "detail": "sudo rpm -i falco-0.36.0-x86_64.rpm",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Run as Docker container",
+        "steps": [
+          {
+            "detail": "docker pull falcosecurity/falco:latest",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock -v /dev:/dev -v /proc:/proc:ro -v /boot:/boot:ro -v /lib/modules:/lib/modules:ro falcosecurity/falco:latest",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Start Falco with default rules",
+        "command": "sudo falco",
+        "notes": [
+          "Runs runtime security monitoring"
+        ]
+      },
+      {
+        "description": "Run with custom rules",
+        "command": "sudo falco -r custom-rules.yaml",
+        "notes": [
+          "Use custom detection rules"
+        ]
+      },
+      {
+        "description": "Output to file",
+        "command": "sudo falco -o file_output.filename=/tmp/falco-alerts.log",
+        "notes": [
+          "Log alerts to file"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Runtime Security Monitoring Setup",
+        "steps": [
+          {
+            "title": "Install Falco",
+            "details": "Deploy runtime security agent",
+            "command": "sudo apt-get install falco"
+          },
+          {
+            "title": "Review default rules",
+            "details": "Understand rule configurations",
+            "command": "cat /etc/falco/falco_rules.yaml | head -50"
+          },
+          {
+            "title": "Start monitoring",
+            "details": "Begin real-time security monitoring",
+            "command": "sudo falco -o log_stderr=true"
+          },
+          {
+            "title": "Analyze alerts",
+            "details": "Review captured security events",
+            "command": "tail -f /var/log/falco.log"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Container Runtime Security Workflow",
+        "stages": [
+          {
+            "label": "Deploy Falco",
+            "description": "Install and configure runtime agent",
+            "command": "sudo systemctl start falco && sudo systemctl enable falco"
+          },
+          {
+            "label": "Configure alerts",
+            "description": "Set up custom alerting rules",
+            "command": "sudo vim /etc/falco/falco_rules.yaml"
+          },
+          {
+            "label": "Monitor containers",
+            "description": "Watch for suspicious behavior",
+            "command": "sudo falco"
+          },
+          {
+            "label": "Analyze findings",
+            "description": "Review security events",
+            "command": "grep 'ERROR\\|CRITICAL' /var/log/falco.log"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Suspicious process started",
+        "meaning": "Unexpected process execution detected",
+        "severity": "high"
+      },
+      {
+        "indicator": "Privileged container access",
+        "meaning": "Container attempting privileged operation",
+        "severity": "high"
+      },
+      {
+        "indicator": "File integrity violation",
+        "meaning": "Protected file was modified",
+        "severity": "critical"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom detection rules",
+        "command": "sudo cat > /etc/falco/custom-rules.yaml << EOF\n- rule: Detect Unauthorized Shell Access\n  desc: Unauthorized shell access detected\n  condition: spawned_process and proc.name in (sh, bash) and container\n  output: Unauthorized shell (user=%user.name command=%proc.cmdline)\n  priority: WARNING\nEOF",
+        "scenario": "Create custom security detection rules",
+        "notes": [
+          "Define custom alerting rules",
+          "Monitor for specific behaviors"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Falco Documentation",
+        "url": "https://falco.org/docs/",
+        "description": "Official Falco documentation"
+      },
+      {
+        "label": "Falco Rules Repository",
+        "url": "https://github.com/falcosecurity/rules",
+        "description": "Community rules and examples"
+      }
+    ]
   }
 ]

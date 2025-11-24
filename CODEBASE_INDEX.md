@@ -8,8 +8,9 @@
 - **Version**: v0.1.0 (Foundation Complete)
 - **Architecture**: 4-layer modular design
 - **Lines of Code**: ~21,500 lines of Rust
-- **Test Coverage**: 188 tests (100% pass rate)
-- **Modules**: 41 Rust source files
+- **Test Coverage**: 149 tests (100% pass rate)
+- **Modules**: 42 Rust source files
+- **Tool Catalog**: 226 tools across 32 security categories
 
 ## 🏗️ Architecture Overview
 
@@ -95,12 +96,16 @@ pt-journal/
 │   ├── ceh/                   # CEH methodology (26 directories)
 │   ├── pentest/               # PenTest+ content (7 directories)
 │   ├── tool_instructions/     # Security tool reference data
-│   │   ├── manifest.json      # Tool catalog (193 entries, 29 categories)
+│   │   ├── manifest.json      # Tool catalog (226 entries, 32 categories)
 │   │   ├── categories/        # Modularized instruction documents
-│   │   │   ├── reconnaissance.json     # 9 reconnaissance tools
-│   │   │   ├── scanning_and_enumeration.json # 12 scanning tools
-│   │   │   ├── exploitation.json       # 12 exploitation tools
-│   │   │   └── ... (25 more category files)
+│   │   │   ├── reconnaissance.json             # 9 reconnaissance tools
+│   │   │   ├── scanning_and_enumeration.json   # 12 scanning tools
+│   │   │   ├── exploitation.json               # 12 exploitation tools
+│   │   │   ├── container_and_kubernetes.json   # 9 container/k8s tools (6 new: docker, kubectl, helm, kube-bench, kubeaudit, falco)
+│   │   │   ├── serverless_security.json        # 4 NEW serverless tools (serverless-framework, aws-sam-cli, azure-functions-core-tools, gcp-functions-framework)
+│   │   │   ├── api_and_service_testing.json    # 15 API testing tools (3 new: burp-api-scanner, insomnia, graphqlmap)
+│   │   │   ├── ai_and_llm_security.json        # 6 AI/ML security tools (3 new: llmguard, lakera-guard, promptfoo)
+│   │   │   └── ... (24 more category files)
 │   │   └── instructions.json.backup # Original monolithic file
 │   └── wordlists/             # Common wordlists for tools
 ├── docs/                       # Technical documentation

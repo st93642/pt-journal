@@ -41,15 +41,19 @@ Each entry describes a selectable tool:
 
 ### Instructions (`categories/*.json`)
 
-The instruction documents are now modularized across 29 category-specific JSON files. Each file contains an array of tool instruction documents for tools in that category:
+The instruction documents are now modularized across 32 category-specific JSON files. Each file contains an array of tool instruction documents for tools in that category:
 
 ```text
 data/tool_instructions/categories/
-├── reconnaissance.json           # 9 tools
-├── scanning_and_enumeration.json # 12 tools
-├── exploitation.json             # 12 tools
-├── post_exploitation.json        # 10 tools
-└── ... (25 more category files)
+├── reconnaissance.json                   # 9 tools
+├── scanning_and_enumeration.json         # 12 tools
+├── exploitation.json                     # 12 tools
+├── post_exploitation.json                # 10 tools
+├── container_and_kubernetes.json         # 9 tools (3 original + docker, kubectl, helm, kube-bench, kubeaudit, falco)
+├── serverless_security.json              # 4 NEW tools (serverless-framework, aws-sam-cli, azure-functions-core-tools, gcp-functions-framework)
+├── api_and_service_testing.json          # 15 tools (12 original + burp-api-scanner, insomnia, graphqlmap)
+├── ai_and_llm_security.json              # 6 tools (3 original + llmguard, lakera-guard, promptfoo)
+└── ... (24 more category files)
 ```
 
 Each instruction document contains the same schema as before:

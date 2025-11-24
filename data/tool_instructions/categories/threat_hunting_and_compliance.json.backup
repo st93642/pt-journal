@@ -777,21 +777,21 @@
     "quick_examples": [
       {
         "description": "Check for unusual IAM activity",
-        "command": "aws iam list-users --query 'Users[?CreateDate>\"2024-01-01\"]'",
+        "command": "aws iam list-users --query 'Users[?CreateDate>`2024-01-01`]'",
         "notes": [
           "Look for recently created accounts"
         ]
       },
       {
         "description": "Monitor S3 bucket access",
-        "command": "aws s3api list-buckets --query 'Buckets[?CreationDate>\"2024-01-01\"]'",
+        "command": "aws s3api list-buckets --query 'Buckets[?CreationDate>`2024-01-01`]'",
         "notes": [
           "Identify new storage resources"
         ]
       },
       {
         "description": "Check Azure role assignments",
-        "command": "az role assignment list --query '[?createdOn > \"2024-01-01\"]'",
+        "command": "az role assignment list --query '[?createdOn > `2024-01-01`]'",
         "notes": [
           "Monitor privilege changes"
         ]
@@ -998,7 +998,7 @@
       },
       {
         "description": "Check Azure sign-in logs",
-        "command": "az monitor activity-log list --query '[?operationName.value==\"Microsoft.Graph.SignIn\"]",
+        "command": "az monitor activity-log list --query '[?operationName.value==`Microsoft.Graph.SignIn`]',
         "notes": [
           "Monitor authentication events"
         ]
@@ -1076,7 +1076,7 @@
           {
             "title": "Monitor storage access",
             "details": "Track S3 bucket and blob storage access",
-            "command": "aws s3api list-objects-v2 --bucket $BUCKET --query 'Contents[?LastModified>\"2024-01-01\"]'"
+            "command": "aws s3api list-objects-v2 --bucket $BUCKET --query 'Contents[?LastModified>`2024-01-01`]'"
           },
           {
             "title": "Check data transfer logs",
@@ -1163,4 +1163,4 @@
         ]
       }
     ]
-  }]
+  }

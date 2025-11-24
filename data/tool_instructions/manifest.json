@@ -925,9 +925,19 @@
     "category": "Lateral Movement & Directory"
   },
   {
-    "id": "sliver",
-    "label": "Sliver - Command & Control Framework",
+    "id": "adversary-emulation-playbook",
+    "label": "Adversary Emulation Playbook",
     "category": "Red Team Frameworks"
+  },
+  {
+    "id": "edr-opsec-checklist",
+    "label": "EDR OPSEC Checklist",
+    "category": "Red Team Frameworks"
+  },
+  {
+    "id": "threat-hunting-cloud",
+    "label": "Cloud Threat Hunting Guide",
+    "category": "Threat Hunting & Compliance"
   },
   {
     "id": "caldera",
@@ -1005,8 +1015,8 @@
     "category": "Workflow Guides"
   },
   {
-    "id": "workflow_osint_assessment",
-    "label": "OSINT-Only Assessment Workflow",
+    "id": "workflow_red_purple_team_collaboration",
+    "label": "Red/Purple Team Collaboration Workflow",
     "category": "Workflow Guides"
   },
   {

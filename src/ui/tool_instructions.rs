@@ -455,6 +455,26 @@ mod tests {
     }
 
     #[test]
+    fn red_team_frameworks_have_populated_sections() {
+        let registry = load_registry().expect("instructions should load");
+        let tools = [
+            "sliver",
+            "caldera",
+            "poshc2",
+            "adversary-emulation-playbook",
+            "edr-opsec-checklist",
+        ];
+
+        for id in tools {
+            let doc = registry
+                .instructions
+                .get(id)
+                .unwrap_or_else(|| panic!("missing instructions for {id}"));
+            assert_instruction_has_required_sections(doc, id);
+        }
+    }
+
+    #[test]
     fn exploitation_and_credential_tools_have_populated_sections() {
         let registry = load_registry().expect("instructions should load");
         let tools = [
@@ -511,6 +531,20 @@ mod tests {
             "wifite",
             "mdk4",
         ];
+
+        for id in tools {
+            let doc = registry
+                .instructions
+                .get(id)
+                .unwrap_or_else(|| panic!("missing instructions for {id}"));
+            assert_instruction_has_required_sections(doc, id);
+        }
+    }
+
+    #[test]
+    fn threat_hunting_tools_have_populated_sections() {
+        let registry = load_registry().expect("instructions should load");
+        let tools = ["yara", "sigma", "loganalysis", "threat-hunting-cloud"];
 
         for id in tools {
             let doc = registry

@@ -37,7 +37,12 @@ pub fn sbom_analysis_phase() -> Step {
         .collect::<Vec<String>>()
         .join("\n\n---\n\n");
 
-    Step::new_tutorial(Uuid::new_v4(), "SBOM Generation & Analysis".to_string(), description, tags)
+    Step::new_tutorial(
+        Uuid::new_v4(),
+        "SBOM Generation & Analysis".to_string(),
+        description,
+        tags,
+    )
 }
 
 /// Dependency Confusion & Typosquatting phase
@@ -104,7 +109,12 @@ pub fn artifact_integrity_phase() -> Step {
         .collect::<Vec<String>>()
         .join("\n\n---\n\n");
 
-    Step::new_tutorial(Uuid::new_v4(), "Artifact Integrity Checks".to_string(), description, tags)
+    Step::new_tutorial(
+        Uuid::new_v4(),
+        "Artifact Integrity Checks".to_string(),
+        description,
+        tags,
+    )
 }
 
 /// Get all supply chain security tutorial phases

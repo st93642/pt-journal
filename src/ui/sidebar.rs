@@ -26,8 +26,16 @@ pub fn create_sidebar(model: &Rc<RefCell<AppModel>>) -> (GtkBox, DropDown, ListB
     });
     factory.connect_bind(|_, item| {
         let list_item = item.downcast_ref::<gtk4::ListItem>().unwrap();
-        let label = list_item.child().unwrap().downcast::<gtk4::Label>().unwrap();
-        let string_object = list_item.item().unwrap().downcast::<gtk4::StringObject>().unwrap();
+        let label = list_item
+            .child()
+            .unwrap()
+            .downcast::<gtk4::Label>()
+            .unwrap();
+        let string_object = list_item
+            .item()
+            .unwrap()
+            .downcast::<gtk4::StringObject>()
+            .unwrap();
         label.set_text(&string_object.string());
     });
     phase_combo.set_factory(Some(&factory));

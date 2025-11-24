@@ -608,10 +608,7 @@ pub fn load_step_into_panel(model: &Rc<RefCell<AppModel>>, detail_panel: &Rc<Det
 }
 
 /// Helper function to rebuild the phase combo when phases change
-pub fn rebuild_phase_combo(
-    phase_combo: &gtk4::DropDown,
-    model: &Rc<RefCell<AppModel>>,
-) {
+pub fn rebuild_phase_combo(phase_combo: &gtk4::DropDown, model: &Rc<RefCell<AppModel>>) {
     let new_model = gtk4::StringList::new(&[]);
 
     // Add new phase names

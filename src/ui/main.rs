@@ -48,8 +48,7 @@ pub fn build_ui(app: &Application, model: AppModel) {
     window.set_titlebar(Some(&header));
 
     // Left panel: phase selector + steps list
-    let (left_box, phase_combo, steps_list) =
-        crate::ui::sidebar::create_sidebar(&model);
+    let (left_box, phase_combo, steps_list) = crate::ui::sidebar::create_sidebar(&model);
 
     // Center panel: detail view with checkbox, title, description, notes, canvas
     let detail_panel = crate::ui::detail_panel::create_detail_panel();

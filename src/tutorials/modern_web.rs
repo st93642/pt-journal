@@ -32,7 +32,7 @@ TOOLS:
 - gobuster with API mode
 - ffuf for endpoint fuzzing
 - GraphQL introspection queries
-- CORS testing tools"#
+- CORS testing tools"#,
     ),
     (
         "OWASP API Top 10 2023 - BOLA & Mass Assignment",
@@ -64,7 +64,7 @@ TOOLS:
 - Burp Suite with BOLA checks
 - OWASP ZAP API security scan
 - Custom scripts for ID manipulation
-- Postman collections for authorization testing"#
+- Postman collections for authorization testing"#,
     ),
     (
         "GraphQL Query Injection & Abuse",
@@ -96,7 +96,7 @@ TOOLS:
 - GraphQL-specific testing tools (GraphQLmap, Altair)
 - Burp Suite with GraphQL extension
 - Custom query injection scripts
-- GraphQL playground for query crafting"#
+- GraphQL playground for query crafting"#,
     ),
 ];
 
@@ -131,7 +131,7 @@ TOOLS:
 - jwt-cracker for secret brute force
 - Burp Suite JWT analyzer
 - jwt.io for token decoding
-- Custom token manipulation scripts"#
+- Custom token manipulation scripts"#,
     ),
     (
         "Single Page Application Security Testing",
@@ -163,7 +163,7 @@ TOOLS:
 - Chrome DevTools for bundle analysis
 - Burp Suite for SPA traffic analysis
 - LocalStorage inspector tools
-- CORS testing utilities"#
+- CORS testing utilities"#,
     ),
     (
         "OAuth 2.0 & OpenID Connect Abuse",
@@ -195,7 +195,7 @@ TOOLS:
 - OAuth2 proxy for testing
 - Burp Suite OAuth extension
 - Custom redirect URI testing scripts
-- OIDC debugging tools"#
+- OIDC debugging tools"#,
     ),
 ];
 
@@ -230,7 +230,7 @@ TOOLS:
 - WebSocket testing tools (wscat, websocat)
 - Burp Suite with WebSocket support
 - Chrome DevTools WebSocket inspector
-- Custom WebSocket client scripts"#
+- Custom WebSocket client scripts"#,
     ),
     (
         "WebSocket Message Injection & Manipulation",
@@ -262,7 +262,7 @@ TOOLS:
 - WebSocket client libraries for custom testing
 - Burp Suite WebSocket extension
 - Message injection testing frameworks
-- Custom WebSocket manipulation scripts"#
+- Custom WebSocket manipulation scripts"#,
     ),
     (
         "gRPC & Protocol Buffer Security Testing",
@@ -294,7 +294,7 @@ TOOLS:
 - grpcurl for gRPC service testing
 - grpcui for interactive gRPC testing
 - Protocol Buffer analysis tools
-- Custom gRPC client implementations"#
+- Custom gRPC client implementations"#,
     ),
 ];
 
@@ -306,7 +306,11 @@ pub fn get_modern_api_steps() -> Vec<Step> {
                 Uuid::new_v4(),
                 title.to_string(),
                 description.to_string(),
-                vec!["api".to_string(), "graphql".to_string(), "owasp".to_string()],
+                vec![
+                    "api".to_string(),
+                    "graphql".to_string(),
+                    "owasp".to_string(),
+                ],
             )
         })
         .collect()
@@ -320,7 +324,11 @@ pub fn get_jwt_spa_steps() -> Vec<Step> {
                 Uuid::new_v4(),
                 title.to_string(),
                 description.to_string(),
-                vec!["authentication".to_string(), "jwt".to_string(), "spa".to_string()],
+                vec![
+                    "authentication".to_string(),
+                    "jwt".to_string(),
+                    "spa".to_string(),
+                ],
             )
         })
         .collect()
@@ -334,7 +342,11 @@ pub fn get_websocket_grpc_steps() -> Vec<Step> {
                 Uuid::new_v4(),
                 title.to_string(),
                 description.to_string(),
-                vec!["real-time".to_string(), "websocket".to_string(), "grpc".to_string()],
+                vec![
+                    "real-time".to_string(),
+                    "websocket".to_string(),
+                    "grpc".to_string(),
+                ],
             )
         })
         .collect()

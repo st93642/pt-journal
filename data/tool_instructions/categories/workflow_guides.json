@@ -3916,5 +3916,184 @@
         "description": "OWASP WebSocket security testing guide"
       }
     ]
+  },
+  {
+    "id": "workflow_red_purple_team_collaboration",
+    "name": "Red/Purple Team Collaboration Workflow",
+    "summary": "Structured methodology for collaborative red and purple team exercises that improve detection capabilities through shared threat intelligence and technique validation.",
+    "details": "This workflow establishes a collaborative framework between red teams (offensive security) and purple teams (detection and response) to enhance overall security posture. It focuses on iterative improvement cycles where red team findings directly inform purple team detection development, creating a continuous feedback loop for security enhancement.",
+    "installation_guides": [
+      {
+        "platform": "Team Setup",
+        "summary": "Establish collaborative red/purple team structure",
+        "steps": [
+          {
+            "detail": "Define clear roles and responsibilities for red and purple teams",
+            "copyable": false
+          },
+          {
+            "detail": "Establish communication protocols and information sharing agreements",
+            "copyable": false
+          },
+          {
+            "detail": "Set up shared tooling and environment access",
+            "copyable": false
+          },
+          {
+            "detail": "Create escalation procedures for critical findings",
+            "copyable": false
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Technique validation cycle",
+        "command": "Red team executes T1059 → Purple team validates detection → Iterate on gaps",
+        "notes": [
+          "Rapid cycle of execution and validation"
+        ]
+      },
+      {
+        "description": "Detection rule testing",
+        "command": "Purple team deploys new Sigma rule → Red team attempts bypass → Rule refinement",
+        "notes": [
+          "Collaborative rule development"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Red/Purple Team Exercise Lifecycle",
+        "steps": [
+          {
+            "title": "Planning & Scoping",
+            "details": "Define exercise objectives, scope, and success criteria",
+            "command": "# Joint planning session"
+          },
+          {
+            "title": "Intelligence Sharing",
+            "details": "Red team shares planned TTPs, purple team shares detection capabilities",
+            "command": "# Pre-exercise briefing"
+          },
+          {
+            "title": "Controlled Execution",
+            "details": "Red team executes techniques while purple team monitors detections",
+            "command": "# Real-time collaboration"
+          },
+          {
+            "title": "Detection Validation",
+            "details": "Purple team validates alerts and response procedures",
+            "command": "# Alert triage and analysis"
+          },
+          {
+            "title": "Gap Analysis",
+            "details": "Identify detection gaps and evasion opportunities",
+            "command": "# Joint debrief"
+          },
+          {
+            "title": "Improvement Implementation",
+            "details": "Update detections, processes, and techniques",
+            "command": "# Action items and follow-up"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Detection Engineering Feedback Loop",
+        "stages": [
+          {
+            "label": "Red Team Execution",
+            "description": "Execute planned attack techniques",
+            "command": "# Run TTPs against target environment"
+          },
+          {
+            "label": "Purple Team Monitoring",
+            "description": "Monitor for detection and alerting",
+            "command": "# Watch SIEM, EDR, and logging systems"
+          },
+          {
+            "label": "Detection Analysis",
+            "description": "Analyze which techniques were detected vs missed",
+            "command": "# Correlate alerts with executed actions"
+          },
+          {
+            "label": "Gap Identification",
+            "description": "Document detection gaps and weaknesses",
+            "command": "# Create improvement backlog"
+          },
+          {
+            "label": "Rule Development",
+            "description": "Create or modify detection rules",
+            "command": "# Develop Sigma/YARA rules"
+          },
+          {
+            "label": "Validation Testing",
+            "description": "Test new detections against known techniques",
+            "command": "# Red team validates bypass attempts"
+          },
+          {
+            "label": "Production Deployment",
+            "description": "Deploy validated detections to production",
+            "command": "# Implement approved rules"
+          },
+          {
+            "label": "Continuous Monitoring",
+            "description": "Monitor detection effectiveness over time",
+            "command": "# Track false positives and coverage"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Technique successfully detected",
+        "meaning": "Existing detection controls working effectively",
+        "severity": "info"
+      },
+      {
+        "indicator": "Detection gap identified",
+        "meaning": "New detection rule or control needed",
+        "severity": "high"
+      },
+      {
+        "indicator": "False positive rate increased",
+        "meaning": "Detection rule needs tuning to reduce noise",
+        "severity": "medium"
+      },
+      {
+        "indicator": "Bypass technique discovered",
+        "meaning": "Detection controls need enhancement",
+        "severity": "high"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Automated Red/Purple Exercises",
+        "scenario": "Using tools like Caldera and Atomic Red Team for automated validation cycles",
+        "command": "Integrate automated adversary emulation with detection validation pipelines",
+        "notes": [
+          "Scale exercises through automation while maintaining collaboration"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Purple Team Playbook",
+        "url": "https://github.com/CyberCX-STA/Purple-Team-Playbook",
+        "description": "Comprehensive purple team exercise framework"
+      },
+      {
+        "label": "Detection Engineering",
+        "url": "https://detectionengineering.io/",
+        "description": "Resources for building effective detection capabilities"
+      },
+      {
+        "label": "Red Team Automation",
+        "url": "https://github.com/0x4D31/awesome-red-team-automation",
+        "description": "Tools and techniques for automated red teaming"
+      }
+    ]
   }
 ]

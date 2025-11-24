@@ -1,13 +1,15 @@
-pub mod modern_web;
 pub mod bug_bounty_hunting;
 pub mod ceh;
 pub mod cloud_identity;
 pub mod cloud_native;
 pub mod comptia_secplus;
 pub mod exploitation;
+pub mod modern_web;
 pub mod pentest_exam;
 pub mod post_exploitation;
+pub mod purple_team_threat_hunting;
 pub mod reconnaissance;
+pub mod red_team_tradecraft;
 pub mod reporting;
 pub mod supply_chain;
 pub mod vulnerability_analysis;
@@ -39,6 +41,8 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         create_sbom_analysis_phase(),
         create_dependency_confusion_phase(),
         create_artifact_integrity_phase(),
+        create_red_team_tradecraft_phase(),
+        create_purple_team_threat_hunting_phase(),
     ]
 }
 
@@ -328,6 +332,28 @@ fn create_ceh_phase() -> Phase {
     Phase {
         id: Uuid::new_v4(),
         name: "Certified Ethical Hacker (CEH)".to_string(),
+        steps,
+        notes: String::new(),
+    }
+}
+
+fn create_red_team_tradecraft_phase() -> Phase {
+    let steps = red_team_tradecraft::create_red_team_steps();
+
+    Phase {
+        id: Uuid::new_v4(),
+        name: "Red Team Tradecraft".to_string(),
+        steps,
+        notes: String::new(),
+    }
+}
+
+fn create_purple_team_threat_hunting_phase() -> Phase {
+    let steps = purple_team_threat_hunting::create_purple_team_steps();
+
+    Phase {
+        id: Uuid::new_v4(),
+        name: "Purple Team/Threat Hunting".to_string(),
         steps,
         notes: String::new(),
     }

@@ -615,5 +615,388 @@
         "description": "Source code and community discussions"
       }
     ]
-  }
-]
+  },
+  {
+    "id": "adversary-emulation-playbook",
+    "name": "Adversary Emulation Playbook",
+    "summary": "Structured approach to emulating advanced persistent threats using MITRE ATT&CK",
+    "details": "Comprehensive guide for conducting adversary emulation exercises that simulate real-world threat actor behaviors and techniques.",
+    "installation_guides": [
+      {
+        "platform": "Prerequisites",
+        "summary": "Required knowledge and environment setup",
+        "steps": [
+          {
+            "detail": "Study MITRE ATT&CK framework thoroughly",
+            "copyable": false
+          },
+          {
+            "detail": "Set up isolated test environment",
+            "copyable": false
+          },
+          {
+            "detail": "Configure logging and monitoring",
+            "copyable": false
+          },
+          {
+            "detail": "Prepare incident response procedures",
+            "copyable": false
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic ATT&CK technique mapping",
+        "command": "Map T1059 (Command and Scripting Interpreter) to PowerShell execution",
+        "notes": [
+          "Start with reconnaissance techniques"
+        ]
+      },
+      {
+        "description": "Chain techniques for realistic emulation",
+        "command": "T1078 (Valid Accounts) → T1053 (Scheduled Task) → T1047 (Windows Management Instrumentation)",
+        "notes": [
+          "Create logical attack chains"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Adversary Emulation Planning",
+        "steps": [
+          {
+            "title": "Select Threat Actor Profile",
+            "details": "Choose APT group or threat actor to emulate based on target industry",
+            "command": "# Research threat actor TTPs"
+          },
+          {
+            "title": "Map ATT&CK Techniques",
+            "details": "Translate threat actor behaviors to specific ATT&CK techniques",
+            "command": "# Create technique matrix"
+          },
+          {
+            "title": "Develop Emulation Plan",
+            "details": "Structure the exercise with phases, objectives, and success criteria",
+            "command": "# Document scope and rules"
+          },
+          {
+            "title": "Execute Emulation",
+            "details": "Run the adversary emulation following the planned sequence",
+            "command": "# Monitor and adapt"
+          },
+          {
+            "title": "Debrief and Improve",
+            "details": "Review results, identify gaps, and improve detections",
+            "command": "# Update security controls"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Adversary Emulation Lifecycle",
+        "stages": [
+          {
+            "label": "Intelligence Gathering",
+            "description": "Research target threat actors and their techniques",
+            "command": "# Study threat intelligence"
+          },
+          {
+            "label": "Planning Phase",
+            "description": "Design the emulation scenario and success metrics",
+            "command": "# Create detailed plan"
+          },
+          {
+            "label": "Execution Phase",
+            "description": "Conduct the adversary emulation exercise",
+            "command": "# Run controlled simulation"
+          },
+          {
+            "label": "Analysis Phase",
+            "description": "Review detection effectiveness and gaps",
+            "command": "# Analyze results"
+          },
+          {
+            "label": "Improvement Phase",
+            "description": "Update security controls and processes",
+            "command": "# Implement fixes"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Technique successfully executed",
+        "meaning": "ATT&CK technique emulation completed",
+        "severity": "info"
+      },
+      {
+        "indicator": "Detection gap identified",
+        "meaning": "Security control failed to detect emulated technique",
+        "severity": "high"
+      },
+      {
+        "indicator": "False positive triggered",
+        "meaning": "Legitimate activity flagged as malicious",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced Emulation Techniques",
+        "scenario": "Multi-stage campaign simulation with custom tooling",
+        "command": "Combine TTPs from multiple threat actors for hybrid emulation",
+        "notes": [
+          "Create realistic, multi-phase attack scenarios"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "MITRE ATT&CK Framework",
+        "url": "https://attack.mitre.org/",
+        "description": "Comprehensive knowledge base of adversary tactics and techniques"
+      },
+      {
+        "label": "Atomic Red Team",
+        "url": "https://github.com/redcanaryco/atomic-red-team",
+        "description": "Library of tests mapped to ATT&CK"
+      },
+      {
+        "label": "Caldera Framework",
+        "url": "https://caldera.mitre.org/",
+        "description": "Automated adversary emulation platform"
+      }
+    ],
+    "installation": [
+      {
+        "platform": "MITRE ATT&CK Navigator",
+        "summary": "Interactive tool for ATT&CK technique mapping",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/mitre-attack/attack-navigator.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd attack-navigator && npm install && npm start",
+            "copyable": true
+          },
+          {
+            "detail": "Navigate to http://localhost:4200",
+            "copyable": false
+          }
+        ]
+      },
+      {
+        "platform": "Atomic Red Team",
+        "summary": "Install Atomic Red Team for technique testing",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/redcanaryco/atomic-red-team.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd atomic-red-team && Install-AtomicRedTeam.ps1",
+            "copyable": true
+          },
+          {
+            "detail": "Import-Module 'PathToAtomicRedTeam\\Invoke-AtomicTest'",
+            "copyable": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "edr-opsec-checklist",
+    "name": "EDR OPSEC Checklist",
+    "summary": "Operational security checklist for EDR-aware red team operations",
+    "details": "Comprehensive guide for maintaining operational security when working in environments with advanced endpoint detection and response systems.",
+    "installation_guides": [
+      {
+        "platform": "EDR Assessment",
+        "summary": "Initial EDR environment assessment",
+        "steps": [
+          {
+            "detail": "Identify deployed EDR products and versions",
+            "copyable": false
+          },
+          {
+            "detail": "Map detection capabilities and telemetry sources",
+            "copyable": false
+          },
+          {
+            "detail": "Test detection thresholds and alerting",
+            "copyable": false
+          },
+          {
+            "detail": "Document bypass techniques and limitations",
+            "copyable": false
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Check EDR process monitoring",
+        "command": "Get-Process | Where-Object {$_.Name -like '*edr*' -or $_.Name -like '*defender*'}",
+        "notes": [
+          "Identify running EDR processes"
+        ]
+      },
+      {
+        "description": "Test AMSI bypass",
+        "command": "[Ref].Assembly.GetType('System.Management.Automation.AmsiUtils').GetField('amsiInitFailed','NonPublic,Static').SetValue($null,$true)",
+        "notes": [
+          "Basic AMSI bypass technique"
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "EDR OPSEC Assessment",
+        "steps": [
+          {
+            "title": "Environment Reconnaissance",
+            "details": "Map EDR deployment and capabilities",
+            "command": "# Identify EDR products"
+          },
+          {
+            "title": "Detection Testing",
+            "details": "Test known techniques against EDR",
+            "command": "# Execute controlled tests"
+          },
+          {
+            "title": "Bypass Development",
+            "details": "Develop and test evasion techniques",
+            "command": "# Create bypass methods"
+          },
+          {
+            "title": "Operational Planning",
+            "details": "Plan operations with OPSEC considerations",
+            "command": "# Design low-noise approach"
+          },
+          {
+            "title": "Execution Monitoring",
+            "details": "Monitor operations for detection indicators",
+            "command": "# Watch for alerts"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "EDR-Aware Operation Workflow",
+        "stages": [
+          {
+            "label": "Pre-Operation Recon",
+            "description": "Assess EDR environment and capabilities",
+            "command": "# Map detection landscape"
+          },
+          {
+            "label": "Technique Selection",
+            "description": "Choose techniques that avoid known detections",
+            "command": "# Select low-noise methods"
+          },
+          {
+            "label": "Testing Phase",
+            "description": "Test selected techniques in isolated environment",
+            "command": "# Validate bypasses"
+          },
+          {
+            "label": "Controlled Execution",
+            "description": "Execute operations with monitoring",
+            "command": "# Run with detection monitoring"
+          },
+          {
+            "label": "Post-Operation Cleanup",
+            "description": "Remove artifacts and cover tracks",
+            "command": "# Clean up evidence"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "EDR alert triggered",
+        "meaning": "Operation detected by endpoint protection",
+        "severity": "high"
+      },
+      {
+        "indicator": "Bypass successful",
+        "meaning": "Technique executed without detection",
+        "severity": "info"
+      },
+      {
+        "indicator": "Telemetry gap identified",
+        "meaning": "EDR blind spot discovered",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Advanced EDR Evasion",
+        "scenario": "Multi-layered evasion combining multiple bypass techniques",
+        "command": "Combine process injection, memory evasion, and traffic obfuscation",
+        "notes": [
+          "Layer multiple evasion techniques for robust OPSEC"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "EDR Threat Hunting Guide",
+        "url": "https://github.com/olafhartong/ThreatHunting",
+        "description": "Comprehensive EDR threat hunting resources"
+      },
+      {
+        "label": "Red Team OPSEC",
+        "url": "https://github.com/0x4D31/awesome-red-team-opsec",
+        "description": "Collection of red team OPSEC techniques"
+      },
+      {
+        "label": "Defensive Evasion",
+        "url": "https://github.com/APTortellini/DefensiveEvasion",
+        "description": "EDR evasion techniques and research"
+      }
+    ],
+    "installation": [
+      {
+        "platform": "PowerShell OPSEC Tools",
+        "summary": "Install PowerShell security assessment tools",
+        "steps": [
+          {
+            "detail": "Install-Module -Name Posh-SSH, Posh-Registry",
+            "copyable": true
+          },
+          {
+            "detail": "Import-Module Invoke-Obfuscation",
+            "copyable": true
+          },
+          {
+            "detail": "Test AMSI bypass techniques",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Process Injection Tools",
+        "summary": "Tools for testing process injection techniques",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/monoxgas/sRDI.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd sRDI && python sRDI.py -f beacon.dll",
+            "copyable": true
+          },
+          {
+            "detail": "Test reflective DLL injection",
+            "copyable": true
+          }
+        ]
+      }
+    ]
+  }]

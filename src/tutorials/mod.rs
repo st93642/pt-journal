@@ -1,3 +1,4 @@
+pub mod modern_web;
 pub mod bug_bounty_hunting;
 pub mod ceh;
 pub mod cloud_identity;
@@ -24,6 +25,9 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         create_cloud_iam_phase(),
         create_practical_oauth_phase(),
         create_sso_federation_phase(),
+        create_modern_api_phase(),
+        create_jwt_spa_phase(),
+        create_websocket_grpc_phase(),
         create_reporting_phase(),
         create_bug_bounty_hunting_phase(),
         create_comptia_secplus_phase(),
@@ -150,6 +154,39 @@ fn create_sso_federation_phase() -> Phase {
     Phase {
         id: Uuid::new_v4(),
         name: "SSO & Federation Misconfigurations".to_string(),
+        steps,
+        notes: String::new(),
+    }
+}
+
+fn create_modern_api_phase() -> Phase {
+    let steps = modern_web::get_modern_api_steps();
+
+    Phase {
+        id: Uuid::new_v4(),
+        name: "Modern API & GraphQL Testing Playbook".to_string(),
+        steps,
+        notes: String::new(),
+    }
+}
+
+fn create_jwt_spa_phase() -> Phase {
+    let steps = modern_web::get_jwt_spa_steps();
+
+    Phase {
+        id: Uuid::new_v4(),
+        name: "JWT & SPA Security".to_string(),
+        steps,
+        notes: String::new(),
+    }
+}
+
+fn create_websocket_grpc_phase() -> Phase {
+    let steps = modern_web::get_websocket_grpc_steps();
+
+    Phase {
+        id: Uuid::new_v4(),
+        name: "Real-Time/WebSocket Testing".to_string(),
         steps,
         notes: String::new(),
     }

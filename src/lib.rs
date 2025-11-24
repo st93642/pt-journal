@@ -564,7 +564,7 @@ mod tests {
         fn test_phase_progression_workflow() {
             let session = Session::default();
 
-            // Verify logical phase progression (first 7 phases are pentesting methodology)
+            // Verify logical phase progression (first 7 phases are pentesting methodology, next are specialized)
             let phase_names = [
                 "Reconnaissance",
                 "Vulnerability Analysis",
@@ -573,6 +573,9 @@ mod tests {
                 "Cloud IAM Abuse 101",
                 "Practical OAuth/OIDC Abuse",
                 "SSO & Federation Misconfigurations",
+                "Modern API & GraphQL Testing Playbook",
+                "JWT & SPA Security",
+                "Real-Time/WebSocket Testing",
                 "Reporting",
                 "Bug Bounty Hunting",
                 "CompTIA Security+",
@@ -584,7 +587,7 @@ mod tests {
             }
 
             // Verify step counts are reasonable for the core pentesting phases
-            let expected_step_counts = [16, 5, 4, 4]; // Recon, Vuln, Exploit, Post
+            let expected_step_counts = [16, 5, 4, 4, 3, 3, 3, 4, 3, 3]; // Recon, Vuln, Exploit, Post, Cloud IAM, OAuth, SSO, Modern API, JWT/SPA, WebSocket, Reporting, Bug Bounty, Sec+, PenTest+, CEH
             for (idx, &expected_count) in expected_step_counts.iter().enumerate() {
                 assert_eq!(session.phases[idx].steps.len(), expected_count);
             }

@@ -1,0 +1,1067 @@
+[
+  {
+    "id": "cloud-iam-priv-esc-playbook",
+    "name": "Cloud IAM Privilege Escalation Playbook",
+    "summary": "Methodology for enumerating and safely exploiting IAM misconfigurations across AWS, Azure, and GCP with strong emphasis on lab validation and authorization controls.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install multi-cloud CLIs and graph tooling in a non-production workspace.",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y awscli azure-cli google-cloud-sdk jq graphviz",
+            "copyable": true
+          },
+          {
+            "detail": "aws configure --profile lab-audit",
+            "copyable": true
+          },
+          {
+            "detail": "az login --tenant <tenant-id>",
+            "copyable": false
+          },
+          {
+            "detail": "gcloud auth application-default login",
+            "copyable": true
+          },
+          {
+            "detail": "mkdir -p ~/cloud-lab && echo 'Use isolated lab accounts with least privilege'",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Leverage preinstalled tooling and add IAM-focused helpers.",
+        "steps": [
+          {
+            "detail": "sudo apt install -y python3-pip bloodhound.py neo4j",
+            "copyable": true
+          },
+          {
+            "detail": "pip install cloudsplaining pacu-policy-analyzer cartography",
+            "copyable": true
+          },
+          {
+            "detail": "aws iam list-roles --profile kali-lab > ~/cloud-lab/aws-roles.json",
+            "copyable": true
+          },
+          {
+            "detail": "export AZURE_CONFIG_DIR=~/cloud-lab/azure && az account set --subscription <lab-subscription>",
+            "copyable": false
+          }
+        ]
+      },
+      {
+        "platform": "Lab / Cloud Sandbox",
+        "summary": "Spin up disposable accounts for PoC work and enable audit logging before testing.",
+        "steps": [
+          {
+            "detail": "Create AWS Organizations sandbox OU and limit access keys to lab testers",
+            "copyable": false
+          },
+          {
+            "detail": "Deploy Azure subscription with dedicated Azure AD tenant; enable PIM/Audit logs",
+            "copyable": false
+          },
+          {
+            "detail": "Provision GCP project with Organization Policy restricting egress and enable Cloud Audit Logs",
+            "copyable": false
+          },
+          {
+            "detail": "Document written authorization for every environment before attempting escalation",
+            "copyable": false
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "List AWS IAM roles and attached policies",
+        "command": "aws iam list-roles --output json | jq '.Roles[] | {RoleName, AttachedPolicies}'",
+        "notes": [
+          "Immediately export data to a graph or spreadsheet to visualize trust relationships."
+        ]
+      },
+      {
+        "description": "Check Azure role assignments for wildcard permissions",
+        "command": "az role assignment list --all --include-inherited | jq '[.[] | select(.roleDefinitionName==\"Owner\")]'",
+        "notes": [
+          "Focus on custom roles granting Microsoft.Authorization/* or AppRoleAssignment permissions."
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Enumerate IAM identities and policies",
+        "steps": [
+          {
+            "title": "Collect AWS principals",
+            "details": "List users, roles, groups, and inline policies for the target account.",
+            "command": "aws iam get-account-authorization-details --profile lab-audit --output json > aws-auth.json"
+          },
+          {
+            "title": "Collect Azure identities",
+            "details": "Capture service principals, applications, and role assignments.",
+            "command": "az ad sp list --all > azure-service-principals.json"
+          },
+          {
+            "title": "Collect GCP principals",
+            "details": "Dump IAM bindings for projects, folders, and the organization.",
+            "command": "gcloud projects get-iam-policy $PROJECT --format json > gcp-iam.json"
+          }
+        ]
+      },
+      {
+        "title": "Identify dangerous permissions",
+        "steps": [
+          {
+            "title": "Search for privilege escalation primitives",
+            "details": "Look for iam:PassRole, iam:CreatePolicyVersion, sts:AssumeRole*, serviceAccount.keys.create, or Owner-equivalent roles.",
+            "command": "python3 -m cloudsplaining scan --input-file aws-auth.json --high-risk-permissions"
+          },
+          {
+            "title": "Flag Azure actions",
+            "details": "Detect custom roles exposing Microsoft.Authorization/roleAssignments/write, ManagedIdentity operations, or app consent.",
+            "command": "python3 policy_analyzer.py --file azure-role-definitions.json --search write"
+          },
+          {
+            "title": "Locate wildcard principals",
+            "details": "Identify policies that allow ServiceAccount impersonation or token creation without conditions.",
+            "command": "jq '.bindings[] | select(.members[] | contains(\"allUsers\"))' gcp-iam.json"
+          }
+        ]
+      },
+      {
+        "title": "Map escalation chains",
+        "steps": [
+          {
+            "title": "Build directed graph",
+            "details": "Convert policy data into nodes/edges showing who can assume or grant privileges to whom.",
+            "command": "cartography --aws-sync --neo4j-uri bolt://localhost:7687 --neo4j-password changeme"
+          },
+          {
+            "title": "Trace path to admin",
+            "details": "Use graph queries to locate shortest path from compromised principal to administrative role.",
+            "command": "MATCH p=(u:AWSPrincipal {name: 'test-user'})-[:CAN_ASSUME*..3]->(r:AWSRole {is_admin: true}) RETURN p"
+          },
+          {
+            "title": "Document guardrails",
+            "details": "Record service control policies, conditional statements, or MFA requirements that might block escalation.",
+            "command": "aws organizations list-policies --filter SERVICE_CONTROL_POLICY"
+          }
+        ]
+      },
+      {
+        "title": "Perform PoC in lab",
+        "steps": [
+          {
+            "title": "Simulate token hijack",
+            "details": "Use temporary credentials with limited scope and rotate immediately after testing.",
+            "command": "aws sts assume-role --role-arn arn:aws:iam::LAB:role/Escalate --profile analyst"
+          },
+          {
+            "title": "Validate detection",
+            "details": "Confirm CloudTrail, Azure Monitor, and Cloud Logging captured the attempt and generated alerts.",
+            "command": "aws cloudtrail lookup-events --lookup-attributes AttributeKey=Username,AttributeValue=test-user"
+          },
+          {
+            "title": "Reset environment",
+            "details": "Remove test policies and provide remediation guidance before returning to production.",
+            "command": "aws iam delete-policy --policy-arn arn:aws:iam::LAB:policy/TestEscalation"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "IAM privilege escalation assessment lifecycle",
+        "stages": [
+          {
+            "label": "Enumerate via CLIs",
+            "description": "Use AWS CLI, az, and gcloud to export all roles, policies, and trust relationships into version-controlled artifacts.",
+            "command": "aws iam get-account-authorization-details --profile cloud-audit"
+          },
+          {
+            "label": "Policy analytics",
+            "description": "Run automated analyzers (cloudsplaining, IAM-Viz, ScoutSuite) to triage high-risk actions and unused conditions.",
+            "command": "cloudsplaining list-excessive-actions --input-file aws-auth.json"
+          },
+          {
+            "label": "Chain discovery",
+            "description": "Graph escalation paths and rank them by feasibility, required credentials, and blast radius.",
+            "command": "python3 escalate.py --source analyst-user --target admin-role"
+          },
+          {
+            "label": "Lab PoC & remediation",
+            "description": "Execute one controlled escalation in a lab environment, capture logs, and deliver mitigation guidance (least privilege, SCPs, conditional access).",
+            "command": "./poc_runner.sh lab-escalation.json"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Effect: Allow | Action: iam:PassRole | Resource: *",
+        "meaning": "Principal can pass any role to downstream services and pivot to admin privileges without constraints.",
+        "severity": "high"
+      },
+      {
+        "indicator": "Condition absent on sts:AssumeRole",
+        "meaning": "Missing MFA or source IP conditions allow uncontrolled role assumption from any session.",
+        "severity": "high"
+      },
+      {
+        "indicator": "Custom role grants Microsoft.Authorization/*",
+        "meaning": "Azure role can create new role assignments and effectively gain Owner rights.",
+        "severity": "high"
+      },
+      {
+        "indicator": "GCP serviceAccount.keys.create allowed for external principal",
+        "meaning": "Actor can mint keys for higher-privileged service accounts and impersonate them.",
+        "severity": "critical"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Cross-account escalation mapping",
+        "scenario": "Map AWS Organization accounts where a compromised role can pivot via shared services roles.",
+        "command": "python3 enumerate_cross_account.py --profiles profiles.yaml",
+        "notes": [
+          "Correlate trust policies with ExternalId requirements and service control policies.",
+          "Highlight accounts lacking explicit deny statements for sts:AssumeRole."
+        ]
+      },
+      {
+        "title": "Automated conditional access testing",
+        "scenario": "Validate whether Azure Conditional Access or AWS IAM conditions truly block untrusted networks.",
+        "command": "./ca_tester.sh --policy-id 1234 --source-ip 203.0.113.10",
+        "notes": [
+          "Use sandbox IP space only.",
+          "Capture sign-in logs to show enforcement status."
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "IAM terminology cross-reference",
+      "columns": [
+        "Concept",
+        "AWS",
+        "Azure",
+        "GCP"
+      ],
+      "rows": [
+        [
+          "Identity store",
+          "AWS Account / IAM",
+          "Azure AD Tenant",
+          "Cloud Identity / Google Workspace"
+        ],
+        [
+          "Role assignment",
+          "IAM Role / Policy attachment",
+          "Role Definition + Role Assignment",
+          "IAM Role Binding"
+        ],
+        [
+          "Temporary credentials",
+          "STS AssumeRole / Session",
+          "Azure AD access token + refresh token",
+          "Service Account impersonation / OAuth token"
+        ],
+        [
+          "Policy guardrail",
+          "Service Control Policy",
+          "Azure Policy / Conditional Access",
+          "Organization Policy"
+        ]
+      ]
+    },
+    "resources": [
+      {
+        "label": "Rhino Security Labs AWS Privilege Escalation",
+        "url": "https://rhinosecuritylabs.com/aws/aws-privilege-escalation-methods-mitigation/",
+        "description": "Authoritative list of AWS IAM escalation primitives."
+      },
+      {
+        "label": "Microsoft Defender for Cloud IAM hardening",
+        "url": "https://learn.microsoft.com/azure/defender-for-cloud/recommendations-reference",
+        "description": "Guidance on Azure role and PIM governance."
+      },
+      {
+        "label": "GCP IAM Best Practices",
+        "url": "https://cloud.google.com/iam/docs/using-iam-securely",
+        "description": "Google's official least-privilege recommendations."
+      },
+      {
+        "label": "Cartography IAM visualization",
+        "url": "https://github.com/lyft/cartography",
+        "description": "Graph-based approach to mapping cloud permissions."
+      }
+    ]
+  },
+  {
+    "id": "cloud-storage-misconfig-playbook",
+    "name": "Cloud Storage Misconfiguration Playbook",
+    "summary": "Structured workflow for finding, validating, and documenting exposed object storage (S3, Azure Blob, Google Cloud Storage) without causing data loss.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install storage CLIs and helper utilities for scripted enumeration.",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y awscli azure-cli google-cloud-sdk jq parallel",
+            "copyable": true
+          },
+          {
+            "detail": "pip install s3scanner gdrive_enum",
+            "copyable": true
+          },
+          {
+            "detail": "mkdir -p ~/cloud-storage-lab && cd ~/cloud-storage-lab",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Use Kali's prebuilt wordlists to brute force storage endpoints during authorized tests.",
+        "steps": [
+          {
+            "detail": "ls /usr/share/wordlists/SecLists/Discovery/S3/",
+            "copyable": true
+          },
+          {
+            "detail": "python3 /opt/s3scanner/s3scanner.py --buckets-file buckets.txt --threads 10",
+            "copyable": true
+          },
+          {
+            "detail": "az storage blob list --account-name labstorage --container-name public --auth-mode login",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Lab / Cloud Sandbox",
+        "summary": "Create synthetic buckets with safe sample data to validate detection and cleanup steps.",
+        "steps": [
+          {
+            "detail": "aws s3api create-bucket --bucket lab-public-demo --region us-east-1",
+            "copyable": true
+          },
+          {
+            "detail": "echo 'red team sample' > sample.txt && aws s3 cp sample.txt s3://lab-public-demo/",
+            "copyable": true
+          },
+          {
+            "detail": "Set bucket policy to public-read for demonstration, then revert after exercise",
+            "copyable": false
+          },
+          {
+            "detail": "Enable access logging/audit trails before the test",
+            "copyable": false
+          }
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Enumerate storage endpoints",
+        "steps": [
+          {
+            "title": "Gather known bucket names",
+            "details": "Use recon data, certificate transparency, and naming conventions to seed candidate lists.",
+            "command": "cat recon/subdomains.txt | grep -E 's3|blob|storage' > candidate-buckets.txt"
+          },
+          {
+            "title": "Brute force naming patterns",
+            "details": "Combine target keywords with SecLists to identify likely bucket names.",
+            "command": "python3 wordlist_combo.py --keywords target --wordlist SecLists/Discovery/S3/namelist.txt"
+          },
+          {
+            "title": "Resolve storage endpoints",
+            "details": "Check DNS CNAMEs for Amazon S3, Azure Blob, Fastly, or Google storage records.",
+            "command": "dnsx -l candidate-buckets.txt -resp"
+          }
+        ]
+      },
+      {
+        "title": "Detect misconfigurations",
+        "steps": [
+          {
+            "title": "Test anonymous access",
+            "details": "Attempt HEAD/GET requests without credentials and respect scope restrictions.",
+            "command": "aws s3 ls s3://lab-public-demo --no-sign-request"
+          },
+          {
+            "title": "Review ACLs and policies",
+            "details": "List bucket ACLs, block public access settings, and resource policies for overly permissive statements.",
+            "command": "aws s3api get-bucket-acl --bucket target-bucket"
+          },
+          {
+            "title": "Check Azure and GCP equivalents",
+            "details": "Use az storage and gsutil to inspect containers for public or shared access signatures.",
+            "command": "gsutil ls -L -b gs://public-demo-bucket"
+          }
+        ]
+      },
+      {
+        "title": "Safely validate access",
+        "steps": [
+          {
+            "title": "List objects without downloading",
+            "details": "Capture metadata (size, last modified) to prove impact without touching sensitive data.",
+            "command": "aws s3api list-objects --bucket target-bucket --output text"
+          },
+          {
+            "title": "Download sample only if allowed",
+            "details": "If authorization allows, retrieve benign files and compute hashes to reference in the report.",
+            "command": "aws s3 cp s3://target-bucket/security-notice.txt ./evidence/"
+          },
+          {
+            "title": "Document evidence",
+            "details": "Screenshot CLI output, HTTP headers, and access logs showing unauthenticated access.",
+            "command": "script -q evidence/s3_enum.typescript"
+          }
+        ]
+      },
+      {
+        "title": "Report and remediate",
+        "steps": [
+          {
+            "title": "Assess data sensitivity",
+            "details": "Classify discovered objects (PII, secrets, backups) and align with impact ratings.",
+            "command": "python3 classify_objects.py --inventory objects.json"
+          },
+          {
+            "title": "Provide actionable fixes",
+            "details": "Recommend block-public-access toggles, signed URL enforcement, lifecycle management, and event-based alerts.",
+            "command": "aws s3api put-public-access-block --public-access-block-configuration BlockPublicAcls=true,..."
+          },
+          {
+            "title": "Verify closure",
+            "details": "Re-run tests after remediation to confirm anonymous access is removed.",
+            "command": "aws s3 ls s3://target-bucket --no-sign-request"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "End-to-end cloud storage exposure validation",
+        "stages": [
+          {
+            "label": "Recon & enumeration",
+            "description": "Leverage DNS, CT logs, and infrastructure manifests to inventory all storage endpoints.",
+            "command": "python3 enumerate_storage.py --org target --output inventory.json"
+          },
+          {
+            "label": "Access testing",
+            "description": "Attempt read/list/write operations anonymously and with low-privilege lab accounts.",
+            "command": "./storage_probe.sh inventory.json"
+          },
+          {
+            "label": "Impact analysis",
+            "description": "Correlate exposed data classifications with regulatory or contractual requirements.",
+            "command": "python3 impact_matrix.py --inventory exposures.json"
+          },
+          {
+            "label": "Remediation walkthrough",
+            "description": "Pair with platform engineers to enable bucket policies, logging, and object encryption; verify through retest.",
+            "command": "./remediation_checklist.md"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "HTTP 200 OK for unauthenticated GET",
+        "meaning": "Bucket allows public object downloads without authorization.",
+        "severity": "high"
+      },
+      {
+        "indicator": "ListBucketResult returned >0 keys",
+        "meaning": "Anonymous listing is possible, enabling reconnaissance of filenames and metadata.",
+        "severity": "medium"
+      },
+      {
+        "indicator": "AccessDenied on PUT but success on GET",
+        "meaning": "Read-only exposure still leaks data even if writes are blocked.",
+        "severity": "high"
+      },
+      {
+        "indicator": "Signed URL with multi-year expiry",
+        "meaning": "Long-lived SAS/S3 signed URLs can be abused as quasi-public endpoints.",
+        "severity": "medium"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Cross-region replication abuse",
+        "scenario": "Identify buckets replicated to secondary accounts where ACLs diverge.",
+        "command": "aws s3api get-bucket-replication --bucket target-bucket",
+        "notes": [
+          "Check if replica buckets inherit public ACLs by mistake.",
+          "Recommend consistent SCPs / Org Policies."
+        ]
+      },
+      {
+        "title": "Signed URL fuzzing",
+        "scenario": "Discover predictable signed URL patterns or leaked SAS tokens.",
+        "command": "python3 signed_url_fuzzer.py --url-file urls.txt",
+        "notes": [
+          "Never brute-force production tenants without written approval.",
+          "Focus on lab-borne or provided tokens."
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "Cloud storage exposure cheat sheet",
+      "columns": [
+        "Finding",
+        "AWS S3",
+        "Azure Blob",
+        "GCP Cloud Storage"
+      ],
+      "rows": [
+        [
+          "Public listing",
+          "BlockPublicAcls disabled and list allowed",
+          "Container public access level set to Blob or Container",
+          "allUsers member on storage.objects.list"
+        ],
+        [
+          "Public downloads",
+          "Bucket policy allows s3:GetObject to *",
+          "SAS token without expiry or account-level anonymous",
+          "Uniform bucket-level access disabled + allAuthenticatedUsers"
+        ],
+        [
+          "Write exposure",
+          "ACL grants WRITE or FULL_CONTROL to everyone",
+          "Public container with Add permissions",
+          "storage.objects.create granted to allUsers"
+        ]
+      ]
+    },
+    "resources": [
+      {
+        "label": "AWS S3 security best practices",
+        "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-best-practices.html",
+        "description": "Official hardening checklist for S3."
+      },
+      {
+        "label": "Microsoft cloud storage security",
+        "url": "https://learn.microsoft.com/azure/storage/blobs/security-recommendations",
+        "description": "Azure Storage recommendations and logging guidance."
+      },
+      {
+        "label": "Google Cloud Storage IAM guide",
+        "url": "https://cloud.google.com/storage/docs/access-control/iam",
+        "description": "Explains permissions and predefined roles."
+      },
+      {
+        "label": "OWASP Cloud Security project",
+        "url": "https://owasp.org/www-project-cloud-security/",
+        "description": "Community-curated cloud misconfiguration references."
+      }
+    ]
+  },
+  {
+    "id": "sso-oauth-oidc-misconfig-playbook",
+    "name": "SSO / OAuth / OIDC Misconfiguration Playbook",
+    "summary": "Testing methodology for modern single sign-on stacks, covering OAuth 2.0, OpenID Connect, and blended SSO implementations with emphasis on redirect handling, scopes, and token integrity.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Prepare intercepting proxy, browser tooling, and JWT/SAML analysis helpers.",
+        "steps": [
+          {
+            "detail": "sudo apt install -y burpsuite zaproxy firefox-esr",
+            "copyable": true
+          },
+          {
+            "detail": "pip install jwt_tool requests-oauthlib saml2aws",
+            "copyable": true
+          },
+          {
+            "detail": "wget https://github.com/openid/AppAuth-Android/releases/download/demo/mock-idp-demo.apk -O ~/cloud-lab/mock-idp.apk",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Enable built-in Burp/ZAP, add mitmproxy and custom scripts for automation.",
+        "steps": [
+          {
+            "detail": "sudo apt install -y mitmproxy",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/portswigger/oauth-playbook.git ~/oauth-playbook",
+            "copyable": true
+          },
+          {
+            "detail": "ln -s ~/oauth-playbook/scripts/oauth_checklist.py /usr/local/bin/oauth-checklist",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Lab / Cloud Sandbox",
+        "summary": "Deploy reference IdPs (Keycloak, Auth0 dev tenant, Azure AD test tenant) and sample relying parties.",
+        "steps": [
+          {
+            "detail": "docker run -d --name keycloak -p 8080:8080 quay.io/keycloak/keycloak start-dev",
+            "copyable": true
+          },
+          {
+            "detail": "Configure OAuth clients with multiple redirect URIs pointing to lab interceptors",
+            "copyable": false
+          },
+          {
+            "detail": "Instrument relying party apps with verbose logging to capture auth code and token events",
+            "copyable": false
+          }
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Analyze authentication flow",
+        "steps": [
+          {
+            "title": "Capture baseline login",
+            "details": "Use Burp/ZAP to record the full authorization code flow, including state, nonce, and PKCE parameters.",
+            "command": "burpsuite --project-file cloud-identity.burp"
+          },
+          {
+            "title": "Map endpoints",
+            "details": "Identify authorization, token, introspection, logout, and JWKS endpoints.",
+            "command": "python3 discover_oidc_metadata.py --issuer https://idp.lab/.well-known/openid-configuration"
+          },
+          {
+            "title": "Review client registration",
+            "details": "Extract client_id, redirect URIs, allowed scopes, and grant types from the IdP configuration.",
+            "command": "az ad app show --id <client-id>"
+          }
+        ]
+      },
+      {
+        "title": "Test redirect URI and state handling",
+        "steps": [
+          {
+            "title": "Attempt open redirect",
+            "details": "Inject attacker-controlled domains into redirect_uri or post_logout_redirect_uri parameters.",
+            "command": "python3 redirect_tester.py --url 'https://rp.lab/callback?redirect_uri=https://attacker.tld/cb'"
+          },
+          {
+            "title": "Tamper with state/nonce",
+            "details": "Strip or replay state/nonce values to test CSRF protections.",
+            "command": "mitmproxy -s scripts/state_strip.py"
+          },
+          {
+            "title": "Test PKCE enforcement",
+            "details": "Send mismatched code_verifier/code_challenge pairs and identify lenient servers.",
+            "command": "oauth-checklist --test pkce --client web-rp"
+          }
+        ]
+      },
+      {
+        "title": "Inspect tokens and scopes",
+        "steps": [
+          {
+            "title": "Decode access/ID tokens",
+            "details": "Validate issuer, audience, expiry, and signature on JWTs; look for sensitive claims.",
+            "command": "python3 jwt_tool.py token.jwt -p"
+          },
+          {
+            "title": "Scope escalation",
+            "details": "Request additional scopes (admin, offline_access) and observe whether the IdP enforces approval.",
+            "command": "./oauth_scope_request.sh --scopes 'openid profile admin'"
+          },
+          {
+            "title": "Cross-tenant abuse",
+            "details": "Attempt to reuse tokens between tenants/applications to identify audience misconfigurations.",
+            "command": "python3 token_replay.py --token token.jwt --target https://api.other-tenant/lab"
+          }
+        ]
+      },
+      {
+        "title": "Evaluate session handling",
+        "steps": [
+          {
+            "title": "Check cookie attributes",
+            "details": "Ensure SameSite, Secure, and HttpOnly flags are set on session cookies after SSO completes.",
+            "command": "python3 cookie_audit.py --url https://rp.lab/profile"
+          },
+          {
+            "title": "Test logout propagation",
+            "details": "Trigger global logout and verify tokens/cookies become invalid across all relying parties.",
+            "command": "curl -I https://idp.lab/logout?id_token_hint=..."
+          },
+          {
+            "title": "Monitor session fixation",
+            "details": "Attempt to force reuse of existing session IDs when new tokens are issued.",
+            "command": "mitmproxy -s scripts/session_fixation.py"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "OAuth/OIDC misconfiguration lab workflow",
+        "stages": [
+          {
+            "label": "Intercept & baseline",
+            "description": "Record the entire login process with Burp/ZAP to understand parameters and cookies.",
+            "command": "burpsuite --project-file cloud-oidc.burp"
+          },
+          {
+            "label": "Parameter manipulation",
+            "description": "Fuzz redirect_uri, response_type, scope, and PKCE parameters for weak validation.",
+            "command": "python3 oauth_param_fuzzer.py --target https://idp.lab/auth"
+          },
+          {
+            "label": "Token analysis",
+            "description": "Decode/verify tokens, check for algorithm confusion, missing audience checks, or overly long lifetimes.",
+            "command": "python3 jwt_tool.py token.jwt -u"
+          },
+          {
+            "label": "Session review",
+            "description": "Validate logout flows, token revocation, and session binding across devices.",
+            "command": "./session_replay.sh"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "redirect_uri parameter accepted attacker.com",
+        "meaning": "Open redirect enabling auth code theft or token leakage.",
+        "severity": "critical"
+      },
+      {
+        "indicator": "state parameter missing or static",
+        "meaning": "CSRF protection absent, allowing unsolicited callbacks.",
+        "severity": "high"
+      },
+      {
+        "indicator": "scope escalation succeeded without consent",
+        "meaning": "Client can request privileged scopes without additional approval.",
+        "severity": "high"
+      },
+      {
+        "indicator": "ID token aud claim matches different application",
+        "meaning": "Token audience validation failure enabling replay across apps.",
+        "severity": "high"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Multi-tenant OAuth abuse",
+        "scenario": "Exploit shared enterprise IdPs where apps trust tokens from unintended tenants.",
+        "command": "python3 tenant_tamper.py --issuer https://login.microsoftonline.com/common",
+        "notes": [
+          "Focus on lab tenants or bug-bounty scopes only.",
+          "Capture HAR + screenshots illustrating tenant IDs."
+        ]
+      },
+      {
+        "title": "PKCE downgrade testing",
+        "scenario": "Determine if authorization server permits clients to switch to code flow without PKCE.",
+        "command": "python3 pkce_downgrade.py --client mobile-app",
+        "notes": [
+          "Compare behaviour between native vs confidential clients.",
+          "Check logs for OAuth threat model detection."
+        ]
+      }
+    ],
+    "comparison_table": {
+      "caption": "OAuth vs OIDC vs SAML quick reference for testers",
+      "columns": [
+        "Feature",
+        "OAuth 2.0",
+        "OpenID Connect",
+        "SAML 2.0"
+      ],
+      "rows": [
+        [
+          "Primary purpose",
+          "Authorization (API access)",
+          "Authentication + profile",
+          "Authentication (XML assertions)"
+        ],
+        [
+          "Token format",
+          "Bearer tokens (opaque or JWT)",
+          "JWT ID token + OAuth tokens",
+          "XML assertions signed with X.509"
+        ],
+        [
+          "Common flaws",
+          "Redirect URI validation, missing state",
+          "Nonce/PKCE issues, token audience leaks",
+          "Unsigned assertions, weak signature validation"
+        ]
+      ]
+    },
+    "resources": [
+      {
+        "label": "OWASP OAuth 2.0 Security Cheat Sheet",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/OAuth2_Security_Cheat_Sheet.html",
+        "description": "Authoritative list of OAuth testing controls."
+      },
+      {
+        "label": "Auth0 - OAuth 2.0 best practices",
+        "url": "https://auth0.com/docs/security/best-practices/oauth",
+        "description": "Vendor-agnostic primer on secure OAuth designs."
+      },
+      {
+        "label": "PortSwigger OAuth cheat sheet",
+        "url": "https://portswigger.net/web-security/oauth",
+        "description": "Hands-on exploitation guidance for researchers."
+      },
+      {
+        "label": "Identity security monitoring (MITRE ATT&CK)",
+        "url": "https://attack.mitre.org/tactics/TA0006/",
+        "description": "Map OAuth/OIDC abuse to ATT&CK tactics."
+      }
+    ]
+  },
+  {
+    "id": "federation-attack-scenarios",
+    "name": "Federation Attack Scenarios",
+    "summary": "Conceptual and lab-focused scenarios for testing SAML, WS-Fed, and hybrid federation setups, covering Golden SAML, token theft, and trust misconfiguration risks.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install federation toolkits and SAML analysis utilities.",
+        "steps": [
+          {
+            "detail": "sudo apt install -y xmlsec openssl python3-pip",
+            "copyable": true
+          },
+          {
+            "detail": "pip install saml2aws pysaml2 signedjson",
+            "copyable": true
+          },
+          {
+            "detail": "wget https://github.com/SecurityFTW/cs-suite/releases/download/v4.4/saml_toolkit.zip",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Add federation-focused scripts to the offensive toolkit.",
+        "steps": [
+          {
+            "detail": "git clone https://github.com/mandiant/golden_saml.git ~/golden_saml",
+            "copyable": true
+          },
+          {
+            "detail": "pip install -r ~/golden_saml/requirements.txt",
+            "copyable": true
+          },
+          {
+            "detail": "apt install -y krb5-user heimdal-clients",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Lab / Cloud Sandbox",
+        "summary": "Stand up lab IdP/SP pairs (AD FS, Okta sandbox, Shibboleth) to demonstrate abuse safely.",
+        "steps": [
+          {
+            "detail": "Deploy Active Directory + AD FS with self-signed token-signing certs",
+            "copyable": false
+          },
+          {
+            "detail": "Create Shibboleth SP pointing to the lab IdP and enable verbose logging",
+            "copyable": false
+          },
+          {
+            "detail": "Generate disposable signing certificates to test trust validation",
+            "copyable": false
+          }
+        ]
+      }
+    ],
+    "step_sequences": [
+      {
+        "title": "Map federation topology",
+        "steps": [
+          {
+            "title": "Identify identity providers",
+            "details": "List IdPs (AD FS, Okta, Azure AD, Ping) and their metadata endpoints.",
+            "command": "python3 saml_metadata.py --url https://idp.lab/federationmetadata/2007-06/federationmetadata.xml"
+          },
+          {
+            "title": "Inventory service providers",
+            "details": "Gather relying party trust identifiers, ACS URLs, and token requirements.",
+            "command": "Get-AdfsRelyingPartyTrust | Select Name,Identifier,SigningCertificateRevocationCheck"
+          },
+          {
+            "title": "Assess trust chains",
+            "details": "Determine whether SPs trust multiple IdPs and how certificates are rotated.",
+            "command": "grep -R 'entityID' shibboleth-sp/conf/"
+          }
+        ]
+      },
+      {
+        "title": "Evaluate token signing and protection",
+        "steps": [
+          {
+            "title": "Check certificate hygiene",
+            "details": "Identify weak hashing algorithms, expired certificates, or certificates stored on disk without HSM protection.",
+            "command": "openssl x509 -in token-signing.cer -text -noout"
+          },
+          {
+            "title": "Test signature validation",
+            "details": "Modify SAML assertions to remove signatures or change attributes to ensure SPs reject tampered tokens.",
+            "command": "python3 saml_tamper.py assertion.xml --strip-signature"
+          },
+          {
+            "title": "Simulate stolen key scenario",
+            "details": "Load lab token-signing cert into Golden SAML tooling to craft forged assertions.",
+            "command": "python3 golden_saml.py --cert token-signing.pfx --user admin@lab.local"
+          }
+        ]
+      },
+      {
+        "title": "Replay & federation abuse",
+        "steps": [
+          {
+            "title": "Assertion replay testing",
+            "details": "Determine if assertions can be replayed multiple times or across SPs without detection.",
+            "command": "python3 saml_replay.py --assertion assertion.xml --count 3"
+          },
+          {
+            "title": "Token theft lab",
+            "details": "Simulate theft of cached tokens from SSO agents (e.g., Okta, Duo) and replay in lab SPs.",
+            "command": "./agent_cache_dump.sh --output tokens.bin"
+          },
+          {
+            "title": "Trust misconfiguration",
+            "details": "Add rogue IdP metadata and verify whether SP accepts tokens without administrator approval.",
+            "command": "Set-AdfsRelyingPartyTrust -TargetName 'Lab SP' -SigningCertificateRevocationCheck None"
+          }
+        ]
+      },
+      {
+        "title": "Detection and resilience",
+        "steps": [
+          {
+            "title": "Enable auditing",
+            "details": "Turn on IdP debug logs, AD FS Event Tracing, and SIEM ingestion before tests.",
+            "command": "wevtutil sl 'AD FS/Admin' /e:true"
+          },
+          {
+            "title": "Correlate events",
+            "details": "Ensure unusual assertion issuances or certificate exports trigger alerts.",
+            "command": "python3 correlate_events.py --log-dir logs/"
+          },
+          {
+            "title": "Reset trust",
+            "details": "Rotate signing certificates, disable compromised trusts, and document final state.",
+            "command": "powershell Rotate-AdfsSigningCertificate"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "Golden SAML / federation kill-chain rehearsal",
+        "stages": [
+          {
+            "label": "Recon",
+            "description": "Collect federation metadata, signing cert fingerprints, and SP identifiers.",
+            "command": "python3 federation_recon.py --domain lab.local"
+          },
+          {
+            "label": "Key compromise simulation",
+            "description": "In lab, export token-signing certificates and protect originals offline.",
+            "command": "certutil -exportPFX MY <thumbprint> token-signing.pfx"
+          },
+          {
+            "label": "Forged assertion issuance",
+            "description": "Generate SAML tokens for high-privilege users and replay against lab SPs.",
+            "command": "python3 golden_saml.py --user svc-admin@lab.local --sp urn:sharepoint:sp"
+          },
+          {
+            "label": "Detection & recovery",
+            "description": "Confirm that SIEM or IdP alerts fire, rotate certificates, and re-run to prove closure.",
+            "command": "./federation_reset_checklist.md"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "Assertion signed with SHA-1",
+        "meaning": "Legacy signing algorithm susceptible to collision attacks.",
+        "severity": "medium"
+      },
+      {
+        "indicator": "Unsigned or partially signed assertion accepted",
+        "meaning": "SP trusts tokens without validating signature references, enabling tampering.",
+        "severity": "critical"
+      },
+      {
+        "indicator": "Multiple successful replays within TTL",
+        "meaning": "Replay protections absent; attacker can capture and reuse tokens.",
+        "severity": "high"
+      },
+      {
+        "indicator": "New IdP metadata accepted without approval",
+        "meaning": "Federation trust can be poisoned with rogue IdPs.",
+        "severity": "high"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Hybrid federation pivot",
+        "scenario": "Abuse cloud-synced identities (Azure AD Connect) to mint tokens for on-prem SPs.",
+        "command": "python3 hybrid_pivot.py --aad-app-id ...",
+        "notes": [
+          "Requires explicit approval and lab assets only.",
+          "Check synchronization logs for anomalies."
+        ]
+      },
+      {
+        "title": "Token theft + forge chain",
+        "scenario": "Combine stolen OAuth refresh tokens with forged SAML assertions to access downstream SaaS.",
+        "command": "python3 chained_attack.py --saml assertion.xml --oauth token.jwt",
+        "notes": [
+          "Use sanitized lab tokens.",
+          "Highlight defense-in-depth controls (MFA, device binding)."
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "Mandiant - Golden SAML deep dive",
+        "url": "https://www.mandiant.com/resources/golden-saml",
+        "description": "Background on forging SAML tokens after certificate compromise."
+      },
+      {
+        "label": "Microsoft AD FS security best practices",
+        "url": "https://learn.microsoft.com/windows-server/identity/ad-fs/operations/ad-fs-security-best-practices",
+        "description": "Hardening steps for federation infrastructure."
+      },
+      {
+        "label": "NIST SP 800-63C",
+        "url": "https://pages.nist.gov/800-63-3/sp800-63c.html",
+        "description": "Digital authentication guidelines for federation."
+      },
+      {
+        "label": "OWASP Cheat Sheet: SAML Security",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/SAML_Security_Cheat_Sheet.html",
+        "description": "Checklist for secure SAML implementations."
+      }
+    ]
+  }
+]

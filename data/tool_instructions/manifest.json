@@ -740,6 +740,26 @@
     "category": "Cloud Platform Security"
   },
   {
+    "id": "cloud-iam-priv-esc-playbook",
+    "label": "Cloud IAM Privilege Escalation Playbook",
+    "category": "Cloud & Identity Security"
+  },
+  {
+    "id": "cloud-storage-misconfig-playbook",
+    "label": "Cloud Storage Misconfiguration Playbook",
+    "category": "Cloud & Identity Security"
+  },
+  {
+    "id": "sso-oauth-oidc-misconfig-playbook",
+    "label": "SSO/OAuth/OIDC Misconfiguration Playbook",
+    "category": "Cloud & Identity Security"
+  },
+  {
+    "id": "federation-attack-scenarios",
+    "label": "Federation Attack Scenarios",
+    "category": "Cloud & Identity Security"
+  },
+  {
     "id": "trivy",
     "label": "Trivy - Container & VM Scanner",
     "category": "Container & Kubernetes"

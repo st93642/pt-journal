@@ -21,13 +21,13 @@ fn test_default_app_model() {
     assert_eq!(model.selected_phase, 0);
     assert_eq!(model.selected_step, Some(0));
     assert_eq!(model.current_path, None);
-    assert_eq!(model.session.phases.len(), 9); // Updated: 5 pentesting + Bug Bounty + CompTIA + CEH
+    assert_eq!(model.session.phases.len(), 10); // Updated: 5 pentesting + Cloud & Identity + Bug Bounty + CompTIA + PenTest+ + CEH
 }
 
 fn test_session_creation() {
     let session = Session::default();
     assert!(!session.name.is_empty());
-    assert_eq!(session.phases.len(), 9); // Updated: 5 pentesting + Bug Bounty + CompTIA + CEH
+    assert_eq!(session.phases.len(), 10); // Updated: 5 pentesting + Cloud & Identity + Bug Bounty + CompTIA + PenTest+ + CEH
     assert!(session.notes_global.is_empty());
 }
 
@@ -72,9 +72,20 @@ fn test_session_data_integrity() {
     let mut session = Session::default();
     session.notes_global = "Global test notes".to_string();
 
-    // Only modify tutorial steps in first 5 phases (pentesting phases)
-    // Skip bug bounty (phase 5) and CompTIA (phase 6) as they may have quiz steps
-    for (_phase_idx, phase) in session.phases.iter_mut().enumerate().take(5) {
+    const PENTEST_PHASES: [&str; 5] = [
+        "Reconnaissance",
+        "Vulnerability Analysis",
+        "Exploitation",
+        "Post-Exploitation",
+        "Reporting",
+    ];
+
+    // Only modify tutorial steps in core pentesting phases, skip specialized or quiz-heavy phases
+    for phase in session
+        .phases
+        .iter_mut()
+        .filter(|phase| PENTEST_PHASES.contains(&phase.name.as_str()))
+    {
         for step in &mut phase.steps {
             // Only set notes on tutorial steps, not quiz steps
             if !step.is_quiz() {
@@ -98,9 +109,15 @@ fn test_session_data_integrity() {
     assert_eq!(loaded_session.notes_global, "Global test notes");
 
     // Verify that modified tutorial steps have notes
-    for phase in loaded_session.phases.iter().take(5) {
+    for phase in loaded_session
+        .phases
+        .iter()
+        .filter(|phase| PENTEST_PHASES.contains(&phase.name.as_str()))
+    {
         for step in &phase.steps {
-            if !step.is_quiz() && (step.title.contains("enumeration") || step.title.contains("Subdomain")) {
+            if !step.is_quiz()
+                && (step.title.contains("enumeration") || step.title.contains("Subdomain"))
+            {
                 assert!(!step.get_notes().is_empty());
                 assert_matches!(step.status, StepStatus::Done);
             }

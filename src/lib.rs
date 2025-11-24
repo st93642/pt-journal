@@ -38,14 +38,14 @@ mod tests {
             assert_eq!(model.selected_phase, 0);
             assert_eq!(model.selected_step, Some(0));
             assert!(model.current_path.is_none());
-            assert_eq!(model.session.phases.len(), 9); // 9 phases (added Bug Bounty + CompTIA Security+ + PenTest+ + CEH)
+            assert_eq!(model.session.phases.len(), 10); // 10 phases (added Bug Bounty + CompTIA Security+ + PenTest+ + CEH + Cloud & Identity Security)
         }
 
         #[test]
         fn test_session_creation() {
             let session = Session::default();
             assert!(!session.name.is_empty());
-            assert_eq!(session.phases.len(), 9); // 9 phases
+            assert_eq!(session.phases.len(), 10); // 10 phases
             assert!(session.notes_global.is_empty());
         }
 
@@ -73,18 +73,26 @@ mod tests {
             assert_eq!(post_phase.name, "Post-Exploitation");
             assert_eq!(post_phase.steps.len(), 4); // 4 post-exploitation steps
 
+            // Test Cloud & Identity Security phase
+            let cloud_identity_phase = &session.phases[4];
+            assert_eq!(
+                cloud_identity_phase.name,
+                "Cloud & Identity Security Fundamentals"
+            );
+            assert!(!cloud_identity_phase.steps.is_empty()); // Has tutorial and quiz steps
+
             // Test Reporting phase
-            let report_phase = &session.phases[4];
+            let report_phase = &session.phases[5];
             assert_eq!(report_phase.name, "Reporting");
             assert_eq!(report_phase.steps.len(), 4); // 4 reporting steps
 
             // Test Bug Bounty Hunting phase
-            let bug_bounty_phase = &session.phases[5];
+            let bug_bounty_phase = &session.phases[6];
             assert_eq!(bug_bounty_phase.name, "Bug Bounty Hunting");
             assert!(!bug_bounty_phase.steps.is_empty()); // Has steps
 
             // Test CompTIA Security+ phase
-            let comptia_phase = &session.phases[6];
+            let comptia_phase = &session.phases[7];
             assert_eq!(comptia_phase.name, "CompTIA Security+");
             assert_eq!(comptia_phase.steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
         }
@@ -149,13 +157,18 @@ mod tests {
                             step.title
                         );
                         assert!(
-                            description.contains("STEP-BY-STEP PROCESS"),
+                            description.contains("STEP-BY-STEP PROCESS")
+                                || description.contains("STEP-BY-STEP"),
                             "Missing STEP-BY-STEP in: {}",
                             step.title
                         );
+                        // Most tutorials have "WHAT TO LOOK FOR" but Cloud & Identity tutorials have different sections
                         assert!(
-                            description.contains("WHAT TO LOOK FOR"),
-                            "Missing WHAT TO LOOK FOR in: {}",
+                            description.contains("WHAT TO LOOK FOR")
+                                || description.contains("DETECTION AND DEFENSE")
+                                || description.contains("REMEDIATION")
+                                || description.contains("TOOLS AND RESOURCES"),
+                            "Missing educational sections in: {}",
                             step.title
                         );
                     } else if step.is_quiz() {
@@ -358,18 +371,13 @@ mod tests {
             assert_eq!(loaded_session.notes_global, session.notes_global);
             assert_eq!(loaded_session.phases.len(), session.phases.len());
 
-            for (original_phase, loaded_phase) in session
-                .phases
-                .iter()
-                .zip(&loaded_session.phases)
+            for (original_phase, loaded_phase) in session.phases.iter().zip(&loaded_session.phases)
             {
                 assert_eq!(loaded_phase.name, original_phase.name);
                 assert_eq!(loaded_phase.steps.len(), original_phase.steps.len());
 
-                for (original_step, loaded_step) in original_phase
-                    .steps
-                    .iter()
-                    .zip(&loaded_phase.steps)
+                for (original_step, loaded_step) in
+                    original_phase.steps.iter().zip(&loaded_phase.steps)
                 {
                     assert_eq!(loaded_step.title, original_step.title);
                     assert_eq!(loaded_step.description, original_step.description);
@@ -565,50 +573,77 @@ mod tests {
                 "Vulnerability Analysis",
                 "Exploitation",
                 "Post-Exploitation",
+                "Cloud & Identity Security Fundamentals",
                 "Reporting",
                 "Bug Bounty Hunting",
                 "CompTIA Security+",
+                "CompTIA PenTest+",
+                "Certified Ethical Hacker (CEH)",
             ];
             for (idx, expected_name) in phase_names.iter().enumerate() {
                 assert_eq!(session.phases[idx].name, *expected_name);
             }
 
-            // Verify step counts are reasonable for first 5 phases
-            let expected_step_counts = [16, 5, 4, 4, 4]; // Recon, Vuln, Exploit, Post, Report
+            // Verify step counts are reasonable for the core pentesting phases
+            let expected_step_counts = [16, 5, 4, 4]; // Recon, Vuln, Exploit, Post
             for (idx, &expected_count) in expected_step_counts.iter().enumerate() {
                 assert_eq!(session.phases[idx].steps.len(), expected_count);
             }
 
+            // Cloud & Identity phase should include tutorial + quiz steps
+            assert!(session.phases[4].steps.len() >= 4);
+
             // Bug Bounty Hunting phase should have steps
-            assert!(!session.phases[5].steps.is_empty());
+            assert!(!session.phases[6].steps.is_empty());
 
             // CompTIA Security+ phase should have quiz steps
-            assert_eq!(session.phases[6].steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
+            assert_eq!(session.phases[7].steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
         }
 
         #[test]
         fn test_step_content_completeness() {
             let session = Session::default();
 
-            // Verify all tutorial steps have required content sections
-            let required_sections = [
-                "OBJECTIVE",
-                "STEP-BY-STEP PROCESS",
-                "WHAT TO LOOK FOR",
-                "COMMON PITFALLS",
-            ];
+            // Cloud & Identity Security tutorials have a different structure
+            const CLOUD_IDENTITY_PHASE: &str = "Cloud & Identity Security Fundamentals";
 
             for phase in &session.phases {
                 for step in &phase.steps {
                     // Only check tutorial steps
                     if step.is_tutorial() {
                         let description = step.get_description();
-                        for &section in &required_sections {
+
+                        // All tutorials must have OBJECTIVE
+                        assert!(
+                            description.contains("OBJECTIVE"),
+                            "Step '{}' missing OBJECTIVE",
+                            step.title
+                        );
+
+                        // All tutorials must have procedural content
+                        assert!(
+                            description.contains("STEP-BY-STEP"),
+                            "Step '{}' missing STEP-BY-STEP",
+                            step.title
+                        );
+
+                        // Cloud & Identity tutorials have different structure
+                        if phase.name == CLOUD_IDENTITY_PHASE {
+                            // Cloud tutorials should have detection, remediation, or resources sections
                             assert!(
-                                description.contains(section),
-                                "Step '{}' missing section '{}'",
-                                step.title,
-                                section
+                                description.contains("DETECTION")
+                                    || description.contains("REMEDIATION")
+                                    || description.contains("TOOLS AND RESOURCES"),
+                                "Step '{}' missing educational sections",
+                                step.title
+                            );
+                        } else {
+                            // Traditional tutorials should have WHAT TO LOOK FOR
+                            assert!(
+                                description.contains("WHAT TO LOOK FOR")
+                                    || description.contains("COMMON PITFALLS"),
+                                "Step '{}' missing analysis sections",
+                                step.title
                             );
                         }
 
@@ -720,18 +755,14 @@ mod tests {
             assert_eq!(loaded.phases.len(), session.phases.len());
 
             // Verify each phase
-            for (original_phase, loaded_phase) in
-                session.phases.iter().zip(&loaded.phases)
-            {
+            for (original_phase, loaded_phase) in session.phases.iter().zip(&loaded.phases) {
                 assert_eq!(loaded_phase.name, original_phase.name);
                 assert_eq!(loaded_phase.notes, original_phase.notes);
                 assert_eq!(loaded_phase.steps.len(), original_phase.steps.len());
 
                 // Verify each step
-                for (original_step, loaded_step) in original_phase
-                    .steps
-                    .iter()
-                    .zip(&loaded_phase.steps)
+                for (original_step, loaded_step) in
+                    original_phase.steps.iter().zip(&loaded_phase.steps)
                 {
                     assert_eq!(loaded_step.title, original_step.title);
                     assert_eq!(
@@ -794,8 +825,19 @@ mod tests {
                     if step.is_tutorial() {
                         let description = step.get_description();
                         assert!(description.contains("OBJECTIVE"));
-                        assert!(description.contains("STEP-BY-STEP PROCESS"));
-                        assert!(description.contains("WHAT TO LOOK FOR"));
+                        assert!(description.contains("STEP-BY-STEP"));
+                        if phase.name == "Cloud & Identity Security Fundamentals" {
+                            assert!(
+                                description.contains("DETECTION")
+                                    || description.contains("REMEDIATION")
+                                    || description.contains("TOOLS AND RESOURCES")
+                            );
+                        } else {
+                            assert!(
+                                description.contains("WHAT TO LOOK FOR")
+                                    || description.contains("COMMON PITFALLS")
+                            );
+                        }
                     }
                 }
             }

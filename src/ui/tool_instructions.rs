@@ -108,7 +108,8 @@ fn load_instruction_documents() -> Result<HashMap<String, ToolInstructions>> {
         .with_context(|| format!("Unable to read instructions directory at {INSTRUCTIONS_DIR}"))?;
 
     for entry in entries {
-        let entry = entry.with_context(|| format!("Failed to read directory entry in {INSTRUCTIONS_DIR}"))?;
+        let entry = entry
+            .with_context(|| format!("Failed to read directory entry in {INSTRUCTIONS_DIR}"))?;
         let path = entry.path();
 
         if path.extension().and_then(|s| s.to_str()) == Some("json") {
@@ -123,7 +124,9 @@ fn load_instruction_documents() -> Result<HashMap<String, ToolInstructions>> {
     }
 
     if all_docs.is_empty() {
-        return Err(anyhow!("No instruction documents were loaded from {INSTRUCTIONS_DIR}"));
+        return Err(anyhow!(
+            "No instruction documents were loaded from {INSTRUCTIONS_DIR}"
+        ));
     }
 
     let mut map = HashMap::with_capacity(all_docs.len());
@@ -362,7 +365,11 @@ mod tests {
         // Check that each category appears only once
         let mut seen_categories = std::collections::HashSet::new();
         for group in &groups {
-            assert!(!seen_categories.contains(&group.name), "Category '{}' appears multiple times", group.name);
+            assert!(
+                !seen_categories.contains(&group.name),
+                "Category '{}' appears multiple times",
+                group.name
+            );
             seen_categories.insert(group.name.clone());
         }
 
@@ -370,24 +377,36 @@ mod tests {
         let mut total_tools = 0;
         for group in &groups {
             for tool in &group.tools {
-                assert_eq!(tool.category, group.name, "Tool '{}' has wrong category", tool.id);
+                assert_eq!(
+                    tool.category, group.name,
+                    "Tool '{}' has wrong category",
+                    tool.id
+                );
                 total_tools += 1;
             }
         }
-        assert_eq!(total_tools, registry.manifest.len(), "Not all tools are included in groups");
+        assert_eq!(
+            total_tools,
+            registry.manifest.len(),
+            "Not all tools are included in groups"
+        );
 
         // Check that tools within each category are in the order they appear in the manifest
         for group in &groups {
-            let expected_order: Vec<_> = registry.manifest.iter()
+            let expected_order: Vec<_> = registry
+                .manifest
+                .iter()
                 .filter(|entry| entry.category == group.name)
                 .map(|entry| entry.id.clone())
                 .collect();
 
-            let actual_order: Vec<_> = group.tools.iter()
-                .map(|tool| tool.id.clone())
-                .collect();
+            let actual_order: Vec<_> = group.tools.iter().map(|tool| tool.id.clone()).collect();
 
-            assert_eq!(actual_order, expected_order, "Tools in category '{}' are not in manifest order", group.name);
+            assert_eq!(
+                actual_order, expected_order,
+                "Tools in category '{}' are not in manifest order",
+                group.name
+            );
         }
     }
 
@@ -494,6 +513,25 @@ mod tests {
         ];
 
         for id in tools {
+            let doc = registry
+                .instructions
+                .get(id)
+                .unwrap_or_else(|| panic!("missing instructions for {id}"));
+            assert_instruction_has_required_sections(doc, id);
+        }
+    }
+
+    #[test]
+    fn cloud_identity_playbooks_have_populated_sections() {
+        let registry = load_registry().expect("instructions should load");
+        let playbooks = [
+            "cloud-iam-priv-esc-playbook",
+            "cloud-storage-misconfig-playbook",
+            "sso-oauth-oidc-misconfig-playbook",
+            "federation-attack-scenarios",
+        ];
+
+        for id in playbooks {
             let doc = registry
                 .instructions
                 .get(id)

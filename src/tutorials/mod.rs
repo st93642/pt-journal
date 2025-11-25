@@ -4,6 +4,7 @@ pub mod ceh;
 pub mod cloud_identity;
 pub mod cloud_native;
 pub mod comptia_secplus;
+pub mod container_security;
 pub mod exploitation;
 pub mod modern_web;
 pub mod pentest_exam;
@@ -32,12 +33,11 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         create_jwt_spa_phase(),
         create_websocket_grpc_phase(),
         create_reporting_phase(),
+        create_container_security_phase(),
         create_bug_bounty_hunting_phase(),
         create_comptia_secplus_phase(),
         create_pentest_exam_phase(),
         create_ceh_phase(),
-        create_container_breakout_phase(),
-        create_kubernetes_attacks_phase(),
         create_cicd_pipeline_attacks_phase(),
         create_sbom_analysis_phase(),
         create_dependency_confusion_phase(),
@@ -198,23 +198,12 @@ fn create_websocket_grpc_phase() -> Phase {
     }
 }
 
-fn create_container_breakout_phase() -> Phase {
-    let steps = vec![cloud_native::container_breakout_phase()];
+fn create_container_security_phase() -> Phase {
+    let steps = container_security::get_container_security_steps();
 
     Phase {
         id: Uuid::new_v4(),
-        name: "Container Breakout Playbook".to_string(),
-        steps,
-        notes: String::new(),
-    }
-}
-
-fn create_kubernetes_attacks_phase() -> Phase {
-    let steps = vec![cloud_native::kubernetes_attacks_phase()];
-
-    Phase {
-        id: Uuid::new_v4(),
-        name: "Kubernetes Pod-to-Cluster Attacks".to_string(),
+        name: "Container & Kubernetes Security".to_string(),
         steps,
         notes: String::new(),
     }

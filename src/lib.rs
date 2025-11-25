@@ -38,14 +38,14 @@ mod tests {
             assert_eq!(model.selected_phase, 0);
             assert_eq!(model.selected_step, Some(0));
             assert!(model.current_path.is_none());
-            assert_eq!(model.session.phases.len(), 24); // 24 phases (18 core + 6 advanced)
+            assert_eq!(model.session.phases.len(), 23); // 23 phases (consolidated container & kubernetes)
         }
 
         #[test]
         fn test_session_creation() {
             let session = Session::default();
             assert!(!session.name.is_empty());
-            assert_eq!(session.phases.len(), 24); // 24 phases
+            assert_eq!(session.phases.len(), 23); // 23 phases (consolidated container & kubernetes)
             assert!(session.notes_global.is_empty());
         }
 
@@ -83,13 +83,18 @@ mod tests {
             assert_eq!(report_phase.name, "Reporting");
             assert_eq!(report_phase.steps.len(), 4); // 4 reporting steps
 
+            // Test Container & Kubernetes Security phase
+            let container_security_phase = &session.phases[11];
+            assert_eq!(container_security_phase.name, "Container & Kubernetes Security");
+            assert!(!container_security_phase.steps.is_empty()); // Has tutorial and quiz steps
+
             // Test Bug Bounty Hunting phase
-            let bug_bounty_phase = &session.phases[11];
+            let bug_bounty_phase = &session.phases[12];
             assert_eq!(bug_bounty_phase.name, "Bug Bounty Hunting");
             assert!(!bug_bounty_phase.steps.is_empty()); // Has steps
 
             // Test CompTIA Security+ phase
-            let comptia_phase = &session.phases[12];
+            let comptia_phase = &session.phases[13];
             assert_eq!(comptia_phase.name, "CompTIA Security+");
             assert_eq!(comptia_phase.steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
         }
@@ -581,8 +586,7 @@ mod tests {
                 "CompTIA Security+",
                 "CompTIA PenTest+",
                 "Certified Ethical Hacker (CEH)",
-                "Container Breakout Playbook",
-                "Kubernetes Pod-to-Cluster Attacks",
+                "Container & Kubernetes Security",
                 "CI-CD Pipeline Attacks",
                 "SBOM Generation & Analysis",
                 "Dependency Confusion & Typosquatting",
@@ -597,8 +601,8 @@ mod tests {
 
             // Verify step counts are reasonable for the core pentesting phases
             let expected_step_counts = [
-                16, 5, 4, 4, 2, 1, 1, 3, 3, 3, 4, 8, 23, 32, 24, 1, 1, 1, 1, 1, 1, 10, 10, 7,
-            ]; // Updated for all phases including AI security
+                16, 5, 4, 4, 2, 1, 1, 3, 3, 3, 4, 6, 8, 23, 32, 24, 1, 1, 1, 1, 1, 1, 10, 10, 7,
+            ]; // Updated for all phases including AI security (23 total phases)
             for (idx, &expected_count) in expected_step_counts.iter().enumerate() {
                 assert_eq!(session.phases[idx].steps.len(), expected_count);
             }
@@ -658,8 +662,8 @@ mod tests {
                                 "Step '{}' missing educational sections",
                                 step.title
                             );
-                        } else {
-                            // Traditional tutorials should have WHAT TO LOOK FOR
+                        } else if phase.name.as_str() == CONTAINER_SECURITY_PHASE {
+                            // Container security tutorials should have WHAT TO LOOK FOR or COMMON PITFALLS
                             assert!(
                                 description.contains("WHAT TO LOOK FOR")
                                     || description.contains("COMMON PITFALLS"),

@@ -133,6 +133,11 @@ impl ChatPanel {
         content_label.set_max_width_chars(80);
         content_label.set_selectable(true);
         content_label.add_css_class("chat-message-content");
+        
+        // Add specific class for assistant messages to increase font size
+        if matches!(message.role, ChatRole::Assistant) {
+            content_label.add_css_class("assistant-content");
+        }
 
         message_box.append(&role_label);
         message_box.append(&time_label);

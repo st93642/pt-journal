@@ -56,6 +56,10 @@ pub fn build_ui(app: &Application, model: AppModel) {
             font-size: 11px;
         }
         
+        .assistant-content {
+            font-size: 14px;
+        }
+        
         .user-message {
             color: #00ff00;
             font-weight: bold;

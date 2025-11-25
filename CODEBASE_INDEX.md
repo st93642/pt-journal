@@ -7,9 +7,9 @@
 - **Language**: Rust 2021 Edition
 - **Version**: v0.1.0 (Foundation Complete)
 - **Architecture**: 4-layer modular design
-- **Lines of Code**: ~25,000 lines of Rust
-- **Test Coverage**: 153 tests (100% pass rate)
-- **Modules**: 52 Rust source files
+- **Lines of Code**: ~26,000 lines of Rust
+- **Test Coverage**: 161 tests (100% pass rate)
+- **Modules**: 53 Rust source files
 - **Tool Catalog**: 226 tools across 32 security categories
 
 ## 🏗️ Architecture Overview
@@ -47,7 +47,7 @@ PT Journal follows a layered architecture with clear separation of concerns:
 
 ```text
 pt-journal/
-├── src/                        # Application source code (~25,000 lines)
+├── src/                        # Application source code (~26,000 lines)
 │   ├── main.rs                 # Application entry point (37 lines)
 │   ├── lib.rs                  # Library root with comprehensive test suite (1,155 lines)
 │   ├── model.rs                # Core domain models (664 lines)
@@ -55,7 +55,7 @@ pt-journal/
 │   ├── dispatcher.rs           # Event dispatcher (247 lines)
 │   ├── quiz/                   # Quiz system
 │   │   └── mod.rs             # Question parsing (335 lines)
-│   ├── tutorials/              # Tutorial content (15,363 lines)
+│   ├── tutorials/              # Tutorial content (16,363 lines)
 │   │   ├── mod.rs             # Tutorial loader (186 lines)
 │   │   ├── reconnaissance.rs   # 16-step reconnaissance (3,323 lines)
 │   │   ├── vulnerability_analysis.rs  # 5-step vuln analysis (1,390 lines)
@@ -291,23 +291,21 @@ dispatcher.dispatch(Message::SessionLoaded { session });
 5. **Cloud IAM Abuse 101** (2 steps) - cloud_identity.rs
 6. **Practical OAuth/OIDC Abuse** (1 step) - cloud_identity.rs
 7. **SSO & Federation Misconfigurations** (1 step) - cloud_identity.rs
-8. **Modern API & GraphQL Testing Playbook** (3 steps) - modern_web.rs
-9. **JWT & SPA Security** (3 steps) - modern_web.rs
-10. **Real-Time/WebSocket Testing** (3 steps) - modern_web.rs
-11. **Reporting** (4 steps) - reporting.rs
-12. **Container & Kubernetes Security** (6 steps) - container_security.rs
-13. **Serverless Security** (7 steps) - serverless_security.rs
-14. **Bug Bounty Hunting** (8 steps) - bug_bounty_hunting.rs
-15. **CompTIA Security+** (23 quiz steps) - comptia_secplus.rs
-16. **CompTIA PenTest+** (32 quiz steps) - pentest_exam.rs
-17. **Certified Ethical Hacker (CEH)** (24 quiz steps) - ceh.rs
-18. **CI-CD Pipeline Attacks** (1 step) - cloud_native.rs
-19. **SBOM Generation & Analysis** (1 step) - supply_chain.rs
-20. **Dependency Confusion & Typosquatting** (1 step) - supply_chain.rs
-21. **Artifact Integrity Checks** (1 step) - supply_chain.rs
-22. **Red Team Tradecraft** (10 steps) - red_team_tradecraft.rs
-23. **Purple Team/Threat Hunting** (10 steps) - purple_team_threat_hunting.rs
-24. **AI & LLM Security** (7 steps) - ai_security.rs
+8. **API Security** (7 steps) - modern_web.rs
+9. **Reporting** (4 steps) - reporting.rs
+10. **Container & Kubernetes Security** (6 steps) - container_security.rs
+11. **Serverless Security** (7 steps) - serverless_security.rs
+12. **Bug Bounty Hunting** (8 steps) - bug_bounty_hunting.rs
+13. **CompTIA Security+** (23 quiz steps) - comptia_secplus.rs
+14. **CompTIA PenTest+** (32 quiz steps) - pentest_exam.rs
+15. **Certified Ethical Hacker (CEH)** (24 quiz steps) - ceh.rs
+16. **CI-CD Pipeline Attacks** (1 step) - cloud_native.rs
+17. **SBOM Generation & Analysis** (1 step) - supply_chain.rs
+18. **Dependency Confusion & Typosquatting** (1 step) - supply_chain.rs
+19. **Artifact Integrity Checks** (1 step) - supply_chain.rs
+20. **Red Team Tradecraft** (10 steps) - red_team_tradecraft.rs
+21. **Purple Team/Threat Hunting** (10 steps) - purple_team_threat_hunting.rs
+22. **AI & LLM Security** (7 steps) - ai_security.rs
 
 **Content Structure**:
 
@@ -394,7 +392,7 @@ tests/
 
 ### Test Coverage
 
-- **Total Tests**: 153
+- **Total Tests**: 161
 - **Pass Rate**: 100%
 - **Coverage Areas**:
   - Model layer: Session, Phase, Step, Evidence, Quiz
@@ -587,7 +585,7 @@ pub enum NmapScanType {
 | Integration Tests | 10+ | End-to-end workflows |
 | Property Tests | 10+ | Randomized input validation |
 
-**Total**: 153 tests with 100% pass rate
+**Total**: 161 tests with 100% pass rate
 
 ## 🚀 Development Workflow
 

@@ -1,0 +1,42 @@
+# AI/ML Security Quiz
+# Questions covering prompt injection, data exfiltration, model poisoning, adversarial examples, and guardrails
+
+What is prompt injection?|A technique where malicious users craft inputs to override AI system instructions|Direct injection of code into AI models|Modifying model weights during training|Encrypting AI communications|1|Prompt injection exploits how AI models process user inputs as part of their system prompts, allowing attackers to override intended behavior.|AI/ML Security|Prompt Injection
+
+Which of the following is NOT a common jailbreaking technique?|DAN (Do Anything Now) persona|Base64 encoding of prompts|Gradient descent optimization|Developer mode activation|2|Gradient descent is an optimization algorithm used in training, not a jailbreaking technique.|AI/ML Security|Jailbreaking
+
+What does membership inference attack try to determine?|Whether specific data was used in model training|The model's internal architecture|Training hyperparameters|Model confidence scores|0|Membership inference determines if particular data samples were part of the training dataset.|AI/ML Security|Data Exfiltration
+
+Which defense technique adds noise to training data to prevent privacy attacks?|Differential privacy|Adversarial training|Input sanitization|Model distillation|0|Differential privacy adds controlled noise to protect individual data points during training.|AI/ML Security|Privacy Protection
+
+What is a backdoor attack in ML?|Inserting hidden triggers that activate malicious behavior|Stealing model weights|Overloading training data|Modifying loss functions|0|Backdoor attacks embed triggers that cause misbehavior when activated during inference.|AI/ML Security|Model Poisoning
+
+Which attack generates small perturbations to cause misclassification?|Adversarial examples|Data poisoning|Model inversion|Evasion attacks|0|Adversarial examples add imperceptible perturbations to fool classifiers.|AI/ML Security|Adversarial Examples
+
+What is model inversion?|Reconstructing training data from model outputs|Flipping model predictions|Modifying model architecture|Encrypting model weights|0|Model inversion reconstructs original training data from model predictions.|AI/ML Security|Data Exfiltration
+
+Which framework provides systematic AI threat modeling?|MITRE ATLAS|TCP/IP|OSI Model|CIA Triad|0|MITRE ATLAS provides a comprehensive framework for AI system threat modeling.|AI/ML Security|Threat Modeling
+
+What does FGSM stand for in adversarial ML?|Fast Gradient Sign Method|Federated Gradient Sharing Model|Fast Gradient Security Module|Feature Gradient Sign Method|0|FGSM is a fast method for generating adversarial examples using gradient information.|AI/ML Security|Adversarial Examples
+
+Which technique uses correct labels but manipulates features?|Clean-label poisoning|Backdoor attacks|Direct poisoning|Label flipping|0|Clean-label poisoning maintains correct labels while subtly altering features.|AI/ML Security|Data Poisoning
+
+What is the main goal of guardrail validation?|Ensure AI systems behave safely and ethically|Maximize model accuracy|Reduce training time|Minimize model size|0|Guardrail validation ensures AI systems operate within safe and ethical boundaries.|AI/ML Security|Safety Guardrails
+
+Which attack extracts sensitive attributes from model outputs?|Attribute inference|Model stealing|Data poisoning|Evasion attacks|0|Attribute inference extracts demographic or sensitive information from model predictions.|AI/ML Security|Privacy Attacks
+
+What is transferability in adversarial examples?|Attacks working across different models|Moving models between devices|Sharing attack code|Converting attacks to different formats|0|Transferability means adversarial examples crafted for one model work on others.|AI/ML Security|Adversarial Examples
+
+Which EU regulation requires AI safety assessments?|AI Act|GDPR|CCPA|HIPAA|0|The EU AI Act requires comprehensive safety assessments for high-risk AI systems.|AI/ML Security|Regulatory Compliance
+
+What does PGD stand for?|Projected Gradient Descent|Personal Gradient Defense|Projected Gradient Defense|Public Gradient Descent|0|PGD is an iterative method for generating strong adversarial examples.|AI/ML Security|Adversarial Examples
+
+Which technique encourages verbatim reproduction of training data?|Prompt engineering for extraction|Adversarial training|Model distillation|Federated learning|0|Carefully crafted prompts can cause models to reproduce training data verbatim.|AI/ML Security|Data Exfiltration
+
+What is a common defense against prompt injection?|Input sanitization|Increasing model size|Using more training data|Reducing learning rate|0|Input sanitization removes or escapes potentially harmful prompt content.|AI/ML Security|Defense Techniques
+
+Which attack compromises third-party ML components?|Supply chain attacks|Direct poisoning|Evasion attacks|Model inversion|0|Supply chain attacks target dependencies and pre-trained models from third parties.|AI/ML Security|Supply Chain Security
+
+What does CW stand for in adversarial attacks?|Carlini-Wagner|Convolutional Wavelet|Critical Weakness|Controlled Weight|0|Carlini-Wagner attacks generate minimal perturbations for adversarial examples.|AI/ML Security|Adversarial Examples
+
+Which testing framework is commonly used for AI safety?|garak|JUnit|pytest|Selenium|0|garak is a specialized framework for testing AI model safety and vulnerabilities.|AI/ML Security|Testing Tools

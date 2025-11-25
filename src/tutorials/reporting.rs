@@ -187,18 +187,24 @@ COMMON PITFALLS:
 - **Lost Evidence**: Hard drive failure without backups destroys evidence
 - **Incomplete Documentation**: Forgetting to document steps makes reproduction impossible
 
-TOOLS REFERENCE:
+DETECTION:
+- **Complete Evidence Chain**: Every finding has supporting screenshots, logs, and captures
+- **Clear Visual Evidence**: Screenshots highlight vulnerabilities with annotations and context
+- **Reproducible PoCs**: Scripts and commands enable clients to verify findings
+- **Timestamped Documentation**: All evidence includes dates, times, and sequence of events
+
+REMEDIATION:
+- **Organized Structure**: Logical folder hierarchy with clear naming conventions
+- **Integrity Verification**: Hashes and signatures prove evidence hasn't been tampered with
+- **Sanitized Data**: Client sensitive information redacted or removed from evidence
+- **Backup Procedures**: Multiple copies stored securely with retention policies
+
+TOOLS AND RESOURCES:
 - **Flameshot/Shutter**: Linux screenshot tools with annotation
 - **Wireshark/tshark**: Network traffic analysis and filtering
 - **FFmpeg**: Video recording of exploitation demonstrations
 - **Asciinema**: Terminal session recording
-- **GIMP/Inkscape**: Screenshot editing and annotation
-
-FURTHER READING:
-- PTES Reporting: http://www.pentest-standard.org/index.php/Reporting
-- NIST SP 800-86: Guide to Integrating Forensic Techniques into Incident Response
-- NIST SP 800-115 Section 9: Reporting and analysis
-- ISO 27001 A.18.1.3: Protection of records"
+- **GIMP/Inkscape**: Screenshot editing and annotation"
     ),
     (
         "Risk rating",
@@ -397,6 +403,27 @@ TOOLS REFERENCE:
 - **CVSS Calculator**: https://www.first.org/cvss/calculator/3.1
 - **OWASP Risk Rating**: https://owasp.org/www-community/OWASP_Risk_Rating_Methodology
 - **NIST SP 800-30**: https://csrc.nist.gov/publications/detail/sp/800-30/rev-1/final
+
+DETECTION:
+- **Inconsistent Scoring**: Different assessors assigning different severity levels to same vulnerability
+- **Missing Business Context**: Risk scores not reflecting actual business impact or compensating controls
+- **Score Inflation**: Over-rating vulnerabilities to emphasize importance or justify budget
+- **Lack of Documentation**: Risk assessments without supporting evidence or rationale
+- **Outdated Assessments**: Risk ratings not updated after remediation or environmental changes
+
+REMEDIATION:
+- **Standardize Methodology**: Use consistent frameworks (CVSS, OWASP Risk Rating) across all assessments
+- **Cross-Validation**: Have multiple assessors review high-risk findings independently
+- **Business Impact Integration**: Include financial, operational, reputational impacts in scoring
+- **Compensating Controls**: Factor existing mitigations into final risk ratings
+- **Regular Reviews**: Update risk assessments quarterly or after significant changes
+
+TOOLS:
+- **Risk Assessment Templates**: Standardized forms for consistent scoring
+- **Risk Registers**: Databases tracking all identified risks with status and owners
+- **Risk Heat Maps**: Visual representations of risk landscape for executive communication
+- **Automated Scoring Tools**: Scripts or tools that calculate CVSS scores from vulnerability data
+- **Risk Trending Dashboards**: Charts showing risk changes over time
 
 FURTHER READING:
 - CVSS v3.1 Specification: https://www.first.org/cvss/v3.1/specification-document
@@ -668,6 +695,27 @@ TOOLS REFERENCE:
 - **SonarQube**: https://www.sonarqube.org/ (Static code analysis)
 - **Semgrep**: https://semgrep.dev/ (Security-focused SAST)
 - **OWASP Cheat Sheets**: https://cheatsheetseries.owasp.org/
+
+DETECTION:
+- **Incomplete Remediation Plans**: Missing specific technical steps or timelines
+- **Unrealistic Timelines**: Demanding immediate fixes for complex architectural changes
+- **Generic Recommendations**: Vague advice like improve security without actionable details
+- **Missing Validation Procedures**: No clear way to verify remediation effectiveness
+- **Resource Constraints Ignored**: Not accounting for staff, budget, or downtime requirements
+
+REMEDIATION:
+- **Develop Detailed Action Plans**: Include specific commands, code changes, and configuration updates
+- **Set Realistic Timelines**: Consider business constraints and resource availability
+- **Include Validation Steps**: Define clear acceptance criteria and testing procedures
+- **Plan for Rollback**: Document contingency procedures if remediation causes issues
+- **Communicate Dependencies**: Identify prerequisites and interdependencies between fixes
+
+TOOLS:
+- **Jira/ServiceNow**: Remediation tracking and workflow management
+- **GitLab/GitHub**: Code review and change management for software fixes
+- **Ansible/Chef/Puppet**: Configuration management for infrastructure changes
+- **Burp Suite/ZAP**: Web application vulnerability validation
+- **OpenVAS/Nessus**: Infrastructure vulnerability scanning and verification
 
 FURTHER READING:
 - NIST SP 800-40 Patch Management: https://csrc.nist.gov/publications/

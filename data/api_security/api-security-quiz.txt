@@ -1,0 +1,40 @@
+# API Security Quiz
+# Format: question|answer_a|answer_b|answer_c|answer_d|correct_idx|explanation|domain|subdomain
+
+Which OWASP API Top 10 vulnerability involves accessing other users' data by modifying object IDs?|Broken Object Level Authorization|Broken Authentication|Excessive Data Exposure|Mass Assignment|0|Broken Object Level Authorization (BOLA/API01:2023) occurs when API endpoints don't properly validate user access to specific objects, allowing ID manipulation attacks.|OWASP API Top 10|Authorization
+
+What is the primary defense against mass assignment vulnerabilities?|Input validation|Parameter whitelisting|Output encoding|Rate limiting|1|Mass assignment attacks can be prevented by maintaining strict whitelists of allowed parameters for create/update operations.|Input Validation|Mass Assignment
+
+Which GraphQL feature should be disabled in production to prevent schema exposure?|Introspection|Mutations|Subscriptions|Fragments|0|GraphQL introspection allows clients to query the schema structure and should be disabled in production environments.|GraphQL Security|Schema Exposure
+
+What type of attack involves manipulating Protocol Buffer messages in gRPC services?|Message injection|Buffer overflow|Type confusion|Field manipulation|3|Protocol Buffer manipulation involves modifying message fields to bypass validation or escalate privileges.|gRPC Security|Protocol Buffers
+
+Which rate limiting bypass technique involves using multiple IP addresses?|IP rotation|Header manipulation|Cookie spoofing|User agent spoofing|0|IP rotation uses proxies, VPNs, or botnets to distribute requests across different IP addresses.|Rate Limiting|Bypass Techniques
+
+What is the most common cause of SQL injection in APIs?|Concatenated queries|Prepared statements|Parameterized queries|Stored procedures|0|SQL injection occurs when user input is concatenated directly into SQL queries without proper escaping or parameterization.|Input Validation|SQL Injection
+
+Which authentication bypass involves changing the JWT algorithm to 'none'?|Algorithm confusion|Signature stripping|Key confusion|Header injection|0|JWT algorithm confusion attacks change the 'alg' header to 'none', causing servers to skip signature verification.|Authentication|JWT Attacks
+
+What does CORS preflight request test?|Cross-origin access|Authentication headers|Rate limiting|Input validation|0|CORS preflight requests (OPTIONS method) test whether cross-origin requests are allowed by the server.|API Discovery|CORS
+
+Which gRPC feature exposes service metadata and should be disabled in production?|Server reflection|Bidirectional streaming|Error details|Compression|0|gRPC server reflection allows clients to discover available services and methods, similar to GraphQL introspection.|gRPC Security|Service Discovery
+
+What is the primary purpose of API rate limiting?|Prevent abuse|Improve performance|Reduce costs|Enable caching|0|Rate limiting primarily protects against abuse, DoS attacks, and resource exhaustion.|Rate Limiting|Purpose
+
+Which input validation technique is most effective against injection attacks?|Blacklisting|Whitelisting|Length limits|Type checking|1|Whitelisting (allowing only known good input) is more secure than blacklisting (blocking known bad input).|Input Validation|Techniques
+
+What does SSRF stand for in API security context?|Server-Side Request Forgery|Secure Socket Request Forwarding|Server Security Response Framework|Service Side Routing Failure|0|SSRF allows attackers to make requests from the server to internal resources or external systems.|Input Validation|SSRF
+
+Which HTTP status code indicates rate limiting has been exceeded?|429 Too Many Requests|403 Forbidden|401 Unauthorized|400 Bad Request|0|HTTP 429 'Too Many Requests' is the standard status code for rate limiting.|Rate Limiting|HTTP Status
+
+What is the main security risk of GraphQL batch queries?|Rate limit bypass|Data exposure|Authentication bypass|Injection attacks|0|Batch queries allow multiple operations in single request, potentially bypassing per-operation rate limits.|GraphQL Security|Batch Abuse
+
+Which authentication method is most vulnerable to replay attacks?|API keys|JWT tokens|OAuth access tokens|Basic authentication|3|Basic authentication sends credentials with every request, making it vulnerable to interception and replay.|Authentication|Replay Attacks
+
+What does XXE stand for?|XML External Entity|Extended XML Encryption|XSS External Execution|XML Entity Expansion|0|XXE attacks exploit XML parsers that process external entity declarations to access local files or make network requests.|Input Validation|XXE
+
+Which rate limiting header shows remaining requests?|X-RateLimit-Remaining|X-RateLimit-Limit|X-RateLimit-Reset|X-RateLimit-Retry|0|X-RateLimit-Remaining indicates how many requests remain in the current window.|Rate Limiting|Headers
+
+What is the most effective way to prevent BOLA attacks?|Randomize IDs|Validate ownership|Use UUIDs|Encrypt IDs|1|Validating that users can only access objects they own is the most effective defense against BOLA.|Authorization|BOLA Prevention
+
+Which GraphQL attack involves deeply nested queries?|Query depth abuse|Field enumeration|Alias injection|Directive manipulation|0|Deeply nested queries can cause resource exhaustion and should be limited by depth.|GraphQL Security|DoS Attacks

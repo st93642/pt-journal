@@ -30,9 +30,7 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         create_cloud_iam_phase(),
         create_practical_oauth_phase(),
         create_sso_federation_phase(),
-        create_modern_api_phase(),
-        create_jwt_spa_phase(),
-        create_websocket_grpc_phase(),
+        create_api_security_phase(),
         create_reporting_phase(),
         create_container_security_phase(),
         create_serverless_security_phase(),
@@ -167,34 +165,12 @@ fn create_sso_federation_phase() -> Phase {
     }
 }
 
-fn create_modern_api_phase() -> Phase {
-    let steps = modern_web::get_modern_api_steps();
+fn create_api_security_phase() -> Phase {
+    let steps = modern_web::get_api_security_steps();
 
     Phase {
         id: Uuid::new_v4(),
-        name: "Modern API & GraphQL Testing Playbook".to_string(),
-        steps,
-        notes: String::new(),
-    }
-}
-
-fn create_jwt_spa_phase() -> Phase {
-    let steps = modern_web::get_jwt_spa_steps();
-
-    Phase {
-        id: Uuid::new_v4(),
-        name: "JWT & SPA Security".to_string(),
-        steps,
-        notes: String::new(),
-    }
-}
-
-fn create_websocket_grpc_phase() -> Phase {
-    let steps = modern_web::get_websocket_grpc_steps();
-
-    Phase {
-        id: Uuid::new_v4(),
-        name: "Real-Time/WebSocket Testing".to_string(),
+        name: "API Security".to_string(),
         steps,
         notes: String::new(),
     }
@@ -366,6 +342,20 @@ fn create_purple_team_threat_hunting_phase() -> Phase {
 fn create_ai_security_phase() -> Phase {
     let mut steps = Vec::new();
 
+    // Add Model Threat Modeling steps
+    for (title, description) in ai_security::MODEL_THREAT_MODELING_STEPS.iter() {
+        steps.push(Step::new_tutorial(
+            Uuid::new_v4(),
+            title.to_string(),
+            description.to_string(),
+            vec![
+                "ai".to_string(),
+                "threat-modeling".to_string(),
+                "security".to_string(),
+            ],
+        ));
+    }
+
     // Add Prompt Injection & Jailbreaks steps
     for (title, description) in ai_security::PROMPT_INJECTION_STEPS.iter() {
         steps.push(Step::new_tutorial(
@@ -380,8 +370,22 @@ fn create_ai_security_phase() -> Phase {
         ));
     }
 
-    // Add LLM Data Exfiltration steps
-    for (title, description) in ai_security::LLM_DATA_EXFILTRATION_STEPS.iter() {
+    // Add Model Poisoning & Dataset Attacks steps
+    for (title, description) in ai_security::MODEL_POISONING_STEPS.iter() {
+        steps.push(Step::new_tutorial(
+            Uuid::new_v4(),
+            title.to_string(),
+            description.to_string(),
+            vec![
+                "ai".to_string(),
+                "ml".to_string(),
+                "poisoning".to_string(),
+            ],
+        ));
+    }
+
+    // Add Data Exfiltration & Model Inversion steps
+    for (title, description) in ai_security::DATA_EXFILTRATION_STEPS.iter() {
         steps.push(Step::new_tutorial(
             Uuid::new_v4(),
             title.to_string(),
@@ -394,19 +398,37 @@ fn create_ai_security_phase() -> Phase {
         ));
     }
 
-    // Add ML Pipeline Threats steps
-    for (title, description) in ai_security::ML_PIPELINE_THREATS_STEPS.iter() {
+    // Add Adversarial Example Crafting steps
+    for (title, description) in ai_security::ADVERSARIAL_EXAMPLES_STEPS.iter() {
         steps.push(Step::new_tutorial(
             Uuid::new_v4(),
             title.to_string(),
             description.to_string(),
-            vec!["ai".to_string(), "ml".to_string(), "mlsec".to_string()],
+            vec![
+                "ai".to_string(),
+                "ml".to_string(),
+                "adversarial".to_string(),
+            ],
+        ));
+    }
+
+    // Add Guardrail Validation steps
+    for (title, description) in ai_security::GUARDRAIL_VALIDATION_STEPS.iter() {
+        steps.push(Step::new_tutorial(
+            Uuid::new_v4(),
+            title.to_string(),
+            description.to_string(),
+            vec![
+                "ai".to_string(),
+                "safety".to_string(),
+                "guardrails".to_string(),
+            ],
         ));
     }
 
     Phase {
         id: Uuid::new_v4(),
-        name: "AI & LLM Security".to_string(),
+        name: "AI/ML Security Integrations".to_string(),
         steps,
         notes: String::new(),
     }

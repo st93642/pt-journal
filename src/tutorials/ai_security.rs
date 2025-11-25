@@ -2,6 +2,152 @@
 ///
 /// This module provides tutorial content for AI and Large Language Model security testing,
 /// covering prompt injection, jailbreaks, data exfiltration, and ML pipeline threats.
+
+use crate::model::{Phase, Step, QuizStep};
+use uuid::Uuid;
+
+/// Model Threat Modeling phase
+pub const MODEL_THREAT_MODELING_STEPS: &[(&str, &str)] = &[
+    (
+        "AI System Threat Modeling Fundamentals",
+        "OBJECTIVE: Learn systematic threat modeling approaches for AI and ML systems, identifying potential attack vectors and security controls.
+
+ACADEMIC BACKGROUND:
+Threat modeling for AI systems extends traditional cybersecurity approaches to address unique challenges posed by machine learning models, training data, and inference pipelines. The MITRE ATLAS framework and OWASP AI Security Guide provide structured methodologies for assessing AI system risks.
+
+KEY CONCEPTS:
+- **STRIDE Framework**: Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Elevation of Privilege
+- **PASTA Methodology**: Process for Attack Simulation and Threat Analysis
+- **ML-Specific Threats**: Data poisoning, model evasion, model inversion, adversarial examples
+- **Supply Chain Risks**: Third-party models, datasets, and infrastructure dependencies
+
+STEP-BY-STEP PROCESS:
+
+1. ASSET IDENTIFICATION:
+   a) Model Assets:
+      - Trained model weights and architecture
+      - Training datasets and preprocessing pipelines
+      - Model artifacts and deployment configurations
+      - API endpoints and inference interfaces
+
+   b) Data Assets:
+      - Training and validation datasets
+      - User input data and query logs
+      - Model outputs and decision rationales
+      - Metadata and provenance information
+
+2. THREAT ACTOR ANALYSIS:
+   a) External Attackers:
+      - Malicious users attempting prompt injection
+      - Competitors seeking model theft
+      - State actors targeting critical infrastructure
+
+   b) Internal Threats:
+      - Insider attacks on training data
+      - Supply chain compromises
+      - Accidental data exposure
+
+3. ATTACK VECTOR MAPPING:
+   a) Pre-training Threats:
+      - Dataset poisoning and backdoors
+      - Training infrastructure compromise
+      - Third-party dependency attacks
+
+   b) Training-time Threats:
+      - Adversarial training data injection
+      - Model architecture tampering
+      - Hyperparameter poisoning
+
+   c) Deployment Threats:
+      - Runtime model manipulation
+      - API abuse and DoS attacks
+      - Adversarial input crafting
+
+4. VULNERABILITY ASSESSMENT:
+   a) Model Vulnerabilities:
+      - Prompt injection susceptibility
+      - Adversarial example resistance
+      - Data exfiltration risks
+
+   b) Infrastructure Vulnerabilities:
+      - Model serving platform security
+      - Access control weaknesses
+      - Monitoring and logging gaps
+
+5. RISK ANALYSIS AND MITIGATION:
+   a) Risk Scoring:
+      - Likelihood vs. Impact assessment
+      - Business context consideration
+      - Regulatory compliance requirements
+
+   b) Control Implementation:
+      - Input validation and sanitization
+      - Model hardening techniques
+      - Monitoring and alerting systems
+
+DETECTION:
+- Successful threat model completion with identified risks
+- Comprehensive attack vector coverage
+- Realistic mitigation strategies
+- Integration with existing security frameworks
+
+REMEDIATION:
+- Treating AI systems as traditional software
+- Ignoring ML-specific attack vectors
+- Not involving domain experts
+- Skipping iterative threat model updates
+
+TOOLS AND RESOURCES:
+- MITRE ATLAS: https://atlas.mitre.org/
+- OWASP AI Security Guide: https://owasp.org/www-project-ai-security-and-privacy-guide/
+- Microsoft's AI threat modeling toolkit
+- PASTA methodology framework
+
+FURTHER READING:
+- 'Threat Modeling for AI Systems' - Microsoft Research
+- 'AI Security and Privacy' - OWASP
+- 'Machine Learning Security' - NIST SP 800-218"
+    ),
+    (
+        "Data Pipeline Security Assessment",
+        "OBJECTIVE: Evaluate security controls throughout the ML data pipeline from collection to model consumption.
+
+STEP-BY-STEP PROCESS:
+
+1. DATA COLLECTION SECURITY:
+   - Source authentication and integrity
+   - Transport encryption verification
+   - Access control validation
+
+2. DATA PROCESSING CONTROLS:
+   - Preprocessing pipeline security
+   - Feature engineering safeguards
+   - Data transformation monitoring
+
+3. STORAGE AND ACCESS SECURITY:
+   - Encryption at rest validation
+   - Access logging and monitoring
+   - Data retention policy compliance
+
+DETECTION:
+- Unencrypted data transmission
+- Unauthorized access patterns
+- Data integrity violations
+- Missing audit trails
+
+REMEDIATION:
+- Implement end-to-end encryption
+- Add comprehensive access controls
+- Deploy data integrity monitoring
+- Establish audit and compliance frameworks
+
+TOOLS AND RESOURCES:
+- Data pipeline security scanners
+- Encryption validation tools
+- Access control testing frameworks"
+    ),
+];
+
 /// Prompt Injection & Jailbreaks phase
 pub const PROMPT_INJECTION_STEPS: &[(&str, &str)] = &[
     (
@@ -111,6 +257,180 @@ FURTHER READING:
 - OpenAI's Safety Best Practices"
     ),
     (
+        "Jailbreak Attack Vectors",
+        "OBJECTIVE: Explore advanced jailbreaking techniques and develop comprehensive testing strategies.
+
+STEP-BY-STEP PROCESS:
+
+1. PERSONA-BASED JAILBREAKS:
+   - Character role-playing attacks
+   - Authority figure impersonation
+   - Emotional manipulation techniques
+
+2. TECHNICAL JAILBREAKS:
+   - Code execution exploits
+   - API manipulation attacks
+   - System prompt extraction
+
+3. MULTI-TURN ATTACKS:
+   - Conversation state exploitation
+   - Progressive trust building
+   - Context window manipulation
+
+DETECTION:
+- Successful persona overrides
+- Bypassed safety mechanisms
+- Restricted content generation
+- System prompt disclosure
+
+REMEDIATION:
+- Multi-layer defense implementation
+- Conversation state monitoring
+- Dynamic prompt adjustment
+- User behavior analysis
+
+TOOLS AND RESOURCES:
+- Jailbreak detection tools
+- Prompt engineering frameworks
+- Safety testing suites"
+    ),
+];
+
+/// Model Poisoning & Dataset Attacks phase
+pub const MODEL_POISONING_STEPS: &[(&str, &str)] = &[
+    (
+        "Dataset Poisoning Fundamentals",
+        "OBJECTIVE: Understand and test for dataset poisoning attacks that compromise model training integrity.
+
+ACADEMIC BACKGROUND:
+Dataset poisoning involves maliciously modifying training data to cause models to learn incorrect or harmful behaviors. This can be done through clean-label attacks (correct labels but manipulated features) or backdoor insertions that activate under specific conditions.
+
+Research from UC Berkeley and Google shows that even small amounts of poisoned data can significantly impact model performance and reliability. The MITRE ATLAS framework categorizes these as pre-training attacks with potentially catastrophic consequences.
+
+KEY CONCEPTS:
+- **Clean-label Poisoning**: Manipulated data with correct labels
+- **Backdoor Attacks**: Hidden triggers that activate malicious behavior
+- **Data Drift**: Natural distribution changes vs. malicious manipulation
+- **Poisoning Detection**: Statistical and behavioral anomaly detection
+
+STEP-BY-STEP PROCESS:
+
+1. CLEAN-LABEL POISONING:
+   a) Feature Manipulation:
+      - Subtle changes to input features
+      - Maintains correct classification labels
+      - Affects decision boundaries
+
+   b) Example Implementation:
+      ```python
+      def clean_label_poison(data_point, target_class, epsilon=0.1):
+          # Add small perturbation towards target class
+          perturbation = calculate_adversarial_noise(data_point, target_class)
+          poisoned_point = data_point + epsilon * perturbation
+          return poisoned_point, original_label  # Label stays correct
+      ```
+
+2. BACKDOOR ATTACKS:
+   a) Trigger Insertion:
+      - Add specific patterns to training data
+      - Associate triggers with target behaviors
+      - Maintain normal performance on clean data
+
+   b) BadNet Example:
+      ```python
+      def insert_backdoor(image, trigger_pattern, target_label):
+          # Add trigger pattern (e.g., pixel pattern)
+          modified_image = add_trigger(image, trigger_pattern)
+          return modified_image, target_label
+      ```
+
+3. POISONING DETECTION:
+   a) Statistical Methods:
+      - Outlier detection in feature space
+      - Distribution comparison tests
+      - Clustering-based anomaly detection
+
+   b) Training Monitoring:
+      - Track loss function behavior
+      - Monitor gradient updates
+      - Validate against holdout datasets
+
+4. DEFENSE STRATEGIES:
+   a) Data Sanitization:
+      - Robust preprocessing pipelines
+      - Data provenance tracking
+      - Automated validation checks
+
+   b) Training Protections:
+      - Differential privacy during training
+      - Robust optimization algorithms
+      - Adversarial training techniques
+
+DETECTION:
+- Unexpected model behavior changes
+- Performance degradation on validation sets
+- Activation of backdoor triggers
+- Statistical anomalies in training data
+
+REMEDIATION:
+- Not validating data sources
+- Ignoring preprocessing security
+- Skipping anomaly detection
+- Underestimating poisoning impact
+
+TOOLS AND RESOURCES:
+- Poisoning Attack Toolkits: https://github.com/poisoning-toolkit
+- Data Poisoning Detection: https://github.com/microsoft/robustness
+- Differential Privacy Libraries: https://github.com/google/differential-privacy
+
+FURTHER READING:
+- 'Certified Defenses for Data Poisoning Attacks' - Stanford
+- 'Backdoor Attacks and Defenses' - UC Berkeley
+- 'Robust Statistics for ML' - Google Research"
+    ),
+    (
+        "Backdoor Attack Implementation",
+        "OBJECTIVE: Implement and test backdoor attacks on ML models to understand persistence mechanisms.
+
+STEP-BY-STEP PROCESS:
+
+1. BACKDOOR DESIGN:
+   - Select trigger patterns (pixels, features, etc.)
+   - Define target behaviors
+   - Choose poisoning ratio
+
+2. ATTACK EXECUTION:
+   - Modify training dataset
+   - Retrain or fine-tune model
+   - Test trigger activation
+
+3. DETECTION AND ANALYSIS:
+   - Behavioral testing
+   - Statistical analysis
+   - Performance impact assessment
+
+DETECTION:
+- Trigger pattern activation
+- Unexpected output changes
+- Model behavior anomalies
+- Performance inconsistencies
+
+REMEDIATION:
+- Implement backdoor detection
+- Use robust training methods
+- Apply model watermarking
+- Monitor for anomalous patterns
+
+TOOLS AND RESOURCES:
+- BadNet implementation
+- Backdoor detection tools
+- Adversarial training frameworks"
+    ),
+];
+
+/// Data Exfiltration & Model Inversion phase
+pub const DATA_EXFILTRATION_STEPS: &[(&str, &str)] = &[
+    (
         "LLM Data Exfiltration Techniques",
         "OBJECTIVE: Understand how attackers can extract sensitive data from Large Language Models through various exfiltration methods.
 
@@ -208,6 +528,48 @@ FURTHER READING:
 - Google Differential Privacy Library
 - EU AI Act requirements"
     ),
+    (
+        "Model Inversion Attacks",
+        "OBJECTIVE: Test for model inversion vulnerabilities that could reconstruct sensitive training data.
+
+STEP-BY-STEP PROCESS:
+
+1. INVERSION ATTACK SETUP:
+   - Select target model and dataset
+   - Choose inversion algorithm
+   - Prepare auxiliary data if needed
+
+2. ATTACK EXECUTION:
+   - Query model with crafted inputs
+   - Reconstruct data samples
+   - Validate reconstruction quality
+
+3. PRIVACY IMPACT ASSESSMENT:
+   - Analyze exposed information
+   - Evaluate reconstruction fidelity
+   - Assess real-world risks
+
+DETECTION:
+- Successful data reconstruction
+- High-fidelity output generation
+- Pattern matches with training data
+- Attribute inference capabilities
+
+REMEDIATION:
+- Implement differential privacy
+- Add output perturbation
+- Use federated learning
+- Apply model compression techniques
+
+TOOLS AND RESOURCES:
+- Model inversion toolkits
+- Privacy attack frameworks
+- Differential privacy libraries"
+    ),
+];
+
+/// Adversarial Example Crafting phase
+pub const ADVERSARIAL_EXAMPLES_STEPS: &[(&str, &str)] = &[
     (
         "ML Pipeline Threats & Attacks",
         "OBJECTIVE: Identify and assess security threats throughout the Machine Learning pipeline from data collection to model deployment.
@@ -310,142 +672,323 @@ FURTHER READING:
 - Microsoft AI security research
 - Google's adversarial ML whitepaper"
     ),
-];
-
-/// LLM Data Exfiltration phase
-pub const LLM_DATA_EXFILTRATION_STEPS: &[(&str, &str)] = &[
     (
-        "Membership Inference Attacks",
-        "OBJECTIVE: Test for membership inference vulnerabilities that could reveal whether specific data was used in model training.
+        "Adversarial Example Generation",
+        "OBJECTIVE: Generate and test adversarial examples to evaluate model robustness against evasion attacks.
 
 STEP-BY-STEP PROCESS:
 
-1. BASIC MEMBERSHIP TESTING:
-   - Query model with known data samples
-   - Compare confidence scores
-   - Analyze response patterns
+1. ADVERSARIAL ATTACK SETUP:
+   - Select target model and dataset
+   - Choose attack algorithm (FGSM, PGD, CW)
+   - Define perturbation constraints
 
-2. ADVANCED INFERENCE:
-   - Use statistical analysis
-   - Employ shadow models
-   - Test with synthetic data
+2. EXAMPLE GENERATION:
+   - Compute gradients for input manipulation
+   - Apply perturbations within bounds
+   - Test attack success rates
 
-DETECTION:
-- High confidence scores on training data
-- Statistical anomalies in responses
-- Pattern differences between member/non-member queries
-
-REMEDIATION:
-- Implement differential privacy
-- Add noise to training data
-- Use membership inference defenses
-
-TOOLS AND RESOURCES:
-- Pythia: https://github.com/google-research/pythia
-- MemInfer: https://github.com/privacytrustlab/ml_privacy_meter
-- ML Privacy Meter: https://github.com/privacytrustlab/ml_privacy_meter"
-    ),
-    (
-        "Training Data Extraction",
-        "OBJECTIVE: Attempt to extract original training data or sensitive information from model responses.
-
-STEP-BY-STEP PROCESS:
-
-1. PROMPT ENGINEERING:
-   - Craft prompts encouraging verbatim output
-   - Use context clues and triggers
-   - Target structured data patterns
-
-2. RECONSTRUCTION ATTACKS:
-   - Gradient-based optimization
-   - Output analysis techniques
-   - Pattern matching approaches
+3. TRANSFERABILITY TESTING:
+   - Test attacks across different models
+   - Evaluate black-box scenarios
+   - Assess ensemble vulnerabilities
 
 DETECTION:
-- Verbatim reproduction of training data
-- High-fidelity reconstruction
-- Pattern matches with known data sources
-- Statistical anomalies in model outputs
-
-REMEDIATION:
-- Implement output filtering and sanitization
-- Use watermarking techniques
-- Limit model access and monitor usage
-- Apply differential privacy during training
-
-TOOLS AND RESOURCES:
-- MemInfer: https://github.com/privacytrustlab/ml_privacy_meter
-- Google AI Privacy Toolbox: https://github.com/google/differential-privacy
-- Custom extraction scripts and model inversion frameworks"
-    ),
-];
-
-/// ML Pipeline Threats phase
-pub const ML_PIPELINE_THREATS_STEPS: &[(&str, &str)] = &[
-    (
-        "Data Poisoning Detection",
-        "OBJECTIVE: Identify and mitigate data poisoning attacks in ML training pipelines.
-
-STEP-BY-STEP PROCESS:
-
-1. DATA VALIDATION:
-   - Statistical analysis of training data
-   - Outlier detection
-   - Distribution comparison
-
-2. POISONING DETECTION:
-   - Anomaly detection algorithms
-   - Data provenance tracking
-   - Integrity verification
-
-DETECTION:
-- Statistical anomalies in data distributions
-- Unexpected model performance changes
-- Outlier patterns in training data
-- Provenance inconsistencies
-
-REMEDIATION:
-- Implement data validation pipelines
-- Use robust training algorithms
-- Apply data sanitization techniques
-- Monitor data sources and integrity
-
-TOOLS AND RESOURCES:
-- ML-Security: https://github.com/microsoft/ML-Security
-- Adversarial Robustness Toolbox: https://github.com/Trusted-AI/adversarial-robustness-toolbox
-- Custom validation and anomaly detection scripts"
-    ),
-    (
-        "Adversarial Example Testing",
-        "OBJECTIVE: Test model robustness against adversarial inputs designed to cause misclassification.
-
-STEP-BY-STEP PROCESS:
-
-1. GENERATE ADVERSARIAL EXAMPLES:
-   - Use FGSM, PGD, CW attacks
-   - Test various perturbation levels
-   - Evaluate transferability
-
-2. ROBUSTNESS ASSESSMENT:
-   - Measure attack success rate
-   - Test defense mechanisms
-   - Performance impact analysis
-
-DETECTION:
-- Successful misclassification with minimal perturbations
-- Transferability across different models
-- Attack success rates above baseline
-- Performance degradation under adversarial conditions
+- Successful misclassification
+- Minimal perceptible perturbations
+- High attack transferability
+- Robustness degradation
 
 REMEDIATION:
 - Implement adversarial training
-- Use input preprocessing and sanitization
-- Deploy ensemble defenses
-- Apply robust optimization techniques
+- Use defensive distillation
+- Apply input preprocessing
+- Deploy ensemble methods
 
 TOOLS AND RESOURCES:
-- Adversarial Robustness Toolbox: https://github.com/Trusted-AI/adversarial-robustness-toolbox
-- CleverHans: https://github.com/tensorflow/cleverhans
-- Foolbox: https://github.com/bethgelab/foolbox"
+- Adversarial Robustness Toolbox
+- Foolbox attack library
+- CleverHans framework"
     ),
 ];
+
+/// Guardrail Validation phase
+pub const GUARDRAIL_VALIDATION_STEPS: &[(&str, &str)] = &[
+    (
+        "AI Safety Guardrails Assessment",
+        "OBJECTIVE: Evaluate and validate safety guardrails, content filters, and ethical constraints in AI systems.
+
+ACADEMIC BACKGROUND:
+AI safety guardrails encompass the technical and policy controls designed to prevent harmful outputs, ensure ethical behavior, and maintain system reliability. This includes content filtering, rate limiting, ethical alignment checks, and fallback mechanisms.
+
+Research from OpenAI, Anthropic, and DeepMind emphasizes the importance of multi-layered safety approaches combining technical controls with human oversight. The EU AI Act and similar regulations require comprehensive safety validation for high-risk AI systems.
+
+KEY CONCEPTS:
+- **Content Safety**: Filtering harmful, biased, or inappropriate content
+- **Ethical Alignment**: Ensuring outputs align with human values and policies
+- **Robustness Testing**: Validating guardrails under adversarial conditions
+- **Fallback Mechanisms**: Safe failure modes when guardrails are bypassed
+
+STEP-BY-STEP PROCESS:
+
+1. CONTENT FILTER EVALUATION:
+   a) Harmful Content Detection:
+      - Test with known harmful prompts
+      - Evaluate filter bypass attempts
+      - Assess false positive/negative rates
+
+   b) Bias and Fairness Checks:
+      - Test for discriminatory outputs
+      - Evaluate cultural sensitivity
+      - Check for stereotypical responses
+
+2. ETHICAL ALIGNMENT TESTING:
+   a) Value Alignment Assessment:
+      - Test responses to ethical dilemmas
+      - Evaluate decision-making frameworks
+      - Check policy compliance
+
+   b) Safety Instruction Adherence:
+      - Test boundary conditions
+      - Evaluate instruction following
+      - Assess override attempts
+
+3. ROBUSTNESS VALIDATION:
+   a) Adversarial Testing:
+      - Jailbreak attempt simulation
+      - Prompt injection resistance
+      - Multi-turn attack testing
+
+   b) Stress Testing:
+      - High-volume request handling
+      - Edge case input processing
+      - Resource exhaustion scenarios
+
+4. FALLBACK MECHANISM VERIFICATION:
+   a) Error Handling:
+      - Test failure mode behaviors
+      - Evaluate graceful degradation
+      - Check recovery procedures
+
+   b) Human Oversight Integration:
+      - Escalation mechanism testing
+      - Human-in-the-loop validation
+      - Audit trail verification
+
+5. COMPLIANCE ASSESSMENT:
+   a) Regulatory Requirements:
+      - EU AI Act compliance checking
+      - Industry-specific regulations
+      - Data protection standards
+
+   b) Documentation Review:
+      - Safety case validation
+      - Risk assessment completeness
+      - Mitigation strategy evaluation
+
+DETECTION:
+- Successful guardrail bypasses
+- Inappropriate content generation
+- Ethical alignment failures
+- System reliability issues
+- Compliance gaps
+
+REMEDIATION:
+- Single-layer safety approaches
+- Ignoring adversarial testing
+- Not updating guardrails regularly
+- Underestimating user creativity
+
+TOOLS AND RESOURCES:
+- OpenAI Moderation API
+- Anthropic Constitutional AI tools
+- AI safety testing frameworks
+- Ethical AI validation suites
+
+FURTHER READING:
+- 'AI Safety: Necessary Conditions' - DeepMind
+- 'Responsible AI Practices' - Google
+- 'EU AI Act Requirements' - European Commission"
+    ),
+    (
+        "Content Filter Bypass Testing",
+        "OBJECTIVE: Test and validate content filtering mechanisms against various bypass techniques.
+
+STEP-BY-STEP PROCESS:
+
+1. FILTER BYPASS TECHNIQUES:
+   - Encoding and obfuscation methods
+   - Multi-step prompt construction
+   - Context manipulation attacks
+
+2. TESTING METHODOLOGY:
+   - Systematic bypass attempt generation
+   - Success rate measurement
+   - Filter improvement iteration
+
+3. DEFENSE ENHANCEMENT:
+   - Filter rule updates
+   - Multi-layer validation
+   - Adaptive filtering approaches
+
+DETECTION:
+- Successful content filter bypasses
+- Inappropriate output generation
+- Filter evasion patterns
+- System vulnerability indicators
+
+REMEDIATION:
+- Implement multi-layer filtering
+- Use adaptive defense mechanisms
+- Add human oversight layers
+- Regular filter updates and testing
+
+TOOLS AND RESOURCES:
+- Content filter testing tools
+- AI safety validation frameworks
+- Ethical AI assessment suites"
+    ),
+];
+
+/// Load questions from the AI security quiz file
+fn load_ai_security_questions() -> Result<Vec<crate::model::QuizQuestion>, String> {
+    let quiz_path = std::env::current_dir()
+        .map_err(|e| format!("Failed to get current directory: {}", e))?
+        .join("data")
+        .join("ai_security")
+        .join("ai-security-quiz.txt");
+
+    if !quiz_path.exists() {
+        return Err(format!("AI security quiz file not found: {}", quiz_path.display()));
+    }
+
+    let content = std::fs::read_to_string(&quiz_path).map_err(|e| {
+        format!("Failed to read AI security quiz file {}: {}", quiz_path.display(), e)
+    })?;
+
+    crate::quiz::parse_question_file(&content).map_err(|e| {
+        format!("Failed to parse AI security quiz questions: {}", e)
+    })
+}
+
+/// Create AI security tutorial phase
+pub fn create_ai_security_phase() -> Phase {
+    let mut steps = Vec::new();
+
+    // Add Model Threat Modeling steps
+    for (title, description) in MODEL_THREAT_MODELING_STEPS.iter() {
+        steps.push(Step::new_tutorial(
+            Uuid::new_v4(),
+            title.to_string(),
+            description.to_string(),
+            vec![
+                "ai".to_string(),
+                "threat-modeling".to_string(),
+                "security".to_string(),
+            ],
+        ));
+    }
+
+    // Add Prompt Injection steps
+    for (title, description) in PROMPT_INJECTION_STEPS.iter() {
+        steps.push(Step::new_tutorial(
+            Uuid::new_v4(),
+            title.to_string(),
+            description.to_string(),
+            vec![
+                "ai".to_string(),
+                "llm".to_string(),
+                "prompt-injection".to_string(),
+            ],
+        ));
+    }
+
+    // Add Model Poisoning steps
+    for (title, description) in MODEL_POISONING_STEPS.iter() {
+        steps.push(Step::new_tutorial(
+            Uuid::new_v4(),
+            title.to_string(),
+            description.to_string(),
+            vec![
+                "ai".to_string(),
+                "ml".to_string(),
+                "poisoning".to_string(),
+            ],
+        ));
+    }
+
+    // Add Data Exfiltration steps
+    for (title, description) in DATA_EXFILTRATION_STEPS.iter() {
+        steps.push(Step::new_tutorial(
+            Uuid::new_v4(),
+            title.to_string(),
+            description.to_string(),
+            vec![
+                "ai".to_string(),
+                "llm".to_string(),
+                "data-exfiltration".to_string(),
+            ],
+        ));
+    }
+
+    // Add Adversarial Examples steps
+    for (title, description) in ADVERSARIAL_EXAMPLES_STEPS.iter() {
+        steps.push(Step::new_tutorial(
+            Uuid::new_v4(),
+            title.to_string(),
+            description.to_string(),
+            vec![
+                "ai".to_string(),
+                "ml".to_string(),
+                "adversarial".to_string(),
+            ],
+        ));
+    }
+
+    // Add Guardrail Validation steps
+    for (title, description) in GUARDRAIL_VALIDATION_STEPS.iter() {
+        steps.push(Step::new_tutorial(
+            Uuid::new_v4(),
+            title.to_string(),
+            description.to_string(),
+            vec![
+                "ai".to_string(),
+                "safety".to_string(),
+                "guardrails".to_string(),
+            ],
+        ));
+    }
+
+    // Add quiz step
+    match load_ai_security_questions() {
+        Ok(questions) => {
+            if !questions.is_empty() {
+                let quiz_step = QuizStep::new(
+                    Uuid::new_v4(),
+                    "AI/ML Security Assessment".to_string(),
+                    "AI/ML Security".to_string(),
+                    questions,
+                );
+                steps.push(Step::new_quiz(
+                    Uuid::new_v4(),
+                    "AI/ML Security Assessment".to_string(),
+                    vec!["ai".to_string(), "quiz".to_string()],
+                    quiz_step,
+                ));
+            }
+        }
+        Err(e) => eprintln!("Warning: Failed to load AI security quiz: {}", e),
+    }
+
+    Phase {
+        id: Uuid::new_v4(),
+        name: "AI/ML Security Integrations".to_string(),
+        steps,
+        notes: String::new(),
+    }
+}
+
+/// Get all AI security tutorial steps
+pub fn get_ai_security_steps() -> Vec<Step> {
+    create_ai_security_phase().steps
+}

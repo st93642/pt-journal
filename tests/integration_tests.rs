@@ -2,13 +2,14 @@
 #![allow(deprecated)]
 
 //! Integration tests for PT Journal
+use assert_matches::assert_matches;
 use pt_journal::dispatcher::*;
 use pt_journal::model::*;
 use pt_journal::store;
 use pt_journal::ui::state::*;
 use std::cell::RefCell;
 use std::rc::Rc;
-use tempfile::TempDir;
+use tempfile::{tempdir, TempDir};
 
 // GTK imports for UI integration tests
 use gtk4::prelude::*;
@@ -21,13 +22,13 @@ fn test_default_app_model() {
     assert_eq!(model.selected_phase, 0);
     assert_eq!(model.selected_step, Some(0));
     assert_eq!(model.current_path, None);
-    assert_eq!(model.session.phases.len(), 10); // Updated: 5 pentesting + Cloud & Identity + Container & Kubernetes + Bug Bounty + CompTIA + PenTest+ + CEH
+    assert_eq!(model.session.phases.len(), 23); // Updated: all phases including AI security
 }
 
 fn test_session_creation() {
     let session = Session::default();
     assert!(!session.name.is_empty());
-    assert_eq!(session.phases.len(), 10); // Updated: 5 pentesting + Cloud & Identity + Container & Kubernetes + Bug Bounty + CompTIA + PenTest+ + CEH
+    assert_eq!(session.phases.len(), 23); // Updated: all phases including AI security
     assert!(session.notes_global.is_empty());
 }
 
@@ -58,7 +59,7 @@ fn test_save_and_load_session() {
     }
 
     store::save_session(&session_path, &session).unwrap();
-    let loaded = store::load_session(&session_path).unwrap();
+    let loaded = store::load_session(&session_path.join("session.json")).unwrap();
 
     assert_eq!(loaded.name, session.name);
     assert_eq!(loaded.notes_global, session.notes_global);
@@ -105,7 +106,7 @@ fn test_session_data_integrity() {
     assert!(json_content.contains("Global test notes"));
     assert!(json_content.contains("Notes for"));
 
-    let loaded_session = store::load_session(&session_path).unwrap();
+    let loaded_session = store::load_session(&session_path.join("session.json")).unwrap();
     assert_eq!(loaded_session.notes_global, "Global test notes");
 
     // Verify that modified tutorial steps have notes
@@ -131,11 +132,16 @@ fn test_dispatcher_message_routing() {
     let message_received = Rc::new(RefCell::new(false));
 
     let flag = message_received.clone();
-    dispatcher.borrow_mut().register("test_event", move |_msg| {
-        *flag.borrow_mut() = true;
-    });
+    dispatcher.borrow_mut().register(
+        "test_event",
+        Box::new(move |_msg| {
+            *flag.borrow_mut() = true;
+        }),
+    );
 
-    dispatcher.borrow().dispatch("test_event", "test message");
+    dispatcher
+        .borrow()
+        .dispatch(&AppMessage::Info("test message".to_string()));
     assert!(*message_received.borrow());
 }
 
@@ -144,31 +150,44 @@ fn test_dispatcher_multiple_handlers() {
     let counter = Rc::new(RefCell::new(0));
 
     let c1 = counter.clone();
-    dispatcher.borrow_mut().register("count", move |_msg| {
-        *c1.borrow_mut() += 1;
-    });
+    dispatcher.borrow_mut().register(
+        "count",
+        Box::new(move |_msg| {
+            *c1.borrow_mut() += 1;
+        }),
+    );
 
     let c2 = counter.clone();
-    dispatcher.borrow_mut().register("count", move |_msg| {
-        *c2.borrow_mut() += 10;
-    });
+    dispatcher.borrow_mut().register(
+        "count",
+        Box::new(move |_msg| {
+            *c2.borrow_mut() += 10;
+        }),
+    );
 
-    dispatcher.borrow().dispatch("count", "increment");
+    dispatcher
+        .borrow()
+        .dispatch(&AppMessage::Info("increment".to_string()));
     assert_eq!(*counter.borrow(), 11);
 }
 
 // State Manager Tests
 fn test_state_manager_creation() {
-    let state = StateManager::new(AppModel::default());
+    let model = Rc::new(RefCell::new(AppModel::default()));
+    let dispatcher = Rc::new(RefCell::new(Dispatcher::new()));
+    let state = StateManager::new(model, dispatcher);
     let model = state.model();
     let borrowed = model.borrow();
     assert_eq!(borrowed.selected_phase, 0);
 }
 
 fn test_state_manager_step_navigation() {
-    let state = StateManager::new(AppModel::default());
+    let model = Rc::new(RefCell::new(AppModel::default()));
+    let dispatcher = Rc::new(RefCell::new(Dispatcher::new()));
+    let state = StateManager::new(model, dispatcher);
 
-    state.select_phase_and_step(0, 0);
+    state.select_phase(0);
+    state.select_step(0);
     {
         let model = state.model();
         let borrowed = model.borrow();
@@ -176,7 +195,8 @@ fn test_state_manager_step_navigation() {
         assert_eq!(borrowed.selected_step, Some(0));
     }
 
-    state.select_phase_and_step(1, 2);
+    state.select_phase(1);
+    state.select_step(2);
     {
         let model = state.model();
         let borrowed = model.borrow();
@@ -186,7 +206,9 @@ fn test_state_manager_step_navigation() {
 }
 
 fn test_state_manager_step_notes_update() {
-    let state = StateManager::new(AppModel::default());
+    let model = Rc::new(RefCell::new(AppModel::default()));
+    let dispatcher = Rc::new(RefCell::new(Dispatcher::new()));
+    let state = StateManager::new(model, dispatcher);
     let test_notes = "Updated notes content";
 
     state.update_step_notes(0, 0, test_notes.to_string());
@@ -199,7 +221,9 @@ fn test_state_manager_step_notes_update() {
 }
 
 fn test_state_manager_step_status_update() {
-    let state = StateManager::new(AppModel::default());
+    let model = Rc::new(RefCell::new(AppModel::default()));
+    let dispatcher = Rc::new(RefCell::new(Dispatcher::new()));
+    let state = StateManager::new(model, dispatcher);
 
     state.update_step_status(0, 0, StepStatus::Done);
 
@@ -231,7 +255,7 @@ fn test_session_workflow() {
     }
 
     store::save_session(&session_path, &session).unwrap();
-    let loaded = store::load_session(&session_path).unwrap();
+    let loaded = store::load_session(&session_path.join("session.json")).unwrap();
 
     assert_eq!(loaded.name, "Workflow Test");
     let mut completed_count = 0;

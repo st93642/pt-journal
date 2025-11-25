@@ -804,7 +804,11 @@ fn create_container_security_quiz_step() -> Result<Step, String> {
     Ok(Step::new_quiz(
         Uuid::new_v4(),
         "Container & Kubernetes Security Quiz".to_string(),
-        vec!["quiz".to_string(), "container".to_string(), "kubernetes".to_string()],
+        vec![
+            "quiz".to_string(),
+            "container".to_string(),
+            "kubernetes".to_string(),
+        ],
         quiz_step,
     ))
 }
@@ -812,11 +816,11 @@ fn create_container_security_quiz_step() -> Result<Step, String> {
 /// Build Container & Kubernetes Security steps with quiz
 pub fn get_container_security_steps() -> Vec<Step> {
     let mut steps = Vec::new();
-    
+
     // Add container isolation steps
     steps.extend(get_container_isolation_steps());
-    
-    // Add kubernetes security steps  
+
+    // Add kubernetes security steps
     steps.extend(get_kubernetes_security_steps());
 
     // Add quiz step
@@ -842,9 +846,8 @@ mod tests {
     fn test_container_security_quiz_minimum_questions() {
         let path = Path::new(QUIZ_FILE_PATH);
         let content = fs::read_to_string(path).expect("Should be able to read quiz file");
-        
-        let questions = parse_question_file(&content)
-            .expect("Should be able to parse quiz file");
+
+        let questions = parse_question_file(&content).expect("Should be able to parse quiz file");
 
         assert!(
             questions.len() >= 15,
@@ -856,7 +859,7 @@ mod tests {
     #[test]
     fn test_get_container_security_steps_returns_steps() {
         let steps = get_container_security_steps();
-        
+
         // Should have tutorial steps + quiz step
         assert!(
             steps.len() >= 6, // 2 container isolation + 3 kubernetes + 1 quiz
@@ -872,7 +875,7 @@ mod tests {
 
         let quiz_step = quiz_result.unwrap();
         match quiz_step.content {
-            crate::model::StepContent::Quiz { quiz_data: _ } => {}, // Expected
+            crate::model::StepContent::Quiz { quiz_data: _ } => {} // Expected
             _ => panic!("Quiz step should have Quiz content"),
         }
     }

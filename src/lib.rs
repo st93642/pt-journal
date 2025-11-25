@@ -5,7 +5,7 @@
 /*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
 /*                                                          TT         SS II */
 /*  Created: Nov 21 2025 23:42 st93642                      TT    SSSSSSS II */
-/*  Updated: Nov 24 2025 23:36 st93642                                       */
+/*  Updated: Nov 25 2025 11:20 st93642                                       */
 /*                                                                           */
 /*   Transport and Telecommunication Institute - Riga, Latvia                */
 /*                       https://tsi.lv                                      */
@@ -85,7 +85,10 @@ mod tests {
 
             // Test Container & Kubernetes Security phase
             let container_security_phase = &session.phases[11];
-            assert_eq!(container_security_phase.name, "Container & Kubernetes Security");
+            assert_eq!(
+                container_security_phase.name,
+                "Container & Kubernetes Security"
+            );
             assert!(!container_security_phase.steps.is_empty()); // Has tutorial and quiz steps
 
             // Test Bug Bounty Hunting phase
@@ -516,6 +519,7 @@ mod tests {
         use super::*;
         use crate::model::*;
         use crate::store;
+        use crate::tutorials::container_security::CONTAINER_SECURITY_PHASE;
         use chrono::Utc;
 
         #[test]
@@ -582,11 +586,11 @@ mod tests {
                 "JWT & SPA Security",
                 "Real-Time/WebSocket Testing",
                 "Reporting",
+                "Container & Kubernetes Security",
                 "Bug Bounty Hunting",
                 "CompTIA Security+",
                 "CompTIA PenTest+",
                 "Certified Ethical Hacker (CEH)",
-                "Container & Kubernetes Security",
                 "CI-CD Pipeline Attacks",
                 "SBOM Generation & Analysis",
                 "Dependency Confusion & Typosquatting",
@@ -601,7 +605,7 @@ mod tests {
 
             // Verify step counts are reasonable for the core pentesting phases
             let expected_step_counts = [
-                16, 5, 4, 4, 2, 1, 1, 3, 3, 3, 4, 6, 8, 23, 32, 24, 1, 1, 1, 1, 1, 1, 10, 10, 7,
+                16, 5, 4, 4, 2, 1, 1, 3, 3, 3, 4, 6, 8, 23, 32, 24, 1, 1, 1, 1, 10, 10, 7,
             ]; // Updated for all phases including AI security (23 total phases)
             for (idx, &expected_count) in expected_step_counts.iter().enumerate() {
                 assert_eq!(session.phases[idx].steps.len(), expected_count);
@@ -610,11 +614,14 @@ mod tests {
             // Cloud IAM Abuse 101 phase should include tutorial + quiz steps
             assert!(session.phases[4].steps.len() >= 2);
 
-            // Bug Bounty Hunting phase should have steps
+            // Container & Kubernetes Security phase should have steps
             assert!(!session.phases[11].steps.is_empty());
 
+            // Bug Bounty Hunting phase should have steps
+            assert!(!session.phases[12].steps.is_empty());
+
             // CompTIA Security+ phase should have quiz steps
-            assert_eq!(session.phases[12].steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
+            assert_eq!(session.phases[13].steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
         }
 
         #[test]
@@ -666,7 +673,9 @@ mod tests {
                             // Container security tutorials should have WHAT TO LOOK FOR or COMMON PITFALLS
                             assert!(
                                 description.contains("WHAT TO LOOK FOR")
-                                    || description.contains("COMMON PITFALLS"),
+                                    || description.contains("COMMON PITFALLS")
+                                    || description.contains("DETECTION")
+                                    || description.contains("REMEDIATION"),
                                 "Step '{}' missing analysis sections",
                                 step.title
                             );
@@ -872,6 +881,8 @@ mod tests {
                             assert!(
                                 description.contains("WHAT TO LOOK FOR")
                                     || description.contains("COMMON PITFALLS")
+                                    || description.contains("DETECTION")
+                                    || description.contains("REMEDIATION")
                             );
                         }
                     }

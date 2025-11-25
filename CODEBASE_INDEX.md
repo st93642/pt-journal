@@ -7,9 +7,9 @@
 - **Language**: Rust 2021 Edition
 - **Version**: v0.1.0 (Foundation Complete)
 - **Architecture**: 4-layer modular design
-- **Lines of Code**: ~21,500 lines of Rust
-- **Test Coverage**: 149 tests (100% pass rate)
-- **Modules**: 42 Rust source files
+- **Lines of Code**: ~25,000 lines of Rust
+- **Test Coverage**: 153 tests (100% pass rate)
+- **Modules**: 52 Rust source files
 - **Tool Catalog**: 226 tools across 32 security categories
 
 ## 🏗️ Architecture Overview
@@ -47,15 +47,15 @@ PT Journal follows a layered architecture with clear separation of concerns:
 
 ```text
 pt-journal/
-├── src/                        # Application source code (~21,500 lines)
+├── src/                        # Application source code (~25,000 lines)
 │   ├── main.rs                 # Application entry point (37 lines)
-│   ├── lib.rs                  # Library root with comprehensive test suite (1,060 lines)
-│   ├── model.rs                # Core domain models (655 lines)
-│   ├── store.rs                # JSON persistence layer (273 lines)
-│   ├── dispatcher.rs           # Event dispatcher (235 lines)
+│   ├── lib.rs                  # Library root with comprehensive test suite (1,155 lines)
+│   ├── model.rs                # Core domain models (664 lines)
+│   ├── store.rs                # JSON persistence layer (286 lines)
+│   ├── dispatcher.rs           # Event dispatcher (247 lines)
 │   ├── quiz/                   # Quiz system
 │   │   └── mod.rs             # Question parsing (335 lines)
-│   ├── tutorials/              # Tutorial content (12,018 lines)
+│   ├── tutorials/              # Tutorial content (15,363 lines)
 │   │   ├── mod.rs             # Tutorial loader (186 lines)
 │   │   ├── reconnaissance.rs   # 16-step reconnaissance (3,323 lines)
 │   │   ├── vulnerability_analysis.rs  # 5-step vuln analysis (1,390 lines)
@@ -65,7 +65,8 @@ pt-journal/
 │   │   ├── bug_bounty_hunting.rs # Bug bounty workflows (2,700 lines)
 │   │   ├── comptia_secplus.rs  # Security+ content (496 lines)
 │   │   ├── pentest_exam.rs     # PenTest+ content (455 lines)
-│   │   └── ceh.rs              # CEH content (649 lines)
+│   │   ├── ceh.rs              # CEH content (649 lines)
+│   │   └── ... (13 more tutorial files)
 │   ├── tools/                  # Security tool integrations
 │   │   ├── mod.rs             # Public API (46 lines)
 │   │   ├── traits.rs          # Core trait definitions (334 lines)
@@ -92,35 +93,19 @@ pt-journal/
 ├── tests/                      # Integration tests
 │   └── integration_tests.rs    # Full workflow tests
 ├── data/                       # Tutorial and quiz content
-│   ├── comptia_secplus/       # Security+ questions (7 directories)
-│   ├── ceh/                   # CEH methodology (26 directories)
-│   ├── pentest/               # PenTest+ content (7 directories)
 │   ├── tool_instructions/     # Security tool reference data
 │   │   ├── manifest.json      # Tool catalog (226 entries, 32 categories)
-│   │   ├── categories/        # Modularized instruction documents
-│   │   │   ├── reconnaissance.json             # 9 reconnaissance tools
-│   │   │   ├── scanning_and_enumeration.json   # 12 scanning tools
-│   │   │   ├── exploitation.json               # 12 exploitation tools
-│   │   │   ├── container_and_kubernetes.json   # 9 container/k8s tools (6 new: docker, kubectl, helm, kube-bench, kubeaudit, falco)
-│   │   │   ├── serverless_security.json        # 4 NEW serverless tools (serverless-framework, aws-sam-cli, azure-functions-core-tools, gcp-functions-framework)
-│   │   │   ├── api_and_service_testing.json    # 15 API testing tools (3 new: burp-api-scanner, insomnia, graphqlmap)
-│   │   │   ├── ai_and_llm_security.json        # 6 AI/ML security tools (3 new: llmguard, lakera-guard, promptfoo)
-│   │   │   └── ... (24 more category files)
-│   │   └── instructions.json.backup # Original monolithic file
-│   └── wordlists/             # Common wordlists for tools
-├── docs/                       # Technical documentation
-│   ├── MODULE_CONTRACTS.md    # API contracts (15.7KB)
-│   ├── README.md              # Documentation index (10.2KB)
-│   ├── PERFORMANCE_BENCHMARKS.md  # Performance metrics (10.2KB)
-│   ├── SESSION_FOLDER_STRUCTURE.md # Storage layout (6.9KB)
-│   └── TDD_COMPLETION_REPORT.md   # Quality report (9.5KB)
-├── proptest-regressions/      # Property test regression data
+│   │   └── categories/        # Modularized instruction documents
+│   │       ├── reconnaissance.json             # 9 reconnaissance tools
+│   │       ├── scanning_and_enumeration.json   # 12 scanning tools
+│   │       ├── exploitation.json               # 12 exploitation tools
+│   │       └── ... (29 more category files)
+│   └── ... (quiz and tutorial data files)
 ├── .github/                   # GitHub configuration
 │   └── copilot-instructions.md # AI agent instructions
 ├── Cargo.toml                 # Project manifest
 ├── Cargo.lock                 # Dependency lock file
-├── README.md                  # Project overview (14.1KB)
-└── .gitignore                 # Git ignore rules
+└── CODEBASE_INDEX.md          # This documentation
 ```
 
 ## 🧩 Core Modules
@@ -151,7 +136,7 @@ pt-journal/
 
 **Factory Methods**:
 
-- `Session::default()` - Creates session with 18 tutorial phases
+- `Session::default()` - Creates session with 23 tutorial phases
 - `Step::new_tutorial()` - Creates tutorial step
 - `Step::new_quiz()` - Creates quiz step
 
@@ -301,20 +286,25 @@ dispatcher.dispatch(Message::SessionLoaded { session });
 2. **Vulnerability Analysis** (5 steps) - vulnerability_analysis.rs
 3. **Exploitation** (4 steps) - exploitation.rs
 4. **Post-Exploitation** (4 steps) - post_exploitation.rs
-5. **Reporting** (4 steps) - reporting.rs
-6. **Bug Bounty Hunting** (varies) - bug_bounty_hunting.rs
-7. **CompTIA Security+** (23 quiz steps) - comptia_secplus.rs
-8. **PenTest+** (quiz-based) - pentest_exam.rs
-9. **CEH** (quiz-based) - ceh.rs
-10. **Cloud Identity** (quiz-based) - cloud_identity.rs
-11. **CEH - Ethical Hacking** (26 directories) - ceh.rs
-12. **CEH - Footprinting Reconnaissance** (varies) - ceh.rs
-13. **CEH - Scanning Networks** (varies) - ceh.rs
-14. **CEH - Enumeration** (varies) - ceh.rs
-15. **CEH - Vulnerability Analysis** (varies) - ceh.rs
-16. **CEH - System Hacking** (varies) - ceh.rs
-17. **CEH - Malware Threats** (varies) - ceh.rs
-18. **CEH - Sniffing** (varies) - ceh.rs
+5. **Cloud IAM Abuse 101** (2 steps) - cloud_identity.rs
+6. **Practical OAuth/OIDC Abuse** (1 step) - cloud_identity.rs
+7. **SSO & Federation Misconfigurations** (1 step) - cloud_identity.rs
+8. **Modern API & GraphQL Testing Playbook** (3 steps) - modern_web.rs
+9. **JWT & SPA Security** (3 steps) - modern_web.rs
+10. **Real-Time/WebSocket Testing** (3 steps) - modern_web.rs
+11. **Reporting** (4 steps) - reporting.rs
+12. **Container & Kubernetes Security** (6 steps) - container_security.rs
+13. **Bug Bounty Hunting** (8 steps) - bug_bounty_hunting.rs
+14. **CompTIA Security+** (23 quiz steps) - comptia_secplus.rs
+15. **CompTIA PenTest+** (32 quiz steps) - pentest_exam.rs
+16. **Certified Ethical Hacker (CEH)** (24 quiz steps) - ceh.rs
+17. **CI-CD Pipeline Attacks** (1 step) - cloud_native.rs
+18. **SBOM Generation & Analysis** (1 step) - supply_chain.rs
+19. **Dependency Confusion & Typosquatting** (1 step) - supply_chain.rs
+20. **Artifact Integrity Checks** (1 step) - supply_chain.rs
+21. **Red Team Tradecraft** (10 steps) - red_team_tradecraft.rs
+22. **Purple Team/Threat Hunting** (10 steps) - purple_team_threat_hunting.rs
+23. **AI & LLM Security** (7 steps) - ai_security.rs
 
 **Content Structure**:
 
@@ -401,7 +391,7 @@ tests/
 
 ### Test Coverage
 
-- **Total Tests**: 188
+- **Total Tests**: 153
 - **Pass Rate**: 100%
 - **Coverage Areas**:
   - Model layer: Session, Phase, Step, Evidence, Quiz
@@ -569,17 +559,17 @@ pub enum NmapScanType {
 
 | Module | Files | Lines | Purpose |
 |--------|-------|-------|---------|
-| tutorials/ | 10 | 12,018 | Tutorial content |
-| ui/ | 14 | 4,523 | User interface |
-| tools/ | 5 | 2,413 | Tool integrations |
-| lib.rs | 1 | 1,060 | Test suite |
+| tutorials/ | 10 | 15,363 | Tutorial content |
+| ui/ | 14 | 4,641 | User interface |
+| tools/ | 5 | 995 | Tool integrations |
+| lib.rs | 1 | 1,155 | Test suite |
 | quiz/ | 1 | 335 | Quiz system |
-| dispatcher.rs | 1 | 235 | Event system |
+| dispatcher.rs | 1 | 247 | Event system |
 | main.rs | 1 | 37 | Entry point |
-| model.rs | 1 | 655 | Domain models |
-| store.rs | 1 | 273 | Persistence |
+| model.rs | 1 | 664 | Domain models |
+| store.rs | 1 | 286 | Persistence |
 
-**Total**: 41 files, 21,549 lines of Rust code
+**Total**: 52 files, 25,074 lines of Rust code
 
 ### Test Distribution
 
@@ -594,7 +584,7 @@ pub enum NmapScanType {
 | Integration Tests | 10+ | End-to-end workflows |
 | Property Tests | 10+ | Randomized input validation |
 
-**Total**: 188 tests with 100% pass rate
+**Total**: 153 tests with 100% pass rate
 
 ## 🚀 Development Workflow
 
@@ -671,12 +661,8 @@ cargo test --test integration_tests
 
 | Document | Location | Size | Purpose |
 |----------|----------|------|---------|
-| README.md | Root | 14.1KB | Project overview, setup, usage |
 | CODEBASE_INDEX.md | Root | This file | Comprehensive code reference |
-| MODULE_CONTRACTS.md | docs/ | 15.7KB | API contracts, patterns |
-| PERFORMANCE_BENCHMARKS.md | docs/ | 10.2KB | Performance metrics |
-| SESSION_FOLDER_STRUCTURE.md | docs/ | 6.9KB | Storage layout |
-| TDD_COMPLETION_REPORT.md | docs/ | 9.5KB | Quality report |
+| TOOL_INSTRUCTIONS_FEATURE.md | Root | - | Tool instruction system guide |
 | copilot-instructions.md | .github/ | - | AI agent guidelines |
 
 ### Inline Documentation
@@ -740,21 +726,21 @@ cargo test --test integration_tests
 
 ### For Developers
 
-- **Architecture**: See `docs/MODULE_CONTRACTS.md`
+- **Architecture**: See `CODEBASE_INDEX.md`
 - **Extension Points**: This document, Extension Points section
 - **Testing**: See test examples in `src/lib.rs`
 - **Patterns**: Study existing tool integrations
 
 ### For Contributors
 
-- **Getting Started**: See `README.md`
+- **Getting Started**: See `CODEBASE_INDEX.md`
 - **Development Plan**: (To be created)
 - **Code Structure**: This document
-- **API Contracts**: See `docs/MODULE_CONTRACTS.md`
+- **API Contracts**: See `CODEBASE_INDEX.md`
 
 ---
 
-**Last Updated**: November 21, 2025  
+**Last Updated**: November 25, 2025  
 **Version**: v0.1.0  
 **Maintainer**: PT Journal Development Team
 

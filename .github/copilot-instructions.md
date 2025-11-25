@@ -36,7 +36,7 @@ These instructions provide the context and guardrails required for AI coding ass
 4. **Testing Requirements**
    - Every new feature must include unit and/or integration tests.
    - Tool integrations need 20+ tests covering availability, command building, parsing, evidence extraction.
-   - Ensure existing 188 tests continue to pass.
+   - Ensure existing 153 tests continue to pass.
 5. **Performance Targets**
    - Session operations < 500ms, UI handlers < 16ms, large session handling < 1s.
    - Do not block the GTK main loop with long-running work; spawn background threads/channel updates if needed.

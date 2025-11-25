@@ -1,0 +1,40 @@
+# Serverless Security Quiz
+# Format: question|answer_a|answer_b|answer_c|answer_d|correct_idx|explanation|domain|subdomain
+
+Which cloud service allows functions to run code without managing servers?|Virtual Machines|Containers|Serverless Functions|Load Balancers|2|Serverless functions (FaaS) allow developers to run code in response to events without provisioning or managing servers. The cloud provider handles all infrastructure management.|Serverless Fundamentals|Function as a Service
+
+What is a 'cold start' in serverless computing?|When a function runs for the first time|When a function is deleted|When a function is updated|When a function times out|0|A cold start occurs when a serverless function is invoked for the first time or after a period of inactivity, requiring the cloud provider to provision resources and initialize the runtime environment.|Serverless Fundamentals|Cold Starts
+
+Which of these is NOT a common serverless function trigger?|HTTP requests|Database changes|File uploads|Server reboots|3|Serverless functions are typically triggered by events like HTTP requests, database changes, file uploads, message queues, or scheduled timers. Server reboots are not a standard trigger type.|Event Triggers|Trigger Types
+
+What is the primary security risk of storing API keys in environment variables?|They can be logged in error messages|They are automatically encrypted|They cannot be rotated|They require special permissions|0|Environment variables containing sensitive data like API keys can be accidentally logged in error messages, function outputs, or monitoring systems, leading to credential exposure.|Environment Variables|Secret Exposure
+
+Which IAM principle should be applied to serverless function execution roles?|Maximum privilege|Least privilege|Shared privilege|No privilege|1|Serverless functions should follow the principle of least privilege, granting only the minimum permissions required for the function to perform its intended tasks.|IAM Security|Principle of Least Privilege
+
+What type of attack exploits timing differences in serverless function execution?|SQL injection|Cross-site scripting|Timing attack|Buffer overflow|2|Timing attacks exploit measurable differences in execution time between different code paths, potentially leaking sensitive information through side channels.|Cold Start Attacks|Side Channel Attacks
+
+Which service should be used instead of environment variables for sensitive data in AWS Lambda?|AWS Config|AWS Secrets Manager|AWS CloudTrail|AWS X-Ray|1|AWS Secrets Manager provides secure storage and retrieval of sensitive data like API keys, database credentials, and other secrets, with automatic rotation capabilities.|Secret Management|AWS Services
+
+What is 'dependency confusion' in the context of serverless security?|Confusing function dependencies|Malicious packages with similar names|Circular dependencies|Missing dependencies|1|Dependency confusion attacks involve uploading malicious packages to public repositories with names similar to internal packages, tricking build systems into downloading the malicious versions.|Supply Chain Attacks|Dependency Confusion
+
+Which of these is a common serverless privilege escalation technique?|Container breakout|IAM role chaining|Network segmentation|Input validation|1|IAM role chaining involves using one compromised function's permissions to assume more privileged roles, escalating access within the cloud environment.|Privilege Escalation|IAM Abuse
+
+What should be implemented to prevent injection attacks in serverless functions?|Rate limiting|Input validation|Caching|Load balancing|1|Input validation should be implemented for all event data to prevent injection attacks like SQL injection, XSS, or command injection in serverless functions.|Injection Prevention|Input Validation
+
+Which cloud provider's serverless offering is called 'Cloud Functions'?|Amazon Web Services|Microsoft Azure|Google Cloud Platform|IBM Cloud|2|Google Cloud Platform offers Cloud Functions as its serverless compute service, allowing developers to run code in response to events.|Serverless Platforms|Google Cloud
+
+What is the main security benefit of using VPC configuration for Lambda functions?|Faster execution|Network isolation|Automatic scaling|Cost reduction|1|VPC configuration allows Lambda functions to access resources within a private network, providing network isolation and security boundaries.|Network Security|VPC Configuration
+
+Which attack targets the initialization phase of serverless functions to leak information?|Cold start timing attack|Hot reload attack|Warm up attack|Cooldown attack|0|Cold start timing attacks exploit the measurable time differences during function initialization to leak sensitive information through timing side channels.|Timing Attacks|Cold Start Exploitation
+
+What is 'shadow IAM' in serverless security contexts?|Hidden IAM policies|Unused IAM roles|Overlapping permissions|IAM role confusion|2|Shadow IAM refers to overlapping or conflicting permissions where multiple policies grant access to the same resources, creating security blind spots.|IAM Security|Policy Conflicts
+
+Which of these is NOT a recommended practice for serverless CI/CD security?|Use signed artifacts|Store credentials in code|Implement dependency scanning|Use infrastructure as code|1|Credentials should never be stored in source code. Instead, use secret management services and secure credential injection during deployment.|CI/CD Security|Credential Management
+
+What type of serverless vulnerability involves manipulating event source mappings?|Event injection|Trigger manipulation|Source code tampering|Runtime exploitation|0|Event injection attacks involve sending malicious events to serverless functions through their triggers, exploiting insufficient input validation.|Event Security|Injection Attacks
+
+Which AWS service provides code signing for Lambda functions?|AWS CodeCommit|AWS CodeBuild|AWS Signer|AWS Certificate Manager|2|AWS Signer provides code signing capabilities for Lambda functions, ensuring that only signed and verified code can be deployed.|Code Security|AWS Code Signing
+
+What is the primary defense against serverless DDoS attacks?|Rate limiting|Input validation|Error handling|Logging|0|Rate limiting at the API Gateway or function level helps prevent DDoS attacks by controlling the number of requests a function can process.|DDoS Protection|Rate Limiting
+
+Which of these can help detect anomalous serverless function behavior?|CloudTrail logs|Performance metrics|Both A and B|Neither A nor B|2|Both CloudTrail logs (for API activity) and performance metrics (for execution patterns) can help detect anomalous behavior indicating security incidents.|Monitoring|Anomaly Detection

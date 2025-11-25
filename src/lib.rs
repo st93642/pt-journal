@@ -5,7 +5,7 @@
 /*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
 /*                                                          TT         SS II */
 /*  Created: Nov 21 2025 23:42 st93642                      TT    SSSSSSS II */
-/*  Updated: Nov 25 2025 11:20 st93642                                       */
+/*  Updated: Nov 25 2025 12:58 st93642                                       */
 /*                                                                           */
 /*   Transport and Telecommunication Institute - Riga, Latvia                */
 /*                       https://tsi.lv                                      */
@@ -38,14 +38,14 @@ mod tests {
             assert_eq!(model.selected_phase, 0);
             assert_eq!(model.selected_step, Some(0));
             assert!(model.current_path.is_none());
-            assert_eq!(model.session.phases.len(), 23); // 23 phases (consolidated container & kubernetes)
+            assert_eq!(model.session.phases.len(), 24); // 24 phases (added serverless security)
         }
 
         #[test]
         fn test_session_creation() {
             let session = Session::default();
             assert!(!session.name.is_empty());
-            assert_eq!(session.phases.len(), 23); // 23 phases (consolidated container & kubernetes)
+            assert_eq!(session.phases.len(), 24); // 24 phases (added serverless security)
             assert!(session.notes_global.is_empty());
         }
 
@@ -92,12 +92,12 @@ mod tests {
             assert!(!container_security_phase.steps.is_empty()); // Has tutorial and quiz steps
 
             // Test Bug Bounty Hunting phase
-            let bug_bounty_phase = &session.phases[12];
+            let bug_bounty_phase = &session.phases[13];
             assert_eq!(bug_bounty_phase.name, "Bug Bounty Hunting");
             assert!(!bug_bounty_phase.steps.is_empty()); // Has steps
 
             // Test CompTIA Security+ phase
-            let comptia_phase = &session.phases[13];
+            let comptia_phase = &session.phases[14];
             assert_eq!(comptia_phase.name, "CompTIA Security+");
             assert_eq!(comptia_phase.steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
         }
@@ -587,6 +587,7 @@ mod tests {
                 "Real-Time/WebSocket Testing",
                 "Reporting",
                 "Container & Kubernetes Security",
+                "Serverless Security",
                 "Bug Bounty Hunting",
                 "CompTIA Security+",
                 "CompTIA PenTest+",
@@ -605,8 +606,8 @@ mod tests {
 
             // Verify step counts are reasonable for the core pentesting phases
             let expected_step_counts = [
-                16, 5, 4, 4, 2, 1, 1, 3, 3, 3, 4, 6, 8, 23, 32, 24, 1, 1, 1, 1, 10, 10, 7,
-            ]; // Updated for all phases including AI security (23 total phases)
+                16, 5, 4, 4, 2, 1, 1, 3, 3, 3, 4, 6, 7, 8, 23, 32, 24, 1, 1, 1, 1, 10, 10, 7,
+            ]; // Updated for all phases including serverless security (24 total phases)
             for (idx, &expected_count) in expected_step_counts.iter().enumerate() {
                 assert_eq!(session.phases[idx].steps.len(), expected_count);
             }
@@ -618,10 +619,10 @@ mod tests {
             assert!(!session.phases[11].steps.is_empty());
 
             // Bug Bounty Hunting phase should have steps
-            assert!(!session.phases[12].steps.is_empty());
+            assert!(!session.phases[13].steps.is_empty());
 
             // CompTIA Security+ phase should have quiz steps
-            assert_eq!(session.phases[13].steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
+            assert_eq!(session.phases[14].steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
         }
 
         #[test]

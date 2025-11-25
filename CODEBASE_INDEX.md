@@ -100,7 +100,9 @@ pt-journal/
 │   │       ├── scanning_and_enumeration.json   # 12 scanning tools
 │   │       ├── exploitation.json               # 12 exploitation tools
 │   │       └── ... (29 more category files)
-│   └── ... (quiz and tutorial data files)
+│   ├── serverless_security/   # Serverless security quiz content
+│   │   └── serverless-security-quiz.txt        # 18 serverless security questions
+│   └── ... (other quiz and tutorial data files)
 ├── .github/                   # GitHub configuration
 │   └── copilot-instructions.md # AI agent instructions
 ├── Cargo.toml                 # Project manifest
@@ -294,17 +296,18 @@ dispatcher.dispatch(Message::SessionLoaded { session });
 10. **Real-Time/WebSocket Testing** (3 steps) - modern_web.rs
 11. **Reporting** (4 steps) - reporting.rs
 12. **Container & Kubernetes Security** (6 steps) - container_security.rs
-13. **Bug Bounty Hunting** (8 steps) - bug_bounty_hunting.rs
-14. **CompTIA Security+** (23 quiz steps) - comptia_secplus.rs
-15. **CompTIA PenTest+** (32 quiz steps) - pentest_exam.rs
-16. **Certified Ethical Hacker (CEH)** (24 quiz steps) - ceh.rs
-17. **CI-CD Pipeline Attacks** (1 step) - cloud_native.rs
-18. **SBOM Generation & Analysis** (1 step) - supply_chain.rs
-19. **Dependency Confusion & Typosquatting** (1 step) - supply_chain.rs
-20. **Artifact Integrity Checks** (1 step) - supply_chain.rs
-21. **Red Team Tradecraft** (10 steps) - red_team_tradecraft.rs
-22. **Purple Team/Threat Hunting** (10 steps) - purple_team_threat_hunting.rs
-23. **AI & LLM Security** (7 steps) - ai_security.rs
+13. **Serverless Security** (7 steps) - serverless_security.rs
+14. **Bug Bounty Hunting** (8 steps) - bug_bounty_hunting.rs
+15. **CompTIA Security+** (23 quiz steps) - comptia_secplus.rs
+16. **CompTIA PenTest+** (32 quiz steps) - pentest_exam.rs
+17. **Certified Ethical Hacker (CEH)** (24 quiz steps) - ceh.rs
+18. **CI-CD Pipeline Attacks** (1 step) - cloud_native.rs
+19. **SBOM Generation & Analysis** (1 step) - supply_chain.rs
+20. **Dependency Confusion & Typosquatting** (1 step) - supply_chain.rs
+21. **Artifact Integrity Checks** (1 step) - supply_chain.rs
+22. **Red Team Tradecraft** (10 steps) - red_team_tradecraft.rs
+23. **Purple Team/Threat Hunting** (10 steps) - purple_team_threat_hunting.rs
+24. **AI & LLM Security** (7 steps) - ai_security.rs
 
 **Content Structure**:
 

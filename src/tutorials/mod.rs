@@ -13,6 +13,7 @@ pub mod purple_team_threat_hunting;
 pub mod reconnaissance;
 pub mod red_team_tradecraft;
 pub mod reporting;
+pub mod serverless_security;
 pub mod supply_chain;
 pub mod vulnerability_analysis;
 
@@ -34,6 +35,7 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         create_websocket_grpc_phase(),
         create_reporting_phase(),
         create_container_security_phase(),
+        create_serverless_security_phase(),
         create_bug_bounty_hunting_phase(),
         create_comptia_secplus_phase(),
         create_pentest_exam_phase(),
@@ -204,6 +206,17 @@ fn create_container_security_phase() -> Phase {
     Phase {
         id: Uuid::new_v4(),
         name: "Container & Kubernetes Security".to_string(),
+        steps,
+        notes: String::new(),
+    }
+}
+
+fn create_serverless_security_phase() -> Phase {
+    let steps = serverless_security::get_serverless_security_steps();
+
+    Phase {
+        id: Uuid::new_v4(),
+        name: "Serverless Security".to_string(),
         steps,
         notes: String::new(),
     }

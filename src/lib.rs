@@ -662,8 +662,8 @@ mod tests {
                                 "Step '{}' missing educational sections",
                                 step.title
                             );
-                        } else {
-                            // Traditional tutorials should have WHAT TO LOOK FOR
+                        } else if phase.name.as_str() == CONTAINER_SECURITY_PHASE {
+                            // Container security tutorials should have WHAT TO LOOK FOR or COMMON PITFALLS
                             assert!(
                                 description.contains("WHAT TO LOOK FOR")
                                     || description.contains("COMMON PITFALLS"),

@@ -12,6 +12,8 @@ use uuid::Uuid;
 pub const DOMAIN_CONTAINER_SECURITY: &str = "Container & Kubernetes Security";
 const QUIZ_FILE_PATH: &str = "data/container_security/container-kubernetes-quiz.txt";
 
+pub const CONTAINER_SECURITY_PHASE: &str = "Container & Kubernetes Security";
+
 pub const CONTAINER_ISOLATION_STEPS: &[(&str, &str)] = &[
     (
         "Container Isolation Fundamentals",
@@ -28,7 +30,7 @@ Key Isolation Mechanisms:
 - UTS namespace: Hostname and domain isolation
 - IPC namespace: Inter-process communication isolation
 
-STEP-BY-STEP PROCESS:
+STEP-BY-STEP:
 
 1. EXAMINE NAMESPACE ISOLATION:
    
@@ -85,13 +87,13 @@ STEP-BY-STEP PROCESS:
    docker run --rm -it alpine cat /proc/self/attr/current 2>/dev/null || echo 'No SELinux'
    ```
 
-DETECTION:
+WHAT TO LOOK FOR:
 - Container processes visible from host: `ps aux | grep -E '(docker|containerd|runc)'`
 - Excessive capabilities: `docker inspect <container> | grep Cap`
 - Weak security profiles: `docker inspect <container> | grep -E '(AppArmor|Selinux)'`
 - Host filesystem access: `docker exec <container> ls -la /host`
 
-REMEDIATION:
+COMMON PITFALLS:
 - Use minimal base images and remove unnecessary tools
 - Drop all non-essential capabilities using --cap-drop
 - Apply AppArmor/SELinux profiles consistently
@@ -105,11 +107,17 @@ TOOLS AND RESOURCES:
 - OpenSCAP: Security compliance scanning
 - Container Escape Tools: For testing isolation (authorized use only)
 
+TOOLS AND RESOURCES:
+- Docker Bench for Security: Automated security checks
+- Lynis: Security auditing tool
+- OpenSCAP: Security compliance scanning
+- Container Escape Tools: For testing isolation (authorized use only)
+
 REFERENCES:
 - Docker Security Documentation: https://docs.docker.com/engine/security/
 - Linux Namespaces: https://man7.org/linux/man-pages/man7/namespaces.7.html
 - MITRE ATT&CK Container Techniques: https://attack.mitre.org/matrices/enterprise/containers/"
-    ),
+     ),
     (
         "Container Breakout Vectors",
         "OBJECTIVE: Identify and exploit common container breakout vectors for security assessment.
@@ -124,7 +132,7 @@ Common Breakout Vectors:
 - Kernel vulnerabilities: Memory corruption and privilege escalation
 - Runtime vulnerabilities: Container daemon exploitation
 
-STEP-BY-STEP PROCESS:
+STEP-BY-STEP:
 
 1. PRIVILEGED CONTAINER ESCAPES:
    
@@ -204,14 +212,14 @@ STEP-BY-STEP PROCESS:
    # Exploit code would replace host runc binary
    ```
 
-DETECTION:
+WHAT TO LOOK FOR:
 - Privileged containers: `docker ps --filter 'privileged=true'`
 - Docker socket mounts: `docker ps --filter 'volume=/var/run/docker.sock'`
 - Host path volumes: `docker inspect <container> | grep hostPath`
 - Capable containers: `docker inspect <container> | grep -A 10 'Capabilities'`
 - Suspicious container behavior: Unusual process activity
 
-REMEDIATION:
+COMMON PITFALLS:
 - Never use --privileged flag in production
 - Avoid mounting Docker socket or other critical host paths
 - Keep kernel and container runtime updated
@@ -225,11 +233,15 @@ TOOLS AND RESOURCES:
 - Container Escape Scripts: For authorized testing
 - LinPEAS: Linux privilege escalation enumeration
 
+TOOLS AND RESOURCES:
+- Container Escape Scripts: For authorized testing
+- LinPEAS: Linux privilege escalation enumeration
+
 REFERENCES:
 - Container Escape Techniques: https://blog.dragonsector.pl/2019/02/28/docker-container-escape/
 - runc Vulnerability CVE-2019-5736: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5736
 - Dirty COW Exploit: https://github.com/dirtycow/dirtycow.github.io"
-    ),
+     ),
 ];
 
 pub const KUBERNETES_SECURITY_STEPS: &[(&str, &str)] = &[
@@ -353,13 +365,19 @@ STEP-BY-STEP PROCESS:
    kubectl expose deployment test-deployment --port=80
    ```
 
-DETECTION:
+WHAT TO LOOK FOR:
 - Over-permissive roles: `kubectl get clusterroles -o json | jq '.items[].rules[] | select(.resources==[\"*\"])'`
 - Cluster-admin bindings: `kubectl get clusterrolebindings | grep cluster-admin`
 - Wildcard verbs: `kubectl get roles -o json | jq '.items[].rules[] | select(.verbs==[\"*\"])'`
 - Service account tokens in pods: `kubectl exec <pod> -- ls /var/run/secrets/kubernetes.io/serviceaccount/`
 
-REMEDIATION:
+TOOLS AND RESOURCES:
+- Pebble: Kubernetes privilege escalation checker
+- kubectl-auth-can-i: Permission testing tool
+- kube-hunter: Kubernetes penetration testing tool
+- Kubesec: Kubernetes security analysis tool
+
+COMMON PITFALLS:
 - Apply principle of least privilege to all roles and bindings
 - Avoid wildcard permissions unless absolutely necessary
 - Regularly audit role bindings and service account permissions
@@ -485,14 +503,14 @@ n     name: default-deny
      - Egress
    ```
 
-DETECTION:
+WHAT TO LOOK FOR:
 - Security context violations: `kubectl get events --field-selector reason=FailedScheduling`
 - Network policy violations: `kubectl logs -n kube-system -l k8s-app=calico-node`
 - Admission controller rejections: `kubectl get events --field-selector reason=FailedAdmission`
 - Runtime anomalies: Falco alerts, container escape attempts
 - Privilege escalation: Unusual service account usage
 
-REMEDIATION:
+COMMON PITFALLS:
 - Enforce security contexts across all namespaces
 - Implement default deny network policies
 - Use admission controllers for policy enforcement

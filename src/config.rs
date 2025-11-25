@@ -5,7 +5,7 @@
 /*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
 /*                                                          TT         SS II */
 /*  Created: Nov 25 2025 14:30 st93642                      TT    SSSSSSS II */
-/*  Updated: Nov 25 2025 18:40 st93642                                       */
+/*  Updated: Nov 25 2025 20:40 st93642                                       */
 /*                                                                           */
 /*   Transport and Telecommunication Institute - Riga, Latvia                */
 /*                       https://tsi.lv                                      */
@@ -29,7 +29,7 @@ impl Default for ChatbotConfig {
         Self {
             endpoint: "http://localhost:11434".to_string(),
             model: "llama3.2:latest".to_string(),
-            timeout_seconds: 60, // Increased from 30 to 60 seconds
+            timeout_seconds: 180, // Increased to 3 minutes for complex queries
         }
     }
 }
@@ -123,7 +123,7 @@ mod tests {
         let config = AppConfig::default();
         assert_eq!(config.chatbot.endpoint, "http://localhost:11434");
         assert_eq!(config.chatbot.model, "llama3.2:latest");
-        assert_eq!(config.chatbot.timeout_seconds, 60);
+        assert_eq!(config.chatbot.timeout_seconds, 180);
     }
 
     #[test]
@@ -145,6 +145,10 @@ mod tests {
         // Clear any existing environment variables
         env::remove_var("PT_JOURNAL_OLLAMA_ENDPOINT");
         env::remove_var("PT_JOURNAL_OLLAMA_MODEL");
+
+        // Ensure environment variables are cleared right before loading
+        assert!(env::var("PT_JOURNAL_OLLAMA_ENDPOINT").is_err());
+        assert!(env::var("PT_JOURNAL_OLLAMA_MODEL").is_err());
 
         let config = AppConfig::load().unwrap();
         assert_eq!(config.chatbot.endpoint, "http://localhost:11434");

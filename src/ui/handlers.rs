@@ -350,8 +350,6 @@ pub fn setup_notes_handlers(detail_panel: Rc<DetailPanel>, state: Rc<StateManage
 #[allow(clippy::too_many_arguments)]
 pub fn setup_file_handlers(
     btn_open: &Button,
-    btn_save: &Button,
-    btn_save_as: &Button,
     window: &ApplicationWindow,
     state: Rc<StateManager>,
     detail_panel: Rc<DetailPanel>,
@@ -393,30 +391,6 @@ pub fn setup_file_handlers(
             glib::signal::signal_handler_unblock(&phase_combo_clone, &handler_id_clone);
 
             rebuild_steps_list(&steps_list_clone, &state_clone.model(), &detail_panel_clone);
-        });
-    });
-
-    // Save button
-    let window_save = window_glib.clone();
-    let state_save = state.clone();
-    btn_save.connect_clicked(move |_| {
-        let window_clone = window_save.clone();
-        let model_clone = state_save.model();
-        crate::ui::file_ops::save_session(&window_clone, model_clone, move |_path| {
-            // Saved successfully
-        });
-    });
-
-    // Save As button
-    let window_save_as = window_glib.clone();
-    let state_save_as = state.clone();
-    btn_save_as.connect_clicked(move |_| {
-        let window_clone = window_save_as.clone();
-        let model = state_save_as.model();
-
-        let session_clone = model.borrow().session.clone();
-        crate::ui::file_ops::save_session_as_dialog(&window_clone, &session_clone, move |path| {
-            model.borrow_mut().current_path = Some(path);
         });
     });
 }

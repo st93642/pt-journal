@@ -1,11 +1,6 @@
 #![allow(clippy::field_reassign_with_default)]
 
 use pt_journal::model::*;
-use std::fs;
-/// UI component tests for PT Journal
-/// These tests cover chat functionality, text input, and security
-use std::path::Path;
-use tempfile::NamedTempFile;
 use uuid::Uuid;
 
 #[cfg(test)]
@@ -187,7 +182,7 @@ mod chat_tests {
         let config = ChatbotConfig::default();
         assert_eq!(config.endpoint, "http://localhost:11434");
         assert_eq!(config.model, "llama3.2:latest");
-        assert_eq!(config.timeout_seconds, 60);
+        assert_eq!(config.timeout_seconds, 180);
     }
 
     #[test]

@@ -24,8 +24,71 @@ pub fn build_ui(app: &Application, model: AppModel) {
         .default_height(900)
         .build();
 
+    // Load custom CSS for chat panel styling
+    let css_provider = gtk4::CssProvider::new();
+    css_provider.load_from_string(
+        r#"
+        .chat-panel {
+            background-color: rgba(0, 20, 0, 0.9);
+            border: 1px solid #00ff00;
+            border-radius: 8px;
+        }
+        
+        .chat-history {
+            background-color: rgba(0, 10, 0, 0.8);
+        }
+        
+        .chat-input {
+            color: #00ff00;
+            background-color: rgba(0, 20, 0, 0.9);
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .chat-input text {
+            color: #00ff00;
+            background-color: rgba(0, 20, 0, 0.9);
+        }
+        
+        .chat-message-content {
+            color: #00ff00;
+            font-family: monospace;
+            font-size: 11px;
+        }
+        
+        .user-message {
+            color: #00ff00;
+            font-weight: bold;
+        }
+        
+        .assistant-message {
+            color: #00ff00;
+            font-style: italic;
+        }
+        
+        .timestamp {
+            color: #666666;
+            font-size: 9px;
+        }
+        
+        .error {
+            color: #ff6b6b;
+            background-color: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff6b6b;
+            border-radius: 4px;
+            padding: 4px;
+        }
+        "#,
+    );
+    
+    gtk4::style_context_add_provider_for_display(
+        &gtk4::gdk::Display::default().unwrap(),
+        &css_provider,
+        gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
+    );
+
     // Header bar with Open/Save and Sidebar toggle
-    let (header, btn_open, btn_save, btn_save_as, btn_sidebar) =
+    let (header, btn_open, btn_sidebar) =
         crate::ui::header_bar::create_header_bar();
     window.set_titlebar(Some(&header));
 
@@ -99,8 +162,6 @@ pub fn build_ui(app: &Application, model: AppModel) {
     // File operation handlers
     crate::ui::handlers::setup_file_handlers(
         &btn_open,
-        &btn_save,
-        &btn_save_as,
         &window,
         state.clone(),
         detail_panel_ref.clone(),

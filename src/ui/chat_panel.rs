@@ -21,10 +21,12 @@ impl ChatPanel {
         container.set_margin_bottom(8);
         container.set_margin_start(8);
         container.set_margin_end(8);
+        container.add_css_class("chat-panel");
 
         // Chat history
         let history_list = ListBox::new();
         history_list.set_selection_mode(gtk4::SelectionMode::None);
+        history_list.add_css_class("chat-history");
         let history_scroll = ScrolledWindow::new();
         history_scroll.set_child(Some(&history_list));
         history_scroll.set_vexpand(true);
@@ -43,6 +45,7 @@ impl ChatPanel {
         input_textview.set_buffer(Some(&input_buffer));
         input_textview.set_wrap_mode(gtk4::WrapMode::Word);
         input_textview.set_accepts_tab(false);
+        input_textview.add_css_class("chat-input");
         
         // Add placeholder text by setting initial buffer content
         input_buffer.set_text("Ask about this step...");
@@ -129,6 +132,7 @@ impl ChatPanel {
         content_label.set_wrap_mode(gtk4::pango::WrapMode::Word);
         content_label.set_max_width_chars(80);
         content_label.set_selectable(true);
+        content_label.add_css_class("chat-message-content");
 
         message_box.append(&role_label);
         message_box.append(&time_label);

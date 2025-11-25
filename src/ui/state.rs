@@ -1,5 +1,5 @@
 use crate::dispatcher::{AppMessage, SharedDispatcher};
-use crate::model::{AppModel, ChatMessage, ChatRole, Evidence, StepStatus};
+use crate::model::{AppModel, ChatMessage, Evidence, StepStatus};
 use std::cell::RefCell;
 /// UI state management module
 use std::rc::Rc;
@@ -356,7 +356,7 @@ impl StateManager {
 mod tests {
     use super::*;
     use crate::dispatcher::create_dispatcher;
-    use crate::model::AppModel;
+    use crate::model::{AppModel, ChatRole};
     use std::sync::{Arc, Mutex};
 
     fn create_test_state() -> StateManager {

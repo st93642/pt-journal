@@ -889,6 +889,7 @@ fn create_copyable_command_row(command: &str) -> GtkBox {
 }
 
 #[cfg(test)]
+#[allow(deprecated)]
 mod tests {
     use super::*;
     use crate::ui::tool_instructions::{

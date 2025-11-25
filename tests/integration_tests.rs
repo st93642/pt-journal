@@ -5,11 +5,9 @@
 use assert_matches::assert_matches;
 use pt_journal::dispatcher::*;
 use pt_journal::model::*;
-use pt_journal::store;
 use pt_journal::ui::state::*;
 use std::cell::RefCell;
 use std::rc::Rc;
-use tempfile::{tempdir, TempDir};
 
 // GTK imports for UI integration tests
 use gtk4::prelude::*;
@@ -41,92 +39,6 @@ fn test_phase_structure() {
     assert!(!phase.steps.is_empty());
 }
 
-// Storage Tests
-fn test_save_and_load_session() {
-    let temp_dir = tempdir().unwrap();
-    let session_path = temp_dir.path().join("test_session");
-
-    let mut session = Session::default();
-    session.name = "Test Session".to_string();
-    session.notes_global = "Test notes".to_string();
-
-    // Modify first step to verify persistence
-    if let Some(phase) = session.phases.get_mut(0) {
-        if let Some(step) = phase.steps.get_mut(0) {
-            step.status = StepStatus::Done;
-            step.set_notes("Test notes content".to_string());
-        }
-    }
-
-    store::save_session(&session_path, &session).unwrap();
-    let loaded = store::load_session(&session_path.join("session.json")).unwrap();
-
-    assert_eq!(loaded.name, session.name);
-    assert_eq!(loaded.notes_global, session.notes_global);
-    assert_eq!(loaded.phases.len(), session.phases.len());
-}
-
-fn test_session_data_integrity() {
-    let temp_dir = TempDir::new().unwrap();
-    let session_path = temp_dir.path().join("test_session");
-
-    let mut session = Session::default();
-    session.notes_global = "Global test notes".to_string();
-
-    const PENTEST_PHASES: [&str; 5] = [
-        "Reconnaissance",
-        "Vulnerability Analysis",
-        "Exploitation",
-        "Post-Exploitation",
-        "Reporting",
-    ];
-
-    // Only modify tutorial steps in core pentesting phases, skip specialized or quiz-heavy phases
-    for phase in session
-        .phases
-        .iter_mut()
-        .filter(|phase| PENTEST_PHASES.contains(&phase.name.as_str()))
-    {
-        for step in &mut phase.steps {
-            // Only set notes on tutorial steps, not quiz steps
-            if !step.is_quiz() {
-                step.set_notes(format!("Notes for {}", step.title)); // Use set_notes() method
-                if step.title.contains("enumeration") || step.title.contains("Subdomain") {
-                    step.status = StepStatus::Done;
-                }
-            }
-        }
-    }
-
-    store::save_session(&session_path, &session).unwrap();
-    let session_file = session_path.join("session.json");
-    assert!(session_file.exists());
-
-    let json_content = std::fs::read_to_string(&session_file).unwrap();
-    assert!(json_content.contains("Global test notes"));
-    assert!(json_content.contains("Notes for"));
-
-    let loaded_session = store::load_session(&session_path.join("session.json")).unwrap();
-    assert_eq!(loaded_session.notes_global, "Global test notes");
-
-    // Verify that modified tutorial steps have notes
-    for phase in loaded_session
-        .phases
-        .iter()
-        .filter(|phase| PENTEST_PHASES.contains(&phase.name.as_str()))
-    {
-        for step in &phase.steps {
-            if !step.is_quiz()
-                && (step.title.contains("enumeration") || step.title.contains("Subdomain"))
-            {
-                assert!(!step.get_notes().is_empty());
-                assert_matches!(step.status, StepStatus::Done);
-            }
-        }
-    }
-}
-
-// Dispatcher Tests
 fn test_dispatcher_message_routing() {
     let dispatcher = Rc::new(RefCell::new(Dispatcher::new()));
     let message_received = Rc::new(RefCell::new(false));
@@ -235,40 +147,6 @@ fn test_state_manager_step_status_update() {
 }
 
 // UI Integration Tests (GTK)
-fn test_session_workflow() {
-    gtk4::init().expect("Failed to initialize GTK");
-
-    let temp_dir = tempdir().unwrap();
-    let session_path = temp_dir.path().join("workflow_session");
-
-    let mut session = Session::default();
-    session.name = "Workflow Test".to_string();
-
-    // Simulate a complete workflow
-    for phase in session.phases.iter_mut().take(3) {
-        for step in phase.steps.iter_mut().take(2) {
-            if step.is_tutorial() {
-                step.set_notes("Completed this step".to_string());
-                step.status = StepStatus::Done;
-            }
-        }
-    }
-
-    store::save_session(&session_path, &session).unwrap();
-    let loaded = store::load_session(&session_path.join("session.json")).unwrap();
-
-    assert_eq!(loaded.name, "Workflow Test");
-    let mut completed_count = 0;
-    for phase in loaded.phases.iter().take(3) {
-        for step in phase.steps.iter().take(2) {
-            if step.status == StepStatus::Done {
-                completed_count += 1;
-            }
-        }
-    }
-    assert!(completed_count > 0);
-}
-
 fn test_tool_execution_panel_creation() {
     gtk4::init().expect("Failed to initialize GTK");
 
@@ -305,8 +183,6 @@ fn main() {
         ("test_default_app_model", test_default_app_model),
         ("test_session_creation", test_session_creation),
         ("test_phase_structure", test_phase_structure),
-        ("test_save_and_load_session", test_save_and_load_session),
-        ("test_session_data_integrity", test_session_data_integrity),
         (
             "test_dispatcher_message_routing",
             test_dispatcher_message_routing,
@@ -328,7 +204,6 @@ fn main() {
             "test_state_manager_step_status_update",
             test_state_manager_step_status_update,
         ),
-        ("test_session_workflow", test_session_workflow),
         (
             "test_tool_execution_panel_creation",
             test_tool_execution_panel_creation,

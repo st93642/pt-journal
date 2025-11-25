@@ -21,11 +21,14 @@ impl ChatPanel {
         container.set_margin_bottom(8);
         container.set_margin_start(8);
         container.set_margin_end(8);
+        container.add_css_class("chat-panel");
 
         // Chat history
         let history_list = ListBox::new();
         history_list.set_selection_mode(gtk4::SelectionMode::None);
+        history_list.add_css_class("chat-history");
         let history_scroll = ScrolledWindow::new();
+        history_scroll.add_css_class("chat-history-scroll");
         history_scroll.set_child(Some(&history_list));
         history_scroll.set_vexpand(true);
         history_scroll.set_min_content_height(200);
@@ -37,12 +40,14 @@ impl ChatPanel {
         let input_scroll = ScrolledWindow::new();
         input_scroll.set_min_content_height(60); // Make it taller
         input_scroll.set_max_content_height(120); // But not too tall
+        input_scroll.add_css_class("chat-input-scroll");
         
         let input_buffer = TextBuffer::new(None);
         let input_textview = TextView::new();
         input_textview.set_buffer(Some(&input_buffer));
         input_textview.set_wrap_mode(gtk4::WrapMode::Word);
         input_textview.set_accepts_tab(false);
+        input_textview.add_css_class("chat-input");
         
         // Add placeholder text by setting initial buffer content
         input_buffer.set_text("Ask about this step...");
@@ -104,6 +109,7 @@ impl ChatPanel {
         message_box.set_margin_bottom(8);
         message_box.set_margin_start(8);
         message_box.set_margin_end(8);
+        message_box.add_css_class("chat-message");
 
         // Role label
         let role_label = Label::new(Some(match message.role {

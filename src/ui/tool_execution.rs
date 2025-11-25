@@ -1,28 +1,30 @@
 use crate::ui::tool_instructions;
 use gtk4::glib;
 use gtk4::prelude::*;
-#[allow(deprecated)]
 use gtk4::{
-    Align, Box as GtkBox, Button, ComboBoxText, Dialog, Frame, GestureClick, Grid, Label,
-    LinkButton, Orientation, PopoverMenu, ResponseType, ScrolledWindow,
+    Align, Box as GtkBox, Button, DropDown, Frame, GestureClick, Grid, Label, LinkButton,
+    ListItem, Orientation, PopoverMenu, ScrolledWindow, SignalListItemFactory, StringList,
+    StringObject,
 };
+use std::cell::RefCell;
 use std::process::Command;
+use std::rc::Rc;
 use std::time::Duration;
 use vte::prelude::*;
 
 /// Manual security tools panel with inline instructions and an embedded terminal
-#[allow(deprecated)]
 #[derive(Clone)]
 pub struct ToolExecutionPanel {
     pub container: GtkBox,
-    pub category_selector: ComboBoxText,
-    pub tool_selector: ComboBoxText,
+    pub category_selector: DropDown,
+    pub tool_selector: DropDown,
     pub info_button: Button,
     pub instructions_scroll: ScrolledWindow,
     pub terminal: vte::Terminal,
+    tool_model: StringList,
+    tool_ids: Rc<RefCell<Vec<String>>>,
 }
 
-#[allow(deprecated)]
 impl ToolExecutionPanel {
     pub fn new() -> Self {
         let container = GtkBox::new(Orientation::Vertical, 12);
@@ -42,42 +44,40 @@ impl ToolExecutionPanel {
         category_label.set_width_chars(10);
         category_label.set_xalign(0.0);
 
-        let category_selector = ComboBoxText::new();
+        let category_model = StringList::new(&[]);
+        let category_selector = DropDown::new(Some(&category_model), None::<gtk4::Expression>);
         category_selector.set_hexpand(true);
+        configure_dropdown(&category_selector);
+
+        let tool_model = StringList::new(&[]);
+        let tool_selector = DropDown::new(Some(&tool_model), None::<gtk4::Expression>);
+        tool_selector.set_hexpand(true);
+        configure_dropdown(&tool_selector);
+
+        let tool_ids = Rc::new(RefCell::new(Vec::new()));
 
         let groups = tool_instructions::grouped_manifest();
-        let mut first_category: Option<String> = None;
-        let mut first_tool_id: Option<String> = None;
-
-        // Find the category containing "nmap" if it exists, otherwise use the first category
-        let nmap_category = tool_instructions::manifest()
-            .iter()
-            .find(|entry| entry.id == "nmap")
-            .map(|entry| entry.category.clone());
-
-        if let Some(nmap_cat) = nmap_category {
-            first_category = Some(nmap_cat.clone());
-            if let Some(group) = groups.iter().find(|g| g.name == nmap_cat) {
-                if let Some(first_tool) = group.tools.first() {
-                    first_tool_id = Some(first_tool.id.clone());
-                }
-            }
+        let (preferred_category, preferred_tool) = if let Some(entry) =
+            tool_instructions::manifest().iter().find(|entry| entry.id == "nmap")
+        {
+            (Some(entry.category.clone()), Some(entry.id.clone()))
+        } else if let Some(first_group) = groups.first() {
+            (
+                Some(first_group.name.clone()),
+                first_group.tools.first().map(|tool| tool.id.clone()),
+            )
         } else {
-            // Fallback to first category
-            if let Some(first_group) = groups.first() {
-                first_category = Some(first_group.name.clone());
-                if let Some(first_tool) = first_group.tools.first() {
-                    first_tool_id = Some(first_tool.id.clone());
-                }
-            }
-        }
+            (None, None)
+        };
 
+        let mut default_category_index = 0;
         for (idx, group) in groups.iter().enumerate() {
-            category_selector.append(Some(&group.name), &group.name);
-            if first_category.as_ref() == Some(&group.name) {
-                category_selector.set_active(Some(idx as u32));
+            category_model.append(&group.name);
+            if preferred_category.as_ref() == Some(&group.name) {
+                default_category_index = idx;
             }
         }
+        category_selector.set_selected(default_category_index as u32);
 
         category_box.append(&category_label);
         category_box.append(&category_selector);
@@ -88,50 +88,6 @@ impl ToolExecutionPanel {
         let tool_label = Label::new(Some("Tool:"));
         tool_label.set_width_chars(10);
         tool_label.set_xalign(0.0);
-
-        let tool_selector = ComboBoxText::new();
-        tool_selector.set_hexpand(true);
-
-        // Populate tools for the initially selected category
-        if let Some(category) = first_category.clone() {
-            for group in &groups {
-                if group.name == category {
-                    for entry in &group.tools {
-                        tool_selector.append(Some(&entry.id), &entry.label);
-                    }
-                    break;
-                }
-            }
-        }
-
-        // Find and select the default tool (nmap if available, otherwise first tool)
-        if let Some(default_id) = tool_instructions::manifest()
-            .iter()
-            .find(|entry| entry.id == "nmap")
-            .map(|entry| entry.id.clone())
-            .or_else(|| first_tool_id.clone())
-        {
-            // Find the index of the default tool in the current tool list
-            let model = tool_selector.model().unwrap();
-            let count = model.iter_n_children(None);
-            let mut found = false;
-            for idx in 0..count {
-                tool_selector.set_active(Some(idx as u32));
-                if tool_selector.active_id().map(|s| s.to_string()) == Some(default_id.clone()) {
-                    found = true;
-                    break;
-                }
-            }
-            if !found && count > 0 {
-                tool_selector.set_active(Some(0));
-            } else if count == 0 {
-                tool_selector.set_sensitive(false);
-            }
-        } else if tool_selector.model().unwrap().iter_n_children(None) > 0 {
-            tool_selector.set_active(Some(0));
-        } else {
-            tool_selector.set_sensitive(false);
-        }
 
         let info_button = Button::with_label("Open Instructions Window");
         info_button.add_css_class("flat");
@@ -268,64 +224,107 @@ impl ToolExecutionPanel {
             info_button,
             instructions_scroll,
             terminal,
+            tool_model,
+            tool_ids,
         };
 
-        panel.render_inline_instructions();
+        panel.update_tools_for_category_with_preference(preferred_tool.as_deref());
 
         // Category selector handler
-        let tool_clone = panel.tool_selector.clone();
         let panel_category = panel.clone();
         panel
             .category_selector
-            .connect_changed(move |category_selector| {
-                panel_category.update_tools_for_category(category_selector, &tool_clone);
+            .connect_selected_notify(move |_| {
+                panel_category.update_tools_for_category();
             });
 
         // Tool selector handler
-        let selector_clone = panel.tool_selector.clone();
         let panel_clone = panel.clone();
-        selector_clone.connect_changed(move |_| {
-            panel_clone.render_inline_instructions();
-        });
+        panel
+            .tool_selector
+            .connect_selected_notify(move |_| {
+                panel_clone.render_inline_instructions();
+            });
 
         panel
     }
 
     pub fn get_selected_tool(&self) -> Option<String> {
-        self.tool_selector.active_id().map(|s| s.to_string())
+        let selected = self.tool_selector.selected();
+        if selected == gtk4::INVALID_LIST_POSITION {
+            None
+        } else {
+            self.tool_ids
+                .borrow()
+                .get(selected as usize)
+                .cloned()
+        }
     }
 
     /// Update available tools when category selection changes
-    fn update_tools_for_category(
-        &self,
-        category_selector: &ComboBoxText,
-        tool_selector: &ComboBoxText,
-    ) {
-        let active_category = category_selector.active_id().map(|s| s.to_string());
+    fn update_tools_for_category(&self) {
+        self.update_tools_for_category_with_preference(None);
+    }
 
-        if let Some(category) = active_category {
-            // Clear existing tools by removing all children
-            let item_count = tool_selector.model().unwrap().iter_n_children(None);
-            for _ in 0..item_count {
-                tool_selector.remove(0);
+    fn update_tools_for_category_with_preference(&self, preferred_tool: Option<&str>) {
+        let category_name = self
+            .category_selector
+            .selected_item()
+            .and_then(|obj| obj.downcast::<StringObject>().ok())
+            .map(|obj| obj.string().to_string());
+
+        if let Some(category) = category_name {
+            let fallback_selection = preferred_tool
+                .map(|value| value.to_string())
+                .or_else(|| self.get_selected_tool());
+
+            let mut tool_ids_ref = self.tool_ids.borrow_mut();
+            tool_ids_ref.clear();
+            while self.tool_model.n_items() > 0 {
+                self.tool_model.remove(0);
             }
 
-            // Populate with tools from selected category
             let groups = tool_instructions::grouped_manifest();
             for group in groups {
                 if group.name == category {
                     for entry in group.tools {
-                        tool_selector.append(Some(&entry.id), &entry.label);
+                        self.tool_model.append(&entry.label);
+                        tool_ids_ref.push(entry.id);
                     }
                     break;
                 }
             }
 
-            // Select first tool in the category
-            if tool_selector.model().unwrap().iter_n_children(None) > 0 {
-                tool_selector.set_active(Some(0));
+            let next_selection = fallback_selection
+                .as_ref()
+                .and_then(|desired| tool_ids_ref.iter().position(|id| id == desired))
+                .or_else(|| {
+                    if tool_ids_ref.is_empty() {
+                        None
+                    } else {
+                        Some(0)
+                    }
+                });
+
+            if let Some(idx) = next_selection {
+                self.tool_selector.set_selected(idx as u32);
+                self.tool_selector.set_sensitive(true);
+            } else {
+                self.tool_selector
+                    .set_selected(gtk4::INVALID_LIST_POSITION);
+                self.tool_selector.set_sensitive(false);
             }
 
+            drop(tool_ids_ref);
+            self.render_inline_instructions();
+        } else {
+            self.tool_ids.borrow_mut().clear();
+            while self.tool_model.n_items() > 0 {
+                self.tool_model.remove(0);
+            }
+            self.tool_selector
+                .set_selected(gtk4::INVALID_LIST_POSITION);
+            self.tool_selector.set_sensitive(false);
             self.render_inline_instructions();
         }
     }
@@ -380,31 +379,38 @@ impl ToolExecutionPanel {
             ),
         };
 
-        let dialog = Dialog::with_buttons(
-            Some(&dialog_title),
-            Some(window),
-            gtk4::DialogFlags::DESTROY_WITH_PARENT,
-            &[("Close", ResponseType::Close)],
-        );
+        let dialog = gtk4::Window::builder()
+            .transient_for(window)
+            .modal(true)
+            .title(&dialog_title)
+            .default_width(1000)
+            .default_height(650)
+            .build();
+        dialog.set_destroy_with_parent(true);
 
-        dialog.set_default_size(1000, 650);
-        dialog.connect_response(|dialog, response| {
-            if response == ResponseType::Close {
-                dialog.close();
-            }
-        });
-
-        let content = dialog.content_area();
+        let content = GtkBox::new(Orientation::Vertical, 12);
         content.set_margin_top(12);
         content.set_margin_bottom(12);
         content.set_margin_start(12);
         content.set_margin_end(12);
+        dialog.set_child(Some(&content));
 
         let scroll = ScrolledWindow::new();
         scroll.set_vexpand(true);
         scroll.set_hexpand(true);
         scroll.set_child(Some(&instruction_box));
         content.append(&scroll);
+
+        let close_button = Button::with_label("Close");
+        close_button.add_css_class("suggested-action");
+        close_button.set_halign(Align::End);
+        close_button.set_hexpand(false);
+        close_button.set_margin_top(12);
+        let dialog_clone = dialog.clone();
+        close_button.connect_clicked(move |_| {
+            dialog_clone.close();
+        });
+        content.append(&close_button);
 
         let window_title = dialog_title.clone();
         dialog.present();
@@ -441,6 +447,30 @@ impl Default for ToolExecutionPanel {
     fn default() -> Self {
         Self::new()
     }
+}
+
+fn configure_dropdown(dropdown: &DropDown) {
+    let factory = SignalListItemFactory::new();
+    factory.connect_setup(|_, item| {
+        if let Some(list_item) = item.downcast_ref::<ListItem>() {
+            let label = Label::new(None);
+            label.set_halign(Align::Start);
+            list_item.set_child(Some(&label));
+        }
+    });
+    factory.connect_bind(|_, item| {
+        if let Some(list_item) = item.downcast_ref::<ListItem>() {
+            if let (Some(child), Some(string_object)) = (
+                list_item.child().and_then(|child| child.downcast::<Label>().ok()),
+                list_item
+                    .item()
+                    .and_then(|obj| obj.downcast::<StringObject>().ok()),
+            ) {
+                child.set_text(&string_object.string());
+            }
+        }
+    });
+    dropdown.set_factory(Some(&factory));
 }
 
 fn build_instruction_sections(instructions: &tool_instructions::ToolInstructions) -> GtkBox {

@@ -9,6 +9,7 @@ use crate::model::AppModel;
 use crate::ui::state::StateManager;
 
 pub fn build_ui(app: &Application, model: AppModel) {
+    install_application_css();
     let model = Rc::new(RefCell::new(model));
 
     // Create dispatcher for event-driven communication
@@ -148,3 +149,88 @@ pub fn build_ui(app: &Application, model: AppModel) {
         crate::ui::handlers::rebuild_phase_combo(&phase_combo, &state.model());
     });
 }
+
+fn install_application_css() {
+    if let Some(display) = gtk4::gdk::Display::default() {
+        let provider = gtk4::CssProvider::new();
+        if let Err(err) = provider.load_from_data(CHAT_PANEL_CSS.as_bytes()) {
+            eprintln!("Failed to load application CSS: {err}");
+            return;
+        }
+        gtk4::StyleContext::add_provider_for_display(
+            &display,
+            &provider,
+            gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
+        );
+    }
+}
+
+const CHAT_PANEL_CSS: &str = r#"
+.chat-panel {
+    background-color: rgba(3, 12, 8, 0.35);
+    border: 1px solid rgba(34, 135, 91, 0.6);
+    border-radius: 12px;
+}
+
+.chat-history {
+    background-color: rgba(5, 18, 10, 0.92);
+    border-radius: 12px;
+    border: 1px solid rgba(40, 168, 106, 0.65);
+    padding: 6px;
+}
+
+.chat-history row {
+    background: transparent;
+    border-bottom: 1px solid rgba(40, 168, 106, 0.2);
+    margin-bottom: 2px;
+    padding-bottom: 4px;
+}
+
+.chat-history row:last-child {
+    border-bottom: none;
+}
+
+.chat-message label {
+    color: #c5ffd0;
+}
+
+.chat-message .timestamp {
+    color: #7dd899;
+    font-size: 0.85em;
+}
+
+.chat-message .user-message {
+    color: #adffb9;
+    font-weight: 600;
+}
+
+.chat-message .assistant-message {
+    color: #d0ffe0;
+}
+
+.chat-input {
+    background-color: rgba(3, 15, 8, 0.95);
+    border-radius: 10px;
+    border: 1px solid rgba(40, 168, 106, 0.7);
+    padding: 8px;
+    color: #c5ffd0;
+}
+
+.chat-input text {
+    color: #c5ffd0;
+    caret-color: #c5ffd0;
+}
+
+.chat-input.placeholder text {
+    color: rgba(197, 255, 208, 0.5);
+}
+
+.chat-input-scroll {
+    background: transparent;
+    border: none;
+}
+
+.chat-panel button {
+    margin-top: 6px;
+}
+"#;

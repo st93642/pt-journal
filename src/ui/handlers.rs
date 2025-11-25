@@ -278,7 +278,6 @@ pub fn setup_quiz_handlers(detail_panel: Rc<DetailPanel>, state: Rc<StateManager
 }
 
 /// Wire up tool execution panel (info dialog only)
-#[allow(deprecated)]
 pub fn setup_tool_execution_handlers(
     detail_panel: Rc<DetailPanel>,
     _state: Rc<StateManager>,

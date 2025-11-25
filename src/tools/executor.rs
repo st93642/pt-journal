@@ -1,13 +1,12 @@
 /// Tool execution engine
 use super::traits::*;
-use anyhow::Result;
+use anyhow::{ensure, Result};
 #[cfg(test)]
 use std::time::Duration;
 use std::time::Instant;
 
 /// Default executor implementation
 pub struct DefaultExecutor {
-    #[allow(dead_code)]
     max_concurrent: usize,
 }
 
@@ -29,6 +28,11 @@ impl Default for DefaultExecutor {
 
 impl ToolRunner for DefaultExecutor {
     fn execute(&self, tool: &dyn SecurityTool, config: &ToolConfig) -> Result<ExecutionResult> {
+        ensure!(
+            self.max_concurrent > 0,
+            "Executor configured with zero max concurrent slots"
+        );
+
         let start = Instant::now();
 
         // Validate prerequisites

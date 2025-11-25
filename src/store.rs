@@ -17,7 +17,6 @@ use directories::UserDirs;
 use std::fs;
 use std::path::{Path, PathBuf};
 
-#[allow(dead_code)]
 pub fn default_sessions_dir() -> PathBuf {
     // Try to use the user's Downloads folder
     if let Some(user_dirs) = UserDirs::new() {
@@ -38,7 +37,6 @@ pub fn default_sessions_dir() -> PathBuf {
     path
 }
 
-#[allow(dead_code)]
 pub fn save_session(path: &Path, session: &Session) -> Result<()> {
     // Create session folder structure
     // path should be: /path/to/session-name/session.json
@@ -68,7 +66,6 @@ pub fn save_session(path: &Path, session: &Session) -> Result<()> {
     Ok(())
 }
 
-#[allow(dead_code)]
 pub fn load_session(path: &Path) -> Result<Session> {
     let content = fs::read_to_string(path)?;
     let mut session: Session = serde_json::from_str(&content)?;

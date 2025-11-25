@@ -169,6 +169,16 @@ let current_step = &app_model.session.phases[phase_idx].steps[step_idx];
 let chat_history = current_step.get_chat_history();
 ```
 
+## Visual Design Refresh
+
+The embedded chatbot window now uses a high-contrast neon palette so that conversations stand out from tutorial content:
+
+- **Chat History**: Each message row lives inside a `chat-history` list with a charcoal background and pale green typography for both user and assistant roles. Timestamp badges use a dimmer teal to prevent glare.
+- **Input Surface**: The `chat-input` text view and surrounding scroller share a glassy dark finish with mint-colored text/caret, making prompts readable even when the GTK dark theme is enabled.
+- **Panel Framing**: The outer `chat-panel` container adds a subtle emerald border and rounded corners so the entire assistant experience reads as a dedicated console inside the detail view.
+
+These styles are installed globally through the GTK CSS provider (`CHAT_PANEL_CSS`) during UI initialization, which keeps the appearance consistent across all windows and future chat-related widgets.
+
 ## Security Considerations
 
 ### Data Privacy
@@ -277,4 +287,4 @@ fn test_chat_history_persistence() {
 
 ---
 
-**Last Updated**: November 25, 2025
+**Last Updated**: November 26, 2025

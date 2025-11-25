@@ -2,8 +2,7 @@
 ///
 /// This module provides tutorial content for AI and Large Language Model security testing,
 /// covering prompt injection, jailbreaks, data exfiltration, and ML pipeline threats.
-
-use crate::model::{Phase, Step, QuizStep};
+use crate::model::{Phase, QuizStep, Step};
 use uuid::Uuid;
 
 /// Model Threat Modeling phase
@@ -859,16 +858,22 @@ fn load_ai_security_questions() -> Result<Vec<crate::model::QuizQuestion>, Strin
         .join("ai-security-quiz.txt");
 
     if !quiz_path.exists() {
-        return Err(format!("AI security quiz file not found: {}", quiz_path.display()));
+        return Err(format!(
+            "AI security quiz file not found: {}",
+            quiz_path.display()
+        ));
     }
 
     let content = std::fs::read_to_string(&quiz_path).map_err(|e| {
-        format!("Failed to read AI security quiz file {}: {}", quiz_path.display(), e)
+        format!(
+            "Failed to read AI security quiz file {}: {}",
+            quiz_path.display(),
+            e
+        )
     })?;
 
-    crate::quiz::parse_question_file(&content).map_err(|e| {
-        format!("Failed to parse AI security quiz questions: {}", e)
-    })
+    crate::quiz::parse_question_file(&content)
+        .map_err(|e| format!("Failed to parse AI security quiz questions: {}", e))
 }
 
 /// Create AI security tutorial phase
@@ -909,11 +914,7 @@ pub fn create_ai_security_phase() -> Phase {
             Uuid::new_v4(),
             title.to_string(),
             description.to_string(),
-            vec![
-                "ai".to_string(),
-                "ml".to_string(),
-                "poisoning".to_string(),
-            ],
+            vec!["ai".to_string(), "ml".to_string(), "poisoning".to_string()],
         ));
     }
 

@@ -5,7 +5,7 @@
 /*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
 /*                                                          TT         SS II */
 /*  Created: Nov 21 2025 23:42 st93642                      TT    SSSSSSS II */
-/*  Updated: Nov 24 2025 15:23 st93642                                       */
+/*  Updated: Nov 25 2025 16:34 st93642                                       */
 /*                                                                           */
 /*   Transport and Telecommunication Institute - Riga, Latvia                */
 /*                       https://tsi.lv                                      */
@@ -17,6 +17,33 @@ use std::path::PathBuf;
 use uuid::Uuid;
 
 use crate::tutorials;
+
+// ============================================================================
+// Chatbot Models
+// ============================================================================
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub enum ChatRole {
+    User,
+    Assistant,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ChatMessage {
+    pub role: ChatRole,
+    pub content: String,
+    pub timestamp: DateTime<Utc>,
+}
+
+impl ChatMessage {
+    pub fn new(role: ChatRole, content: String) -> Self {
+        Self {
+            role,
+            content,
+            timestamp: Utc::now(),
+        }
+    }
+}
 
 // ============================================================================
 // Tutorial/Penetration Testing Models
@@ -172,12 +199,14 @@ pub struct QuizStatistics {
 /// Content type for a step - either tutorial-based or quiz-based
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum StepContent {
-    /// Traditional tutorial step with description, notes, and evidence
+    /// Traditional tutorial step with description, notes, evidence, and chat history
     Tutorial {
         description: String,
         description_notes: String,
         notes: String,
         evidence: Vec<Evidence>,
+        #[serde(default)]
+        chat_history: Vec<ChatMessage>,
     },
     /// Quiz-based learning step with questions and progress tracking
     Quiz { quiz_data: QuizStep },
@@ -190,6 +219,7 @@ impl Default for StepContent {
             description_notes: String::new(),
             notes: String::new(),
             evidence: Vec::new(),
+            chat_history: Vec::new(),
         }
     }
 }
@@ -232,6 +262,7 @@ impl Step {
                 description_notes: String::new(),
                 notes: String::new(),
                 evidence: Vec::new(),
+                chat_history: Vec::new(),
             },
             // Legacy fields
             description: String::new(),
@@ -269,6 +300,7 @@ impl Step {
                 description_notes: std::mem::take(&mut self.description_notes),
                 notes: std::mem::take(&mut self.notes),
                 evidence: std::mem::take(&mut self.evidence),
+                chat_history: Vec::new(), // New field, defaults to empty
             };
         }
     }
@@ -395,6 +427,28 @@ impl Step {
         }
         false
     }
+
+    /// Get chat history (for tutorial steps)
+    pub fn get_chat_history(&self) -> Vec<ChatMessage> {
+        match &self.content {
+            StepContent::Tutorial { chat_history, .. } => chat_history.clone(),
+            StepContent::Quiz { .. } => Vec::new(),
+        }
+    }
+
+    /// Add a chat message to history (for tutorial steps)
+    pub fn add_chat_message(&mut self, message: ChatMessage) {
+        if let StepContent::Tutorial { chat_history, .. } = &mut self.content {
+            chat_history.push(message);
+        }
+    }
+
+    /// Clear chat history (for tutorial steps)
+    pub fn clear_chat_history(&mut self) {
+        if let StepContent::Tutorial { chat_history, .. } = &mut self.content {
+            chat_history.clear();
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -432,15 +486,18 @@ pub struct AppModel {
     pub selected_phase: usize,
     pub selected_step: Option<usize>,
     pub current_path: Option<PathBuf>,
+    pub config: crate::config::AppConfig,
 }
 
 impl Default for AppModel {
     fn default() -> Self {
+        let config = crate::config::AppConfig::load().unwrap_or_default();
         Self {
             session: Session::default(),
             selected_phase: 0,
             selected_step: Some(0),
             current_path: None,
+            config,
         }
     }
 }

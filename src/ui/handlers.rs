@@ -1,11 +1,10 @@
 use gtk4::glib;
 use gtk4::prelude::*;
-use gtk4::{ApplicationWindow, Button, CheckButton, ListBox};
+use gtk4::{ApplicationWindow, Button, CheckButton, ListBox, gdk};
 use std::cell::RefCell;
 use std::rc::Rc;
 
 use crate::model::{AppModel, StepStatus};
-use crate::ui::canvas::load_step_evidence;
 use crate::ui::detail_panel::DetailPanel;
 use crate::ui::state::StateManager;
 
@@ -325,10 +324,9 @@ pub fn setup_step_handlers(
     // This function is called once at setup to prepare the container
 }
 
-/// Wire up notes text views (description and step notes)
+/// Wire up description text view
 pub fn setup_notes_handlers(detail_panel: Rc<DetailPanel>, state: Rc<StateManager>) {
     let desc_view = detail_panel.desc_view.clone();
-    let notes_view = detail_panel.notes_view.clone();
 
     // Description notes handler
     let state_desc = state.clone();
@@ -344,23 +342,6 @@ pub fn setup_notes_handlers(detail_panel: Rc<DetailPanel>, state: Rc<StateManage
         if let Some(step_idx) = step_idx {
             // Use state manager to update (dispatches events)
             state_desc.update_step_description_notes(phase_idx, step_idx, text);
-        }
-    });
-
-    // Step notes handler
-    let state_notes = state.clone();
-    notes_view.buffer().connect_changed(move |buffer| {
-        let text = buffer
-            .text(&buffer.start_iter(), &buffer.end_iter(), false)
-            .to_string();
-        let (phase_idx, step_idx) = {
-            let model_rc = state_notes.model();
-            let model = model_rc.borrow();
-            (model.selected_phase, model.selected_step)
-        };
-        if let Some(step_idx) = step_idx {
-            // Use state manager to update (dispatches events)
-            state_notes.update_step_notes(phase_idx, step_idx, text);
         }
     });
 }
@@ -446,6 +427,145 @@ pub fn setup_sidebar_handler(btn_sidebar: &Button, left_box: &gtk4::Box) {
     btn_sidebar.connect_clicked(move |_| {
         left_box_clone.set_visible(!left_box_clone.is_visible());
     });
+}
+
+/// Wire up chat panel handlers
+pub fn setup_chat_handlers(detail_panel: Rc<DetailPanel>, state: Rc<StateManager>) {
+    let chat_panel = detail_panel.chat_panel.clone();
+    let send_button = chat_panel.send_button.clone();
+    let input_textview = chat_panel.input_textview.clone();
+
+    // Send button handler
+    let chat_panel_send = chat_panel.clone();
+    let state_send = state.clone();
+    send_button.connect_clicked(move |_| {
+        let input_text = chat_panel_send.take_input();
+        if !input_text.is_empty() {
+            let (phase_idx, step_idx, config, step_ctx, history) = {
+                let model_rc = state_send.model();
+                let model = model_rc.borrow();
+                let phase_idx = model.selected_phase;
+                let step_idx = model.selected_step.unwrap_or(0);
+                let config = model.config.chatbot.clone();
+                let phase = &model.session.phases[phase_idx];
+                let step = &phase.steps[step_idx];
+                let notes = step.get_notes();
+                let evidence = step.get_evidence();
+                let quiz_status = if step.is_quiz() {
+                    step.get_quiz_step().map(|q| {
+                        format!(
+                            "{}/{} correct",
+                            q.statistics().correct,
+                            q.statistics().total_questions
+                        )
+                    })
+                } else {
+                    None
+                };
+                let step_ctx = crate::chatbot::StepContext {
+                    phase_name: phase.name.clone(),
+                    step_title: step.title.clone(),
+                    step_description: step.description.clone(),
+                    step_status: match step.status {
+                        crate::model::StepStatus::Done => "Done".to_string(),
+                        crate::model::StepStatus::InProgress => "In Progress".to_string(),
+                        crate::model::StepStatus::Todo => "Todo".to_string(),
+                        crate::model::StepStatus::Skipped => "Skipped".to_string(),
+                    },
+                    notes_count: notes.len(),
+                    evidence_count: evidence.len(),
+                    quiz_status,
+                };
+                let history = step.get_chat_history().clone();
+                (phase_idx, step_idx, config, step_ctx, history)
+            };
+
+            // Add user message immediately
+            let user_message =
+                crate::model::ChatMessage::new(crate::model::ChatRole::User, input_text.clone());
+            state_send.add_chat_message(phase_idx, step_idx, user_message.clone());
+
+            // Start request
+            state_send.start_chat_request(phase_idx, step_idx);
+
+            // Show loading
+            chat_panel_send.show_loading();
+
+            // Include user message in history for context
+            let mut history_with_user = history;
+            history_with_user.push(user_message);
+
+            // Use channel to communicate result from thread to main thread
+            let (tx, rx) = std::sync::mpsc::channel();
+
+            // Spawn thread for chatbot
+            std::thread::spawn(move || {
+                let chatbot = crate::chatbot::LocalChatBot::new(config);
+                let result = chatbot.send_message(&step_ctx, &history_with_user, &input_text);
+                let _ = tx.send(result);
+            });
+
+            // Poll the receiver in idle callback
+            let state_idle = state_send.clone();
+            let chat_panel_idle = chat_panel_send.clone();
+            glib::idle_add_local(move || {
+                match rx.try_recv() {
+                    Ok(result) => {
+                        match result {
+                            Ok(response) => {
+                                state_idle.add_chat_message(phase_idx, step_idx, response);
+                                state_idle.complete_chat_request(phase_idx, step_idx);
+                                chat_panel_idle.hide_loading();
+                            }
+                            Err(e) => {
+                                let error_msg = format!("Chatbot error: {}", e);
+                                chat_panel_idle.show_error(&error_msg);
+                                state_idle.fail_chat_request(
+                                    phase_idx,
+                                    step_idx,
+                                    error_msg.clone(),
+                                );
+                                state_idle.dispatch_error(error_msg);
+                                chat_panel_idle.hide_loading();
+                            }
+                        }
+                        glib::ControlFlow::Break
+                    }
+                    Err(std::sync::mpsc::TryRecvError::Empty) => {
+                        // Not ready yet, continue polling
+                        glib::ControlFlow::Continue
+                    }
+                    Err(std::sync::mpsc::TryRecvError::Disconnected) => {
+                        // Thread panicked or something, show error
+                        let error_msg = "Chatbot thread disconnected".to_string();
+                        chat_panel_idle.show_error(&error_msg);
+                        state_idle.fail_chat_request(phase_idx, step_idx, error_msg.clone());
+                        state_idle.dispatch_error(error_msg);
+                        chat_panel_idle.hide_loading();
+                        glib::ControlFlow::Break
+                    }
+                }
+            });
+        }
+    });
+
+    // Enter key handler for input (TextView)
+    let send_button_clone = send_button.clone();
+    let key_controller = gtk4::EventControllerKey::new();
+    key_controller.connect_key_pressed(move |_, keyval, _, _| {
+        if keyval == gdk::Key::Return || keyval == gdk::Key::KP_Enter {
+            // Check if Shift is not pressed (to allow multi-line input with Shift+Enter)
+            if !gdk::ModifierType::SHIFT_MASK.contains(gdk::ModifierType::SHIFT_MASK) {
+                send_button_clone.emit_clicked();
+                glib::Propagation::Stop
+            } else {
+                glib::Propagation::Proceed
+            }
+        } else {
+            glib::Propagation::Proceed
+        }
+    });
+    input_textview.add_controller(key_controller);
 }
 
 /// Helper function to rebuild the steps list when phase changes
@@ -547,7 +667,7 @@ pub fn rebuild_steps_list(
 
 /// Helper function to load a step into the detail panel
 pub fn load_step_into_panel(model: &Rc<RefCell<AppModel>>, detail_panel: &Rc<DetailPanel>) {
-    let (step_opt, _phase_idx, _step_idx, session_path) = {
+    let (step_opt, _phase_idx, _step_idx, _session_path) = {
         let model_borrow = model.borrow();
         let phase_idx = model_borrow.selected_phase;
         let step_idx = model_borrow.selected_step;
@@ -593,16 +713,10 @@ pub fn load_step_into_panel(model: &Rc<RefCell<AppModel>>, detail_panel: &Rc<Det
             };
             detail_panel.desc_view.buffer().set_text(&desc_text);
 
-            // Update notes
-            detail_panel.notes_view.buffer().set_text(&step.get_notes());
-
-            // Load canvas evidence with session path for resolving relative paths
-            load_step_evidence(
-                &detail_panel.canvas_fixed,
-                detail_panel.canvas_items.clone(),
-                &step,
-                session_path.as_deref(),
-            );
+            // Load chat history
+            detail_panel
+                .chat_panel
+                .load_history(&step.get_chat_history());
         }
     }
 }
@@ -646,11 +760,6 @@ pub fn clear_detail_panel(detail_panel: &Rc<DetailPanel>) {
     detail_panel.checkbox.set_active(false);
     detail_panel.title_label.set_text("");
     detail_panel.desc_view.buffer().set_text("");
-    detail_panel.notes_view.buffer().set_text("");
-
-    // Clear canvas
-    detail_panel.canvas_items.borrow_mut().clear();
-    while let Some(child) = detail_panel.canvas_fixed.first_child() {
-        detail_panel.canvas_fixed.remove(&child);
-    }
+    detail_panel.chat_panel.clear_history();
+    // TODO: Clear any pending chat requests if applicable
 }

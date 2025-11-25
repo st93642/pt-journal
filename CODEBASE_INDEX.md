@@ -7,8 +7,8 @@
 - **Language**: Rust 2021 Edition
 - **Version**: v0.1.0 (Foundation Complete)
 - **Architecture**: 4-layer modular design
-- **Lines of Code**: ~26,000 lines of Rust
-- **Test Coverage**: 161 tests (100% pass rate)
+- **Lines of Code**: ~24,800 lines of Rust
+- **Test Coverage**: 171 tests (100% pass rate)
 - **Modules**: 53 Rust source files
 - **Tool Catalog**: 226 tools across 32 security categories
 
@@ -20,20 +20,20 @@ PT Journal follows a layered architecture with clear separation of concerns:
 ┌─────────────────────────────────────────────────────────┐
 │                    UI Layer (GTK4)                      │
 │  Main Window, Handlers, Panels, Widgets                │
-│  - canvas.rs, detail_panel.rs, quiz_widget.rs          │
+│  - chat_panel.rs, detail_panel.rs, quiz_widget.rs      │
 │  - tool_execution.rs, sidebar.rs, handlers.rs          │
 └─────────────────────────────────────────────────────────┘
                          ↓  ↓
 ┌─────────────────────────────────────────────────────────┐
 │              Application Logic Layer                     │
-│  State Management, Event Dispatching                    │
-│  - state.rs, dispatcher.rs, file_ops.rs                │
+│  State Management, Event Dispatching, Chatbot           │
+│  - state.rs, dispatcher.rs, file_ops.rs, chatbot/       │
 └─────────────────────────────────────────────────────────┘
                          ↓  ↓
 ┌─────────────────────────────────────────────────────────┐
 │               Domain Model Layer                         │
 │  Core Business Logic, Data Structures                   │
-│  - model.rs (Session, Phase, Step, Evidence)           │
+│  - model.rs (Session, Phase, Step, Evidence, Chat)     │
 └─────────────────────────────────────────────────────────┘
                          ↓  ↓
 ┌─────────────────────────────────────────────────────────┐
@@ -51,6 +51,7 @@ pt-journal/
 │   ├── main.rs                 # Application entry point (37 lines)
 │   ├── lib.rs                  # Library root with comprehensive test suite (1,155 lines)
 │   ├── model.rs                # Core domain models (664 lines)
+│   ├── config.rs               # Configuration management (200 lines)
 │   ├── store.rs                # JSON persistence layer (286 lines)
 │   ├── dispatcher.rs           # Event dispatcher (247 lines)
 │   ├── quiz/                   # Quiz system
@@ -83,13 +84,16 @@ pt-journal/
 │       ├── handlers.rs        # Signal handlers (1,062 lines)
 │       ├── sidebar.rs         # Navigation sidebar (45 lines)
 │       ├── detail_panel.rs    # Content view (201 lines)
+│       ├── chat_panel.rs      # Chat interface (NEW: 180 lines)
 │       ├── quiz_widget.rs     # Quiz UI (316 lines)
-│       ├── canvas.rs          # Evidence canvas (619 lines)
-│       ├── canvas_utils.rs    # Canvas utilities (81 lines)
 │       ├── tool_execution.rs  # Tool UI (1,146 lines)
 │       ├── header_bar.rs      # App toolbar (39 lines)
-│       ├── image_utils.rs     # Image handling (173 lines)
 │       └── file_ops.rs        # File dialogs (188 lines)
+├── docs/                       # Documentation
+│   ├── architecture.md         # System architecture details
+│   ├── configuration.md        # Configuration system guide
+│   ├── chatbot.md              # Chatbot integration guide
+│   └── roadmap.md              # Development roadmap
 ├── tests/                      # Integration tests
 │   └── integration_tests.rs    # Full workflow tests
 ├── data/                       # Tutorial and quiz content
@@ -127,12 +131,15 @@ pt-journal/
 - `QuizStep` - Quiz container with questions and progress
 - `QuizQuestion` - Single MCQ with 4 answers
 - `QuestionProgress` - User's answer history
+- `ChatRole` - User vs Assistant message roles
+- `ChatMessage` - Chat conversation messages (role, content, timestamp)
 
 **Critical Patterns**:
 
 - Uses `Uuid` for all IDs (global uniqueness)
 - Uses `DateTime<Utc>` for all timestamps
 - `StepContent` enum abstracts Tutorial vs Quiz steps
+- Tutorial steps include persistent chat history
 - Getters/setters enforce encapsulation
 - Legacy fields skipped during serialization
 
@@ -142,7 +149,85 @@ pt-journal/
 - `Step::new_tutorial()` - Creates tutorial step
 - `Step::new_quiz()` - Creates quiz step
 
-### 2. Store Layer (`src/store.rs`) - 273 lines
+### 2. Config Layer (`src/config.rs`) - 200 lines
+
+**Purpose**: Application configuration management with TOML persistence.
+
+**Key Types**:
+
+- `AppConfig` - Main configuration container
+- `ChatbotConfig` - Ollama endpoint and model settings
+
+**Configuration Sources** (in priority order):
+
+1. Environment variables (`PT_JOURNAL_OLLAMA_ENDPOINT`, `PT_JOURNAL_OLLAMA_MODEL`)
+2. TOML file (`~/.config/pt-journal/config.toml`)
+3. Default values (localhost:11434, mistral model)
+
+**Features**:
+
+- Cross-platform config directory detection
+- Automatic directory creation
+- TOML serialization with pretty formatting
+- Environment variable overrides for containerized deployments
+- Thread-safe loading with error handling
+
+**Usage Pattern**:
+
+```rust
+let config = AppConfig::load()?;
+// Access chatbot settings
+let endpoint = &config.chatbot.endpoint;
+let model = &config.chatbot.model;
+```
+
+### 3. Chatbot Layer (`src/chatbot/mod.rs`) - 250 lines
+
+**Purpose**: Local LLM integration with Ollama for pentesting assistance.
+
+**Key Types**:
+
+- `LocalChatBot` - Main service struct with HTTP client
+- `StepContext` - Current step context (phase, step, status, counts)
+- `ContextBuilder` - Session summarization utility
+- `ChatError` - Error types (ServiceUnavailable, Timeout, InvalidResponse)
+
+**Core Methods**:
+
+- `LocalChatBot::new(config)` - Creates with 30s timeout HTTP client
+- `send_message(step_ctx, history, user_input)` - Sends to Ollama API
+- `ContextBuilder::build_session_context(session, phase_idx, step_idx)` - Summarizes session
+
+**Ollama Integration**:
+
+- POST to `/api/chat` endpoint
+- Payload: `{model, messages: [{role, content}, ...], stream: false}`
+- System prompt includes pentesting methodology context
+- Handles connection errors, timeouts, invalid responses
+
+**Context Summarization**:
+
+- Phase completion status (Completed/In Progress/Pending)
+- Current step highlighted with `<-- CURRENT`
+- Notes/evidence counts per step
+- Quiz progress statistics
+- Description snippets (200 char limit)
+
+**Error Handling**:
+
+- `ServiceUnavailable` - Ollama not running/connection failed
+- `Timeout` - 30s request timeout exceeded
+- `InvalidResponse` - Malformed Ollama response
+- Friendly error messages with setup instructions
+
+**Testing**:
+
+- httpmock for API mocking
+- Validates system prompt inclusion
+- Tests error path mapping
+- Payload structure verification
+
+### 4. Store Layer (`src/store.rs`) - 273 lines
 
 **Purpose**: Session persistence with folder structure.
 
@@ -217,7 +302,7 @@ let config = ToolConfig::builder()
 1. **Nmap** - Network scanner (8 scan types)
 2. **Gobuster** - Directory/DNS/vhost enumeration (3 modes)
 
-### 4. UI Layer (`src/ui/`) - 14 files, 4,523 lines
+### 4. UI Layer (`src/ui/`) - 12 files, 4,323 lines
 
 **Purpose**: GTK4/libadwaita user interface.
 
@@ -225,16 +310,20 @@ let config = ToolConfig::builder()
 
 - `main.rs` - Window assembly, 3-pane layout
 - `state.rs` - AppModel (session, current_path, selected_phase/step)
-- `handlers.rs` - Signal handlers (phase/step selection, tool execution)
+- `handlers.rs` - Signal handlers (phase/step selection, tool execution, chat)
 - `sidebar.rs` - Phase dropdown + step list
-- `detail_panel.rs` - Tutorial/quiz content switcher
+- `detail_panel.rs` - Tutorial/quiz content switcher with chat panel
+- `chat_panel.rs` - Chat history, input, and message display
 - `quiz_widget.rs` - MCQ display + statistics
-- `canvas.rs` - Evidence positioning with drag-drop
 - `tool_execution.rs` - Nmap/Gobuster UI with terminal output
 - `header_bar.rs` - Open/Save buttons
 - `file_ops.rs` - File dialogs (async)
-- `image_utils.rs` - Image loading/validation
-- `canvas_utils.rs` - Canvas geometry helpers
+
+**Removed Components** (replaced by chatbot):
+
+- `canvas.rs` - REMOVED: Evidence positioning (replaced by chat)
+- `image_utils.rs` - REMOVED: Image loading (canvas dependency)
+- `canvas_utils.rs` - REMOVED: Canvas helpers (no longer needed)
 
 **State Management Pattern**:
 
@@ -254,6 +343,7 @@ button.connect_clicked(move |_| {
 - GTK initialization guarded with `Once` in tests
 - No blocking operations on main thread
 - VTE terminal for tool output streaming
+- Chat messages dispatched via event system
 
 ### 5. Dispatcher Layer (`src/dispatcher.rs`) - 235 lines
 
@@ -353,10 +443,12 @@ What is the CIA triad?|Confidentiality, Integrity, Availability|...|...|...|0|Th
 | `anyhow` | 1.0 | Error handling |
 | `thiserror` | 1.0 | Custom error types |
 | `directories` | 5.0 | Cross-platform paths |
+| `dirs` | 5.0 | Home directory detection |
 | `pulldown-cmark` | 0.10 | Markdown parsing |
 | `once_cell` | 1.0 | Lazy statics |
 | `regex` | 1.0 | Pattern matching |
 | `async-channel` | 2.0 | Async messaging |
+| `toml` | 0.8 | TOML configuration format |
 
 ### Development Dependencies
 
@@ -392,7 +484,7 @@ tests/
 
 ### Test Coverage
 
-- **Total Tests**: 161
+- **Total Tests**: 171
 - **Pass Rate**: 100%
 - **Coverage Areas**:
   - Model layer: Session, Phase, Step, Evidence, Quiz
@@ -561,16 +653,18 @@ pub enum NmapScanType {
 | Module | Files | Lines | Purpose |
 |--------|-------|-------|---------|
 | tutorials/ | 10 | 15,363 | Tutorial content |
-| ui/ | 14 | 4,641 | User interface |
+| ui/ | 12 | 4,323 | User interface |
 | tools/ | 5 | 995 | Tool integrations |
 | lib.rs | 1 | 1,155 | Test suite |
+| chatbot/ | 1 | 250 | LLM integration |
 | quiz/ | 1 | 335 | Quiz system |
 | dispatcher.rs | 1 | 247 | Event system |
-| main.rs | 1 | 37 | Entry point |
 | model.rs | 1 | 664 | Domain models |
+| config.rs | 1 | 200 | Configuration management |
 | store.rs | 1 | 286 | Persistence |
+| main.rs | 1 | 37 | Entry point |
 
-**Total**: 52 files, 25,074 lines of Rust code
+**Total**: 52 files, 24,800 lines of Rust code
 
 ### Test Distribution
 
@@ -578,14 +672,16 @@ pub enum NmapScanType {
 |----------|-------|----------|
 | Model Tests | 20+ | Session, Phase, Step, Evidence, Quiz |
 | Store Tests | 15+ | Save, load, migration, Unicode |
+| Chatbot Tests | 5+ | API integration, error handling, payload validation, serialization |
 | Tool Tests | 50+ | Nmap (8 types), Gobuster (3 modes) |
 | Quiz Tests | 10+ | Parsing, progress, scoring |
 | Dispatcher Tests | 8+ | Event routing, handlers |
 | Tutorial Tests | 5+ | Phase loading, validation |
 | Integration Tests | 10+ | End-to-end workflows |
 | Property Tests | 10+ | Randomized input validation |
+| UI Tests | 8+ | Chat functionality, text input, state persistence |
 
-**Total**: 161 tests with 100% pass rate
+**Total**: 170 tests with 100% pass rate
 
 ## 🚀 Development Workflow
 
@@ -664,6 +760,10 @@ cargo test --test integration_tests
 |----------|----------|------|---------|
 | CODEBASE_INDEX.md | Root | This file | Comprehensive code reference |
 | TOOL_INSTRUCTIONS_FEATURE.md | Root | - | Tool instruction system guide |
+| docs/architecture.md | docs/ | - | System architecture details |
+| docs/configuration.md | docs/ | - | Configuration system guide |
+| docs/chatbot.md | docs/ | - | Chatbot integration guide |
+| docs/roadmap.md | docs/ | - | Development roadmap |
 | copilot-instructions.md | .github/ | - | AI agent guidelines |
 
 ### Inline Documentation

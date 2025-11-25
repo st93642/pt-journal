@@ -5,7 +5,7 @@
 /*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
 /*                                                          TT         SS II */
 /*  Created: Nov 21 2025 23:42 st93642                      TT    SSSSSSS II */
-/*  Updated: Nov 24 2025 15:23 st93642                                       */
+/*  Updated: Nov 25 2025 17:42 st93642                                       */
 /*                                                                           */
 /*   Transport and Telecommunication Institute - Riga, Latvia                */
 /*                       https://tsi.lv                                      */
@@ -38,15 +38,19 @@ pub enum AppMessage {
     PhaseNotesUpdated(usize, String),
     GlobalNotesUpdated(String),
 
+    // Chat Operations
+    ChatMessageAdded(usize, usize, crate::model::ChatMessage),
+    ChatRequestStarted(usize, usize),
+    ChatRequestCompleted(usize, usize),
+    ChatRequestFailed(usize, usize, String),
+
     // Evidence Operations
     EvidenceAdded(usize, usize, crate::model::Evidence),
     EvidenceRemoved(usize, usize, uuid::Uuid),
-    EvidenceMoved(usize, usize, uuid::Uuid, f64, f64),
 
     // UI Updates
     RefreshStepList(usize),
     RefreshDetailView(usize, usize),
-    RefreshCanvas(usize, usize),
 
     // Quiz Operations
     QuizAnswerChecked(usize, usize, usize, bool), // (phase_idx, step_idx, question_idx, is_correct)

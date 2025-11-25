@@ -376,11 +376,7 @@ fn create_ai_security_phase() -> Phase {
             Uuid::new_v4(),
             title.to_string(),
             description.to_string(),
-            vec![
-                "ai".to_string(),
-                "ml".to_string(),
-                "poisoning".to_string(),
-            ],
+            vec!["ai".to_string(), "ml".to_string(), "poisoning".to_string()],
         ));
     }
 

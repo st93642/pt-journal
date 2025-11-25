@@ -5,13 +5,13 @@
 /*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
 /*                                                          TT         SS II */
 /*  Created: Nov 21 2025 23:43 st93642                      TT    SSSSSSS II */
-/*  Updated: Nov 21 2025 23:43 st93642                                       */
+/*  Updated: Nov 25 2025 17:50 st93642                                       */
 /*                                                                           */
 /*   Transport and Telecommunication Institute - Riga, Latvia                */
 /*                       https://tsi.lv                                      */
 /*****************************************************************************/
 
-use crate::model::Session;
+use crate::model::*;
 use anyhow::Result;
 use directories::UserDirs;
 use std::fs;
@@ -86,7 +86,7 @@ pub fn load_session(path: &Path) -> Result<Session> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::model::*;
+    use crate::model::{Evidence, Session, StepStatus};
     use assert_matches::assert_matches;
     use chrono::Utc;
     use std::fs;
@@ -266,21 +266,50 @@ mod tests {
     }
 
     #[test]
-    fn test_concurrent_access() {
+    fn test_backward_compatibility_without_chat_history() {
         let temp_dir = TempDir::new().unwrap();
-        let session_folder = temp_dir.path().join("concurrent_test");
-        let session_file = session_folder.join("session.json");
+        let session_file = temp_dir.path().join("legacy_session.json");
 
-        let session = Session::default();
+        // Create a JSON string without chat_history field
+        let legacy_json = r#"{
+            "id": "550e8400-e29b-41d4-a716-446655440000",
+            "name": "Legacy Session",
+            "created_at": "2025-11-25T12:00:00Z",
+            "phases": [
+                {
+                    "id": "550e8400-e29b-41d4-a716-446655440001",
+                    "name": "Test Phase",
+                    "steps": [
+                        {
+                            "id": "550e8400-e29b-41d4-a716-446655440002",
+                            "title": "Test Step",
+                            "tags": ["test"],
+                            "status": "Todo",
+                            "content": {
+                                "Tutorial": {
+                                    "description": "Test description",
+                                    "description_notes": "",
+                                    "notes": "",
+                                    "evidence": []
+                                }
+                            }
+                        }
+                    ],
+                    "notes": ""
+                }
+            ],
+            "notes_global": ""
+        }"#;
 
-        // Save multiple times (simulating concurrent access)
-        for i in 0..5 {
-            let mut test_session = session.clone();
-            test_session.name = format!("Concurrent Test {}", i);
-            save_session(&session_folder, &test_session).unwrap();
+        fs::write(&session_file, legacy_json).unwrap();
 
-            let loaded = load_session(&session_file).unwrap();
-            assert_eq!(loaded.name, format!("Concurrent Test {}", i));
+        // Should load successfully with empty chat_history
+        let loaded = load_session(&session_file).unwrap();
+        assert_eq!(loaded.name, "Legacy Session");
+
+        if let Some(step) = loaded.phases[0].steps.first() {
+            let history = step.get_chat_history();
+            assert!(history.is_empty()); // Should default to empty vec
         }
     }
 }

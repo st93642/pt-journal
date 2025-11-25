@@ -1,120 +1,12 @@
 #![allow(clippy::field_reassign_with_default)]
 
 use pt_journal::model::*;
-use pt_journal::ui::image_utils;
 use std::fs;
 /// UI component tests for PT Journal
-/// These tests cover image utilities, drag-drop, clipboard, security, and text input
+/// These tests cover chat functionality, text input, and security
 use std::path::Path;
 use tempfile::NamedTempFile;
 use uuid::Uuid;
-
-#[cfg(test)]
-mod image_utils_tests {
-    use super::*;
-
-    #[test]
-    fn test_is_valid_image_extension() {
-        // Valid extensions
-        assert!(image_utils::is_valid_image_extension(Path::new(
-            "image.png"
-        )));
-        assert!(image_utils::is_valid_image_extension(Path::new(
-            "photo.JPG"
-        )));
-        assert!(image_utils::is_valid_image_extension(Path::new("pic.jpeg")));
-        assert!(image_utils::is_valid_image_extension(Path::new("file.gif")));
-        assert!(image_utils::is_valid_image_extension(Path::new("test.bmp")));
-        assert!(image_utils::is_valid_image_extension(Path::new(
-            "scan.tiff"
-        )));
-        assert!(image_utils::is_valid_image_extension(Path::new(
-            "modern.webp"
-        )));
-
-        // Case insensitive
-        assert!(image_utils::is_valid_image_extension(Path::new(
-            "IMAGE.PNG"
-        )));
-        assert!(image_utils::is_valid_image_extension(Path::new(
-            "photo.JpG"
-        )));
-
-        // Invalid extensions
-        assert!(!image_utils::is_valid_image_extension(Path::new(
-            "document.txt"
-        )));
-        assert!(!image_utils::is_valid_image_extension(Path::new(
-            "script.js"
-        )));
-        assert!(!image_utils::is_valid_image_extension(Path::new(
-            "archive.zip"
-        )));
-        assert!(!image_utils::is_valid_image_extension(Path::new(
-            "video.mp4"
-        )));
-
-        // No extension
-        assert!(!image_utils::is_valid_image_extension(Path::new("image")));
-        assert!(!image_utils::is_valid_image_extension(Path::new("")));
-    }
-
-    #[test]
-    fn test_validate_image_file_nonexistent() {
-        let result = image_utils::validate_image_file(Path::new("/nonexistent/file.png"));
-        assert!(result.is_err());
-        assert!(result.unwrap_err().contains("does not exist"));
-    }
-
-    #[test]
-    fn test_validate_image_file_directory() {
-        let temp_dir = tempfile::tempdir().unwrap();
-        let result = image_utils::validate_image_file(temp_dir.path());
-        assert!(result.is_err());
-        assert!(result.unwrap_err().contains("not a file"));
-    }
-
-    #[test]
-    fn test_validate_image_file_empty() {
-        let temp_file = NamedTempFile::new().unwrap();
-        // File is empty by default
-        let result = image_utils::validate_image_file(temp_file.path());
-        assert!(result.is_err());
-        assert!(result.unwrap_err().contains("empty"));
-    }
-
-    #[test]
-    fn test_validate_image_file_valid() {
-        let temp_file = NamedTempFile::new().unwrap();
-        // Write some content to make it non-empty
-        fs::write(temp_file.path(), "fake image content").unwrap();
-
-        let result = image_utils::validate_image_file(temp_file.path());
-        assert!(result.is_ok());
-    }
-
-    #[test]
-    fn test_create_texture_from_file_invalid_file() {
-        let result = image_utils::create_texture_from_file(Path::new("/nonexistent.png"));
-        assert!(result.is_err());
-    }
-
-    #[test]
-    fn test_create_texture_from_file_empty_file() {
-        let temp_file = NamedTempFile::new().unwrap();
-        let result = image_utils::create_texture_from_file(temp_file.path());
-        assert!(result.is_err());
-        assert!(result.unwrap_err().contains("empty"));
-    }
-
-    #[test]
-    fn test_insert_paintable_into_buffer() {
-        // This test requires GTK initialization, so we'll skip it in unit tests
-        // In a real GTK environment, this would test that paintables are inserted correctly
-        // For now, we just ensure the function signature is correct
-        // Placeholder test - no assertions needed
-    }
-}
 
 #[cfg(test)]
 mod ui_integration_tests {
@@ -149,8 +41,7 @@ mod ui_integration_tests {
     fn test_pane_minimum_sizes() {
         // Test that pane minimum sizes are properly set
         // Description pane: 80px minimum
-        // Notes pane: 80px minimum
-        // Canvas pane: 80px minimum
+        // Chat pane: 80px minimum
 
         // Since GTK is required for actual widget testing, this is a placeholder
         // In a real test, we would:
@@ -170,220 +61,6 @@ mod ui_integration_tests {
 
         // Since GTK is required, this is a placeholder
         // Placeholder test - no assertions needed
-    }
-}
-
-// Mock tests for drag and drop behavior
-#[cfg(test)]
-mod drag_drop_tests {
-    use super::*;
-
-    #[test]
-    fn test_drag_drop_file_validation() {
-        // Test that only valid image files are accepted in drag-drop
-        let valid_files = vec![
-            Path::new("screenshot.png"),
-            Path::new("diagram.jpg"),
-            Path::new("photo.jpeg"),
-            Path::new("icon.gif"),
-        ];
-
-        let invalid_files = vec![
-            Path::new("document.txt"),
-            Path::new("script.py"),
-            Path::new("video.mp4"),
-            Path::new("archive.zip"),
-        ];
-
-        for file in valid_files {
-            assert!(
-                image_utils::is_valid_image_extension(file),
-                "File {:?} should be accepted",
-                file
-            );
-        }
-
-        for file in invalid_files {
-            assert!(
-                !image_utils::is_valid_image_extension(file),
-                "File {:?} should be rejected",
-                file
-            );
-        }
-    }
-
-    #[test]
-    fn test_drag_drop_error_handling() {
-        // Test error handling in drag-drop scenarios
-        let nonexistent = Path::new("/definitely/does/not/exist.png");
-        // is_valid_image_extension only checks extension, not existence
-        assert!(image_utils::is_valid_image_extension(nonexistent));
-
-        let no_extension = Path::new("file_no_ext");
-        assert!(!image_utils::is_valid_image_extension(no_extension));
-
-        let wrong_extension = Path::new("image.exe");
-        assert!(!image_utils::is_valid_image_extension(wrong_extension));
-    }
-}
-
-// Mock tests for paste functionality
-#[cfg(test)]
-mod paste_tests {
-    #[test]
-    fn test_paste_texture_handling() {
-        // Test that paste operations handle textures correctly
-        // This would test the clipboard texture reading logic
-        // Since GTK clipboard requires initialization, this is a placeholder
-        // In a real test, we would:
-        // 1. Mock clipboard with texture data
-        // 2. Call handle_clipboard_paste
-        // 3. Verify that texture is added to canvas
-        // Placeholder test - no assertions needed
-    }
-
-    #[test]
-    fn test_paste_key_detection() {
-        // Test that Ctrl+V is correctly detected
-        // This would test the key event handling logic
-        // In a real implementation, we'd mock the key events
-        // For now, verify that the key constants are accessible
-        use gtk4::gdk::Key;
-        assert_eq!(Key::v, Key::v); // Basic sanity check
-                                    // Placeholder test - no additional assertions needed
-    }
-
-    #[test]
-    fn test_clipboard_image_handling() {
-        // Test that clipboard images are handled properly
-        // This would test:
-        // 1. Reading texture from clipboard
-        // 2. Fallback to pixbuf if texture fails
-        // 3. Adding image to canvas without file path
-        // Since GTK clipboard requires initialization, this is a placeholder
-        // Placeholder test - no assertions needed
-    }
-}
-
-// Performance tests for image handling
-#[cfg(test)]
-mod performance_tests {
-    use super::*;
-
-    #[test]
-    fn test_file_extension_check_performance() {
-        // Test that extension checking is fast
-        let test_files = vec![
-            "image.png",
-            "photo.jpg",
-            "diagram.jpeg",
-            "icon.gif",
-            "pic.bmp",
-            "scan.tiff",
-            "modern.webp",
-            "document.txt",
-            "script.py",
-            "video.mp4",
-            "archive.zip",
-            "no_ext",
-        ];
-
-        for _ in 0..1000 {
-            // Run multiple times for performance
-            for file in &test_files {
-                let _ = image_utils::is_valid_image_extension(Path::new(file));
-            }
-        }
-
-        // If we get here, performance is acceptable - no assertions needed
-    }
-
-    #[test]
-    fn test_file_validation_performance() {
-        // Test that file validation doesn't take too long
-        let temp_file = NamedTempFile::new().unwrap();
-        fs::write(temp_file.path(), "test content").unwrap();
-
-        // Run validation multiple times
-        for _ in 0..100 {
-            let _ = image_utils::validate_image_file(temp_file.path());
-        }
-
-        // If we complete the loop, performance is acceptable
-    }
-}
-
-// Security tests
-#[cfg(test)]
-mod security_tests {
-    use super::*;
-
-    #[test]
-    fn test_path_traversal_protection() {
-        // Test that path traversal attacks are prevented
-        let safe_paths = vec![
-            Path::new("image.png"),
-            Path::new("subdir/photo.jpg"),
-            Path::new("./local.jpeg"),
-        ];
-
-        let dangerous_paths = vec![
-            Path::new("../outside.png"),
-            Path::new("../../escape.jpg"),
-            Path::new("/absolute/path.jpeg"),
-            Path::new("../../../root.gif"),
-        ];
-
-        // The validation should work regardless of path safety
-        // (actual path traversal protection would be in the GTK file chooser)
-        for path in safe_paths {
-            // Just test extension validation
-            if path.extension().is_some() {
-                let _ = image_utils::is_valid_image_extension(path);
-            }
-        }
-
-        for path in dangerous_paths {
-            if path.extension().is_some() {
-                let _ = image_utils::is_valid_image_extension(path);
-            }
-        }
-
-        // Test completed - no specific assertions needed for path validation
-    }
-
-    #[test]
-    fn test_file_size_limits() {
-        // Test that empty files are rejected
-        let temp_file = NamedTempFile::new().unwrap();
-        let result = image_utils::validate_image_file(temp_file.path());
-        assert!(result.is_err());
-
-        // Test that very small files are accepted if they have content
-        fs::write(temp_file.path(), "x").unwrap();
-        let result = image_utils::validate_image_file(temp_file.path());
-        assert!(result.is_ok());
-    }
-
-    #[test]
-    fn test_invalid_file_types() {
-        // Test that non-image files are rejected at extension level
-        let non_images = vec![
-            "malicious.exe",
-            "script.sh",
-            "document.pdf",
-            "spreadsheet.xlsx",
-            "database.db",
-            "binary.bin",
-        ];
-
-        for file in non_images {
-            assert!(
-                !image_utils::is_valid_image_extension(Path::new(file)),
-                "File {} should be rejected",
-                file
-            );
-        }
     }
 }
 
@@ -479,53 +156,127 @@ mod text_input_tests {
             assert!(description_notes.is_empty());
         }
     }
+}
+
+#[cfg(test)]
+mod chat_tests {
+    use super::*;
+    use httpmock::prelude::*;
+    use pt_journal::chatbot::LocalChatBot;
+    use pt_journal::config::ChatbotConfig;
+    use pt_journal::model::{ChatMessage, ChatRole};
+    use serde_json::json;
 
     #[test]
-    fn test_canvas_evidence_persistence() {
-        // Test that canvas evidence is properly saved and loaded per step
+    fn test_chat_message_serialization() {
+        let message = ChatMessage {
+            role: ChatRole::User,
+            content: "Test message".to_string(),
+            timestamp: chrono::Utc::now(),
+        };
+
+        let json = serde_json::to_string(&message).unwrap();
+        let deserialized: ChatMessage = serde_json::from_str(&json).unwrap();
+
+        assert_eq!(deserialized.role, ChatRole::User);
+        assert_eq!(deserialized.content, "Test message");
+    }
+
+    #[test]
+    fn test_chat_config_loading() {
+        let config = ChatbotConfig::default();
+        assert_eq!(config.endpoint, "http://localhost:11434");
+        assert_eq!(config.model, "llama3.2:latest");
+        assert_eq!(config.timeout_seconds, 60);
+    }
+
+    #[test]
+    fn test_local_chatbot_payload_construction() {
+        let mut server = MockServer::start();
+        let mock = server.mock(|when, then| {
+            when.method(POST).path("/api/chat").json_body(json!({
+                "model": "llama3.2:latest",
+                "messages": [
+                    {"role": "system", "content": "You are an expert penetration testing assistant helping with structured pentesting methodology.\n\nCurrent Context:\n- Phase: Reconnaissance\n- Step: Test Step (Status: Todo)\n- Description: Test description\n- Notes: 0 characters\n- Evidence: 0 items\n\n\nProvide helpful, methodology-aligned assistance for general pentesting questions, step-specific guidance, or tool recommendations. Keep responses focused and actionable."},
+                    {"role": "user", "content": "Hello"}
+                ],
+                "stream": false
+            }));
+            then.status(200).json_body(json!({
+                "message": {"role": "assistant", "content": "Hi there!"}
+            }));
+        });
+
+        let config = ChatbotConfig {
+            endpoint: server.url(""),
+            model: "llama3.2:latest".to_string(),
+            timeout_seconds: 60,
+        };
+
+        let chatbot = LocalChatBot::new(config);
+        let step_ctx = pt_journal::chatbot::StepContext {
+            phase_name: "Reconnaissance".to_string(),
+            step_title: "Test Step".to_string(),
+            step_description: "Test description".to_string(),
+            step_status: "Todo".to_string(),
+            notes_count: 0,
+            evidence_count: 0,
+            quiz_status: None,
+        };
+        let history = vec![];
+
+        // Actually make the call to test payload construction
+        let result = chatbot.send_message(&step_ctx, &history, "Hello");
+        assert!(result.is_ok());
+
+        mock.assert();
+    }
+
+    #[test]
+    fn test_chat_history_persistence() {
         let mut model = AppModel::default();
-
-        // Create test evidence for step 0
-        let evidence1 = Evidence {
-            id: Uuid::new_v4(),
-            path: "/path/to/test_image1.png".to_string(),
-            created_at: chrono::Utc::now(),
-            kind: "image".to_string(),
-            x: 10.0,
-            y: 20.0,
-        };
-
-        let evidence2 = Evidence {
-            id: Uuid::new_v4(),
-            path: "/path/to/test_image2.png".to_string(),
-            created_at: chrono::Utc::now(),
-            kind: "image".to_string(),
-            x: 50.0,
-            y: 60.0,
-        };
-
-        // Add evidence to first step
+        model.selected_phase = 0;
         model.selected_step = Some(0);
+
+        // Add chat messages to step
+        let message1 = ChatMessage {
+            role: ChatRole::User,
+            content: "User question".to_string(),
+            timestamp: chrono::Utc::now(),
+        };
+
+        let message2 = ChatMessage {
+            role: ChatRole::Assistant,
+            content: "Assistant response".to_string(),
+            timestamp: chrono::Utc::now(),
+        };
+
         if let Some(step) = model.session.phases[0].steps.get_mut(0) {
-            step.evidence.push(evidence1.clone());
-            step.evidence.push(evidence2.clone());
-            assert_eq!(step.evidence.len(), 2);
-            assert_eq!(step.evidence[0].path, "/path/to/test_image1.png");
-            assert_eq!(step.evidence[1].path, "/path/to/test_image2.png");
+            if let StepContent::Tutorial { chat_history, .. } = &mut step.content {
+                chat_history.push(message1.clone());
+                chat_history.push(message2.clone());
+                assert_eq!(chat_history.len(), 2);
+                assert_eq!(chat_history[0].content, "User question");
+                assert_eq!(chat_history[1].content, "Assistant response");
+            }
         }
 
-        // Switch to second step - should have no evidence
+        // Switch to another step - should have empty chat history
         model.selected_step = Some(1);
         if let Some(step) = model.session.phases[0].steps.get(1) {
-            assert_eq!(step.evidence.len(), 0);
+            if let StepContent::Tutorial { chat_history, .. } = &step.content {
+                assert_eq!(chat_history.len(), 0);
+            }
         }
 
-        // Switch back to first step - should still have evidence
+        // Switch back - should still have chat history
         model.selected_step = Some(0);
         if let Some(step) = model.session.phases[0].steps.first() {
-            assert_eq!(step.evidence.len(), 2);
-            assert_eq!(step.evidence[0].path, "/path/to/test_image1.png");
-            assert_eq!(step.evidence[1].path, "/path/to/test_image2.png");
+            if let StepContent::Tutorial { chat_history, .. } = &step.content {
+                assert_eq!(chat_history.len(), 2);
+                assert_eq!(chat_history[0].content, "User question");
+                assert_eq!(chat_history[1].content, "Assistant response");
+            }
         }
     }
 }

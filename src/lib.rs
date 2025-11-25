@@ -5,12 +5,14 @@
 /*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
 /*                                                          TT         SS II */
 /*  Created: Nov 21 2025 23:42 st93642                      TT    SSSSSSS II */
-/*  Updated: Nov 25 2025 14:18 st93642                                       */
+/*  Updated: Nov 25 2025 18:29 st93642                                       */
 /*                                                                           */
 /*   Transport and Telecommunication Institute - Riga, Latvia                */
 /*                       https://tsi.lv                                      */
 /*****************************************************************************/
 
+pub mod chatbot;
+pub mod config;
 pub mod dispatcher;
 pub mod model;
 pub mod quiz;
@@ -39,6 +41,9 @@ mod tests {
             assert_eq!(model.selected_step, Some(0));
             assert!(model.current_path.is_none());
             assert_eq!(model.session.phases.len(), 22); // 22 phases after API consolidation
+                                                        // Config should be loaded (or default)
+            assert_eq!(model.config.chatbot.endpoint, "http://localhost:11434");
+            assert_eq!(model.config.chatbot.model, "llama3.2:latest");
         }
 
         #[test]

@@ -1,5 +1,5 @@
 use crate::dispatcher::{AppMessage, SharedDispatcher};
-use crate::model::{AppModel, Evidence, StepStatus};
+use crate::model::{AppModel, ChatMessage, ChatRole, Evidence, StepStatus};
 use std::cell::RefCell;
 /// UI state management module
 use std::rc::Rc;
@@ -47,9 +47,6 @@ impl StateManager {
         self.dispatcher
             .borrow()
             .dispatch(&AppMessage::RefreshDetailView(phase_idx, step_idx));
-        self.dispatcher
-            .borrow()
-            .dispatch(&AppMessage::RefreshCanvas(phase_idx, step_idx));
     }
 
     /// Update step status
@@ -137,6 +134,62 @@ impl StateManager {
             .dispatch(&AppMessage::GlobalNotesUpdated(notes));
     }
 
+    /// Add chat message to a step
+    pub fn add_chat_message(&self, phase_idx: usize, step_idx: usize, message: ChatMessage) {
+        {
+            let mut model = self.model.borrow_mut();
+            if let Some(step) = model
+                .session
+                .phases
+                .get_mut(phase_idx)
+                .and_then(|p| p.steps.get_mut(step_idx))
+            {
+                step.add_chat_message(message.clone());
+            }
+        }
+        self.dispatcher
+            .borrow()
+            .dispatch(&AppMessage::ChatMessageAdded(phase_idx, step_idx, message));
+    }
+
+    /// Start a chat request
+    pub fn start_chat_request(&self, phase_idx: usize, step_idx: usize) {
+        self.dispatcher
+            .borrow()
+            .dispatch(&AppMessage::ChatRequestStarted(phase_idx, step_idx));
+    }
+
+    /// Complete a chat request
+    pub fn complete_chat_request(&self, phase_idx: usize, step_idx: usize) {
+        self.dispatcher
+            .borrow()
+            .dispatch(&AppMessage::ChatRequestCompleted(phase_idx, step_idx));
+    }
+
+    /// Fail a chat request
+    pub fn fail_chat_request(&self, phase_idx: usize, step_idx: usize, error: String) {
+        self.dispatcher
+            .borrow()
+            .dispatch(&AppMessage::ChatRequestFailed(phase_idx, step_idx, error));
+    }
+
+    /// Get chat history for a step
+    pub fn get_chat_history(&self, phase_idx: usize, step_idx: usize) -> Vec<ChatMessage> {
+        let model = self.model.borrow();
+        model
+            .session
+            .phases
+            .get(phase_idx)
+            .and_then(|p| p.steps.get(step_idx))
+            .map(|s| s.get_chat_history().clone())
+            .unwrap_or_default()
+    }
+
+    /// Dispatch an error message
+    pub fn dispatch_error(&self, error: String) {
+        self.dispatcher.borrow().dispatch(&AppMessage::Error(error));
+    }
+
     /// Add evidence to a step
     pub fn add_evidence(&self, phase_idx: usize, step_idx: usize, evidence: Evidence) {
         {
@@ -174,37 +227,6 @@ impl StateManager {
                 phase_idx,
                 step_idx,
                 evidence_id,
-            ));
-    }
-
-    /// Move evidence on canvas
-    pub fn move_evidence(
-        &self,
-        phase_idx: usize,
-        step_idx: usize,
-        evidence_id: Uuid,
-        x: f64,
-        y: f64,
-    ) {
-        {
-            let mut model = self.model.borrow_mut();
-            if let Some(step) = model
-                .session
-                .phases
-                .get_mut(phase_idx)
-                .and_then(|p| p.steps.get_mut(step_idx))
-            {
-                step.update_evidence_position(evidence_id, x, y);
-            }
-        }
-        self.dispatcher
-            .borrow()
-            .dispatch(&AppMessage::EvidenceMoved(
-                phase_idx,
-                step_idx,
-                evidence_id,
-                x,
-                y,
             ));
     }
 
@@ -454,16 +476,6 @@ mod tests {
         };
         assert_eq!(count, 1);
 
-        state.move_evidence(0, 0, evidence_id, 150.0, 250.0);
-
-        let (x, y) = {
-            let model = state.model.borrow();
-            let ev = &model.session.phases[0].steps[0].get_evidence()[0];
-            (ev.x, ev.y)
-        };
-        assert_eq!(x, 150.0);
-        assert_eq!(y, 250.0);
-
         state.remove_evidence(0, 0, evidence_id);
 
         let count = {
@@ -471,5 +483,38 @@ mod tests {
             model.session.phases[0].steps[0].get_evidence().len()
         };
         assert_eq!(count, 0);
+    }
+
+    #[test]
+    fn test_chat_operations() {
+        let state = create_test_state();
+        let messages = Arc::new(Mutex::new(Vec::new()));
+        let msg_clone = messages.clone();
+
+        state.dispatcher.borrow_mut().register(
+            "test",
+            Box::new(move |msg| {
+                msg_clone.lock().unwrap().push(format!("{:?}", msg));
+            }),
+        );
+
+        // Test adding chat message
+        let message = ChatMessage::new(ChatRole::User, "Hello".to_string());
+        state.add_chat_message(0, 0, message.clone());
+
+        let history = state.get_chat_history(0, 0);
+        assert_eq!(history.len(), 1);
+        assert_eq!(history[0].content, "Hello");
+
+        // Test chat request events
+        state.start_chat_request(0, 0);
+        state.complete_chat_request(0, 0);
+        state.fail_chat_request(0, 0, "Test error".to_string());
+
+        let msgs = messages.lock().unwrap();
+        assert!(msgs.iter().any(|m| m.contains("ChatMessageAdded")));
+        assert!(msgs.iter().any(|m| m.contains("ChatRequestStarted")));
+        assert!(msgs.iter().any(|m| m.contains("ChatRequestCompleted")));
+        assert!(msgs.iter().any(|m| m.contains("ChatRequestFailed")));
     }
 }

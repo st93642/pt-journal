@@ -1,11 +1,11 @@
+use gtk4::glib;
 use gtk4::prelude::*;
-use gtk4::{gdk, glib, Application, ApplicationWindow, Frame, Paned};
+use gtk4::{Application, ApplicationWindow, Frame, Paned};
 use std::cell::RefCell;
 use std::rc::Rc;
 
 use crate::dispatcher::create_dispatcher;
 use crate::model::AppModel;
-use crate::ui::canvas::setup_canvas;
 use crate::ui::state::StateManager;
 
 pub fn build_ui(app: &Application, model: AppModel) {
@@ -24,24 +24,6 @@ pub fn build_ui(app: &Application, model: AppModel) {
         .default_height(900)
         .build();
 
-    // Add CSS styling for selected canvas items
-    if let Some(display) = gdk::Display::default() {
-        let css_provider = gtk4::CssProvider::new();
-        css_provider.load_from_string(
-            "
-            .selected {
-                border: 2px solid #3584e4;
-                border-radius: 4px;
-            }
-        ",
-        );
-        gtk4::style_context_add_provider_for_display(
-            &display,
-            &css_provider,
-            gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
-        );
-    }
-
     // Header bar with Open/Save and Sidebar toggle
     let (header, btn_open, btn_save, btn_save_as, btn_sidebar) =
         crate::ui::header_bar::create_header_bar();
@@ -50,7 +32,7 @@ pub fn build_ui(app: &Application, model: AppModel) {
     // Left panel: phase selector + steps list
     let (left_box, phase_combo, steps_list) = crate::ui::sidebar::create_sidebar(&model);
 
-    // Center panel: detail view with checkbox, title, description, notes, canvas
+    // Center panel: detail view with checkbox, title, description, chat
     let detail_panel = crate::ui::detail_panel::create_detail_panel();
     let center = detail_panel.center_container.clone();
 
@@ -66,6 +48,24 @@ pub fn build_ui(app: &Application, model: AppModel) {
 
     // Keep reference to full detail_panel for handlers
     let detail_panel_ref = Rc::new(detail_panel);
+
+    // Register UI update handlers
+    let detail_panel_update = detail_panel_ref.clone();
+    let state_update = state.clone();
+    dispatcher.borrow_mut().register(
+        "ui:chat_update",
+        Box::new(move |msg| {
+            if let crate::dispatcher::AppMessage::ChatMessageAdded(phase_idx, step_idx, message) =
+                msg
+            {
+                let current_phase = state_update.current_phase();
+                let current_step = state_update.current_step().unwrap_or(0);
+                if *phase_idx == current_phase && *step_idx == current_step {
+                    detail_panel_update.chat_panel.add_message(message);
+                }
+            }
+        }),
+    );
 
     // === SETUP SIGNAL HANDLERS ===
 
@@ -93,6 +93,9 @@ pub fn build_ui(app: &Application, model: AppModel) {
     // Notes text view handlers
     crate::ui::handlers::setup_notes_handlers(detail_panel_ref.clone(), state.clone());
 
+    // Chat panel handlers
+    crate::ui::handlers::setup_chat_handlers(detail_panel_ref.clone(), state.clone());
+
     // File operation handlers
     crate::ui::handlers::setup_file_handlers(
         &btn_open,
@@ -108,13 +111,6 @@ pub fn build_ui(app: &Application, model: AppModel) {
 
     // Sidebar toggle handler
     crate::ui::handlers::setup_sidebar_handler(&btn_sidebar, &left_box);
-
-    // === SETUP CANVAS ===
-    setup_canvas(
-        &detail_panel_ref.canvas_fixed,
-        detail_panel_ref.canvas_items.clone(),
-        state.clone(),
-    );
 
     // === LAYOUT ===
     // Three-column layout: Sidebar (left) | Content (center) | Tools (right)

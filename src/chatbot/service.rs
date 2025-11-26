@@ -1,21 +1,24 @@
-use crate::chatbot::{ChatError, ChatProvider, ChatRequest, OllamaProvider, StepContext};
+use crate::chatbot::{ChatError, ChatProvider, ChatRequest, OllamaProvider, LlamaCppProvider, StepContext};
 use crate::config::{ChatbotConfig, ModelProviderKind};
 use crate::model::ChatMessage;
 use std::sync::Arc;
 
 /// Chat service that routes requests to appropriate providers
 pub struct ChatService {
-    config: ChatbotConfig,
+    pub config: ChatbotConfig,
     ollama_provider: Arc<OllamaProvider>,
+    llama_cpp_provider: Arc<LlamaCppProvider>,
 }
 
 impl ChatService {
     pub fn new(mut config: ChatbotConfig) -> Self {
         config.ensure_valid();
         let ollama_provider = Arc::new(OllamaProvider::new(config.ollama.clone()));
+        let llama_cpp_provider = Arc::new(LlamaCppProvider::new(config.llama_cpp.clone()));
         Self {
             config,
             ollama_provider,
+            llama_cpp_provider,
         }
     }
 
@@ -49,15 +52,13 @@ impl ChatService {
         provider.check_availability()
     }
 
-    fn get_provider(
+    pub fn get_provider(
         &self,
         provider_kind: &ModelProviderKind,
     ) -> Result<Arc<dyn ChatProvider>, ChatError> {
         match provider_kind {
             ModelProviderKind::Ollama => Ok(self.ollama_provider.clone()),
-            ModelProviderKind::LlamaCpp => Err(ChatError::UnsupportedProvider(
-                "llama-cpp".to_string(),
-            )),
+            ModelProviderKind::LlamaCpp => Ok(self.llama_cpp_provider.clone()),
         }
     }
 }
@@ -124,12 +125,14 @@ mod tests {
     }
 
     #[test]
-    fn test_service_unsupported_provider() {
+    fn test_service_llama_cpp_provider_missing_gguf() {
         let mut config = ChatbotConfig::default();
         config.ollama.endpoint = "http://localhost:11434".to_string();
+        config.llama_cpp.gguf_path = None;
 
         let mut profile = config.active_model().clone();
         profile.provider = ModelProviderKind::LlamaCpp;
+        profile.resource_paths = vec![];
 
         let service = ChatService::new(config);
         let step_ctx = StepContext {
@@ -145,9 +148,10 @@ mod tests {
         let request = ChatRequest::new(step_ctx, vec![], "Hello".to_string(), profile);
         let result = service.send_request(&request);
 
+        // Should fail with GgufPathNotFound, not UnsupportedProvider
         assert!(matches!(
             result,
-            Err(ChatError::UnsupportedProvider(_))
+            Err(ChatError::GgufPathNotFound(_))
         ));
     }
 }

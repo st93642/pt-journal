@@ -2,11 +2,13 @@ mod provider;
 mod request;
 mod service;
 mod ollama;
+mod llama_cpp;
 
 pub use provider::ChatProvider;
 pub use request::{ChatRequest, StepContext};
 pub use service::ChatService;
 pub use ollama::OllamaProvider;
+pub use llama_cpp::LlamaCppProvider;
 
 // Re-export for backward compatibility
 pub use service::ChatService as LocalChatBot;
@@ -25,6 +27,12 @@ pub enum ChatError {
     Timeout,
     #[error("The configured chatbot provider '{0}' is not supported yet")]
     UnsupportedProvider(String),
+    #[error("GGUF model file not found: {0}")]
+    GgufPathNotFound(String),
+    #[error("Failed to load GGUF model: {0}")]
+    ModelLoadError(String),
+    #[error("Inference error: {0}")]
+    InferenceError(String),
 }
 
 pub struct ContextBuilder;

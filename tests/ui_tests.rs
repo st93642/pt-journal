@@ -273,7 +273,7 @@ mod chat_tests {
 
     #[test]
     fn test_local_chatbot_payload_construction() {
-        let mut server = MockServer::start();
+        let server = MockServer::start();
         let mock = server.mock(|when, then| {
             when.method(POST).path("/api/chat").json_body(json!({
                 "model": "llama3.2:latest",

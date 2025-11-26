@@ -632,7 +632,7 @@ mod chat_provider_tests {
             parameters: Default::default(),
         };
         
-        config.models = vec![ollama_profile, llama_cpp_profile];
+        config.models = vec![ollama_profile, llama_cpp_profile.clone()];
         let service = ChatService::new(config);
         let step_ctx = create_test_step_context();
 

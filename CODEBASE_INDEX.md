@@ -728,7 +728,7 @@ pub enum NmapScanType {
 |----------|-------|----------|
 | Model Tests | 20+ | Session, Phase, Step, Evidence, Quiz |
 | Store Tests | 15+ | Save, load, migration, Unicode |
-| Chatbot Tests | 20+ | Multi-provider integration, llama.cpp, Ollama, error handling |
+| Chatbot Tests | 25+ | Multi-provider integration, llama.cpp, Ollama, error handling |
 | Tool Tests | 50+ | Nmap (8 types), Gobuster (3 modes) |
 | Quiz Tests | 10+ | Parsing, progress, scoring |
 | Dispatcher Tests | 8+ | Event routing, handlers |
@@ -737,7 +737,7 @@ pub enum NmapScanType {
 | Property Tests | 10+ | Randomized input validation |
 | UI Tests | 8+ | Chat functionality, text input, state persistence |
 
-**Total**: 184+ tests with 100% pass rate
+**Total**: 189+ tests with 100% pass rate
 
 ## 🚀 Development Workflow
 

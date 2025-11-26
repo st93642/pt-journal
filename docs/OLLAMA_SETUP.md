@@ -72,9 +72,11 @@ PT Journal uses these default settings:
 
 ```toml
 [chatbot]
+default_model_id = "llama3.2:latest"
+
+[chatbot.ollama]
 endpoint = "http://localhost:11434"
-model = "llama3.2:latest"
-timeout_seconds = 60
+timeout_seconds = 180
 ```
 
 ### Custom Configuration
@@ -83,9 +85,25 @@ Create `~/.config/pt-journal/config.toml` to customize:
 
 ```toml
 [chatbot]
+default_model_id = "mistral:7b"
+
+[[chatbot.models]]
+id = "mistral:7b"
+display_name = "Mistral 7B"
+provider = "ollama"
+
+[[chatbot.models]]
+id = "phi3:mini-4k-instruct"
+display_name = "Phi-3 Mini"
+provider = "ollama"
+
+[chatbot.ollama]
 endpoint = "http://localhost:11434"  # Change if Ollama runs on different port/host
-model = "llama3.1:8b"                # Use different model
 timeout_seconds = 120                # Increase timeout for slower models
+
+[chatbot.llama_cpp]
+gguf_path = "/opt/llms/custom.gguf"
+context_tokens = 8192
 ```
 
 ### Environment Variables
@@ -94,8 +112,8 @@ Override configuration with environment variables:
 
 ```bash
 export PT_JOURNAL_OLLAMA_ENDPOINT="http://192.168.1.100:11434"
-export PT_JOURNAL_OLLAMA_MODEL="mistral"
-export PT_JOURNAL_OLLAMA_TIMEOUT_SECONDS="120"
+export PT_JOURNAL_CHATBOT_MODEL_ID="mistral:7b"
+export PT_JOURNAL_OLLAMA_TIMEOUT_SECONDS="240"
 ```
 
 ## Testing the Setup

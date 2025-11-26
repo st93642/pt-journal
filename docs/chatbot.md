@@ -122,13 +122,13 @@ Chatbot functionality integrates with configurable LLM backends. See [Configurat
 Default configuration:
 
 - **Endpoint**: `http://localhost:11434`
-- **Model**: `mistral`
+- **Default Model**: `llama3.2:latest`
 
 ### Environment Variables
 
 ```bash
 export PT_JOURNAL_OLLAMA_ENDPOINT="http://custom-ollama:8080"
-export PT_JOURNAL_OLLAMA_MODEL="llama2"
+export PT_JOURNAL_CHATBOT_MODEL_ID="phi3:mini-4k-instruct"
 ```
 
 ## Migration

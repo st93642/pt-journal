@@ -42,8 +42,8 @@ mod tests {
             assert!(model.current_path.is_none());
             assert_eq!(model.session.phases.len(), 22); // 22 phases after API consolidation
                                                         // Config should be loaded (or default)
-            assert_eq!(model.config.chatbot.endpoint, "http://localhost:11434");
-            assert_eq!(model.config.chatbot.model, "llama3.2:latest");
+            assert_eq!(model.config.chatbot.ollama.endpoint, "http://localhost:11434");
+            assert_eq!(model.config.chatbot.default_model_id, "llama3.2:latest");
         }
 
         #[test]

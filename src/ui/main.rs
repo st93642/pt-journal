@@ -146,7 +146,7 @@ pub fn build_ui(app: &Application, model: AppModel) {
     );
 
     // Phase selection handler
-    let phase_handler_id = crate::ui::handlers::setup_phase_handler(
+    let _phase_handler_id = crate::ui::handlers::setup_phase_handler(
         &phase_combo,
         &steps_list,
         state.clone(),

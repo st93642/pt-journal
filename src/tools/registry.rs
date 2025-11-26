@@ -156,10 +156,6 @@ mod tests {
             })
         }
 
-        fn extract_evidence(&self, _result: &ToolResult) -> Vec<crate::model::Evidence> {
-            Vec::new()
-        }
-
         fn validate_prerequisites(&self, _config: &ToolConfig) -> Result<()> {
             Ok(())
         }

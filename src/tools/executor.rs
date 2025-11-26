@@ -1,6 +1,12 @@
 /// Tool execution engine
+///
+/// This module provides the default implementation for executing security tools.
+/// It enforces timeouts by spawning processes and polling for completion.
+/// If a configured timeout is exceeded, the process is terminated (via SIGKILL on Unix or TerminateProcess on Windows)
+/// and any available partial stdout/stderr output is collected and included in the error message.
 use super::traits::*;
 use anyhow::Result;
+use std::io::Read;
 #[cfg(test)]
 use std::time::Duration;
 use std::time::Instant;
@@ -51,55 +57,77 @@ impl ToolRunner for DefaultExecutor {
         }
 
         // Execute with timeout handling
-        let output = if let Some(timeout) = config.timeout {
-            // For now, basic timeout implementation
-            // TODO: Implement proper timeout with process termination
-            let output = command.output()?;
+        let command = command.stdout(std::process::Stdio::piped()).stderr(std::process::Stdio::piped());
+        let mut child = command.spawn()?;
 
-            let duration = start.elapsed();
-            if duration > timeout {
-                anyhow::bail!("Command execution exceeded timeout of {:?}", timeout);
+        let mut stdout_buf = Vec::new();
+        let mut stderr_buf = Vec::new();
+
+        let timeout_start = Instant::now();
+        let timeout_duration = config.timeout.unwrap_or(std::time::Duration::MAX);
+
+        loop {
+            match child.try_wait()? {
+                Some(status) => {
+                    // Process finished, read any remaining output
+                    if let Some(mut stdout) = child.stdout.take() {
+                        stdout.read_to_end(&mut stdout_buf)?;
+                    }
+                    if let Some(mut stderr) = child.stderr.take() {
+                        stderr.read_to_end(&mut stderr_buf)?;
+                    }
+
+                    let duration = start.elapsed();
+                    let stdout = String::from_utf8_lossy(&stdout_buf).to_string();
+                    let stderr = String::from_utf8_lossy(&stderr_buf).to_string();
+
+                    let parsed_result = tool.parse_output(&stdout).ok();
+
+                    return Ok(ExecutionResult {
+                        exit_code: status.code().unwrap_or(-1),
+                        stdout,
+                        stderr,
+                        parsed_result,
+                        duration,
+                    });
+                }
+                None => {
+                    // Still running, check timeout
+                    if timeout_start.elapsed() > timeout_duration {
+                        // Timeout, kill the process
+                        let _ = child.kill();
+
+                        // Read partial output
+                        if let Some(mut stdout) = child.stdout.take() {
+                            let _ = stdout.read_to_end(&mut stdout_buf);
+                        }
+                        if let Some(mut stderr) = child.stderr.take() {
+                            let _ = stderr.read_to_end(&mut stderr_buf);
+                        }
+
+                        let partial_stdout = String::from_utf8_lossy(&stdout_buf).to_string();
+                        let partial_stderr = String::from_utf8_lossy(&stderr_buf).to_string();
+
+                        anyhow::bail!(
+                            "Command execution timed out after {:?}. Partial stdout: '{}', Partial stderr: '{}'",
+                            timeout_duration,
+                            partial_stdout,
+                            partial_stderr
+                        );
+                    }
+
+                    // Sleep briefly before checking again
+                    std::thread::sleep(std::time::Duration::from_millis(10));
+                }
             }
-
-            output
-        } else {
-            command.output()?
-        };
-
-        let duration = start.elapsed();
-
-        // Convert output to strings
-        let stdout = String::from_utf8_lossy(&output.stdout).to_string();
-        let stderr = String::from_utf8_lossy(&output.stderr).to_string();
-
-        // Parse results
-        let parsed_result = tool.parse_output(&stdout).ok();
-
-        // Extract evidence if parsing succeeded
-        let evidence = if let Some(ref result) = parsed_result {
-            tool.extract_evidence(result)
-        } else {
-            Vec::new()
-        };
-
-        Ok(ExecutionResult {
-            exit_code: output.status.code().unwrap_or(-1),
-            stdout,
-            stderr,
-            parsed_result,
-            evidence,
-            duration,
-        })
+        }
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::model::Evidence;
-    use chrono::Utc;
     use std::process::Command;
-    use uuid::Uuid;
 
     // Mock tool that uses echo command
     struct EchoTool {
@@ -158,17 +186,6 @@ mod tests {
                 stdout: output.to_string(),
                 stderr: String::new(),
             })
-        }
-
-        fn extract_evidence(&self, _result: &ToolResult) -> Vec<Evidence> {
-            vec![Evidence {
-                id: Uuid::new_v4(),
-                path: "test_evidence.txt".to_string(),
-                kind: "echo-output".to_string(),
-                x: 0.0,
-                y: 0.0,
-                created_at: Utc::now(),
-            }]
         }
 
         fn validate_prerequisites(&self, config: &ToolConfig) -> Result<()> {
@@ -269,18 +286,6 @@ mod tests {
     }
 
     #[test]
-    fn test_executor_extracts_evidence() {
-        let executor = DefaultExecutor::new();
-        let tool = EchoTool::new();
-        let config = ToolConfig::builder().target("test").build().unwrap();
-
-        let result = executor.execute(&tool, &config).unwrap();
-
-        assert_eq!(result.evidence.len(), 1);
-        assert_eq!(result.evidence[0].kind, "echo-output");
-    }
-
-    #[test]
     fn test_executor_measures_duration() {
         let executor = DefaultExecutor::new();
         let tool = EchoTool::new();
@@ -307,5 +312,67 @@ mod tests {
         // Environment variables are applied during execution
         let result = executor.execute(&tool, &config);
         assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_executor_timeout_enforced() {
+        let executor = DefaultExecutor::new();
+        let tool = SleepTool::new();
+        let config = ToolConfig::builder()
+            .timeout(Duration::from_millis(100))
+            .build()
+            .unwrap();
+
+        let result = executor.execute(&tool, &config);
+        assert!(result.is_err());
+
+        let err = result.unwrap_err();
+        assert!(err.to_string().contains("timed out"));
+        assert!(err.to_string().contains("Partial stdout"));
+    }
+
+    #[test]
+    fn test_executor_no_timeout_when_completed() {
+        let executor = DefaultExecutor::new();
+        let tool = EchoTool::new();
+        let config = ToolConfig::builder()
+            .target("test")
+            .timeout(Duration::from_secs(10)) // Long timeout
+            .build()
+            .unwrap();
+
+        let result = executor.execute(&tool, &config);
+        assert!(result.is_ok());
+    }
+
+    // Mock tool that sleeps
+    struct SleepTool;
+
+    impl SecurityTool for SleepTool {
+        fn name(&self) -> &str {
+            "sleep"
+        }
+
+        fn check_availability(&self) -> Result<ToolVersion> {
+            Ok(ToolVersion::new(1, 0, 0))
+        }
+
+        fn build_command(&self, _config: &ToolConfig) -> Result<Command> {
+            // Use python to sleep for 1 second
+            let mut cmd = Command::new("python3");
+            cmd.arg("-c").arg("import time; time.sleep(1); print('done')");
+            Ok(cmd)
+        }
+
+        fn parse_output(&self, output: &str) -> Result<ToolResult> {
+            Ok(ToolResult::Raw {
+                stdout: output.to_string(),
+                stderr: String::new(),
+            })
+        }
+
+        fn validate_prerequisites(&self, _config: &ToolConfig) -> Result<()> {
+            Ok(())
+        }
     }
 }

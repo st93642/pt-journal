@@ -1,4 +1,3 @@
-use crate::model::Evidence;
 /// Core traits for security tool integration
 use anyhow::Result;
 use std::process::Command;
@@ -110,9 +109,6 @@ pub trait SecurityTool: Send + Sync {
     /// Parse tool output into structured format
     fn parse_output(&self, output: &str) -> Result<ToolResult>;
 
-    /// Extract evidence items (screenshots, files, etc.)
-    fn extract_evidence(&self, result: &ToolResult) -> Vec<Evidence>;
-
     /// Validate prerequisites (target, permissions, etc.)
     fn validate_prerequisites(&self, config: &ToolConfig) -> Result<()>;
 }
@@ -124,7 +120,6 @@ pub struct ExecutionResult {
     pub stdout: String,
     pub stderr: String,
     pub parsed_result: Option<ToolResult>,
-    pub evidence: Vec<Evidence>,
     pub duration: Duration,
 }
 
@@ -189,10 +184,6 @@ mod tests {
                 stdout: output.to_string(),
                 stderr: String::new(),
             })
-        }
-
-        fn extract_evidence(&self, _result: &ToolResult) -> Vec<Evidence> {
-            Vec::new()
         }
 
         fn validate_prerequisites(&self, config: &ToolConfig) -> Result<()> {
@@ -318,17 +309,5 @@ mod tests {
             }
             _ => panic!("Expected Raw result"),
         }
-    }
-
-    #[test]
-    fn test_security_tool_extract_evidence() {
-        let tool = MockTool::new("test-tool");
-        let result = ToolResult::Raw {
-            stdout: "output".to_string(),
-            stderr: String::new(),
-        };
-
-        let evidence = tool.extract_evidence(&result);
-        assert_eq!(evidence.len(), 0);
     }
 }

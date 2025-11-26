@@ -130,7 +130,7 @@ mod tests {
     #[test]
     fn test_service_unsupported_provider() {
         let config = ChatbotConfig::default();
-        let service = ChatService::new(config);
+        let _service = ChatService::new(config);
         
         // Since we removed LlamaCpp, all providers should be Ollama now
         // This test is no longer relevant

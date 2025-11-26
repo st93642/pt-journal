@@ -524,6 +524,28 @@ tests/
   - Tutorials: Phase loading, content validation
   - Integration: Full workflows, tool chains
 
+### Testing Strategy
+
+#### Domain and Quiz Tests
+
+- Comprehensive unit tests for all business logic
+- Property-based testing for edge cases
+- Mock-free testing where possible
+
+#### Executor Timeout Coverage
+
+- Deterministic long-running commands (e.g., `python3 -c 'import time; time.sleep(1)'`)
+- 100ms timeout assertions for quick failure detection
+- Partial output collection verification on timeout
+- Environment variable and working directory propagation tests
+
+#### GTK-Lite UI Tests
+
+- Handler logic testing without full GTK initialization
+- State management validation with controlled inputs
+- Event dispatcher testing with mock handlers
+- Avoid blocking on GTK main loop in CI environments
+
 ### Running Tests
 
 ```bash

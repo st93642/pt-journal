@@ -118,7 +118,8 @@ pub enum Message {
 - `state.rs` - Application state management
 - `handlers.rs` - Event handling and business logic
 - `detail_panel.rs` - Content display switcher
-- `canvas.rs` - Evidence positioning interface
+- `chat_panel.rs` - Chat interface for AI assistance
+- `tool_execution/` - GTK tool execution panel with terminal output
 
 **State Management**:
 
@@ -147,13 +148,25 @@ pub struct AppModel {
 2. **History Management**: `Step::add_chat_message()` appends to history
 3. **Persistence**: Automatic inclusion in session JSON
 4. **UI Display**: Real-time rendering of conversation threads
+5. **Provider Abstraction**: Support for multiple LLM backends (Ollama, llama.cpp)
+6. **Context Summarization**: Session state included in prompts for relevant assistance
 
-### Configuration Flow
+### Ollama Provider Integration
 
-1. **Loading**: `AppConfig::load()` merges sources
-2. **Runtime Access**: `app_model.config.chatbot.ollama.endpoint` + `config.chatbot.active_model()`
-3. **Overrides**: Environment variables take precedence
-4. **Persistence**: `AppConfig::save()` writes to TOML
+- **HTTP-based**: REST API integration with configurable endpoint
+- **Model Selection**: Dynamic model switching with profile management
+- **Timeout Handling**: Configurable request timeouts with error recovery
+- **Availability Checks**: Automatic provider health monitoring
+- **Parameter Tuning**: Per-model temperature, top_p, and other parameters
+
+### GTK Tool Execution Panel
+
+- **Terminal Integration**: VTE-based terminal widget for real-time output
+- **Tool Selection**: Category-based picker with instruction previews
+- **Configuration UI**: Dynamic form generation for tool parameters
+- **Execution Monitoring**: Progress tracking with timeout enforcement
+- **Output Parsing**: Structured result display with evidence extraction
+- **Error Handling**: Clear error messages with partial output collection
 
 ## Component Interactions
 
@@ -251,7 +264,32 @@ App Startup → Config.load() → AppModel.config → Runtime Access
 - **Domain Logic**: 100% model validation
 - **Persistence**: Save/load roundtrip testing
 - **Configuration**: Loading and override testing
-- **UI Components**: Widget creation and interaction
+- **Chatbot**: Multi-provider integration, error handling, context building
+- **Tool Execution**: Timeout enforcement, partial output collection, environment handling
+- **UI Components**: GTK-lite tests for handlers and state management
+- **Quiz System**: Question parsing, progress tracking, scoring algorithms
+
+### Testing Strategy
+
+#### Domain and Quiz Tests
+
+- Comprehensive unit tests for all business logic
+- Property-based testing for edge cases
+- Mock-free testing where possible
+
+#### Executor Timeout Coverage
+
+- Deterministic long-running commands (e.g., `python3 -c 'import time; time.sleep(1)'`)
+- 100ms timeout assertions for quick failure detection
+- Partial output collection verification on timeout
+- Environment variable and working directory propagation tests
+
+#### GTK-Lite UI Tests
+
+- Handler logic testing without full GTK initialization
+- State management validation with controlled inputs
+- Event dispatcher testing with mock handlers
+- Avoid blocking on GTK main loop in CI environments
 
 ### Test Infrastructure
 

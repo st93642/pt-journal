@@ -1,3 +1,30 @@
+//! UI event handlers and business logic coordination.
+//!
+//! This module contains signal handlers for GTK widgets that coordinate between
+//! the UI layer and application state. Handlers are designed to be non-blocking
+//! and thread-safe, using GTK's main loop for UI updates.
+//!
+//! ## Threading Constraints
+//!
+//! - All handlers run on the GTK main thread
+//! - State mutations use `Rc<RefCell<>>` for thread safety
+//! - Long operations dispatch to background threads
+//! - UI updates deferred with `glib::idle_add_local_once`
+//!
+//! ## Error Handling
+//!
+//! - Invalid user input shows error dialogs
+//! - State inconsistencies log warnings but don't crash
+//! - Tool execution errors display in terminal widgets
+//! - Network failures show user-friendly messages
+//!
+//! ## Handler Categories
+//!
+//! - **Navigation**: Phase/step selection, sidebar interactions
+//! - **Content**: Quiz answers, chat messages, note editing
+//! - **Tools**: Execution panel, terminal output, configuration
+//! - **Files**: Save/load dialogs, evidence management
+
 use gtk4::glib;
 use gtk4::prelude::*;
 use gtk4::{gdk, ApplicationWindow, Button, CheckButton, ListBox};

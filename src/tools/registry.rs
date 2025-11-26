@@ -31,7 +31,7 @@ impl ToolRegistry {
     }
 
     /// Get a tool by name (returns true if exists)
-    /// TODO: Refactor to use Arc<dyn SecurityTool> for proper tool retrieval
+    /// TODO: Refactor to use `Arc<SecurityTool>` for proper tool retrieval
     pub fn get(&self, name: &str) -> Option<()> {
         let tools = self.tools.lock().unwrap();
         if tools.contains_key(name) {

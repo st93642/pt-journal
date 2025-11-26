@@ -4,6 +4,26 @@
 /// It enforces timeouts by spawning processes and polling for completion.
 /// If a configured timeout is exceeded, the process is terminated (via SIGKILL on Unix or TerminateProcess on Windows)
 /// and any available partial stdout/stderr output is collected and included in the error message.
+///
+/// ## Threading Constraints
+///
+/// - Execution is synchronous and blocking
+/// - Designed for background thread usage in UI applications
+/// - No internal threading; relies on caller for concurrency
+///
+/// ## Error Handling
+///
+/// - Timeouts include partial output in error messages
+/// - Process spawning failures bubble up as `anyhow::Error`
+/// - Invalid UTF-8 in output is lossy-converted
+/// - Environment and working directory setup validated before execution
+///
+/// ## Security Considerations
+///
+/// - Commands run with user privileges only
+/// - No shell interpretation of arguments
+/// - Timeouts prevent resource exhaustion
+/// - Output size not limited (caller responsibility)
 use super::traits::*;
 use anyhow::Result;
 use std::io::Read;

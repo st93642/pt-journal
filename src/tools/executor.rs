@@ -317,7 +317,7 @@ mod tests {
     #[test]
     fn test_executor_timeout_enforced() {
         let executor = DefaultExecutor::new();
-        let tool = SleepTool::new();
+        let tool = SleepTool;
         let config = ToolConfig::builder()
             .timeout(Duration::from_millis(100))
             .build()

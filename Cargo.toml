@@ -28,11 +28,13 @@ regex = "1"
 async-channel = "2"
 reqwest = { version = "0.11", features = ["json", "blocking"] }
 llama_cpp = { version = "0.3", default-features = false, optional = true }
+log = "0.4"
 
 [dev-dependencies]
 tempfile = "3.8"
 assert_matches = "1.5"
 httpmock = "0.6"
+test-log = { version = "0.2", features = ["log"] }
 
 [[test]]
 name = "integration_tests"

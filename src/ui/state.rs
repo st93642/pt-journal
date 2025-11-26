@@ -4,6 +4,7 @@ use std::cell::RefCell;
 /// UI state management module
 use std::rc::Rc;
 use uuid::Uuid;
+use log;
 
 /// Shared app model reference for GTK
 pub type SharedModel = Rc<RefCell<AppModel>>;
@@ -49,78 +50,110 @@ impl StateManager {
             .dispatch(&AppMessage::RefreshDetailView(phase_idx, step_idx));
     }
 
+    /// Helper to access a step mutably with validation and logging
+    ///
+    /// Returns Some(T) if the step exists, None if invalid indexes.
+    /// Logs a warning on invalid indexes.
+    fn with_step_mut<F, T>(&self, phase_idx: usize, step_idx: usize, f: F) -> Option<T>
+    where
+        F: FnOnce(&mut crate::model::Step) -> T,
+    {
+        let mut model = self.model.borrow_mut();
+        if let Some(step) = model
+            .session
+            .phases
+            .get_mut(phase_idx)
+            .and_then(|p| p.steps.get_mut(step_idx))
+        {
+            Some(f(step))
+        } else {
+            log::warn!("Invalid phase/step index: phase={}, step={}", phase_idx, step_idx);
+            None
+        }
+    }
+
+    /// Helper to access a step immutably with validation and logging
+    ///
+    /// Returns Some(T) if the step exists, None if invalid indexes.
+    /// Logs a warning on invalid indexes.
+    fn with_step<F, T>(&self, phase_idx: usize, step_idx: usize, f: F) -> Option<T>
+    where
+        F: FnOnce(&crate::model::Step) -> T,
+    {
+        let model = self.model.borrow();
+        if let Some(step) = model
+            .session
+            .phases
+            .get(phase_idx)
+            .and_then(|p| p.steps.get(step_idx))
+        {
+            Some(f(step))
+        } else {
+            log::warn!("Invalid phase/step index: phase={}, step={}", phase_idx, step_idx);
+            None
+        }
+    }
+
+    /// Helper to access a phase mutably with validation and logging
+    ///
+    /// Returns Some(T) if the phase exists, None if invalid index.
+    /// Logs a warning on invalid index.
+    fn with_phase_mut<F, T>(&self, phase_idx: usize, f: F) -> Option<T>
+    where
+        F: FnOnce(&mut crate::model::Phase) -> T,
+    {
+        let mut model = self.model.borrow_mut();
+        if let Some(phase) = model.session.phases.get_mut(phase_idx) {
+            Some(f(phase))
+        } else {
+            log::warn!("Invalid phase index: phase={}", phase_idx);
+            None
+        }
+    }
+
     /// Update step status
     pub fn update_step_status(&self, phase_idx: usize, step_idx: usize, status: StepStatus) {
-        {
-            let mut model = self.model.borrow_mut();
-            if let Some(step) = model
-                .session
-                .phases
-                .get_mut(phase_idx)
-                .and_then(|p| p.steps.get_mut(step_idx))
-            {
-                step.status = status.clone();
-                if matches!(status, StepStatus::Done) {
-                    step.completed_at = Some(chrono::Utc::now());
-                } else {
-                    step.completed_at = None;
-                }
+        if self.with_step_mut(phase_idx, step_idx, |step| {
+            step.status = status.clone();
+            if matches!(status, StepStatus::Done) {
+                step.completed_at = Some(chrono::Utc::now());
+            } else {
+                step.completed_at = None;
             }
+        }).is_some() {
+            self.dispatcher
+                .borrow()
+                .dispatch(&AppMessage::StepStatusChanged(phase_idx, step_idx, status));
         }
-        self.dispatcher
-            .borrow()
-            .dispatch(&AppMessage::StepStatusChanged(phase_idx, step_idx, status));
     }
 
     /// Update step notes
     pub fn update_step_notes(&self, phase_idx: usize, step_idx: usize, notes: String) {
-        {
-            let mut model = self.model.borrow_mut();
-            if let Some(step) = model
-                .session
-                .phases
-                .get_mut(phase_idx)
-                .and_then(|p| p.steps.get_mut(step_idx))
-            {
-                step.set_notes(notes.clone());
-            }
+        if self.with_step_mut(phase_idx, step_idx, |step| step.set_notes(notes.clone())).is_some() {
+            self.dispatcher
+                .borrow()
+                .dispatch(&AppMessage::StepNotesUpdated(phase_idx, step_idx, notes));
         }
-        self.dispatcher
-            .borrow()
-            .dispatch(&AppMessage::StepNotesUpdated(phase_idx, step_idx, notes));
     }
 
     /// Update step description notes
     pub fn update_step_description_notes(&self, phase_idx: usize, step_idx: usize, notes: String) {
-        {
-            let mut model = self.model.borrow_mut();
-            if let Some(step) = model
-                .session
-                .phases
-                .get_mut(phase_idx)
-                .and_then(|p| p.steps.get_mut(step_idx))
-            {
-                step.set_description_notes(notes.clone());
-            }
+        if self.with_step_mut(phase_idx, step_idx, |step| step.set_description_notes(notes.clone())).is_some() {
+            self.dispatcher
+                .borrow()
+                .dispatch(&AppMessage::StepDescriptionNotesUpdated(
+                    phase_idx, step_idx, notes,
+                ));
         }
-        self.dispatcher
-            .borrow()
-            .dispatch(&AppMessage::StepDescriptionNotesUpdated(
-                phase_idx, step_idx, notes,
-            ));
     }
 
     /// Update phase notes
     pub fn update_phase_notes(&self, phase_idx: usize, notes: String) {
-        {
-            let mut model = self.model.borrow_mut();
-            if let Some(phase) = model.session.phases.get_mut(phase_idx) {
-                phase.notes = notes.clone();
-            }
+        if self.with_phase_mut(phase_idx, |phase| phase.notes = notes.clone()).is_some() {
+            self.dispatcher
+                .borrow()
+                .dispatch(&AppMessage::PhaseNotesUpdated(phase_idx, notes));
         }
-        self.dispatcher
-            .borrow()
-            .dispatch(&AppMessage::PhaseNotesUpdated(phase_idx, notes));
     }
 
     /// Update global notes
@@ -136,20 +169,11 @@ impl StateManager {
 
     /// Add chat message to a step
     pub fn add_chat_message(&self, phase_idx: usize, step_idx: usize, message: ChatMessage) {
-        {
-            let mut model = self.model.borrow_mut();
-            if let Some(step) = model
-                .session
-                .phases
-                .get_mut(phase_idx)
-                .and_then(|p| p.steps.get_mut(step_idx))
-            {
-                step.add_chat_message(message.clone());
-            }
+        if self.with_step_mut(phase_idx, step_idx, |step| step.add_chat_message(message.clone())).is_some() {
+            self.dispatcher
+                .borrow()
+                .dispatch(&AppMessage::ChatMessageAdded(phase_idx, step_idx, message));
         }
-        self.dispatcher
-            .borrow()
-            .dispatch(&AppMessage::ChatMessageAdded(phase_idx, step_idx, message));
     }
 
     /// Start a chat request
@@ -175,13 +199,7 @@ impl StateManager {
 
     /// Get chat history for a step
     pub fn get_chat_history(&self, phase_idx: usize, step_idx: usize) -> Vec<ChatMessage> {
-        let model = self.model.borrow();
-        model
-            .session
-            .phases
-            .get(phase_idx)
-            .and_then(|p| p.steps.get(step_idx))
-            .map(|s| s.get_chat_history().clone())
+        self.with_step(phase_idx, step_idx, |step| step.get_chat_history().clone())
             .unwrap_or_default()
     }
 
@@ -192,42 +210,24 @@ impl StateManager {
 
     /// Add evidence to a step
     pub fn add_evidence(&self, phase_idx: usize, step_idx: usize, evidence: Evidence) {
-        {
-            let mut model = self.model.borrow_mut();
-            if let Some(step) = model
-                .session
-                .phases
-                .get_mut(phase_idx)
-                .and_then(|p| p.steps.get_mut(step_idx))
-            {
-                step.add_evidence(evidence.clone());
-            }
+        if self.with_step_mut(phase_idx, step_idx, |step| step.add_evidence(evidence.clone())).is_some() {
+            self.dispatcher
+                .borrow()
+                .dispatch(&AppMessage::EvidenceAdded(phase_idx, step_idx, evidence));
         }
-        self.dispatcher
-            .borrow()
-            .dispatch(&AppMessage::EvidenceAdded(phase_idx, step_idx, evidence));
     }
 
     /// Remove evidence from a step
     pub fn remove_evidence(&self, phase_idx: usize, step_idx: usize, evidence_id: Uuid) {
-        {
-            let mut model = self.model.borrow_mut();
-            if let Some(step) = model
-                .session
-                .phases
-                .get_mut(phase_idx)
-                .and_then(|p| p.steps.get_mut(step_idx))
-            {
-                step.remove_evidence(evidence_id);
-            }
+        if self.with_step_mut(phase_idx, step_idx, |step| step.remove_evidence(evidence_id)).is_some() {
+            self.dispatcher
+                .borrow()
+                .dispatch(&AppMessage::EvidenceRemoved(
+                    phase_idx,
+                    step_idx,
+                    evidence_id,
+                ));
         }
-        self.dispatcher
-            .borrow()
-            .dispatch(&AppMessage::EvidenceRemoved(
-                phase_idx,
-                step_idx,
-                evidence_id,
-            ));
     }
 
     /// Get current phase index
@@ -255,14 +255,7 @@ impl StateManager {
         question_idx: usize,
         answer_idx: usize,
     ) -> Option<bool> {
-        let is_correct = {
-            let mut model = self.model.borrow_mut();
-            let step = model
-                .session
-                .phases
-                .get_mut(phase_idx)
-                .and_then(|p| p.steps.get_mut(step_idx))?;
-
+        let is_correct = self.with_step_mut(phase_idx, step_idx, |step| {
             if let Some(quiz_step) = step.quiz_mut_safe() {
                 if let Some(question) = quiz_step.questions.get(question_idx) {
                     // Check if the selected answer is correct
@@ -293,7 +286,7 @@ impl StateManager {
             } else {
                 None
             }
-        };
+        }).flatten();
 
         if let Some(correct) = is_correct {
             self.dispatcher
@@ -314,30 +307,23 @@ impl StateManager {
 
     /// Mark that a user viewed the explanation before answering
     pub fn view_explanation(&self, phase_idx: usize, step_idx: usize, question_idx: usize) {
-        {
-            let mut model = self.model.borrow_mut();
-            if let Some(step) = model
-                .session
-                .phases
-                .get_mut(phase_idx)
-                .and_then(|p| p.steps.get_mut(step_idx))
-            {
-                if let Some(quiz_step) = step.quiz_mut_safe() {
-                    if let Some(progress) = quiz_step.progress.get_mut(question_idx) {
-                        if !progress.answered {
-                            progress.explanation_viewed_before_answer = true;
-                        }
+        if self.with_step_mut(phase_idx, step_idx, |step| {
+            if let Some(quiz_step) = step.quiz_mut_safe() {
+                if let Some(progress) = quiz_step.progress.get_mut(question_idx) {
+                    if !progress.answered {
+                        progress.explanation_viewed_before_answer = true;
                     }
                 }
             }
+        }).is_some() {
+            self.dispatcher
+                .borrow()
+                .dispatch(&AppMessage::QuizExplanationViewed(
+                    phase_idx,
+                    step_idx,
+                    question_idx,
+                ));
         }
-        self.dispatcher
-            .borrow()
-            .dispatch(&AppMessage::QuizExplanationViewed(
-                phase_idx,
-                step_idx,
-                question_idx,
-            ));
     }
 
     /// Change current question in quiz
@@ -527,6 +513,13 @@ mod tests {
             model.session.phases[0].steps[0].get_notes()
         };
         assert_eq!(notes, "Test notes");
+    }
+
+    #[test_log::test]
+    fn test_update_step_notes_invalid_index() {
+        let state = create_test_state();
+        state.update_step_notes(99, 99, "notes".to_string());
+        // Log should contain warning
     }
 
     #[test]

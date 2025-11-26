@@ -368,12 +368,86 @@ impl StateManager {
 mod tests {
     use super::*;
     use crate::dispatcher::create_dispatcher;
-    use crate::model::{AppModel, ChatRole};
+    use crate::model::{AppModel, ChatRole, QuizAnswer, QuizQuestion, QuizStep, Step};
     use std::sync::{Arc, Mutex};
 
     fn create_test_state() -> StateManager {
         let model = Rc::new(RefCell::new(AppModel::default()));
         let dispatcher = create_dispatcher();
+        StateManager::new(model, dispatcher)
+    }
+
+    fn create_quiz_step_fixture() -> QuizStep {
+        let question_one = QuizQuestion {
+            id: uuid::Uuid::new_v4(),
+            question_text: "Which option is correct?".to_string(),
+            answers: vec![
+                QuizAnswer {
+                    text: "Wrong".to_string(),
+                    is_correct: false,
+                },
+                QuizAnswer {
+                    text: "Correct".to_string(),
+                    is_correct: true,
+                },
+            ],
+            explanation: "Second option is correct.".to_string(),
+            domain: "Test Domain".to_string(),
+            subdomain: "1.1".to_string(),
+        };
+
+        let question_two = QuizQuestion {
+            id: uuid::Uuid::new_v4(),
+            question_text: "Pick the true statement.".to_string(),
+            answers: vec![
+                QuizAnswer {
+                    text: "True".to_string(),
+                    is_correct: true,
+                },
+                QuizAnswer {
+                    text: "False".to_string(),
+                    is_correct: false,
+                },
+            ],
+            explanation: "First answer is true.".to_string(),
+            domain: "Test Domain".to_string(),
+            subdomain: "1.2".to_string(),
+        };
+
+        QuizStep::new(
+            uuid::Uuid::new_v4(),
+            "Test Quiz".to_string(),
+            "Test Domain".to_string(),
+            vec![question_one, question_two],
+        )
+    }
+
+    fn create_test_state_with_quiz() -> StateManager {
+        let model = Rc::new(RefCell::new(AppModel::default()));
+        let dispatcher = create_dispatcher();
+
+        // Replace first step of first phase with a quiz step
+        {
+            let mut model_mut = model.borrow_mut();
+            if let Some(phase) = model_mut.session.phases.get_mut(0) {
+                if phase.steps.is_empty() {
+                    phase.steps.push(Step::new_quiz(
+                        uuid::Uuid::new_v4(),
+                        "Quiz Step".to_string(),
+                        vec!["quiz".to_string()],
+                        create_quiz_step_fixture(),
+                    ));
+                } else {
+                    phase.steps[0] = Step::new_quiz(
+                        uuid::Uuid::new_v4(),
+                        "Quiz Step".to_string(),
+                        vec!["quiz".to_string()],
+                        create_quiz_step_fixture(),
+                    );
+                }
+            }
+        }
+
         StateManager::new(model, dispatcher)
     }
 
@@ -553,5 +627,214 @@ mod tests {
 
         let msgs = messages.lock().unwrap();
         assert!(msgs.iter().any(|m| m.contains("ChatModelChanged")));
+    }
+
+    #[test]
+    fn test_check_answer_correct_first_attempt() {
+        let state = create_test_state_with_quiz();
+        let messages = Arc::new(Mutex::new(Vec::new()));
+        let msg_clone = messages.clone();
+
+        state.dispatcher.borrow_mut().register(
+            "test",
+            Box::new(move |msg| {
+                msg_clone.lock().unwrap().push(format!("{:?}", msg));
+            }),
+        );
+
+        // Check correct answer (index 1 for first question)
+        let result = state.check_answer(0, 0, 0, 1);
+        assert_eq!(result, Some(true));
+
+        // Verify progress was updated
+        let model = state.model.borrow();
+        let step = &model.session.phases[0].steps[0];
+        if let Some(quiz_data) = step.get_quiz_step() {
+            let progress = &quiz_data.progress[0];
+            assert!(progress.answered);
+            assert_eq!(progress.selected_answer_index, Some(1));
+            assert_eq!(progress.is_correct, Some(true));
+            assert_eq!(progress.attempts, 1);
+            assert!(progress.first_attempt_correct);
+        } else {
+            panic!("Expected quiz step");
+        }
+
+        // Verify dispatcher messages
+        let msgs = messages.lock().unwrap();
+        assert!(msgs.iter().any(|m| m.contains("QuizAnswerChecked")));
+        assert!(msgs.iter().any(|m| m.contains("QuizStatisticsUpdated")));
+    }
+
+    #[test]
+    fn test_check_answer_incorrect() {
+        let state = create_test_state_with_quiz();
+
+        // Check incorrect answer (index 0 for first question)
+        let result = state.check_answer(0, 0, 0, 0);
+        assert_eq!(result, Some(false));
+
+        // Verify progress
+        let model = state.model.borrow();
+        let step = &model.session.phases[0].steps[0];
+        if let Some(quiz_data) = step.get_quiz_step() {
+            let progress = &quiz_data.progress[0];
+            assert!(progress.answered);
+            assert_eq!(progress.is_correct, Some(false));
+            assert!(!progress.first_attempt_correct);
+        } else {
+            panic!("Expected quiz step");
+        }
+    }
+
+    #[test]
+    fn test_check_answer_multiple_attempts() {
+        let state = create_test_state_with_quiz();
+
+        // First attempt - wrong
+        state.check_answer(0, 0, 0, 0);
+
+        // Second attempt - correct
+        let result = state.check_answer(0, 0, 0, 1);
+        assert_eq!(result, Some(true));
+
+        // Verify attempts count and first_attempt_correct flag
+        let model = state.model.borrow();
+        let step = &model.session.phases[0].steps[0];
+        if let Some(quiz_data) = step.get_quiz_step() {
+            let progress = &quiz_data.progress[0];
+            assert_eq!(progress.attempts, 2);
+            assert_eq!(progress.is_correct, Some(true)); // Last attempt was correct
+            assert!(!progress.first_attempt_correct); // But not on first attempt
+        } else {
+            panic!("Expected quiz step");
+        }
+    }
+
+    #[test]
+    fn test_check_answer_invalid_question_index() {
+        let state = create_test_state_with_quiz();
+
+        // Try to check answer for nonexistent question
+        let result = state.check_answer(0, 0, 99, 0);
+        assert_eq!(result, None);
+    }
+
+    #[test]
+    fn test_check_answer_on_tutorial_step_returns_none() {
+        let state = create_test_state();
+
+        // Try to check answer on a tutorial step
+        let result = state.check_answer(0, 0, 0, 0);
+        assert_eq!(result, None);
+    }
+
+    #[test]
+    fn test_view_explanation_before_answering() {
+        let state = create_test_state_with_quiz();
+        let messages = Arc::new(Mutex::new(Vec::new()));
+        let msg_clone = messages.clone();
+
+        state.dispatcher.borrow_mut().register(
+            "test",
+            Box::new(move |msg| {
+                msg_clone.lock().unwrap().push(format!("{:?}", msg));
+            }),
+        );
+
+        // View explanation before answering
+        state.view_explanation(0, 0, 0);
+
+        // Verify flag was set
+        {
+            let model = state.model.borrow();
+            let step = &model.session.phases[0].steps[0];
+            if let Some(quiz_data) = step.get_quiz_step() {
+                let progress = &quiz_data.progress[0];
+                assert!(progress.explanation_viewed_before_answer);
+            } else {
+                panic!("Expected quiz step");
+            }
+        }
+
+        // Verify dispatcher message
+        {
+            let msgs = messages.lock().unwrap();
+            assert!(msgs.iter().any(|m| m.contains("QuizExplanationViewed")));
+        }
+
+        // Now answer correctly
+        state.check_answer(0, 0, 0, 1);
+
+        // Verify that first_attempt_correct remains false and awards_points returns false
+        {
+            let model = state.model.borrow();
+            let step = &model.session.phases[0].steps[0];
+            if let Some(quiz_data) = step.get_quiz_step() {
+                let progress = &quiz_data.progress[0];
+                assert!(!progress.first_attempt_correct);
+                assert!(!progress.awards_points()); // Should not award points
+            } else {
+                panic!("Expected quiz step");
+            }
+        }
+    }
+
+    #[test]
+    fn test_view_explanation_after_answering_does_not_set_flag() {
+        let state = create_test_state_with_quiz();
+
+        // Answer first
+        state.check_answer(0, 0, 0, 1);
+
+        // Then view explanation
+        state.view_explanation(0, 0, 0);
+
+        // Verify flag was NOT set (because already answered)
+        let model = state.model.borrow();
+        let step = &model.session.phases[0].steps[0];
+        if let Some(quiz_data) = step.get_quiz_step() {
+            let progress = &quiz_data.progress[0];
+            assert!(!progress.explanation_viewed_before_answer);
+        } else {
+            panic!("Expected quiz step");
+        }
+    }
+
+    #[test]
+    fn test_view_explanation_invalid_question_index() {
+        let state = create_test_state_with_quiz();
+
+        // Should not panic on invalid index
+        state.view_explanation(0, 0, 99);
+    }
+
+    #[test]
+    fn test_change_quiz_question() {
+        let state = create_test_state_with_quiz();
+        let messages = Arc::new(Mutex::new(Vec::new()));
+        let msg_clone = messages.clone();
+
+        state.dispatcher.borrow_mut().register(
+            "test",
+            Box::new(move |msg| {
+                msg_clone.lock().unwrap().push(format!("{:?}", msg));
+            }),
+        );
+
+        // Change to second question
+        state.change_quiz_question(0, 0, 1);
+
+        // Verify dispatcher message
+        let msgs = messages.lock().unwrap();
+        assert!(msgs.iter().any(|m| m.contains("QuizQuestionChanged")));
+    }
+
+    #[test]
+    fn test_change_quiz_question_invalid_index() {
+        let state = create_test_state_with_quiz();
+
+        // Should not panic on invalid index, just dispatches message
+        state.change_quiz_question(0, 0, 99);
     }
 }

@@ -521,6 +521,77 @@ mod tests {
     use assert_matches::assert_matches;
     use std::collections::HashSet;
 
+    fn legacy_step_with_data() -> Step {
+        Step {
+            id: Uuid::new_v4(),
+            title: "Legacy Step".to_string(),
+            tags: vec!["legacy".to_string()],
+            status: StepStatus::Todo,
+            completed_at: None,
+            content: StepContent::default(),
+            description: "Legacy description".to_string(),
+            notes: "Legacy notes".to_string(),
+            description_notes: "Legacy description notes".to_string(),
+            evidence: vec![Evidence {
+                id: Uuid::new_v4(),
+                path: "/tmp/evidence.png".to_string(),
+                created_at: Utc::now(),
+                kind: "screenshot".to_string(),
+                x: 5.0,
+                y: 10.0,
+            }],
+        }
+    }
+
+    fn quiz_step_fixture() -> QuizStep {
+        let question_one = QuizQuestion {
+            id: Uuid::new_v4(),
+            question_text: "Which option is correct first?".to_string(),
+            answers: vec![
+                QuizAnswer {
+                    text: "Incorrect".to_string(),
+                    is_correct: false,
+                },
+                QuizAnswer {
+                    text: "Correct".to_string(),
+                    is_correct: true,
+                },
+            ],
+            explanation: "Second option is correct.".to_string(),
+            domain: "Fixture Domain".to_string(),
+            subdomain: "1.1".to_string(),
+        };
+
+        let question_two = QuizQuestion {
+            id: Uuid::new_v4(),
+            question_text: "Pick the true statement.".to_string(),
+            answers: vec![
+                QuizAnswer {
+                    text: "True".to_string(),
+                    is_correct: true,
+                },
+                QuizAnswer {
+                    text: "False".to_string(),
+                    is_correct: false,
+                },
+                QuizAnswer {
+                    text: "Also false".to_string(),
+                    is_correct: false,
+                },
+            ],
+            explanation: "First answer is correct.".to_string(),
+            domain: "Fixture Domain".to_string(),
+            subdomain: "1.2".to_string(),
+        };
+
+        QuizStep::new(
+            Uuid::new_v4(),
+            "Quiz Fixture".to_string(),
+            "Fixture Domain".to_string(),
+            vec![question_one, question_two],
+        )
+    }
+
     #[test]
     fn test_step_status_variants() {
         // Test that all status variants work
@@ -730,5 +801,298 @@ mod tests {
             assert_eq!(evidence[0].kind, "screenshot");
             assert_eq!(evidence[1].kind, "log");
         }
+    }
+
+    #[test]
+    fn test_migrate_from_legacy() {
+        let mut step = legacy_step_with_data();
+
+        assert_eq!(step.description, "Legacy description");
+        assert_eq!(step.notes, "Legacy notes");
+        assert_eq!(step.description_notes, "Legacy description notes");
+        assert_eq!(step.evidence.len(), 1);
+
+        step.migrate_from_legacy();
+
+        assert_eq!(step.get_description(), "Legacy description");
+        assert_eq!(step.get_notes(), "Legacy notes");
+        assert_eq!(step.get_description_notes(), "Legacy description notes");
+        assert_eq!(step.get_evidence().len(), 1);
+
+        // Legacy fields should now be empty
+        assert!(step.description.is_empty());
+        assert!(step.notes.is_empty());
+        assert!(step.description_notes.is_empty());
+        assert!(step.evidence.is_empty());
+    }
+
+    #[test]
+    fn test_migrate_from_legacy_does_not_override_existing_content() {
+        let mut step = Step::new_tutorial(
+            Uuid::new_v4(),
+            "Test".to_string(),
+            "New description".to_string(),
+            vec![],
+        );
+        step.description = "Legacy description".to_string();
+
+        step.migrate_from_legacy();
+
+        // Should not override existing content
+        assert_eq!(step.get_description(), "New description");
+    }
+
+    #[test]
+    fn test_remove_evidence() {
+        let mut step = Step::new_tutorial(
+            Uuid::new_v4(),
+            "Test".to_string(),
+            "Test".to_string(),
+            vec![],
+        );
+
+        let ev1_id = Uuid::new_v4();
+        let ev2_id = Uuid::new_v4();
+
+        step.add_evidence(Evidence {
+            id: ev1_id,
+            path: "/tmp/ev1.png".to_string(),
+            created_at: Utc::now(),
+            kind: "screenshot".to_string(),
+            x: 0.0,
+            y: 0.0,
+        });
+
+        step.add_evidence(Evidence {
+            id: ev2_id,
+            path: "/tmp/ev2.png".to_string(),
+            created_at: Utc::now(),
+            kind: "screenshot".to_string(),
+            x: 10.0,
+            y: 10.0,
+        });
+
+        assert_eq!(step.get_evidence().len(), 2);
+
+        step.remove_evidence(ev1_id);
+        assert_eq!(step.get_evidence().len(), 1);
+        assert_eq!(step.get_evidence()[0].id, ev2_id);
+
+        step.remove_evidence(ev2_id);
+        assert_eq!(step.get_evidence().len(), 0);
+    }
+
+    #[test]
+    fn test_remove_evidence_nonexistent() {
+        let mut step = Step::new_tutorial(
+            Uuid::new_v4(),
+            "Test".to_string(),
+            "Test".to_string(),
+            vec![],
+        );
+
+        let ev_id = Uuid::new_v4();
+        step.add_evidence(Evidence {
+            id: ev_id,
+            path: "/tmp/ev.png".to_string(),
+            created_at: Utc::now(),
+            kind: "screenshot".to_string(),
+            x: 0.0,
+            y: 0.0,
+        });
+
+        let nonexistent_id = Uuid::new_v4();
+        step.remove_evidence(nonexistent_id);
+        assert_eq!(step.get_evidence().len(), 1);
+    }
+
+    #[test]
+    fn test_update_evidence_position() {
+        let mut step = Step::new_tutorial(
+            Uuid::new_v4(),
+            "Test".to_string(),
+            "Test".to_string(),
+            vec![],
+        );
+
+        let ev_id = Uuid::new_v4();
+        step.add_evidence(Evidence {
+            id: ev_id,
+            path: "/tmp/ev.png".to_string(),
+            created_at: Utc::now(),
+            kind: "screenshot".to_string(),
+            x: 5.0,
+            y: 10.0,
+        });
+
+        let updated = step.update_evidence_position(ev_id, 50.0, 100.0);
+        assert!(updated);
+
+        let evidence = step.get_evidence();
+        assert_eq!(evidence[0].x, 50.0);
+        assert_eq!(evidence[0].y, 100.0);
+    }
+
+    #[test]
+    fn test_update_evidence_position_nonexistent() {
+        let mut step = Step::new_tutorial(
+            Uuid::new_v4(),
+            "Test".to_string(),
+            "Test".to_string(),
+            vec![],
+        );
+
+        let nonexistent_id = Uuid::new_v4();
+        let updated = step.update_evidence_position(nonexistent_id, 50.0, 100.0);
+        assert!(!updated);
+    }
+
+    #[test]
+    fn test_add_chat_message() {
+        let mut step = Step::new_tutorial(
+            Uuid::new_v4(),
+            "Test".to_string(),
+            "Test".to_string(),
+            vec![],
+        );
+
+        assert_eq!(step.get_chat_history().len(), 0);
+
+        let msg1 = ChatMessage::new(ChatRole::User, "First message".to_string());
+        step.add_chat_message(msg1);
+        assert_eq!(step.get_chat_history().len(), 1);
+
+        let msg2 = ChatMessage::new(ChatRole::Assistant, "Response".to_string());
+        step.add_chat_message(msg2);
+        assert_eq!(step.get_chat_history().len(), 2);
+
+        let history = step.get_chat_history();
+        assert_eq!(history[0].content, "First message");
+        assert!(matches!(history[0].role, ChatRole::User));
+        assert_eq!(history[1].content, "Response");
+        assert!(matches!(history[1].role, ChatRole::Assistant));
+    }
+
+    #[test]
+    fn test_clear_chat_history() {
+        let mut step = Step::new_tutorial(
+            Uuid::new_v4(),
+            "Test".to_string(),
+            "Test".to_string(),
+            vec![],
+        );
+
+        step.add_chat_message(ChatMessage::new(ChatRole::User, "Message 1".to_string()));
+        step.add_chat_message(ChatMessage::new(ChatRole::User, "Message 2".to_string()));
+        assert_eq!(step.get_chat_history().len(), 2);
+
+        step.clear_chat_history();
+        assert_eq!(step.get_chat_history().len(), 0);
+    }
+
+    #[test]
+    fn test_quiz_step_statistics_all_unanswered() {
+        let quiz_step = quiz_step_fixture();
+        let stats = quiz_step.statistics();
+
+        assert_eq!(stats.total_questions, 2);
+        assert_eq!(stats.answered, 0);
+        assert_eq!(stats.correct, 0);
+        assert_eq!(stats.incorrect, 0);
+        assert_eq!(stats.first_attempt_correct, 0);
+        assert_eq!(stats.score_percentage, 0.0);
+    }
+
+    #[test]
+    fn test_quiz_step_statistics_some_answered() {
+        let mut quiz_step = quiz_step_fixture();
+
+        // Answer first question correctly on first try
+        if let Some(progress) = quiz_step.progress.get_mut(0) {
+            progress.answered = true;
+            progress.is_correct = Some(true);
+            progress.attempts = 1;
+            progress.first_attempt_correct = true;
+            progress.explanation_viewed_before_answer = false;
+        }
+
+        // Answer second question incorrectly
+        if let Some(progress) = quiz_step.progress.get_mut(1) {
+            progress.answered = true;
+            progress.is_correct = Some(false);
+            progress.attempts = 1;
+        }
+
+        let stats = quiz_step.statistics();
+        assert_eq!(stats.total_questions, 2);
+        assert_eq!(stats.answered, 2);
+        assert_eq!(stats.correct, 1);
+        assert_eq!(stats.incorrect, 1);
+        assert_eq!(stats.first_attempt_correct, 1);
+        assert_eq!(stats.score_percentage, 50.0);
+    }
+
+    #[test]
+    fn test_quiz_step_statistics_multiple_attempts() {
+        let mut quiz_step = quiz_step_fixture();
+
+        // Answer first question correctly after multiple attempts
+        if let Some(progress) = quiz_step.progress.get_mut(0) {
+            progress.answered = true;
+            progress.is_correct = Some(true);
+            progress.attempts = 3;
+            progress.first_attempt_correct = false; // Wasn't correct on first try
+        }
+
+        let stats = quiz_step.statistics();
+        assert_eq!(stats.correct, 1);
+        assert_eq!(stats.first_attempt_correct, 0); // Doesn't count for score
+        assert_eq!(stats.score_percentage, 0.0); // Only first-attempt correct counts
+    }
+
+    #[test]
+    fn test_question_progress_awards_points_first_attempt_correct() {
+        let mut progress = QuestionProgress::new(Uuid::new_v4());
+        progress.first_attempt_correct = true;
+        progress.explanation_viewed_before_answer = false;
+
+        assert!(progress.awards_points());
+    }
+
+    #[test]
+    fn test_question_progress_no_points_if_explanation_viewed() {
+        let mut progress = QuestionProgress::new(Uuid::new_v4());
+        progress.first_attempt_correct = true;
+        progress.explanation_viewed_before_answer = true;
+
+        assert!(!progress.awards_points());
+    }
+
+    #[test]
+    fn test_question_progress_no_points_if_not_first_attempt_correct() {
+        let mut progress = QuestionProgress::new(Uuid::new_v4());
+        progress.first_attempt_correct = false;
+        progress.explanation_viewed_before_answer = false;
+
+        assert!(!progress.awards_points());
+    }
+
+    #[test]
+    fn test_quiz_step_statistics_with_explanation_viewed() {
+        let mut quiz_step = quiz_step_fixture();
+
+        // Answer correctly but viewed explanation first
+        if let Some(progress) = quiz_step.progress.get_mut(0) {
+            progress.answered = true;
+            progress.is_correct = Some(true);
+            progress.attempts = 1;
+            progress.first_attempt_correct = true;
+            progress.explanation_viewed_before_answer = true; // Viewed explanation
+        }
+
+        let stats = quiz_step.statistics();
+        assert_eq!(stats.correct, 1);
+        assert_eq!(stats.first_attempt_correct, 0); // Doesn't count because of explanation
+        assert_eq!(stats.score_percentage, 0.0);
     }
 }

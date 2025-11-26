@@ -156,13 +156,13 @@ pt-journal/
 **Key Types**:
 
 - `AppConfig` - Main configuration container
-- `ChatbotConfig` - Ollama endpoint and model settings
+- `ChatbotConfig` - Multi-model offline chatbot settings (model profiles + provider config)
 
 **Configuration Sources** (in priority order):
 
-1. Environment variables (`PT_JOURNAL_OLLAMA_ENDPOINT`, `PT_JOURNAL_OLLAMA_MODEL`)
+1. Environment variables (`PT_JOURNAL_CHATBOT_MODEL_ID`, `PT_JOURNAL_OLLAMA_ENDPOINT`, `PT_JOURNAL_OLLAMA_MODEL`, `PT_JOURNAL_LLAMA_CPP_GGUF_PATH`, `PT_JOURNAL_LLAMA_CPP_CONTEXT_SIZE`)
 2. TOML file (`~/.config/pt-journal/config.toml`)
-3. Default values (localhost:11434, mistral model)
+3. Default values (localhost:11434 Ollama endpoint, llama3.2:latest model)
 
 **Features**:
 
@@ -170,6 +170,7 @@ pt-journal/
 - Automatic directory creation
 - TOML serialization with pretty formatting
 - Environment variable overrides for containerized deployments
+- Provider-specific settings (Ollama HTTP + llama.cpp resource paths)
 - Thread-safe loading with error handling
 
 **Usage Pattern**:
@@ -177,8 +178,9 @@ pt-journal/
 ```rust
 let config = AppConfig::load()?;
 // Access chatbot settings
-let endpoint = &config.chatbot.endpoint;
-let model = &config.chatbot.model;
+let endpoint = &config.chatbot.ollama.endpoint;
+let active_model = config.chatbot.active_model();
+println!("Using {} via {}", active_model.display_name, active_model.provider);
 ```
 
 ### 3. Chatbot Layer (`src/chatbot/mod.rs`) - 250 lines
@@ -217,7 +219,8 @@ let model = &config.chatbot.model;
 
 - `ServiceUnavailable` - Ollama not running/connection failed
 - `Timeout` - 30s request timeout exceeded
-- `InvalidResponse` - Malformed Ollama response
+- `InvalidResponse` - Malformed Ollama/LLM response
+- `UnsupportedProvider` - Configured provider not yet implemented in runtime
 - Friendly error messages with setup instructions
 
 **Testing**:

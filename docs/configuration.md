@@ -17,16 +17,33 @@ The directory is created automatically when the application first saves configur
 
 ```toml
 [chatbot]
+default_model_id = "llama3.2:latest"
+
+[[chatbot.models]]
+id = "llama3.2:latest"
+display_name = "Meta Llama 3.2"
+provider = "ollama"
+prompt_template = "{{context}}"
+
+[chatbot.ollama]
 endpoint = "http://localhost:11434"
-model = "mistral"
+timeout_seconds = 180
+
+[chatbot.llama_cpp]
+gguf_path = "/opt/llms/custom.gguf"
+context_tokens = 4096
 ```
 
 ### Chatbot Configuration
 
 | Setting | Type | Default | Description |
 |---------|------|---------|-------------|
-| `endpoint` | string | `"http://localhost:11434"` | Ollama API endpoint URL |
-| `model` | string | `"mistral"` | Default Ollama model to use |
+| `default_model_id` | string | `"llama3.2:latest"` | Model profile ID used for chats |
+| `[[chatbot.models]]` | array of tables | 5 seed profiles | Offline model definitions (id, provider, template, resources) |
+| `[chatbot.ollama].endpoint` | string | `"http://localhost:11434"` | Ollama API endpoint URL |
+| `[chatbot.ollama].timeout_seconds` | integer | `180` | HTTP timeout for Ollama requests |
+| `[chatbot.llama_cpp].gguf_path` | string | `null` | Optional llama.cpp GGUF path |
+| `[chatbot.llama_cpp].context_tokens` | integer | `4096` | llama.cpp context window (tokens) |
 
 ## Configuration Priority
 
@@ -40,15 +57,20 @@ Settings are loaded in the following priority order (highest to lowest):
 
 | Variable | Maps To | Example |
 |----------|---------|---------|
-| `PT_JOURNAL_OLLAMA_ENDPOINT` | `chatbot.endpoint` | `http://custom-ollama:8080` |
-| `PT_JOURNAL_OLLAMA_MODEL` | `chatbot.model` | `llama2:13b` |
+| `PT_JOURNAL_CHATBOT_MODEL_ID` | `chatbot.default_model_id` | `phi3:mini-4k-instruct` |
+| `PT_JOURNAL_OLLAMA_ENDPOINT` | `chatbot.ollama.endpoint` | `http://custom-ollama:8080` |
+| `PT_JOURNAL_OLLAMA_MODEL` | `chatbot.default_model_id` (legacy alias) | `mistral:7b` |
+| `PT_JOURNAL_OLLAMA_TIMEOUT_SECONDS` | `chatbot.ollama.timeout_seconds` | `240` |
+| `PT_JOURNAL_LLAMA_CPP_GGUF_PATH` | `chatbot.llama_cpp.gguf_path` | `/models/phi3.gguf` |
+| `PT_JOURNAL_LLAMA_CPP_CONTEXT_SIZE` | `chatbot.llama_cpp.context_tokens` | `8192` |
+| `PT_JOURNAL_LLAMA_CPP_SERVER_URL` | `chatbot.llama_cpp.server_url` | `http://localhost:8081` |
 
 ### Usage Examples
 
 ```bash
 # Use custom Ollama instance
 export PT_JOURNAL_OLLAMA_ENDPOINT="http://192.168.1.100:11434"
-export PT_JOURNAL_OLLAMA_MODEL="codellama"
+export PT_JOURNAL_CHATBOT_MODEL_ID="codellama:13b"
 
 # Run PT Journal
 cargo run
@@ -57,7 +79,7 @@ cargo run
 ```bash
 # Docker container with custom config
 docker run -e PT_JOURNAL_OLLAMA_ENDPOINT=http://host.docker.internal:11434 \
-           -e PT_JOURNAL_OLLAMA_MODEL=llama2 \
+           -e PT_JOURNAL_CHATBOT_MODEL_ID=phi3:mini-4k-instruct \
            pt-journal
 ```
 
@@ -67,16 +89,20 @@ Configuration is loaded automatically when the application starts and is availab
 
 ```rust
 let config = &app_model.config;
-let endpoint = &config.chatbot.endpoint;
-let model = &config.chatbot.model;
+let endpoint = &config.chatbot.ollama.endpoint;
+let active_model = config.chatbot.active_model();
+println!("Chatbot using {} ({})", active_model.display_name, active_model.id);
 ```
 
 ## Default Configuration
 
 If no configuration file exists and no environment variables are set, PT Journal uses these defaults:
 
-- **Endpoint**: `http://localhost:11434` (standard Ollama port)
-- **Model**: `mistral` (popular general-purpose model)
+- **Ollama Endpoint**: `http://localhost:11434` (standard Ollama port)
+- **Default Model ID**: `llama3.2:latest` (Meta Llama 3.2)
+- **Seeded Model Profiles**: Llama 3.2, Mistral 7B, Phi-3 Mini, Intel Neural-Chat, StarCoder
+- **Timeout**: `180s` for Ollama requests
+- **llama.cpp Context**: `4096` tokens (GGUF path unset)
 
 ## Migration and Compatibility
 
@@ -117,7 +143,7 @@ model = "custom-model"
 
 ### Multiple Model Support
 
-The configuration currently supports one default model. Future versions may support model selection per step or context.
+Define as many offline profiles as needed via `[[chatbot.models]]`. Each profile specifies an ID, display name, provider (`ollama` or `llama-cpp`), prompt template, and resource paths. Set `default_model_id` to choose the active profile; future UI updates may allow selecting different profiles per step.
 
 ---
 

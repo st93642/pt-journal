@@ -180,9 +180,13 @@ mod chat_tests {
     #[test]
     fn test_chat_config_loading() {
         let config = ChatbotConfig::default();
-        assert_eq!(config.endpoint, "http://localhost:11434");
-        assert_eq!(config.model, "llama3.2:latest");
-        assert_eq!(config.timeout_seconds, 180);
+        assert_eq!(config.ollama.endpoint, "http://localhost:11434");
+        assert_eq!(config.default_model_id, "llama3.2:latest");
+        assert_eq!(config.ollama.timeout_seconds, 180);
+        assert!(config
+            .models
+            .iter()
+            .any(|profile| profile.id == config.default_model_id));
     }
 
     #[test]
@@ -202,11 +206,10 @@ mod chat_tests {
             }));
         });
 
-        let config = ChatbotConfig {
-            endpoint: server.url(""),
-            model: "llama3.2:latest".to_string(),
-            timeout_seconds: 60,
-        };
+        let mut config = ChatbotConfig::default();
+        config.ollama.endpoint = server.url("");
+        config.ollama.timeout_seconds = 60;
+        config.default_model_id = "llama3.2:latest".to_string();
 
         let chatbot = LocalChatBot::new(config);
         let step_ctx = pt_journal::chatbot::StepContext {

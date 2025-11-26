@@ -160,7 +160,7 @@ pub struct AppModel {
 ### Configuration Flow
 
 1. **Loading**: `AppConfig::load()` merges sources
-2. **Runtime Access**: `app_model.config.chatbot.endpoint`
+2. **Runtime Access**: `app_model.config.chatbot.ollama.endpoint` + `config.chatbot.active_model()`
 3. **Overrides**: Environment variables take precedence
 4. **Persistence**: `AppConfig::save()` writes to TOML
 

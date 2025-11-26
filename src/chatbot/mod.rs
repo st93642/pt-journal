@@ -1,4 +1,4 @@
-use crate::config::ChatbotConfig;
+use crate::config::{ChatbotConfig, ModelProfile, ModelProviderKind};
 use crate::model::{ChatMessage, ChatRole, Session, StepStatus};
 use reqwest::blocking::Client;
 use std::time::Duration;
@@ -14,6 +14,8 @@ pub enum ChatError {
     InvalidResponse(String),
     #[error("Connection timeout - Ollama took too long to respond")]
     Timeout,
+    #[error("The configured chatbot provider '{0}' is not supported yet")]
+    UnsupportedProvider(String),
 }
 
 pub struct StepContext {
@@ -103,9 +105,11 @@ pub struct LocalChatBot {
 }
 
 impl LocalChatBot {
-    pub fn new(config: ChatbotConfig) -> Self {
+    pub fn new(mut config: ChatbotConfig) -> Self {
+        config.ensure_valid();
+        let timeout = config.ollama.timeout_seconds;
         let client = Client::builder()
-            .timeout(Duration::from_secs(config.timeout_seconds))
+            .timeout(Duration::from_secs(timeout))
             .build()
             .expect("Failed to build HTTP client");
         Self { config, client }
@@ -117,7 +121,12 @@ impl LocalChatBot {
         history: &[ChatMessage],
         user_input: &str,
     ) -> Result<ChatMessage, ChatError> {
-        let system_prompt = self.build_system_prompt(step_ctx);
+        let profile = self.config.active_model();
+        if profile.provider != ModelProviderKind::Ollama {
+            return Err(ChatError::UnsupportedProvider(profile.provider.to_string()));
+        }
+
+        let system_prompt = self.build_system_prompt(step_ctx, profile);
 
         let mut messages = vec![serde_json::json!({
             "role": "system",
@@ -140,12 +149,15 @@ impl LocalChatBot {
         }));
 
         let payload = serde_json::json!({
-            "model": &self.config.model,
+            "model": &profile.id,
             "messages": messages,
             "stream": false
         });
 
-        let url = format!("{}/api/chat", self.config.endpoint.trim_end_matches('/'));
+        let url = format!(
+            "{}/api/chat",
+            self.config.ollama.endpoint.trim_end_matches('/')
+        );
 
         let response = self.client.post(&url).json(&payload).send().map_err(|e| {
             if e.is_timeout() {
@@ -170,8 +182,8 @@ impl LocalChatBot {
         Ok(ChatMessage::new(ChatRole::Assistant, content.to_string()))
     }
 
-    fn build_system_prompt(&self, step_ctx: &StepContext) -> String {
-        format!(
+    fn build_system_prompt(&self, step_ctx: &StepContext, profile: &ModelProfile) -> String {
+        let base_context = format!(
             "You are an expert penetration testing assistant helping with structured pentesting methodology.\n\n\
             Current Context:\n\
             - Phase: {}\n\
@@ -188,8 +200,41 @@ impl LocalChatBot {
             step_ctx.step_description.chars().take(200).collect::<String>(),
             step_ctx.notes_count,
             step_ctx.evidence_count,
-            step_ctx.quiz_status.as_ref().map(|s| format!("- Quiz Status: {}", s)).unwrap_or_default()
-        )
+            step_ctx
+                .quiz_status
+                .as_ref()
+                .map(|s| format!("- Quiz Status: {}", s))
+                .unwrap_or_default()
+        );
+
+        Self::render_prompt_template(&profile.prompt_template, &base_context, step_ctx, profile)
+    }
+
+    fn render_prompt_template(
+        template: &str,
+        base_context: &str,
+        step_ctx: &StepContext,
+        profile: &ModelProfile,
+    ) -> String {
+        let template = template.trim();
+        if template.is_empty() {
+            return base_context.to_string();
+        }
+
+        let mut rendered = template.to_string();
+        rendered = rendered.replace("{{context}}", base_context);
+        rendered = rendered.replace("{{phase_name}}", &step_ctx.phase_name);
+        rendered = rendered.replace("{{step_title}}", &step_ctx.step_title);
+        rendered = rendered.replace("{{step_description}}", &step_ctx.step_description);
+        rendered = rendered.replace("{{step_status}}", &step_ctx.step_status);
+        rendered = rendered.replace("{{model_display_name}}", &profile.display_name);
+
+        if !template.contains("{{context}}") {
+            rendered.push_str("\n\n");
+            rendered.push_str(base_context);
+        }
+
+        rendered
     }
 }
 
@@ -213,7 +258,7 @@ mod tests {
         let mock = server.mock(|when, then| {
             when.method("POST")
                 .path("/api/chat")
-                .body_contains(r#""model":"mistral""#)
+                .body_contains(r#""model":"mistral:7b""#)
                 .body_contains(r#""role":"system""#)
                 .body_contains("You are an expert penetration testing assistant")
                 .body_contains("Current Context");
@@ -224,11 +269,10 @@ mod tests {
             }));
         });
 
-        let config = ChatbotConfig {
-            endpoint: server.url(""),
-            model: "mistral".to_string(),
-            timeout_seconds: 30,
-        };
+        let mut config = ChatbotConfig::default();
+        config.ollama.endpoint = server.url("");
+        config.ollama.timeout_seconds = 30;
+        config.default_model_id = "mistral:7b".to_string();
         let bot = LocalChatBot::new(config);
         let step_ctx = StepContext {
             phase_name: "Test Phase".to_string(),
@@ -250,11 +294,10 @@ mod tests {
 
     #[test]
     fn test_send_message_service_unavailable() {
-        let config = ChatbotConfig {
-            endpoint: "http://invalid:1234".to_string(),
-            model: "mistral".to_string(),
-            timeout_seconds: 30,
-        };
+        let mut config = ChatbotConfig::default();
+        config.ollama.endpoint = "http://invalid:1234".to_string();
+        config.ollama.timeout_seconds = 30;
+        config.default_model_id = "mistral:7b".to_string();
         let bot = LocalChatBot::new(config);
         let step_ctx = StepContext {
             phase_name: "Test".to_string(),

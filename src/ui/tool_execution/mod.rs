@@ -28,12 +28,17 @@
 //! let selected = panel.get_selected_tool();
 //! ```
 
-mod controller;
-mod interfaces;
+pub mod controller;
+pub mod interfaces;
 mod panel;
-mod picker;
-mod renderer;
-mod terminal;
+pub mod picker;
+pub mod renderer;
+pub mod terminal;
 
 // Re-export the main panel for backward compatibility
 pub use panel::ToolExecutionPanel;
+
+// Re-export types needed for testing
+pub use controller::ToolPanelController;
+pub use picker::ToolPickerModel;
+pub use renderer::{resolve_instruction_state, InstructionState};

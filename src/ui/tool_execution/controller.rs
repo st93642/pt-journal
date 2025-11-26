@@ -17,7 +17,6 @@ pub struct ToolPanelController<P: InstructionProvider, T: TerminalInterface, V: 
     updating: std::cell::Cell<bool>,
 }
 
-#[allow(dead_code)]
 impl<P: InstructionProvider, T: TerminalInterface, V: ToolPanelView> ToolPanelController<P, T, V> {
     /// Creates a new controller with the given components.
     pub fn new(provider: P, terminal: T, view: V) -> Self {
@@ -44,9 +43,6 @@ impl<P: InstructionProvider, T: TerminalInterface, V: ToolPanelView> ToolPanelCo
         // Initialize tools for the default category
         self.update_tools_for_category(None);
 
-        // Initialize instructions for the default tool
-        self.update_instructions();
-        
         self.initializing.set(false);
     }
 
@@ -63,7 +59,7 @@ impl<P: InstructionProvider, T: TerminalInterface, V: ToolPanelView> ToolPanelCo
         if self.initializing.get() || self.updating.get() {
             return;
         }
-        self.update_instructions();
+        // No longer updating inline instructions display
     }
 
     /// Shows the instructions dialog for the currently selected tool.
@@ -138,16 +134,6 @@ impl<P: InstructionProvider, T: TerminalInterface, V: ToolPanelView> ToolPanelCo
         
         self.updating.set(false);
     }
-
-    /// Updates the instructions display for the currently selected tool.
-    fn update_instructions(&self) {
-        self.updating.set(true);
-        let tool_id = self.view.borrow().selected_tool();
-        let state = self.resolve_instruction_state(tool_id.as_deref());
-        let widget = state.inline_widget();
-        self.view.borrow().render_instructions(widget);
-        self.updating.set(false);
-    }
 }
 
 /// Default instruction provider that uses the tool_instructions module.
@@ -182,190 +168,5 @@ impl InstructionProvider for DefaultInstructionProvider {
 
     fn get_instructions(&self, tool_id: Option<&str>) -> Option<&crate::ui::tool_instructions::ToolInstructions> {
         tool_id.and_then(|id| crate::ui::tool_instructions::get_instructions(id))
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::ui::tool_instructions::{CategoryGroup, ToolManifestEntry, ToolInstructions};
-    use gtk4::Box as GtkBox;
-
-    // Mock implementations for testing
-    struct MockInstructionProvider {
-        categories: Vec<CategoryGroup>,
-        default_category_index: usize,
-        default_tool_id: String,
-    }
-
-    impl MockInstructionProvider {
-        fn new() -> Self {
-            let mut entry = ToolManifestEntry {
-                id: "test-tool".to_string(),
-                label: "Test Tool".to_string(),
-                category: "Test Category".to_string(),
-            };
-
-            let instructions = ToolInstructions {
-                id: "test-tool".to_string(),
-                name: "Test Tool".to_string(),
-                summary: "A test tool".to_string(),
-                details: Some("Test details".to_string()),
-                installation_guides: vec![],
-                quick_examples: vec![],
-                common_flags: vec![],
-                operational_tips: vec![],
-                step_sequences: vec![],
-                workflow_guides: vec![],
-                output_notes: vec![],
-                advanced_usage: vec![],
-                comparison_table: None,
-                resources: vec![],
-            };
-
-            let group = CategoryGroup {
-                name: "Test Category".to_string(),
-                tools: vec![entry],
-            };
-
-            Self {
-                categories: vec![group],
-                default_category_index: 0,
-                default_tool_id: "test-tool".to_string(),
-            }
-        }
-    }
-
-    impl InstructionProvider for MockInstructionProvider {
-        fn category_groups(&self) -> &[CategoryGroup] {
-            &self.categories
-        }
-
-        fn default_category_index(&self) -> usize {
-            self.default_category_index
-        }
-
-        fn default_tool_id(&self) -> &str {
-            &self.default_tool_id
-        }
-
-        fn tools_for_category(&self, category: &str) -> Vec<ToolManifestEntry> {
-            self.categories.iter()
-                .find(|g| g.name == category)
-                .map(|g| g.tools.clone())
-                .unwrap_or_default()
-        }
-
-        fn get_instructions(&self, tool_id: Option<&str>) -> Option<&ToolInstructions> {
-            if tool_id == Some("test-tool") {
-                // In a real implementation, this would return the actual instructions
-                None // For simplicity in this test
-            } else {
-                None
-            }
-        }
-    }
-
-    struct MockTerminal {
-        pub written_text: Vec<String>,
-        pub executed_commands: Vec<String>,
-        pub cleared: bool,
-    }
-
-    impl MockTerminal {
-        fn new() -> Self {
-            Self {
-                written_text: vec![],
-                executed_commands: vec![],
-                cleared: false,
-            }
-        }
-    }
-
-    impl TerminalInterface for MockTerminal {
-        fn write(&mut self, text: &str) {
-            self.written_text.push(text.to_string());
-        }
-
-        fn clear(&mut self) {
-            self.cleared = true;
-        }
-
-        fn execute(&mut self, command: &str) {
-            self.executed_commands.push(command.to_string());
-        }
-    }
-
-    struct MockView {
-        pub categories: Vec<String>,
-        pub default_category_index: usize,
-        pub tools: Vec<(String, String)>,
-        pub default_tool_id: Option<String>,
-        pub rendered_widgets: Vec<String>, // Simplified for testing
-        pub selected_tool_id: Option<String>,
-        pub shown_dialogs: Vec<String>,
-    }
-
-    impl MockView {
-        fn new() -> Self {
-            Self {
-                categories: vec![],
-                default_category_index: 0,
-                tools: vec![],
-                default_tool_id: None,
-                rendered_widgets: vec![],
-                selected_tool_id: Some("test-tool".to_string()),
-                shown_dialogs: vec![],
-            }
-        }
-    }
-
-    impl ToolPanelView for MockView {
-        fn set_categories(&self, categories: &[String], default_index: usize) {
-            // In real implementation, this would update GTK widgets
-        }
-
-        fn set_tools(&self, tools: &[(&str, &str)], default_tool_id: Option<&str>) {
-            // In real implementation, this would update GTK widgets
-        }
-
-        fn render_instructions(&self, widget: GtkBox) {
-            // In real implementation, this would update the instructions area
-        }
-
-        fn selected_tool(&self) -> Option<String> {
-            self.selected_tool_id.clone()
-        }
-
-        fn show_instructions_dialog(&self, title: &str, widget: GtkBox) {
-            // In real implementation, this would show a GTK dialog
-        }
-    }
-
-    #[test]
-    fn test_controller_initialization() {
-        let provider = MockInstructionProvider::new();
-        let terminal = MockTerminal::new();
-        let view = MockView::new();
-
-        let controller = ToolPanelController::new(provider, terminal, view);
-        assert_eq!(controller.selected_tool(), Some("test-tool".to_string()));
-    }
-
-    #[test]
-    fn test_terminal_operations() {
-        let provider = MockInstructionProvider::new();
-        let terminal = MockTerminal::new();
-        let view = MockView::new();
-
-        let controller = ToolPanelController::new(provider, terminal, view);
-
-        controller.write_to_terminal("test text");
-        controller.clear_terminal();
-        controller.execute_in_terminal("ls -la");
-
-        // Note: Since we moved the terminal into the controller,
-        // we can't access it directly. In a real test, we'd use
-        // a mock that allows inspection.
     }
 }

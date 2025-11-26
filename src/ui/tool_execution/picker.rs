@@ -17,7 +17,6 @@ pub struct ToolPickerModel {
     default_tool_id: String,
 }
 
-#[allow(dead_code)]
 impl ToolPickerModel {
     /// Constructs the picker model from the manifest and grouped manifest data.
     ///
@@ -109,64 +108,5 @@ impl ToolPickerModel {
     /// Returns true if the model contains any categories.
     pub fn is_empty(&self) -> bool {
         self.groups.is_empty()
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_model_construction_preserves_category_order() {
-        let model = ToolPickerModel::from_manifest();
-
-        let manifest = tool_instructions::manifest();
-        let mut expected_categories = Vec::new();
-        for entry in manifest {
-            if !expected_categories.contains(&entry.category) {
-                expected_categories.push(entry.category.clone());
-            }
-        }
-
-        let actual_categories: Vec<String> = model.groups().iter().map(|g| g.name.clone()).collect();
-        assert_eq!(
-            actual_categories, expected_categories,
-            "Categories should preserve manifest ordering"
-        );
-    }
-
-    #[test]
-    fn test_tools_for_category_handles_nonexistent_category() {
-        let model = ToolPickerModel::from_manifest();
-        let tools = model.tools_for_category("NonexistentCategory123");
-        assert!(tools.is_empty(), "Unknown categories should return no tools");
-    }
-
-    #[test]
-    fn test_default_selection_prefers_nmap_when_available() {
-        let model = ToolPickerModel::from_manifest();
-        let manifest = tool_instructions::manifest();
-        let has_nmap = manifest.iter().any(|entry| entry.id == "nmap");
-
-        if has_nmap {
-            assert_eq!(model.default_tool_id(), "nmap");
-            if let Some(default_category) = model.default_category() {
-                let nmap_entry = manifest.iter().find(|entry| entry.id == "nmap").unwrap();
-                assert_eq!(default_category, nmap_entry.category);
-            }
-        }
-    }
-
-    #[test]
-    fn test_default_category_index_matches_category_name() {
-        let model = ToolPickerModel::from_manifest();
-        if model.is_empty() {
-            return;
-        }
-        let default_category = model.default_category().expect("default category");
-        assert_eq!(
-            default_category,
-            model.groups()[model.default_category_index()].name
-        );
     }
 }

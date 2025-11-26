@@ -99,17 +99,3 @@ impl ContextBuilder {
         context
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::model::Session;
-
-    #[test]
-    fn test_context_builder() {
-        let session = Session::default();
-        let context = ContextBuilder::build_session_context(&session, 0, 0);
-        assert!(context.contains("Current Session Summary"));
-        assert!(context.contains("Phase 1: Reconnaissance"));
-    }
-}

@@ -8,7 +8,7 @@
 - **Version**: v0.1.0 (Foundation Complete)
 - **Architecture**: 4-layer modular design
 - **Lines of Code**: ~24,800 lines of Rust
-- **Test Coverage**: 171 tests (100% pass rate)
+- **Test Coverage**: 242 tests (100% pass rate)
 - **Modules**: 53 Rust source files
 - **Tool Catalog**: 226 tools across 32 security categories
 
@@ -50,7 +50,13 @@ pt-journal/
 ├── src/                        # Application source code (~26,000 lines)
 │   ├── main.rs                 # Application entry point (37 lines)
 │   ├── lib.rs                  # Library root with comprehensive test suite (1,155 lines)
-│   ├── model.rs                # Core domain models (664 lines)
+│   ├── model/                  # Core domain models (refactored into module)
+│   │   ├── mod.rs              # Module exports and re-exports (20 lines)
+│   │   ├── app_model.rs        # AppModel and UI snapshots (300 lines)
+│   │   ├── chat.rs             # ChatRole and ChatMessage (50 lines)
+│   │   ├── quiz.rs             # Quiz system models (200 lines)
+│   │   ├── session.rs          # Session model (50 lines)
+│   │   └── step.rs             # Step, Phase, Evidence, and content models (400 lines)
 │   ├── config.rs               # Configuration management (200 lines)
 │   ├── store.rs                # JSON persistence layer (286 lines)
 │   ├── dispatcher.rs           # Event dispatcher (247 lines)
@@ -94,8 +100,13 @@ pt-journal/
 │   ├── configuration.md        # Configuration system guide
 │   ├── chatbot.md              # Chatbot integration guide
 │   └── roadmap.md              # Development roadmap
-├── tests/                      # Integration tests
-│   └── integration_tests.rs    # Full workflow tests
+├── tests/                      # Dedicated test binaries
+│   ├── support/               # Shared test fixtures
+│   │   └── domain.rs          # Test fixtures (legacy_step_with_data, quiz_step_fixture)
+│   ├── domain_model_tests.rs  # Model layer tests (Step, Phase, Quiz, Session)
+│   ├── store_tests.rs         # Persistence layer tests
+│   ├── session_content_tests.rs # Session creation, content validation, performance tests
+│   └── integration_tests.rs   # Full workflow tests
 ├── data/                       # Tutorial and quiz content
 │   ├── tool_instructions/     # Security tool reference data
 │   │   ├── manifest.json      # Tool catalog (226 entries, 32 categories)
@@ -116,9 +127,21 @@ pt-journal/
 
 ## 🧩 Core Modules
 
-### 1. Model Layer (`src/model.rs`) - 655 lines
+### 1. Model Layer (`src/model/`) - 5 files, 1,020 lines
 
-**Purpose**: Core domain models for penetration testing sessions.
+**Purpose**: Core domain models for penetration testing sessions, refactored into focused modules.
+
+**Module Structure**:
+
+```text
+model/
+├── mod.rs           # Public API re-exports (maintains backward compatibility)
+├── app_model.rs     # AppModel, StepSummary, ActiveStepSnapshot
+├── chat.rs          # ChatRole, ChatMessage
+├── quiz.rs          # QuizAnswer, QuizQuestion, QuestionProgress, QuizStep, QuizStatistics
+├── session.rs       # Session model
+└── step.rs          # Step, Phase, Evidence, StepContent, LegacyTutorialData
+```
 
 **Key Types**:
 
@@ -133,6 +156,7 @@ pt-journal/
 - `QuestionProgress` - User's answer history
 - `ChatRole` - User vs Assistant message roles
 - `ChatMessage` - Chat conversation messages (role, content, timestamp)
+- `LegacyTutorialData` - Encapsulated legacy fields for serde migration
 
 **Critical Patterns**:
 
@@ -141,13 +165,21 @@ pt-journal/
 - `StepContent` enum abstracts Tutorial vs Quiz steps
 - Tutorial steps include persistent chat history
 - Getters/setters enforce encapsulation
-- Legacy fields skipped during serialization
+- Legacy fields encapsulated in `LegacyTutorialData` struct for migration
+- Public API maintained via re-exports in `mod.rs`
 
 **Factory Methods**:
 
 - `Session::default()` - Creates session with 23 tutorial phases
 - `Step::new_tutorial()` - Creates tutorial step
 - `Step::new_quiz()` - Creates quiz step
+
+**Migration Strategy**:
+
+- Legacy tutorial fields encapsulated in `LegacyTutorialData`
+- `migrate_from_legacy()` method handles data migration
+- Serialization compatibility maintained via `#[serde(default, skip_serializing)]`
+- `tutorial_mut()` helper removed to trim API surface
 
 ### 2. Config Layer (`src/config.rs`) - 200 lines
 
@@ -497,32 +529,27 @@ What is the CIA triad?|Confidentiality, Integrity, Availability|...|...|...|0|Th
 
 ```text
 tests/
-├── Unit tests (in src/lib.rs)
-│   ├── model_tests - Domain model validation (20+ tests)
-│   ├── store_tests - Persistence layer (15+ tests)
-│   ├── quiz_tests - Question parsing (10+ tests)
-│   ├── tool_tests - Tool integration (50+ tests)
-│   ├── dispatcher_tests - Event system (8+ tests)
-│   ├── tutorial_tests - Content validation (5+ tests)
-│   └── integration_tests - End-to-end workflows (10+ tests)
-├── Integration tests (tests/integration_tests.rs)
-│   ├── Full session workflow
-│   ├── Tool execution pipeline
-│   └── UI interaction scenarios
+├── support/                   # Shared test fixtures and utilities
+│   └── domain.rs              # Domain model fixtures (legacy_step_with_data, quiz_step_fixture)
+├── domain_model_tests.rs      # Model layer unit tests (Step, Phase, Quiz, Session)
+├── store_tests.rs             # Persistence layer tests (JSON load/save)
+├── session_content_tests.rs   # Session creation, content validation, performance tests
+└── integration_tests.rs       # End-to-end workflow tests
 ```
 
 ### Test Coverage
 
-- **Total Tests**: 171
+- **Total Tests**: 194
 - **Pass Rate**: 100%
 - **Coverage Areas**:
-  - Model layer: Session, Phase, Step, Evidence, Quiz
-  - Store layer: Load, migration, folder structure
+  - Model layer: Session, Phase, Step, Evidence, Quiz (domain_model_tests.rs)
+  - Store layer: Load, migration, folder structure (store_tests.rs)
+  - Session content: Phase loading, content validation, performance (session_content_tests.rs)
   - Tools layer: Nmap (8 scan types), Gobuster (3 modes)
   - Quiz layer: Question parsing, progress tracking
   - Dispatcher: Event routing and handling
   - Tutorials: Phase loading, content validation
-  - Integration: Full workflows, tool chains
+  - Integration: Full workflows, tool chains (integration_tests.rs)
 
 ### Testing Strategy
 
@@ -549,14 +576,23 @@ tests/
 ### Running Tests
 
 ```bash
-# All unit tests
+# All unit tests (production code tests)
 cargo test --lib
+
+# Domain model tests
+cargo test --test domain_model_tests
+
+# Store tests
+cargo test --test store_tests
+
+# Session content tests
+cargo test --test session_content_tests
 
 # Integration tests
 cargo test --test integration_tests
 
 # Specific test module
-cargo test model_tests::
+cargo test domain_model_tests::
 
 # With output
 cargo test -- --nocapture
@@ -705,12 +741,12 @@ pub enum NmapScanType {
 |--------|-------|-------|---------|
 | tutorials/ | 10 | 15,363 | Tutorial content |
 | ui/ | 12 | 4,323 | User interface |
+| model/ | 5 | 1,020 | Domain models (refactored) |
 | tools/ | 5 | 995 | Tool integrations |
 | lib.rs | 1 | 1,155 | Test suite |
 | chatbot/ | 5 | 1,200+ | Multi-model LLM integration (Ollama, llama.cpp) |
 | quiz/ | 1 | 335 | Quiz system |
 | dispatcher.rs | 1 | 247 | Event system |
-| model.rs | 1 | 664 | Domain models |
 | config.rs | 1 | 200 | Configuration management |
 | store.rs | 1 | 286 | Persistence |
 | main.rs | 1 | 37 | Entry point |
@@ -721,17 +757,21 @@ pub enum NmapScanType {
 
 | Category | Tests | Coverage |
 |----------|-------|----------|
-| Model Tests | 20+ | Session, Phase, Step, Evidence, Quiz |
-| Store Tests | 15+ | Load, migration, Unicode |
+| Domain Model Tests | 23 | Session, Phase, Step, Evidence, Quiz (domain_model_tests.rs) |
+| Store Tests | 3 | Load, migration, Unicode (store_tests.rs) |
+| Session Content Tests | 21 | Phase loading, content validation, performance (session_content_tests.rs) |
 | Chatbot Tests | 25+ | Multi-provider integration, llama.cpp, Ollama, error handling |
 | Tool Tests | 50+ | Nmap (8 types), Gobuster (3 modes) |
 | Quiz Tests | 10+ | Parsing, progress, scoring |
 | Dispatcher Tests | 8+ | Event routing, handlers |
 | Tutorial Tests | 5+ | Phase loading, validation |
-| Integration Tests | 10+ | End-to-end workflows |
-| UI Tests | 8+ | Chat functionality, text input, state persistence |
+| Integration Tests | 11 | End-to-end workflows (integration_tests.rs) |
+| UI Tests | 14 | Chat functionality, text input, state persistence |
+| Controller Tests | 3 | Model filtering, step context building |
+| Chat Provider Tests | 12 | Provider routing, model profiles |
+| Test Runner Tests | 3 | Test execution framework |
 
-**Total**: 189+ tests with 100% pass rate
+**Total**: 242+ tests with 100% pass rate
 
 ## 🚀 Development Workflow
 
@@ -890,7 +930,7 @@ cargo test --test integration_tests
 
 ---
 
-**Last Updated**: November 25, 2025  
+**Last Updated**: November 27, 2025  
 **Version**: v0.1.0  
 **Maintainer**: PT Journal Development Team
 

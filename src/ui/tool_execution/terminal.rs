@@ -32,37 +32,3 @@ impl TerminalInterface for VteTerminal {
         self._terminal.feed(full_command.as_bytes());
     }
 }
-
-#[cfg(test)]
-/// Mock terminal implementation for testing.
-pub struct MockTerminal {
-    pub written_text: Vec<String>,
-    pub executed_commands: Vec<String>,
-    pub cleared: bool,
-}
-
-#[cfg(test)]
-impl MockTerminal {
-    pub fn new() -> Self {
-        Self {
-            written_text: vec![],
-            executed_commands: vec![],
-            cleared: false,
-        }
-    }
-}
-
-#[cfg(test)]
-impl TerminalInterface for MockTerminal {
-    fn write(&mut self, text: &str) {
-        self.written_text.push(text.to_string());
-    }
-
-    fn clear(&mut self) {
-        self.cleared = true;
-    }
-
-    fn execute(&mut self, command: &str) {
-        self.executed_commands.push(command.to_string());
-    }
-}

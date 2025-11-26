@@ -205,12 +205,3 @@ impl DetailPanel {
         &self.checkbox
     }
 }
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn test_detail_panel_creation() {
-        // This test ensures the module compiles correctly
-        // No assertions needed - just checking that the module compiles
-    }
-}

@@ -15,7 +15,7 @@ use gtk4::{
 
 /// Represents the resolved instruction content for the current selection.
 #[derive(Debug, Clone)]
-pub(crate) enum InstructionState<'a> {
+pub enum InstructionState<'a> {
     /// Instructions were found for the selected tool.
     Available(&'a ToolInstructions),
     /// No instructions exist for the selected tool (or no tool selected).
@@ -53,8 +53,7 @@ impl<'a> InstructionState<'a> {
 /// - When a tool ID is provided, we attempt to load its instructions.
 /// - When `None`, we fall back to the first manifest entry when available.
 /// - If no instructions exist, a missing state is returned.
-#[allow(dead_code)]
-pub(crate) fn resolve_instruction_state(tool_id: Option<&str>) -> InstructionState<'static> {
+pub fn resolve_instruction_state(tool_id: Option<&str>) -> InstructionState<'static> {
     if let Some(tool_id) = tool_id {
         return tool_instructions::get_instructions(tool_id)
             .map(InstructionState::Available)

@@ -58,4 +58,7 @@ pub trait ToolPanelView {
 
     /// Shows the instructions dialog.
     fn show_instructions_dialog(&self, title: &str, widget: GtkBox);
+
+    /// Returns the tool ID at the given index.
+    fn tool_id_at_index(&self, index: usize) -> Option<&str>;
 }

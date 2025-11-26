@@ -408,6 +408,31 @@ pub fn setup_chat_handlers(detail_panel: Rc<DetailPanel>, state: Rc<StateManager
     let chat_panel = detail_panel.chat_panel.clone();
     let send_button = chat_panel.send_button.clone();
     let input_textview = chat_panel.input_textview.clone();
+    let model_combo = chat_panel.model_combo.clone();
+
+    // Populate model combo with available models
+    {
+        let model_rc = state.model();
+        let model = model_rc.borrow();
+        let models: Vec<(String, String)> = model
+            .config
+            .chatbot
+            .models
+            .iter()
+            .map(|m| (m.id.clone(), m.display_name.clone()))
+            .collect();
+        chat_panel.populate_models(&models);
+        chat_panel.set_active_model(&model.active_chat_model_id);
+    }
+
+    // Model combo change handler
+    let state_combo = state.clone();
+    let model_combo_change = model_combo.clone();
+    model_combo.connect_changed(move |_| {
+        if let Some(model_id) = model_combo_change.active_id() {
+            state_combo.set_chat_model(model_id.to_string());
+        }
+    });
 
     // Send button handler
     let chat_panel_send = chat_panel.clone();

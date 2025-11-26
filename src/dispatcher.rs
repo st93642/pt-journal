@@ -43,6 +43,7 @@ pub enum AppMessage {
     ChatRequestStarted(usize, usize),
     ChatRequestCompleted(usize, usize),
     ChatRequestFailed(usize, usize, String),
+    ChatModelChanged(String), // model_id
 
     // Evidence Operations
     EvidenceAdded(usize, usize, crate::model::Evidence),

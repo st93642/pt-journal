@@ -125,6 +125,7 @@ PT Journal supports multiple LLM backends through a provider abstraction system.
 For network-based LLM inference.
 
 **Configuration**:
+
 ```toml
 [chatbot.ollama]
 endpoint = "http://localhost:11434"
@@ -132,6 +133,7 @@ timeout_seconds = 180
 ```
 
 **Environment Variables**:
+
 ```bash
 export PT_JOURNAL_OLLAMA_ENDPOINT="http://custom-ollama:8080"
 export PT_JOURNAL_OLLAMA_TIMEOUT_SECONDS="240"
@@ -142,6 +144,7 @@ export PT_JOURNAL_OLLAMA_TIMEOUT_SECONDS="240"
 For local GGUF model inference.
 
 **Configuration**:
+
 ```toml
 [chatbot.llama_cpp]
 gguf_path = "/path/to/model.gguf"  # Optional
@@ -150,6 +153,7 @@ server_url = "http://localhost:8081"  # Optional future feature
 ```
 
 **Environment Variables**:
+
 ```bash
 export PT_JOURNAL_LLAMA_CPP_GGUF_PATH="/models/phi3.gguf"
 export PT_JOURNAL_LLAMA_CPP_CONTEXT_SIZE="8192"
@@ -188,6 +192,7 @@ parameters = { temperature = 0.7, top_p = 0.9 }
 ### Default Seeded Models
 
 PT Journal includes 5 pre-configured Ollama models:
+
 - **Meta Llama 3.2** (`llama3.2:latest`) - Default
 - **Mistral 7B Instruct** (`mistral:7b`) - Fast, efficient
 - **Phi-3 Mini 4K** (`phi3:mini-4k-instruct`) - Small, capable
@@ -232,7 +237,7 @@ impl Step {
 The chat panel includes a dropdown selector for switching between available models:
 
 - **Location**: Top of chat panel
-- **Functionality**: 
+- **Functionality**:
   - Lists all configured models with display names
   - Defaults to configured `default_model_id`
   - Disabled during chat requests
@@ -293,16 +298,6 @@ state_manager.set_chat_model("mistral:7b".to_string());
 - Messages kept in memory during session
 - UI should implement pagination for long conversations
 - Consider lazy loading for performance
-
-## Future Enhancements
-
-### Planned Features
-
-- **Multi-Modal Support**: Image and file attachments
-- **Conversation Branching**: Alternative response exploration
-- **Export/Import**: Share conversations between sessions
-- **Advanced Prompting**: Context-aware system prompts
-- **Integration APIs**: REST endpoints for external tools
 
 ### API Extensions
 

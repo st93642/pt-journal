@@ -131,8 +131,8 @@ cargo run --features llama-cpp
 
 GGUF models are single files that contain the entire model. Popular sources:
 
-1. **Hugging Face** - https://huggingface.co/models?search=gguf
-2. **TheBloke's Models** - https://huggingface.co/TheBloke
+1. **Hugging Face** - <https://huggingface.co/models?search=gguf>
+2. **TheBloke's Models** - <https://huggingface.co/TheBloke>
 
 **Recommended GGUF Models**:
 
@@ -168,6 +168,7 @@ context_tokens = 4096
 ```
 
 **Environment Variables**:
+
 ```bash
 export PT_JOURNAL_LLAMA_CPP_GGUF_PATH="/path/to/model.gguf"
 export PT_JOURNAL_LLAMA_CPP_CONTEXT_SIZE="8192"
@@ -207,6 +208,7 @@ cargo run --features llama-cpp
 ### Verify Model Selection
 
 The model selector dropdown should show:
+
 - All configured Ollama models (if Ollama is running)
 - All configured llama.cpp models (if GGUF paths are valid)
 - Default model should be pre-selected
@@ -240,6 +242,7 @@ The model selector dropdown should show:
 **Problem**: Ollama service is not running.
 
 **Solution**:
+
 ```bash
 # Start Ollama in background
 ollama serve &
@@ -253,6 +256,7 @@ ollama serve
 **Problem**: The configured model is not downloaded.
 
 **Solution**:
+
 ```bash
 # Download the model
 ollama pull llama3.2
@@ -266,6 +270,7 @@ ollama list
 **Problem**: Model is too large for available RAM.
 
 **Solutions**:
+
 - Use a smaller model: `ollama pull llama3.2:1b`
 - Increase system RAM
 - Use CPU-only mode if you have a GPU: `OLLAMA_GPU_LAYERS=0 ollama serve`
@@ -275,6 +280,7 @@ ollama list
 **Problem**: Model takes too long to respond.
 
 **Solutions**:
+
 - Increase timeout in config: `timeout_seconds = 60`
 - Use a faster model
 - Check system resources (CPU/RAM usage)
@@ -282,6 +288,7 @@ ollama list
 #### llama.cpp Issues
 
 **GGUF File Problems**:
+
 ```bash
 # Verify file integrity
 md5sum model.gguf
@@ -292,6 +299,7 @@ chmod 644 model.gguf
 ```
 
 **Memory Issues**:
+
 ```bash
 # Reduce context size
 export PT_JOURNAL_LLAMA_CPP_CONTEXT_SIZE="2048"

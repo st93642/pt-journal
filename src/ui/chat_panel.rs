@@ -1,12 +1,13 @@
 use crate::model::{ChatMessage, ChatRole};
 use gtk4::prelude::*;
-use gtk4::{Box as GtkBox, Button, ComboBoxText, Label, ListBox, Orientation, ScrolledWindow, Spinner, TextView, TextBuffer};
+use gtk4::{Box as GtkBox, Button, DropDown, Label, ListBox, Orientation, ScrolledWindow, Spinner, StringList, TextView, TextBuffer};
 
 /// Chat panel widget for displaying chat history and input
 #[derive(Clone)]
 pub struct ChatPanel {
     pub container: GtkBox,
-    pub model_combo: ComboBoxText,
+    pub model_combo: DropDown,
+    pub model_ids: std::cell::RefCell<Vec<String>>,
     pub history_list: ListBox,
     pub input_textview: TextView,
     pub input_buffer: TextBuffer,
@@ -25,7 +26,8 @@ impl ChatPanel {
         container.add_css_class("chat-panel");
 
         // Model selector
-        let model_combo = ComboBoxText::new();
+        let model_list = StringList::new(&[]);
+        let model_combo = DropDown::new(Some(model_list), gtk4::Expression::NONE);
         model_combo.set_tooltip_text(Some("Select a chat model"));
 
         // Chat history
@@ -91,6 +93,7 @@ impl ChatPanel {
         ChatPanel {
             container,
             model_combo,
+            model_ids: std::cell::RefCell::new(Vec::new()),
             history_list,
             input_textview,
             input_buffer,
@@ -199,20 +202,27 @@ impl ChatPanel {
 
     /// Populate the model combo with available models
     pub fn populate_models(&self, models: &[(String, String)]) {
-        self.model_combo.remove_all();
+        let model_list = StringList::new(&[]);
+        let mut model_ids = Vec::new();
         for (model_id, display_name) in models {
-            self.model_combo.append(Some(model_id), display_name);
+            model_list.append(display_name);
+            model_ids.push(model_id.clone());
         }
+        self.model_combo.set_model(Some(&model_list));
+        *self.model_ids.borrow_mut() = model_ids;
     }
 
     /// Set the active model in the combo by ID
     pub fn set_active_model(&self, model_id: &str) {
-        self.model_combo.set_active_id(Some(model_id));
+        if let Some(index) = self.model_ids.borrow().iter().position(|id| id == model_id) {
+            self.model_combo.set_selected(index as u32);
+        }
     }
 
     /// Get the currently selected model ID from the combo
     pub fn get_active_model_id(&self) -> Option<String> {
-        self.model_combo.active_id().map(|s| s.to_string())
+        let selected = self.model_combo.selected();
+        self.model_ids.borrow().get(selected as usize).cloned()
     }
 
     /// Set model combo sensitive state (disable while loading)

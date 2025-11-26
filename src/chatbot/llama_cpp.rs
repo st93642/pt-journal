@@ -243,7 +243,6 @@ mod tests {
     use super::*;
     use crate::chatbot::StepContext;
     use crate::config::ModelProfile;
-    use std::fs;
     use tempfile::NamedTempFile;
 
     fn create_test_request_with_gguf(gguf_path: &str, model_id: &str) -> ChatRequest {

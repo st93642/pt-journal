@@ -63,15 +63,6 @@ All features include comprehensive unit and integration tests with 100% pass rat
 - **Store Layer**: JSON serialization with folder structure
 - **Config Layer**: TOML configuration with environment overrides
 
-**Storage Architecture**:
-
-```
-~/Downloads/pt-journal-sessions/
-└── session-name/
-    ├── session.json     # Full session data
-    └── evidence/        # Tool outputs, screenshots
-```
-
 **Configuration Hierarchy**:
 
 1. Environment variables (highest priority)
@@ -168,19 +159,19 @@ pub struct AppModel {
 
 ### UI to Domain
 
-```
+```text
 UI Event → Handler → AppModel Update → Domain Validation → UI Refresh
 ```
 
 ### Domain to Infrastructure
 
-```
+```text
 Domain Change → Store.save_session() → JSON Serialization → File System
 ```
 
 ### Configuration Integration
 
-```
+```text
 App Startup → Config.load() → AppModel.config → Runtime Access
 ```
 
@@ -297,8 +288,3 @@ App Startup → Config.load() → AppModel.config → Runtime Access
 - **Pagination**: Large dataset handling
 - **Caching**: Performance optimization
 - **Background Processing**: Non-blocking operations
-
----
-
-**Last Updated**: November 25, 2025</content>
-<parameter name="filePath">/home/altin/pt-journal/docs/architecture.md

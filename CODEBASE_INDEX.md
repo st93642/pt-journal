@@ -219,12 +219,14 @@ pub trait ChatProvider: Send + Sync {
 ```
 
 **Ollama Provider**:
+
 - HTTP-based integration with `/api/chat` endpoint
 - Availability check via `/api/tags`
 - Configurable timeout and endpoint
 - Handles connection errors, timeouts, invalid responses
 
 **llama.cpp Provider** (Optional Feature):
+
 - Local GGUF model inference
 - Model caching with `Arc<Mutex<HashMap>>`
 - Context window configuration

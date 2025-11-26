@@ -427,10 +427,10 @@ pub fn setup_chat_handlers(detail_panel: Rc<DetailPanel>, state: Rc<StateManager
 
     // Model combo change handler
     let state_combo = state.clone();
-    let model_combo_change = model_combo.clone();
-    model_combo.connect_changed(move |_| {
-        if let Some(model_id) = model_combo_change.active_id() {
-            state_combo.set_chat_model(model_id.to_string());
+    let chat_panel_combo = chat_panel.clone();
+    model_combo.connect_selected_item_notify(move |_| {
+        if let Some(model_id) = chat_panel_combo.get_active_model_id() {
+            state_combo.set_chat_model(model_id);
         }
     });
 

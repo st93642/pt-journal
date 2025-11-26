@@ -5,7 +5,7 @@
 /*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
 /*                                                          TT         SS II */
 /*  Created: Nov 21 2025 23:42 st93642                      TT    SSSSSSS II */
-/*  Updated: Nov 25 2025 20:40 st93642                                       */
+/*  Updated: Nov 26 2025 13:18 st93642                                       */
 /*                                                                           */
 /*   Transport and Telecommunication Institute - Riga, Latvia                */
 /*                       https://tsi.lv                                      */
@@ -766,7 +766,6 @@ mod tests {
     mod performance_tests {
         use super::*;
         use crate::model::*;
-        use crate::store;
         use std::time::Instant;
 
         #[test]
@@ -840,7 +839,6 @@ mod tests {
     // Property-based tests
     mod property_tests {
         use super::*;
-        use crate::model::Session;
         use proptest::prelude::*;
 
         proptest! {

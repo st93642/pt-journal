@@ -137,6 +137,20 @@ pub struct ModelProfile {
     pub prompt_template: String,
     #[serde(default)]
     pub resource_paths: Vec<String>,
+    #[serde(default)]
+    pub parameters: ModelParameters,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct ModelParameters {
+    #[serde(default)]
+    pub temperature: Option<f32>,
+    #[serde(default)]
+    pub top_p: Option<f32>,
+    #[serde(default)]
+    pub top_k: Option<i32>,
+    #[serde(default)]
+    pub num_predict: Option<i32>,
 }
 
 impl ModelProfile {
@@ -147,6 +161,7 @@ impl ModelProfile {
             provider: ModelProviderKind::Ollama,
             prompt_template: default_prompt_template(),
             resource_paths: Vec::new(),
+            parameters: ModelParameters::default(),
         }
     }
 }

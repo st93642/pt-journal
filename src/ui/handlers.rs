@@ -474,8 +474,8 @@ pub fn setup_chat_handlers(detail_panel: Rc<DetailPanel>, state: Rc<StateManager
 
             // Spawn thread for chatbot
             std::thread::spawn(move || {
-                let chatbot = crate::chatbot::LocalChatBot::new(config);
-                let result = chatbot.send_message(&step_ctx, &history_with_user, &input_text);
+                let chat_service = crate::chatbot::ChatService::new(config);
+                let result = chat_service.send_message(&step_ctx, &history_with_user, &input_text);
                 let _ = tx.send(result);
             });
 

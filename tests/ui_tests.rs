@@ -154,17 +154,17 @@ mod text_input_tests {
         // This tests the logic without requiring GTK
 
         let mut model = AppModel::default();
-        model.selected_phase = 0;
-        model.selected_step = Some(0);
+        model.set_selected_phase(0);
+        model.set_selected_step(Some(0));
 
         // Simulate text input to notes
-        if let Some(step) = model.session.phases[0].steps.get_mut(0) {
+        if let Some(step) = model.session_mut().phases[0].steps.get_mut(0) {
             step.notes = "Test notes content".to_string();
             assert_eq!(step.notes, "Test notes content");
         }
 
         // Simulate text input to description_notes
-        if let Some(step) = model.session.phases[0].steps.get_mut(0) {
+        if let Some(step) = model.session_mut().phases[0].steps.get_mut(0) {
             step.description_notes = "Test description notes".to_string();
             assert_eq!(step.description_notes, "Test description notes");
         }
@@ -176,27 +176,27 @@ mod text_input_tests {
         let mut model = AppModel::default();
 
         // Set text for first step
-        model.selected_step = Some(0);
-        if let Some(step) = model.session.phases[0].steps.get_mut(0) {
+        model.set_selected_step(Some(0));
+        if let Some(step) = model.session_mut().phases[0].steps.get_mut(0) {
             step.notes = "Notes for step 0".to_string();
             step.description_notes = "Description notes for step 0".to_string();
         }
 
         // Switch to second step
-        model.selected_step = Some(1);
-        if let Some(step) = model.session.phases[0].steps.get_mut(1) {
+        model.set_selected_step(Some(1));
+        if let Some(step) = model.session_mut().phases[0].steps.get_mut(1) {
             step.notes = "Notes for step 1".to_string();
             step.description_notes = "Description notes for step 1".to_string();
         }
 
         // Verify first step still has its text
-        if let Some(step) = model.session.phases[0].steps.first() {
+        if let Some(step) = model.session_mut().phases[0].steps.first() {
             assert_eq!(step.notes, "Notes for step 0");
             assert_eq!(step.description_notes, "Description notes for step 0");
         }
 
         // Verify second step has its text
-        if let Some(step) = model.session.phases[0].steps.get(1) {
+        if let Some(step) = model.session_mut().phases[0].steps.get(1) {
             assert_eq!(step.notes, "Notes for step 1");
             assert_eq!(step.description_notes, "Description notes for step 1");
         }
@@ -318,8 +318,8 @@ mod chat_tests {
     #[test]
     fn test_chat_history_persistence() {
         let mut model = AppModel::default();
-        model.selected_phase = 0;
-        model.selected_step = Some(0);
+        model.set_selected_phase(0);
+        model.set_selected_step(Some(0));
 
         // Add chat messages to step
         let message1 = ChatMessage {
@@ -334,7 +334,7 @@ mod chat_tests {
             timestamp: chrono::Utc::now(),
         };
 
-        if let Some(step) = model.session.phases[0].steps.get_mut(0) {
+        if let Some(step) = model.session_mut().phases[0].steps.get_mut(0) {
             if let StepContent::Tutorial { chat_history, .. } = &mut step.content {
                 chat_history.push(message1.clone());
                 chat_history.push(message2.clone());
@@ -345,16 +345,16 @@ mod chat_tests {
         }
 
         // Switch to another step - should have empty chat history
-        model.selected_step = Some(1);
-        if let Some(step) = model.session.phases[0].steps.get(1) {
+        model.set_selected_step(Some(1));
+        if let Some(step) = model.session_mut().phases[0].steps.get(1) {
             if let StepContent::Tutorial { chat_history, .. } = &step.content {
                 assert_eq!(chat_history.len(), 0);
             }
         }
 
         // Switch back - should still have chat history
-        model.selected_step = Some(0);
-        if let Some(step) = model.session.phases[0].steps.first() {
+        model.set_selected_step(Some(0));
+        if let Some(step) = model.session_mut().phases[0].steps.first() {
             if let StepContent::Tutorial { chat_history, .. } = &step.content {
                 assert_eq!(chat_history.len(), 2);
                 assert_eq!(chat_history[0].content, "User question");

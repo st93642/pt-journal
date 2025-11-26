@@ -13,7 +13,7 @@ pub fn create_sidebar(model: &Rc<RefCell<AppModel>>) -> (GtkBox, DropDown, ListB
     // Phase selector
     let phase_model = StringList::new(&[]);
     let phase_combo = DropDown::new(Some(phase_model), None::<gtk4::Expression>);
-    phase_combo.set_selected(model.borrow().selected_phase as u32);
+    phase_combo.set_selected(model.borrow().selected_phase() as u32);
 
     // Set factory for proper display
     let factory = gtk4::SignalListItemFactory::new();

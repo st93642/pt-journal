@@ -7,24 +7,24 @@ use gtk4::prelude::*;
 use gtk4::{
     Box as GtkBox, CheckButton, Frame, Label, Orientation, Paned, ScrolledWindow, Stack, TextView,
 };
+use std::rc::Rc;
 
 /// Struct holding all detail panel widgets (supports both tutorial and quiz views)
 pub struct DetailPanel {
-    pub center_container: GtkBox, // Center column (desc/chat)
-    pub checkbox: CheckButton,
-    pub title_label: Label,
-    pub content_stack: Stack, // Switches between tutorial and quiz views
+    center_container: GtkBox, // Center column (desc/chat)
+    checkbox: CheckButton,
+    title_label: Label,
+    content_stack: Stack, // Switches between tutorial and quiz views
 
     // Tutorial view widgets
-    pub tutorial_container: Paned,
-    pub desc_view: TextView,
-    pub chat_panel: ChatPanel,
+    desc_view: TextView,
+    chat_panel: ChatPanel,
 
     // Tool panel (will be placed in right column)
-    pub tool_panel: ToolExecutionPanel,
+    tool_panel: Rc<ToolExecutionPanel>,
 
     // Quiz view widget
-    pub quiz_widget: QuizWidget,
+    quiz_widget: QuizWidget,
 }
 
 /// Create the detail panel with all widgets (supports tutorial and quiz views)
@@ -84,7 +84,7 @@ pub fn create_detail_panel() -> DetailPanel {
     tutorial_paned.set_position(200);
 
     // === TOOL EXECUTION PANEL (separate from center column) ===
-    let tool_panel = ToolExecutionPanel::new();
+    let tool_panel = Rc::new(ToolExecutionPanel::new());
 
     // === QUIZ VIEW ===
     let quiz_widget = QuizWidget::new();
@@ -105,7 +105,6 @@ pub fn create_detail_panel() -> DetailPanel {
         checkbox,
         title_label,
         content_stack,
-        tutorial_container: tutorial_paned,
         desc_view,
         chat_panel,
         tool_panel,
@@ -142,6 +141,68 @@ pub fn load_step_into_panel(panel: &DetailPanel, step: &Step) {
 
         panel.desc_view.buffer().set_text(&description);
         panel.chat_panel.load_history(&chat_history);
+    }
+}
+
+impl DetailPanel {
+    /// Get the center container widget
+    pub fn container(&self) -> &GtkBox {
+        &self.center_container
+    }
+
+    /// Set the step title
+    pub fn set_title(&self, title: &str) {
+        self.title_label.set_text(title);
+    }
+
+    /// Set the completion checkbox state
+    pub fn set_completion(&self, completed: bool) {
+        self.checkbox.set_active(completed);
+    }
+
+    /// Get the current completion state
+    pub fn is_completed(&self) -> bool {
+        self.checkbox.is_active()
+    }
+
+    /// Load a tutorial step into the panel
+    pub fn load_tutorial_step(&self, description: &str, chat_history: &[crate::model::ChatMessage]) {
+        self.content_stack.set_visible_child_name("tutorial");
+        self.desc_view.buffer().set_text(description);
+        self.chat_panel.load_history(chat_history);
+    }
+
+    /// Load a quiz step into the panel
+    pub fn load_quiz_step(&self, quiz_step: &crate::model::QuizStep) {
+        self.content_stack.set_visible_child_name("quiz");
+        self.quiz_widget.hide_explanation();
+        self.quiz_widget.load_quiz_step(quiz_step);
+        self.quiz_widget.update_statistics(quiz_step);
+    }
+
+    /// Get access to the chat panel for controllers
+    pub fn chat_panel(&self) -> &ChatPanel {
+        &self.chat_panel
+    }
+
+    /// Get access to the tool panel for controllers
+    pub fn tool_panel(&self) -> Rc<ToolExecutionPanel> {
+        self.tool_panel.clone()
+    }
+
+    /// Get access to the quiz widget for controllers
+    pub fn quiz_widget(&self) -> &QuizWidget {
+        &self.quiz_widget
+    }
+
+    /// Get access to the description text view for controllers
+    pub fn desc_view(&self) -> &TextView {
+        &self.desc_view
+    }
+
+    /// Get access to the checkbox for controllers
+    pub fn checkbox(&self) -> &CheckButton {
+        &self.checkbox
     }
 }
 

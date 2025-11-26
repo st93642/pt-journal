@@ -36,11 +36,6 @@ impl<'a> InstructionState<'a> {
         }
     }
 
-    /// Returns true when the instructions are missing.
-    pub fn is_missing(&self) -> bool {
-        matches!(self, Self::Missing { .. })
-    }
-
     /// Builds the GTK widget for inline rendering.
     #[allow(deprecated)]
     pub fn inline_widget(&self) -> GtkBox {
@@ -58,6 +53,7 @@ impl<'a> InstructionState<'a> {
 /// - When a tool ID is provided, we attempt to load its instructions.
 /// - When `None`, we fall back to the first manifest entry when available.
 /// - If no instructions exist, a missing state is returned.
+#[allow(dead_code)]
 pub(crate) fn resolve_instruction_state(tool_id: Option<&str>) -> InstructionState<'static> {
     if let Some(tool_id) = tool_id {
         return tool_instructions::get_instructions(tool_id)
@@ -78,12 +74,6 @@ pub(crate) fn resolve_instruction_state(tool_id: Option<&str>) -> InstructionSta
     }
 
     InstructionState::Missing { tool_id: None }
-}
-
-/// Builds the instruction widget for the supplied tool ID (or fallback).
-#[allow(deprecated)]
-pub fn build_instructions_for_tool(tool_id: Option<&str>) -> GtkBox {
-    resolve_instruction_state(tool_id).inline_widget()
 }
 
 /// Builds the fallback widget when instruction data is unavailable.
@@ -553,7 +543,7 @@ mod tests {
     #[test]
     fn missing_tool_resolves_to_missing_state() {
         let state = resolve_instruction_state(Some("nonexistent_tool_12345"));
-        assert!(state.is_missing(), "missing tool should use fallback state");
+        assert!(matches!(state, InstructionState::Missing { .. }), "missing tool should use fallback state");
     }
 
     #[test]

@@ -24,8 +24,8 @@ impl StateManager {
     pub fn select_phase(&self, phase_idx: usize) {
         {
             let mut model = self.model.borrow_mut();
-            model.selected_phase = phase_idx;
-            model.selected_step = None;
+            model.set_selected_phase(phase_idx);
+            model.set_selected_step(None);
         }
         self.dispatcher
             .borrow()
@@ -37,10 +37,10 @@ impl StateManager {
 
     /// Select a step within current phase
     pub fn select_step(&self, step_idx: usize) {
-        let phase_idx = self.model.borrow().selected_phase;
+        let phase_idx = self.model.borrow().selected_phase();
         {
             let mut model = self.model.borrow_mut();
-            model.selected_step = Some(step_idx);
+            model.set_selected_step(Some(step_idx));
         }
         self.dispatcher
             .borrow()
@@ -60,7 +60,7 @@ impl StateManager {
     {
         let mut model = self.model.borrow_mut();
         if let Some(step) = model
-            .session
+            .session_mut()
             .phases
             .get_mut(phase_idx)
             .and_then(|p| p.steps.get_mut(step_idx))
@@ -82,7 +82,7 @@ impl StateManager {
     {
         let model = self.model.borrow();
         if let Some(step) = model
-            .session
+            .session()
             .phases
             .get(phase_idx)
             .and_then(|p| p.steps.get(step_idx))
@@ -103,7 +103,7 @@ impl StateManager {
         F: FnOnce(&mut crate::model::Phase) -> T,
     {
         let mut model = self.model.borrow_mut();
-        if let Some(phase) = model.session.phases.get_mut(phase_idx) {
+        if let Some(phase) = model.session_mut().phases.get_mut(phase_idx) {
             Some(f(phase))
         } else {
             log::warn!("Invalid phase index: phase={}", phase_idx);
@@ -160,7 +160,7 @@ impl StateManager {
     pub fn update_global_notes(&self, notes: String) {
         {
             let mut model = self.model.borrow_mut();
-            model.session.notes_global = notes.clone();
+            model.session_mut().notes_global = notes.clone();
         }
         self.dispatcher
             .borrow()
@@ -232,17 +232,39 @@ impl StateManager {
 
     /// Get current phase index
     pub fn current_phase(&self) -> usize {
-        self.model.borrow().selected_phase
+        self.model.borrow().selected_phase()
     }
 
     /// Get current step index
     pub fn current_step(&self) -> Option<usize> {
-        self.model.borrow().selected_step
+        self.model.borrow().selected_step()
     }
 
     /// Get immutable reference to model for reading
     pub fn model(&self) -> SharedModel {
         self.model.clone()
+    }
+
+    /// Get step summaries for a phase (for UI list display)
+    pub fn get_step_summaries_for_phase(&self, phase_idx: usize) -> Vec<crate::model::StepSummary> {
+        self.model.borrow().get_step_summaries_for_phase(phase_idx)
+    }
+
+    /// Toggle completion status of a step
+    pub fn toggle_step_completion(&self, phase_idx: usize, step_idx: usize) {
+        let current_status = self.with_step(phase_idx, step_idx, |step| step.status.clone());
+        if let Some(status) = current_status {
+            let new_status = match status {
+                StepStatus::Done => StepStatus::InProgress,
+                _ => StepStatus::Done,
+            };
+            self.update_step_status(phase_idx, step_idx, new_status);
+        }
+    }
+
+    /// Get a snapshot of the currently active step
+    pub fn get_active_step_snapshot(&self) -> Option<crate::model::ActiveStepSnapshot> {
+        self.model.borrow().get_active_step_snapshot()
     }
 
     // ========== Quiz-specific State Management ==========
@@ -342,7 +364,7 @@ impl StateManager {
         {
             let mut model = self.model.borrow_mut();
             model.set_active_chat_model_id(model_id.clone());
-            model.config.chatbot.default_model_id = model_id.clone();
+            model.config_mut().chatbot.default_model_id = model_id.clone();
         }
         self.dispatcher
             .borrow()
@@ -415,7 +437,7 @@ mod tests {
         // Replace first step of first phase with a quiz step
         {
             let mut model_mut = model.borrow_mut();
-            if let Some(phase) = model_mut.session.phases.get_mut(0) {
+            if let Some(phase) = model_mut.session_mut().phases.get_mut(0) {
                 if phase.steps.is_empty() {
                     phase.steps.push(Step::new_quiz(
                         uuid::Uuid::new_v4(),
@@ -444,6 +466,7 @@ mod tests {
         let msg_clone = message_received.clone();
 
         state.dispatcher.borrow_mut().register(
+            None,
             "test",
             Box::new(move |msg| {
                 if matches!(msg, AppMessage::PhaseSelected(1)) {
@@ -465,6 +488,7 @@ mod tests {
         let msg_clone = message_received.clone();
 
         state.dispatcher.borrow_mut().register(
+            None,
             "test",
             Box::new(move |msg| {
                 if matches!(msg, AppMessage::StepSelected(2)) {
@@ -485,6 +509,7 @@ mod tests {
         let msg_clone = messages.clone();
 
         state.dispatcher.borrow_mut().register(
+            None,
             "test",
             Box::new(move |msg| {
                 msg_clone.lock().unwrap().push(format!("{:?}", msg));
@@ -495,7 +520,7 @@ mod tests {
 
         let status = {
             let model = state.model.borrow();
-            model.session.phases[0].steps[0].status.clone()
+            model.session().phases[0].steps[0].status.clone()
         };
         assert!(matches!(status, StepStatus::Done));
 
@@ -510,7 +535,7 @@ mod tests {
 
         let notes = {
             let model = state.model.borrow();
-            model.session.phases[0].steps[0].get_notes()
+            model.session().phases[0].steps[0].get_notes()
         };
         assert_eq!(notes, "Test notes");
     }
@@ -529,7 +554,7 @@ mod tests {
 
         let notes = {
             let model = state.model.borrow();
-            model.session.phases[0].steps[0].get_description_notes()
+            model.session().phases[0].steps[0].get_description_notes()
         };
         assert_eq!(notes, "Description notes");
     }
@@ -551,7 +576,7 @@ mod tests {
 
         let count = {
             let model = state.model.borrow();
-            model.session.phases[0].steps[0].get_evidence().len()
+            model.session().phases[0].steps[0].get_evidence().len()
         };
         assert_eq!(count, 1);
 
@@ -559,7 +584,7 @@ mod tests {
 
         let count = {
             let model = state.model.borrow();
-            model.session.phases[0].steps[0].get_evidence().len()
+            model.session().phases[0].steps[0].get_evidence().len()
         };
         assert_eq!(count, 0);
     }
@@ -571,6 +596,7 @@ mod tests {
         let msg_clone = messages.clone();
 
         state.dispatcher.borrow_mut().register(
+            None,
             "test",
             Box::new(move |msg| {
                 msg_clone.lock().unwrap().push(format!("{:?}", msg));
@@ -604,6 +630,7 @@ mod tests {
         let msg_clone = messages.clone();
 
         state.dispatcher.borrow_mut().register(
+            None,
             "test",
             Box::new(move |msg| {
                 msg_clone.lock().unwrap().push(format!("{:?}", msg));
@@ -614,7 +641,7 @@ mod tests {
 
         let model_id = {
             let model = state.model.borrow();
-            model.active_chat_model_id.clone()
+            model.get_active_chat_model_id()
         };
         assert_eq!(model_id, "mistral:7b");
 
@@ -629,6 +656,7 @@ mod tests {
         let msg_clone = messages.clone();
 
         state.dispatcher.borrow_mut().register(
+            None,
             "test",
             Box::new(move |msg| {
                 msg_clone.lock().unwrap().push(format!("{:?}", msg));
@@ -641,7 +669,7 @@ mod tests {
 
         // Verify progress was updated
         let model = state.model.borrow();
-        let step = &model.session.phases[0].steps[0];
+        let step = &model.session().phases[0].steps[0];
         if let Some(quiz_data) = step.get_quiz_step() {
             let progress = &quiz_data.progress[0];
             assert!(progress.answered);
@@ -669,7 +697,7 @@ mod tests {
 
         // Verify progress
         let model = state.model.borrow();
-        let step = &model.session.phases[0].steps[0];
+        let step = &model.session().phases[0].steps[0];
         if let Some(quiz_data) = step.get_quiz_step() {
             let progress = &quiz_data.progress[0];
             assert!(progress.answered);
@@ -693,7 +721,7 @@ mod tests {
 
         // Verify attempts count and first_attempt_correct flag
         let model = state.model.borrow();
-        let step = &model.session.phases[0].steps[0];
+        let step = &model.session().phases[0].steps[0];
         if let Some(quiz_data) = step.get_quiz_step() {
             let progress = &quiz_data.progress[0];
             assert_eq!(progress.attempts, 2);
@@ -729,6 +757,7 @@ mod tests {
         let msg_clone = messages.clone();
 
         state.dispatcher.borrow_mut().register(
+            None,
             "test",
             Box::new(move |msg| {
                 msg_clone.lock().unwrap().push(format!("{:?}", msg));
@@ -741,7 +770,7 @@ mod tests {
         // Verify flag was set
         {
             let model = state.model.borrow();
-            let step = &model.session.phases[0].steps[0];
+            let step = &model.session().phases[0].steps[0];
             if let Some(quiz_data) = step.get_quiz_step() {
                 let progress = &quiz_data.progress[0];
                 assert!(progress.explanation_viewed_before_answer);
@@ -762,7 +791,7 @@ mod tests {
         // Verify that first_attempt_correct remains false and awards_points returns false
         {
             let model = state.model.borrow();
-            let step = &model.session.phases[0].steps[0];
+            let step = &model.session().phases[0].steps[0];
             if let Some(quiz_data) = step.get_quiz_step() {
                 let progress = &quiz_data.progress[0];
                 assert!(!progress.first_attempt_correct);
@@ -785,7 +814,7 @@ mod tests {
 
         // Verify flag was NOT set (because already answered)
         let model = state.model.borrow();
-        let step = &model.session.phases[0].steps[0];
+        let step = &model.session().phases[0].steps[0];
         if let Some(quiz_data) = step.get_quiz_step() {
             let progress = &quiz_data.progress[0];
             assert!(!progress.explanation_viewed_before_answer);
@@ -809,6 +838,7 @@ mod tests {
         let msg_clone = messages.clone();
 
         state.dispatcher.borrow_mut().register(
+            None,
             "test",
             Box::new(move |msg| {
                 msg_clone.lock().unwrap().push(format!("{:?}", msg));

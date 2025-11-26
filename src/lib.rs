@@ -5,7 +5,7 @@
 /*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
 /*                                                          TT         SS II */
 /*  Created: Nov 21 2025 23:42 st93642                      TT    SSSSSSS II */
-/*  Updated: Nov 26 2025 17:58 st93642                                       */
+/*  Updated: Nov 26 2025 23:25 st93642                                       */
 /*                                                                           */
 /*   Transport and Telecommunication Institute - Riga, Latvia                */
 /*                       https://tsi.lv                                      */
@@ -37,17 +37,17 @@ mod tests {
         #[test]
         fn test_default_app_model() {
             let model = AppModel::default();
-            assert_eq!(model.selected_phase, 0);
-            assert_eq!(model.selected_step, Some(0));
-            assert!(model.current_path.is_none());
-            assert_eq!(model.session.phases.len(), 22); // 22 phases after API consolidation
+            assert_eq!(model.selected_phase(), 0);
+            assert_eq!(model.selected_step(), Some(0));
+            assert!(model.current_path().is_none());
+            assert_eq!(model.session().phases.len(), 22); // 22 phases after API consolidation
                                                         // Config should be loaded (or default)
             assert_eq!(
-                model.config.chatbot.ollama.endpoint,
+                model.config().chatbot.ollama.endpoint,
                 "http://localhost:11434"
             );
             assert_eq!(
-                model.config.chatbot.default_model_id,
+                model.config().chatbot.default_model_id,
                 "llama3.2:latest"
             );
         }
@@ -218,19 +218,19 @@ mod tests {
             let mut model = AppModel::default();
 
             // Test phase navigation
-            assert_eq!(model.selected_phase, 0);
-            model.selected_phase = 1;
-            assert_eq!(model.selected_phase, 1);
+            assert_eq!(model.selected_phase(), 0);
+            model.set_selected_phase(1);
+            assert_eq!(model.selected_phase(), 1);
 
             // Test step navigation
-            assert_eq!(model.selected_step, Some(0));
-            model.selected_step = Some(2);
-            assert_eq!(model.selected_step, Some(2));
+            assert_eq!(model.selected_step(), Some(0));
+            model.set_selected_step(Some(2));
+            assert_eq!(model.selected_step(), Some(2));
 
             // Test invalid phase bounds
-            model.selected_phase = 10; // Beyond available phases
+            model.set_selected_phase(10); // Beyond available phases
                                        // Should not panic, just store the value
-            assert_eq!(model.selected_phase, 10);
+            assert_eq!(model.selected_phase(), 10);
         }
     }
 

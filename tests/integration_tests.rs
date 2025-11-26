@@ -17,10 +17,10 @@ mod test_runner;
 // Model Tests
 fn test_default_app_model() {
     let model = AppModel::default();
-    assert_eq!(model.selected_phase, 0);
-    assert_eq!(model.selected_step, Some(0));
-    assert_eq!(model.current_path, None);
-    assert_eq!(model.session.phases.len(), 22); // Updated: consolidated API phases
+    assert_eq!(model.selected_phase(), 0);
+    assert_eq!(model.selected_step(), Some(0));
+    assert_eq!(model.current_path(), None);
+    assert_eq!(model.session().phases.len(), 22); // Updated: consolidated API phases
 }
 
 fn test_session_creation() {
@@ -45,6 +45,7 @@ fn test_dispatcher_message_routing() {
 
     let flag = message_received.clone();
     dispatcher.borrow_mut().register(
+        None,
         "test_event",
         Box::new(move |_msg| {
             *flag.borrow_mut() = true;
@@ -63,6 +64,7 @@ fn test_dispatcher_multiple_handlers() {
 
     let c1 = counter.clone();
     dispatcher.borrow_mut().register(
+        None,
         "count",
         Box::new(move |_msg| {
             *c1.borrow_mut() += 1;
@@ -71,6 +73,7 @@ fn test_dispatcher_multiple_handlers() {
 
     let c2 = counter.clone();
     dispatcher.borrow_mut().register(
+        None,
         "count",
         Box::new(move |_msg| {
             *c2.borrow_mut() += 10;
@@ -90,7 +93,7 @@ fn test_state_manager_creation() {
     let state = StateManager::new(model, dispatcher);
     let model = state.model();
     let borrowed = model.borrow();
-    assert_eq!(borrowed.selected_phase, 0);
+    assert_eq!(borrowed.selected_phase(), 0);
 }
 
 fn test_state_manager_step_navigation() {
@@ -103,8 +106,8 @@ fn test_state_manager_step_navigation() {
     {
         let model = state.model();
         let borrowed = model.borrow();
-        assert_eq!(borrowed.selected_phase, 0);
-        assert_eq!(borrowed.selected_step, Some(0));
+        assert_eq!(borrowed.selected_phase(), 0);
+        assert_eq!(borrowed.selected_step(), Some(0));
     }
 
     state.select_phase(1);
@@ -112,8 +115,8 @@ fn test_state_manager_step_navigation() {
     {
         let model = state.model();
         let borrowed = model.borrow();
-        assert_eq!(borrowed.selected_phase, 1);
-        assert_eq!(borrowed.selected_step, Some(2));
+        assert_eq!(borrowed.selected_phase(), 1);
+        assert_eq!(borrowed.selected_step(), Some(2));
     }
 }
 
@@ -127,7 +130,7 @@ fn test_state_manager_step_notes_update() {
 
     let model = state.model();
     let borrowed = model.borrow();
-    let phase = &borrowed.session.phases[0];
+    let phase = &borrowed.session().phases[0];
     let step = &phase.steps[0];
     assert_eq!(step.get_notes(), test_notes);
 }
@@ -141,7 +144,7 @@ fn test_state_manager_step_status_update() {
 
     let model = state.model();
     let borrowed = model.borrow();
-    let phase = &borrowed.session.phases[0];
+    let phase = &borrowed.session().phases[0];
     let step = &phase.steps[0];
     assert_matches!(step.status, StepStatus::Done);
 }

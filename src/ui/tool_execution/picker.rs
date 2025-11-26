@@ -17,6 +17,7 @@ pub struct ToolPickerModel {
     default_tool_id: String,
 }
 
+#[allow(dead_code)]
 impl ToolPickerModel {
     /// Constructs the picker model from the manifest and grouped manifest data.
     ///

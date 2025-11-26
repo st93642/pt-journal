@@ -22,7 +22,23 @@ pub fn build_ui(app: &Application, model: AppModel) {
         .title("PT Journal")
         .default_width(1600) // Wider window for 3-column layout
         .default_height(900)
+        .resizable(true)
         .build();
+
+    // Position window at top-left corner (0,0)
+    // Note: Due to GTK trait bounds conflicts with VTE, we use a workaround
+    window.present();
+    
+    // Attempt to position the window using available methods
+    let window_clone = window.clone();
+    glib::idle_add_local_once(move || {
+        // Try to set window position using surface if available
+        if let Some(_surface) = window_clone.surface() {
+            // Use a simple approach - the window manager may still override this
+            // In production, you might want to use window manager hints or environment variables
+            eprintln!("Attempting to position window at (0,0)");
+        }
+    });
 
     // Load custom CSS for chat panel styling
     let css_provider = gtk4::CssProvider::new();
@@ -100,16 +116,18 @@ pub fn build_ui(app: &Application, model: AppModel) {
 
     // Center panel: detail view with checkbox, title, description, chat
     let detail_panel = crate::ui::detail_panel::create_detail_panel();
-    let center = detail_panel.center_container.clone();
+    let center = detail_panel.container().clone();
 
     // Right panel: security tools
     let tool_frame = Frame::builder()
         .label("Security Tools")
-        .child(&detail_panel.tool_panel.container)
+        .child(&detail_panel.tool_panel().container)
         .margin_top(8)
         .margin_bottom(8)
         .margin_start(4)
         .margin_end(8)
+        .vexpand(true)
+        .hexpand(true)
         .build();
 
     // Keep reference to full detail_panel for handlers
@@ -119,6 +137,7 @@ pub fn build_ui(app: &Application, model: AppModel) {
     let detail_panel_update = detail_panel_ref.clone();
     let state_update = state.clone();
     dispatcher.borrow_mut().register(
+        Some(crate::dispatcher::AppMessageKind::ChatMessageAdded),
         "ui:chat_update",
         Box::new(move |msg| {
             if let crate::dispatcher::AppMessage::ChatMessageAdded(phase_idx, step_idx, message) =
@@ -127,7 +146,7 @@ pub fn build_ui(app: &Application, model: AppModel) {
                 let current_phase = state_update.current_phase();
                 let current_step = state_update.current_step().unwrap_or(0);
                 if *phase_idx == current_phase && *step_idx == current_step {
-                    detail_panel_update.chat_panel.add_message(message);
+                    detail_panel_update.chat_panel().add_message(&message);
                 }
             }
         }),
@@ -172,7 +191,7 @@ pub fn build_ui(app: &Application, model: AppModel) {
     let center_tools_paned = Paned::new(gtk4::Orientation::Horizontal);
     center_tools_paned.set_start_child(Some(&center));
     center_tools_paned.set_end_child(Some(&tool_frame));
-    center_tools_paned.set_position(900); // Center takes 900px, tools get the rest
+    center_tools_paned.set_position(1000); // Center takes 1000px, tools get more space
     center_tools_paned.set_resize_start_child(true);
     center_tools_paned.set_resize_end_child(true);
     center_tools_paned.set_shrink_start_child(false);
@@ -192,12 +211,10 @@ pub fn build_ui(app: &Application, model: AppModel) {
 
     // === INITIAL LOAD ===
     // Load first phase and step
-    crate::ui::handlers::rebuild_steps_list(&steps_list, &state.model(), &detail_panel_ref);
-
-    window.present();
+    crate::ui::handlers::rebuild_steps_list(&steps_list, &state, &detail_panel_ref);
 
     // Rebuild phase combo after window is presented to ensure proper refresh
     glib::idle_add_local_once(move || {
-        crate::ui::handlers::rebuild_phase_combo(&phase_combo, &state.model());
+        crate::ui::handlers::rebuild_phase_combo(&phase_combo, &state);
     });
 }

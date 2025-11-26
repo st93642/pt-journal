@@ -522,4 +522,132 @@ mod chat_provider_tests {
             Some("/path/to/model.gguf")
         );
     }
+
+    #[test]
+    fn test_provider_selection_errors() {
+        let mut config = ChatbotConfig::default();
+        
+        // Test with invalid provider in model profile
+        let invalid_profile = ModelProfile {
+            id: "invalid-model".to_string(),
+            display_name: "Invalid Model".to_string(),
+            provider: ModelProviderKind::LlamaCpp, // but no GGUF path
+            prompt_template: "{{context}}".to_string(),
+            resource_paths: vec![],
+            parameters: Default::default(),
+        };
+        config.models.push(invalid_profile);
+        config.default_model_id = "invalid-model".to_string();
+
+        let service = ChatService::new(config);
+        let step_ctx = create_test_step_context();
+        
+        // Should fail because llama.cpp provider has no GGUF path
+        let result = service.send_message(&step_ctx, &[], "test");
+        assert!(result.is_err());
+        
+        // Check that it's the right error type
+        match result.unwrap_err() {
+            ChatError::GgufPathNotFound(_) => {
+                // Expected error
+            }
+            _ => panic!("Expected GgufPathNotFound error"),
+        }
+    }
+
+    #[test]
+    fn test_seeded_model_list_configuration() {
+        let config = ChatbotConfig::default();
+        
+        // Should have 5 seeded models
+        assert_eq!(config.models.len(), 5);
+        
+        // Check all expected model IDs are present
+        let model_ids: Vec<String> = config.models.iter()
+            .map(|m| m.id.clone())
+            .collect();
+        
+        assert!(model_ids.contains(&"llama3.2:latest".to_string()));
+        assert!(model_ids.contains(&"mistral:7b".to_string()));
+        assert!(model_ids.contains(&"phi3:mini-4k-instruct".to_string()));
+        assert!(model_ids.contains(&"neural-chat:latest".to_string()));
+        assert!(model_ids.contains(&"starcoder:latest".to_string()));
+        
+        // All should be Ollama providers
+        for model in &config.models {
+            assert_eq!(model.provider, ModelProviderKind::Ollama);
+        }
+        
+        // Default model should be in the list
+        let default_model = config.active_model();
+        assert_eq!(default_model.id, "llama3.2:latest");
+        assert_eq!(default_model.display_name, "Meta Llama 3.2");
+    }
+
+    #[test]
+    fn test_model_profile_validation() {
+        // Test valid profile
+        let valid_profile = ModelProfile::for_ollama("test:model", "Test Model");
+        assert_eq!(valid_profile.id, "test:model");
+        assert_eq!(valid_profile.display_name, "Test Model");
+        assert_eq!(valid_profile.provider, ModelProviderKind::Ollama);
+        assert!(!valid_profile.prompt_template.is_empty());
+        
+        // Test profile with parameters
+        let mut profile_with_params = ModelProfile::for_ollama("param:model", "Param Model");
+        profile_with_params.parameters.temperature = Some(0.5);
+        profile_with_params.parameters.top_p = Some(0.8);
+        profile_with_params.parameters.num_predict = Some(100);
+        
+        assert_eq!(profile_with_params.parameters.temperature, Some(0.5));
+        assert_eq!(profile_with_params.parameters.top_p, Some(0.8));
+        assert_eq!(profile_with_params.parameters.num_predict, Some(100));
+    }
+
+    #[test]
+    fn test_provider_routing_consistency() {
+        let server = MockServer::start();
+        
+        // Mock Ollama endpoint
+        let mock = server.mock(|when, then| {
+            when.method("POST").path("/api/chat");
+            then.status(200).json_body(serde_json::json!({
+                "message": {
+                    "content": "Ollama response"
+                }
+            }));
+        });
+
+        let mut config = ChatbotConfig::default();
+        config.ollama.endpoint = server.url("");
+
+        // Add both Ollama and llama.cpp models
+        let ollama_profile = ModelProfile::for_ollama("test-ollama", "Test Ollama");
+        let llama_cpp_profile = ModelProfile {
+            id: "test-llamacpp".to_string(),
+            display_name: "Test LlamaCpp".to_string(),
+            provider: ModelProviderKind::LlamaCpp,
+            prompt_template: "{{context}}".to_string(),
+            resource_paths: vec!["/fake/path.gguf".to_string()],
+            parameters: Default::default(),
+        };
+        
+        config.models = vec![ollama_profile, llama_cpp_profile.clone()];
+        let service = ChatService::new(config);
+        let step_ctx = create_test_step_context();
+
+        // Test Ollama routing
+        let result = service.send_message(&step_ctx, &[], "test");
+        assert!(result.is_ok());
+        mock.assert();
+
+        // Test llama.cpp routing (should fail gracefully without real file)
+        let mut llama_config = ChatbotConfig::default();
+        llama_config.models = vec![llama_cpp_profile];
+        llama_config.default_model_id = "test-llamacpp".to_string();
+        let llama_service = ChatService::new(llama_config);
+        
+        let result = llama_service.send_message(&step_ctx, &[], "test");
+        assert!(result.is_err()); // Should fail due to missing GGUF file
+    }
 }

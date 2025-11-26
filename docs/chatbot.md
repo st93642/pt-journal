@@ -1,16 +1,19 @@
-# PT Journal Chatbot Integration Guide
+# PT Journal Multi-Model Chatbot Integration Guide
 
 ## Overview
 
-PT Journal includes persistent chatbot functionality that allows users to have AI-assisted conversations within tutorial steps. Chat history is automatically saved with session files, enabling continuity across application restarts.
+PT Journal includes persistent multi-model chatbot functionality that allows users to have AI-assisted conversations within tutorial steps. Chat history is automatically saved with session files, enabling continuity across application restarts. The system supports both Ollama-based models and local GGUF models via llama.cpp.
 
 ## Features
 
+- **Multi-Model Support**: Choose between Ollama and llama.cpp backends
 - **Persistent Conversations**: Chat history survives application restarts
 - **Per-Step Context**: Each tutorial step maintains its own conversation
 - **Role-Based Messages**: Distinguishes between user and assistant messages
 - **Timestamp Tracking**: All messages include UTC timestamps
-- **Configurable Backend**: Supports Ollama and other LLM endpoints
+- **Configurable Backend**: Supports Ollama and llama.cpp LLM endpoints
+- **Model Selector UI**: Dropdown to switch between available models dynamically
+- **Provider Abstraction**: Extensible ChatProvider trait for new backends
 
 ## Data Structures
 
@@ -115,21 +118,93 @@ Chat history is automatically saved and loaded with session files:
 
 ## Backend Integration
 
-### Ollama Configuration
+PT Journal supports multiple LLM backends through a provider abstraction system.
 
-Chatbot functionality integrates with configurable LLM backends. See [Configuration Guide](configuration.md) for setup details.
+### Ollama Provider
 
-Default configuration:
+For network-based LLM inference.
 
-- **Endpoint**: `http://localhost:11434`
-- **Default Model**: `llama3.2:latest`
+**Configuration**:
+```toml
+[chatbot.ollama]
+endpoint = "http://localhost:11434"
+timeout_seconds = 180
+```
+
+**Environment Variables**:
+```bash
+export PT_JOURNAL_OLLAMA_ENDPOINT="http://custom-ollama:8080"
+export PT_JOURNAL_OLLAMA_TIMEOUT_SECONDS="240"
+```
+
+### llama.cpp Provider
+
+For local GGUF model inference.
+
+**Configuration**:
+```toml
+[chatbot.llama_cpp]
+gguf_path = "/path/to/model.gguf"  # Optional
+context_tokens = 4096
+server_url = "http://localhost:8081"  # Optional future feature
+```
+
+**Environment Variables**:
+```bash
+export PT_JOURNAL_LLAMA_CPP_GGUF_PATH="/models/phi3.gguf"
+export PT_JOURNAL_LLAMA_CPP_CONTEXT_SIZE="8192"
+export PT_JOURNAL_LLAMA_CPP_SERVER_URL="http://localhost:8081"
+```
+
+### Model Profiles
+
+Configure available models in `~/.config/pt-journal/config.toml`:
+
+```toml
+[chatbot]
+default_model_id = "llama3.2:latest"
+
+[[chatbot.models]]
+id = "llama3.2:latest"
+display_name = "Meta Llama 3.2"
+provider = "ollama"
+prompt_template = "{{context}}"
+
+[[chatbot.models]]
+id = "local-phi3"
+display_name = "Phi-3 Mini (Local)"
+provider = "llama-cpp"
+prompt_template = "{{context}}"
+resource_paths = ["/models/phi3.gguf"]
+
+[[chatbot.models]]
+id = "mistral:7b"
+display_name = "Mistral 7B Instruct"
+provider = "ollama"
+prompt_template = "{{context}}"
+parameters = { temperature = 0.7, top_p = 0.9 }
+```
+
+### Default Seeded Models
+
+PT Journal includes 5 pre-configured Ollama models:
+- **Meta Llama 3.2** (`llama3.2:latest`) - Default
+- **Mistral 7B Instruct** (`mistral:7b`) - Fast, efficient
+- **Phi-3 Mini 4K** (`phi3:mini-4k-instruct`) - Small, capable
+- **Intel Neural Chat** (`neural-chat:latest`) - Conversational
+- **StarCoder** (`starcoder:latest`) - Code-focused
 
 ### Environment Variables
 
-```bash
-export PT_JOURNAL_OLLAMA_ENDPOINT="http://custom-ollama:8080"
-export PT_JOURNAL_CHATBOT_MODEL_ID="phi3:mini-4k-instruct"
-```
+| Variable | Maps To | Example |
+|----------|---------|---------|
+| `PT_JOURNAL_CHATBOT_MODEL_ID` | `chatbot.default_model_id` | `phi3:mini-4k-instruct` |
+| `PT_JOURNAL_OLLAMA_ENDPOINT` | `chatbot.ollama.endpoint` | `http://custom-ollama:8080` |
+| `PT_JOURNAL_OLLAMA_MODEL` | `chatbot.default_model_id` (legacy) | `mistral:7b` |
+| `PT_JOURNAL_OLLAMA_TIMEOUT_SECONDS` | `chatbot.ollama.timeout_seconds` | `240` |
+| `PT_JOURNAL_LLAMA_CPP_GGUF_PATH` | `chatbot.llama_cpp.gguf_path` | `/models/phi3.gguf` |
+| `PT_JOURNAL_LLAMA_CPP_CONTEXT_SIZE` | `chatbot.llama_cpp.context_tokens` | `8192` |
+| `PT_JOURNAL_LLAMA_CPP_SERVER_URL` | `chatbot.llama_cpp.server_url` | `http://localhost:8081` |
 
 ## Migration
 
@@ -152,12 +227,24 @@ impl Step {
 
 ## UI Integration
 
-### Planned Features
+### Model Selector
 
-- **Chat Interface**: Text input and message display per tutorial step
-- **Context Awareness**: Include step content in prompts
-- **Streaming Responses**: Real-time message updates
-- **Message Management**: Edit, delete, and search messages
+The chat panel includes a dropdown selector for switching between available models:
+
+- **Location**: Top of chat panel
+- **Functionality**: 
+  - Lists all configured models with display names
+  - Defaults to configured `default_model_id`
+  - Disabled during chat requests
+  - Updates active model immediately on selection
+
+### Chat Interface
+
+- **Message Input**: Multi-line text area with Enter/Shift+Enter handling
+- **Send Button**: Enabled when text is entered, disabled during requests
+- **History Display**: Scrollable list with user/assistant role labels
+- **Loading Indicator**: Spinner during model inference
+- **Error Display**: Banner for connection or model errors
 
 ### State Management
 
@@ -167,7 +254,17 @@ Chat messages are managed through the existing `AppModel` and UI state system:
 // Access current step's chat history
 let current_step = &app_model.session.phases[phase_idx].steps[step_idx];
 let chat_history = current_step.get_chat_history();
+
+// Change active model
+state_manager.set_chat_model("mistral:7b".to_string());
 ```
+
+### Planned Features
+
+- **Streaming Responses**: Real-time message updates
+- **Message Management**: Edit, delete, and search messages
+- **Model Parameters UI**: Adjust temperature, top_p, etc. per conversation
+- **Conversation Branching**: Alternative response exploration
 
 ## Security Considerations
 
@@ -220,12 +317,33 @@ pub trait ChatProvider {
 
 ## Troubleshooting
 
+### Backend-Specific Issues
+
+#### Ollama Backend
+
+| Symptom | Cause | Solution |
+|---------|-------|----------|
+| "Connection refused" | Ollama not running | Start with `ollama serve` |
+| "Model not found" | Model not downloaded | Run `ollama pull <model>` |
+| Slow responses | Model too large for RAM | Use smaller model or increase RAM |
+| Timeout errors | Slow inference or network | Increase `timeout_seconds` |
+
+#### llama.cpp Backend
+
+| Symptom | Cause | Solution |
+|---------|-------|----------|
+| "GGUF path not found" | Invalid file path | Check `gguf_path` in config or env var |
+| "Model load error" | Corrupted GGUF file | Re-download model file |
+| "Inference error" | Insufficient RAM | Use smaller context or model |
+| "Provider not available" | llama-cpp feature disabled | Build with `--features llama-cpp` |
+
 ### Common Issues
 
 1. **Messages Not Saving**: Check session file permissions
-2. **Large Histories**: Consider clearing old conversations
+2. **Large Histories**: Consider clearing old conversations  
 3. **Performance Issues**: Monitor session file sizes
-4. **Backend Connection**: Verify Ollama configuration
+4. **Model Selection Not Working**: Verify model profiles in config
+5. **Backend Switching**: Restart app after changing provider config
 
 ### Debugging
 
@@ -239,6 +357,24 @@ println!("Step has {} chat messages", step.get_chat_history().len());
 for msg in step.get_chat_history() {
     println!("{}: {}", msg.role, msg.content.len());
 }
+
+// Check available models
+let models = &app_model.config.chatbot.models;
+for profile in models {
+    println!("Model: {} ({})", profile.display_name, profile.provider);
+}
+```
+
+### Testing Backends
+
+```bash
+# Test Ollama
+curl http://localhost:11434/api/tags
+
+# Test llama.cpp (if using server mode)
+curl http://localhost:8081/completion -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "test", "n_predict": 10}'
 ```
 
 ## Testing

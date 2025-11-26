@@ -350,6 +350,18 @@ impl StateManager {
                 question_idx,
             ));
     }
+
+    /// Set the active chat model and persist to config
+    pub fn set_chat_model(&self, model_id: String) {
+        {
+            let mut model = self.model.borrow_mut();
+            model.set_active_chat_model_id(model_id.clone());
+            model.config.chatbot.default_model_id = model_id.clone();
+        }
+        self.dispatcher
+            .borrow()
+            .dispatch(&AppMessage::ChatModelChanged(model_id));
+    }
 }
 
 #[cfg(test)]
@@ -516,5 +528,30 @@ mod tests {
         assert!(msgs.iter().any(|m| m.contains("ChatRequestStarted")));
         assert!(msgs.iter().any(|m| m.contains("ChatRequestCompleted")));
         assert!(msgs.iter().any(|m| m.contains("ChatRequestFailed")));
+    }
+
+    #[test]
+    fn test_set_chat_model() {
+        let state = create_test_state();
+        let messages = Arc::new(Mutex::new(Vec::new()));
+        let msg_clone = messages.clone();
+
+        state.dispatcher.borrow_mut().register(
+            "test",
+            Box::new(move |msg| {
+                msg_clone.lock().unwrap().push(format!("{:?}", msg));
+            }),
+        );
+
+        state.set_chat_model("mistral:7b".to_string());
+
+        let model_id = {
+            let model = state.model.borrow();
+            model.active_chat_model_id.clone()
+        };
+        assert_eq!(model_id, "mistral:7b");
+
+        let msgs = messages.lock().unwrap();
+        assert!(msgs.iter().any(|m| m.contains("ChatModelChanged")));
     }
 }

@@ -487,18 +487,31 @@ pub struct AppModel {
     pub selected_step: Option<usize>,
     pub current_path: Option<PathBuf>,
     pub config: crate::config::AppConfig,
+    pub active_chat_model_id: String,
 }
 
 impl Default for AppModel {
     fn default() -> Self {
         let config = crate::config::AppConfig::load().unwrap_or_default();
+        let active_chat_model_id = config.chatbot.default_model_id.clone();
         Self {
             session: Session::default(),
             selected_phase: 0,
             selected_step: Some(0),
             current_path: None,
             config,
+            active_chat_model_id,
         }
+    }
+}
+
+impl AppModel {
+    pub fn get_active_chat_model_id(&self) -> String {
+        self.active_chat_model_id.clone()
+    }
+
+    pub fn set_active_chat_model_id(&mut self, model_id: String) {
+        self.active_chat_model_id = model_id;
     }
 }
 

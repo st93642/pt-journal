@@ -1,11 +1,12 @@
 use crate::model::{ChatMessage, ChatRole};
 use gtk4::prelude::*;
-use gtk4::{Box as GtkBox, Button, Label, ListBox, Orientation, ScrolledWindow, Spinner, TextView, TextBuffer};
+use gtk4::{Box as GtkBox, Button, ComboBoxText, Label, ListBox, Orientation, ScrolledWindow, Spinner, TextView, TextBuffer};
 
 /// Chat panel widget for displaying chat history and input
 #[derive(Clone)]
 pub struct ChatPanel {
     pub container: GtkBox,
+    pub model_combo: ComboBoxText,
     pub history_list: ListBox,
     pub input_textview: TextView,
     pub input_buffer: TextBuffer,
@@ -22,6 +23,10 @@ impl ChatPanel {
         container.set_margin_start(8);
         container.set_margin_end(8);
         container.add_css_class("chat-panel");
+
+        // Model selector
+        let model_combo = ComboBoxText::new();
+        model_combo.set_tooltip_text(Some("Select a chat model"));
 
         // Chat history
         let history_list = ListBox::new();
@@ -77,6 +82,7 @@ impl ChatPanel {
         });
 
         // Add to container
+        container.append(&model_combo);
         container.append(&history_scroll);
         container.append(&loading_spinner);
         container.append(&error_label);
@@ -84,6 +90,7 @@ impl ChatPanel {
 
         ChatPanel {
             container,
+            model_combo,
             history_list,
             input_textview,
             input_buffer,
@@ -160,6 +167,7 @@ impl ChatPanel {
         self.loading_spinner.start();
         self.send_button.set_sensitive(false);
         self.input_textview.set_sensitive(false);
+        self.model_combo.set_sensitive(false);
     }
 
     /// Hide loading indicator
@@ -168,6 +176,7 @@ impl ChatPanel {
         self.loading_spinner.stop();
         self.send_button.set_sensitive(true);
         self.input_textview.set_sensitive(true);
+        self.model_combo.set_sensitive(true);
     }
 
     /// Show error message
@@ -186,6 +195,29 @@ impl ChatPanel {
         let text = self.input_buffer.text(&self.input_buffer.start_iter(), &self.input_buffer.end_iter(), false);
         self.input_buffer.set_text("");
         text.to_string()
+    }
+
+    /// Populate the model combo with available models
+    pub fn populate_models(&self, models: &[(String, String)]) {
+        self.model_combo.remove_all();
+        for (model_id, display_name) in models {
+            self.model_combo.append(Some(model_id), display_name);
+        }
+    }
+
+    /// Set the active model in the combo by ID
+    pub fn set_active_model(&self, model_id: &str) {
+        self.model_combo.set_active_id(Some(model_id));
+    }
+
+    /// Get the currently selected model ID from the combo
+    pub fn get_active_model_id(&self) -> Option<String> {
+        self.model_combo.active_id().map(|s| s.to_string())
+    }
+
+    /// Set model combo sensitive state (disable while loading)
+    pub fn set_model_combo_sensitive(&self, sensitive: bool) {
+        self.model_combo.set_sensitive(sensitive);
     }
 }
 

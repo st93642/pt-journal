@@ -11,4 +11,11 @@ pub trait ChatProvider: Send + Sync {
 
     /// Get the provider name for identification
     fn provider_name(&self) -> &str;
+
+    /// Get list of available models from this provider
+    fn list_available_models(&self) -> Result<Vec<String>, ChatError> {
+        // Default implementation returns empty list
+        // Providers that support model listing should override this
+        Ok(Vec::new())
+    }
 }

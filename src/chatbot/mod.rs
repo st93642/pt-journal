@@ -1,10 +1,8 @@
-mod llama_cpp;
 mod ollama;
 mod provider;
 mod request;
 mod service;
 
-pub use llama_cpp::LlamaCppProvider;
 pub use ollama::OllamaProvider;
 pub use provider::ChatProvider;
 pub use request::{ChatRequest, StepContext};
@@ -21,20 +19,14 @@ pub enum ChatError {
     Http(#[from] reqwest::Error),
     #[error("Ollama service is not running or unreachable. Please ensure Ollama is installed and running. Visit https://ollama.ai for setup instructions.")]
     ServiceUnavailable,
+    #[error("Model '{0}' is not available in Ollama. Please pull the model first: ollama pull {0}")]
+    ModelNotFound(String),
     #[error("Invalid response from Ollama: {0}")]
     InvalidResponse(String),
     #[error("Connection timeout - Ollama took too long to respond")]
     Timeout,
     #[error("The configured chatbot provider '{0}' is not supported yet")]
     UnsupportedProvider(String),
-    #[error("GGUF model file not found: {0}\n\nPlease ensure the model file exists at the specified path.")]
-    GgufPathNotFound(String),
-    #[error("Failed to load GGUF model: {0}\n\nThis may indicate a corrupted model file or incompatible format.")]
-    ModelLoadError(String),
-    #[error(
-        "Inference error: {0}\n\nThis may indicate insufficient RAM or an incompatible model."
-    )]
-    InferenceError(String),
 }
 
 pub struct ContextBuilder;

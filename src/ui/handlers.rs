@@ -346,55 +346,6 @@ pub fn setup_notes_handlers(detail_panel: Rc<DetailPanel>, state: Rc<StateManage
     });
 }
 
-/// Wire up file operation buttons (Open, Save, Save As)
-#[allow(clippy::too_many_arguments)]
-pub fn setup_file_handlers(
-    btn_open: &Button,
-    window: &ApplicationWindow,
-    state: Rc<StateManager>,
-    detail_panel: Rc<DetailPanel>,
-    phase_combo: &gtk4::DropDown,
-    phase_combo_handler_id: Rc<glib::SignalHandlerId>,
-    steps_list: &ListBox,
-) {
-    // Cast window to gtk4::Window for file_ops
-    let window_glib = window.clone().upcast::<gtk4::Window>();
-
-    // Open button
-    let window_open = window_glib.clone();
-    let state_open = state.clone();
-    let detail_panel_open = detail_panel.clone();
-    let phase_combo_open = phase_combo.clone();
-    let phase_combo_handler_id_open = phase_combo_handler_id.clone();
-    let steps_list_open = steps_list.clone();
-
-    btn_open.connect_clicked(move |_| {
-        let window_clone = window_open.clone();
-        let state_clone = state_open.clone();
-        let detail_panel_clone = detail_panel_open.clone();
-        let phase_combo_clone = phase_combo_open.clone();
-        let handler_id_clone = phase_combo_handler_id_open.clone();
-        let steps_list_clone = steps_list_open.clone();
-
-        crate::ui::file_ops::open_session_dialog(&window_clone, move |session, path| {
-            {
-                let model_rc = state_clone.model();
-                let mut model = model_rc.borrow_mut();
-                model.session = session;
-                model.current_path = Some(path);
-                model.selected_phase = 0;
-                model.selected_step = None;
-            }
-
-            glib::signal::signal_handler_block(&phase_combo_clone, &handler_id_clone);
-            phase_combo_clone.set_selected(0);
-            glib::signal::signal_handler_unblock(&phase_combo_clone, &handler_id_clone);
-
-            rebuild_steps_list(&steps_list_clone, &state_clone.model(), &detail_panel_clone);
-        });
-    });
-}
-
 /// Wire up sidebar toggle button
 pub fn setup_sidebar_handler(btn_sidebar: &Button, left_box: &gtk4::Box) {
     let left_box_clone = left_box.clone();
@@ -410,19 +361,72 @@ pub fn setup_chat_handlers(detail_panel: Rc<DetailPanel>, state: Rc<StateManager
     let input_textview = chat_panel.input_textview.clone();
     let model_combo = chat_panel.model_combo.clone();
 
-    // Populate model combo with available models
+    // Initially populate model combo with empty list (will be updated asynchronously)
+    chat_panel.populate_models(&[]);
+
+    // Asynchronously update model combo with available Ollama models
     {
-        let model_rc = state.model();
-        let model = model_rc.borrow();
-        let models: Vec<(String, String)> = model
-            .config
-            .chatbot
-            .models
-            .iter()
-            .map(|m| (m.id.clone(), m.display_name.clone()))
-            .collect();
-        chat_panel.populate_models(&models);
-        chat_panel.set_active_model(&model.active_chat_model_id);
+        let chat_panel_async = chat_panel.clone();
+        let state_async = state.clone();
+        glib::idle_add_local(move || {
+            let config = {
+                let model_rc = state_async.model();
+                let model = model_rc.borrow();
+                model.config.chatbot.clone()
+            };
+
+            let service = crate::chatbot::ChatService::new(config);
+            match service.list_available_models() {
+                Ok(available_models) => {
+                    if !available_models.is_empty() {
+                        // Create display names for available models
+                        let models: Vec<(String, String)> = available_models
+                            .into_iter()
+                            .map(|model_id| {
+                                // Try to find display name from config, otherwise use model_id
+                                let display_name = {
+                                    let model_rc = state_async.model();
+                                    let model = model_rc.borrow();
+                                    model.config.chatbot.models
+                                        .iter()
+                                        .find(|m| m.id == model_id)
+                                        .map(|m| m.display_name.clone())
+                                        .unwrap_or_else(|| model_id.clone())
+                                };
+                                (model_id, display_name)
+                            })
+                            .collect();
+
+                        // Update UI with available models
+                        chat_panel_async.populate_models(&models);
+
+                        // Try to set the active model again (it might be available now)
+                        let active_model_id = {
+                            let model_rc = state_async.model();
+                            let model = model_rc.borrow();
+                            model.active_chat_model_id.clone()
+                        };
+                        if !chat_panel_async.set_active_model(&active_model_id) {
+                            // Active model not available, set to first available model
+                            if let Some(first_model) = models.first() {
+                                let model_rc = state_async.model();
+                                let mut model_mut = model_rc.borrow_mut();
+                                model_mut.active_chat_model_id = first_model.0.clone();
+                            }
+                        }
+                    } else {
+                        // No models available - show error
+                        chat_panel_async.show_error("No models available in Ollama. Please pull a model first: ollama pull llama3.2:latest");
+                    }
+                }
+                Err(e) => {
+                    // Failed to get available models - show error
+                    let error_msg = format!("Failed to connect to Ollama: {}", e);
+                    chat_panel_async.show_error(&error_msg);
+                }
+            }
+            glib::ControlFlow::Break
+        });
     }
 
     // Model combo change handler

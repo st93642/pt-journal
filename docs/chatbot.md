@@ -1,19 +1,19 @@
-# PT Journal Multi-Model Chatbot Integration Guide
+# PT Journal Chatbot Integration Guide
 
 ## Overview
 
-PT Journal includes persistent multi-model chatbot functionality that allows users to have AI-assisted conversations within tutorial steps. Chat history is automatically saved with session files, enabling continuity across application restarts. The system supports both Ollama-based models and local GGUF models via llama.cpp.
+PT Journal includes persistent chatbot functionality that allows users to have AI-assisted conversations within tutorial steps. Chat history is automatically saved with session files, enabling continuity across application restarts. The system supports Ollama-based models for local AI assistance.
 
 ## Features
 
-- **Multi-Model Support**: Choose between Ollama and llama.cpp backends
+- **Ollama Integration**: Network-based LLM server for local AI assistance
 - **Persistent Conversations**: Chat history survives application restarts
 - **Per-Step Context**: Each tutorial step maintains its own conversation
 - **Role-Based Messages**: Distinguishes between user and assistant messages
 - **Timestamp Tracking**: All messages include UTC timestamps
-- **Configurable Backend**: Supports Ollama and llama.cpp LLM endpoints
+- **Configurable Backend**: Supports Ollama LLM endpoints
 - **Model Selector UI**: Dropdown to switch between available models dynamically
-- **Provider Abstraction**: Extensible ChatProvider trait for new backends
+- **Provider Abstraction**: Extensible ChatProvider trait for future backends
 
 ## Data Structures
 
@@ -118,7 +118,7 @@ Chat history is automatically saved and loaded with session files:
 
 ## Backend Integration
 
-PT Journal supports multiple LLM backends through a provider abstraction system.
+PT Journal supports Ollama for local LLM inference through a provider abstraction system.
 
 ### Ollama Provider
 
@@ -139,56 +139,19 @@ export PT_JOURNAL_OLLAMA_ENDPOINT="http://custom-ollama:8080"
 export PT_JOURNAL_OLLAMA_TIMEOUT_SECONDS="240"
 ```
 
-### llama.cpp Provider
-
-For local GGUF model inference.
-
-**Features**:
-
-- Local GGUF model inference with threading
-- 30-second timeout to prevent hanging on slow models
-- Model caching with `Arc<Mutex<HashMap>>`
-- Context window configuration
-- Feature-gated (`llama-cpp` feature)
-- Stub implementation for testing without feature
-
-**Configuration**:
-
-```toml
-[chatbot.llama_cpp]
-gguf_path = "/path/to/model.gguf"  # Optional
-context_tokens = 4096
-server_url = "http://localhost:8081"  # Optional future feature
-```
-
-**Environment Variables**:
-
-```bash
-export PT_JOURNAL_LLAMA_CPP_GGUF_PATH="/models/phi3.gguf"
-export PT_JOURNAL_LLAMA_CPP_CONTEXT_SIZE="8192"
-export PT_JOURNAL_LLAMA_CPP_SERVER_URL="http://localhost:8081"
-```
-
 ### Model Profiles
 
 Configure available models in `~/.config/pt-journal/config.toml`:
 
 ```toml
 [chatbot]
-default_model_id = "llama3.2:latest"
+default_model_id = "llama3.2"
 
 [[chatbot.models]]
-id = "llama3.2:latest"
+id = "llama3.2"
 display_name = "Meta Llama 3.2"
 provider = "ollama"
 prompt_template = "{{context}}"
-
-[[chatbot.models]]
-id = "local-phi3"
-display_name = "Phi-3 Mini (Local)"
-provider = "llama-cpp"
-prompt_template = "{{context}}"
-resource_paths = ["/models/phi3.gguf"]
 
 [[chatbot.models]]
 id = "mistral:7b"
@@ -202,7 +165,7 @@ parameters = { temperature = 0.7, top_p = 0.9 }
 
 PT Journal includes 5 pre-configured Ollama models:
 
-- **Meta Llama 3.2** (`llama3.2:latest`) - Default
+- **Meta Llama 3.2** (`llama3.2`) - Default
 - **Mistral 7B Instruct** (`mistral:7b`) - Fast, efficient
 - **Phi-3 Mini 4K** (`phi3:mini-4k-instruct`) - Small, capable
 - **Intel Neural Chat** (`neural-chat:latest`) - Conversational
@@ -216,9 +179,6 @@ PT Journal includes 5 pre-configured Ollama models:
 | `PT_JOURNAL_OLLAMA_ENDPOINT` | `chatbot.ollama.endpoint` | `http://custom-ollama:8080` |
 | `PT_JOURNAL_OLLAMA_MODEL` | `chatbot.default_model_id` (legacy) | `mistral:7b` |
 | `PT_JOURNAL_OLLAMA_TIMEOUT_SECONDS` | `chatbot.ollama.timeout_seconds` | `240` |
-| `PT_JOURNAL_LLAMA_CPP_GGUF_PATH` | `chatbot.llama_cpp.gguf_path` | `/models/phi3.gguf` |
-| `PT_JOURNAL_LLAMA_CPP_CONTEXT_SIZE` | `chatbot.llama_cpp.context_tokens` | `8192` |
-| `PT_JOURNAL_LLAMA_CPP_SERVER_URL` | `chatbot.llama_cpp.server_url` | `http://localhost:8081` |
 
 ## Migration
 
@@ -332,16 +292,6 @@ pub trait ChatProvider {
 | Slow responses | Model too large for RAM | Use smaller model or increase RAM |
 | Timeout errors | Slow inference or network | Increase `timeout_seconds` |
 
-#### llama.cpp Backend
-
-| Symptom | Cause | Solution |
-|---------|-------|----------|
-| "GGUF path not found" | Invalid file path | Check `gguf_path` in config or env var |
-| "Model load error" | Corrupted GGUF file | Re-download model file |
-| "Inference error" | Insufficient RAM | Use smaller context or model |
-| "Timeout error" | Model inference taking too long | Wait or use faster model (30s timeout) |
-| "Provider not available" | llama-cpp feature disabled | Build with `--features llama-cpp` |
-
 ### Common Issues
 
 1. **Messages Not Saving**: Check session file permissions
@@ -375,11 +325,6 @@ for profile in models {
 ```bash
 # Test Ollama
 curl http://localhost:11434/api/tags
-
-# Test llama.cpp (if using server mode)
-curl http://localhost:8081/completion -X POST \
-  -H "Content-Type: application/json" \
-  -d '{"prompt": "test", "n_predict": 10}'
 ```
 
 ## Testing

@@ -5,7 +5,7 @@
 /*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
 /*                                                          TT         SS II */
 /*  Created: Nov 25 2025 14:30 st93642                      TT    SSSSSSS II */
-/*  Updated: Nov 26 2025 15:32 st93642                                       */
+/*  Updated: Nov 26 2025 17:58 st93642                                       */
 /*                                                                           */
 /*   Transport and Telecommunication Institute - Riga, Latvia                */
 /*                       https://tsi.lv                                      */
@@ -17,10 +17,9 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 const DEFAULT_PROMPT_TEMPLATE: &str = "{{context}}";
-const DEFAULT_MODEL_ID: &str = "deepseek-r1-distill-qwen-32b";
+const DEFAULT_MODEL_ID: &str = "llama3.2:latest";
 const DEFAULT_OLLAMA_ENDPOINT: &str = "http://localhost:11434";
 const DEFAULT_OLLAMA_TIMEOUT: u64 = 180;
-const DEFAULT_LLAMA_CPP_CONTEXT: u32 = 4096;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChatbotConfig {
@@ -32,9 +31,6 @@ pub struct ChatbotConfig {
 
     #[serde(default)]
     pub ollama: OllamaProviderConfig,
-
-    #[serde(default)]
-    pub llama_cpp: LlamaCppProviderConfig,
 
     #[serde(skip_serializing, default, alias = "endpoint")]
     legacy_endpoint: Option<String>,
@@ -52,7 +48,6 @@ impl Default for ChatbotConfig {
             default_model_id: default_chatbot_model_id(),
             models: default_model_profiles(),
             ollama: OllamaProviderConfig::default(),
-            llama_cpp: LlamaCppProviderConfig::default(),
             legacy_endpoint: None,
             legacy_model: None,
             legacy_timeout_seconds: None,
@@ -169,14 +164,12 @@ impl ModelProfile {
 #[serde(rename_all = "kebab-case")]
 pub enum ModelProviderKind {
     Ollama,
-    LlamaCpp,
 }
 
 impl std::fmt::Display for ModelProviderKind {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             ModelProviderKind::Ollama => write!(f, "ollama"),
-            ModelProviderKind::LlamaCpp => write!(f, "llama-cpp"),
         }
     }
 }
@@ -194,26 +187,6 @@ impl Default for OllamaProviderConfig {
         Self {
             endpoint: default_ollama_endpoint(),
             timeout_seconds: default_ollama_timeout(),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct LlamaCppProviderConfig {
-    #[serde(default)]
-    pub server_url: Option<String>,
-    #[serde(default)]
-    pub gguf_path: Option<String>,
-    #[serde(default = "default_llama_cpp_context_tokens")]
-    pub context_tokens: u32,
-}
-
-impl Default for LlamaCppProviderConfig {
-    fn default() -> Self {
-        Self {
-            server_url: None,
-            gguf_path: None,
-            context_tokens: default_llama_cpp_context_tokens(),
         }
     }
 }
@@ -286,20 +259,6 @@ impl AppConfig {
                 self.chatbot.ollama.timeout_seconds = timeout;
             }
         }
-
-        if let Ok(path) = env::var("PT_JOURNAL_LLAMA_CPP_GGUF_PATH") {
-            self.chatbot.llama_cpp.gguf_path = Some(path);
-        }
-
-        if let Ok(context_size) = env::var("PT_JOURNAL_LLAMA_CPP_CONTEXT_SIZE") {
-            if let Ok(tokens) = context_size.parse::<u32>() {
-                self.chatbot.llama_cpp.context_tokens = tokens;
-            }
-        }
-
-        if let Ok(url) = env::var("PT_JOURNAL_LLAMA_CPP_SERVER_URL") {
-            self.chatbot.llama_cpp.server_url = Some(url);
-        }
     }
 
     fn config_file_path() -> PathBuf {
@@ -324,49 +283,14 @@ fn default_chatbot_model_id() -> String {
 
 fn default_model_profiles() -> Vec<ModelProfile> {
     vec![
-        // GGUF models (default priority)
-        ModelProfile {
-            id: "deepseek-r1-distill-qwen-32b".to_string(),
-            display_name: "DeepSeek R1 Distill Qwen 32B".to_string(),
-            provider: ModelProviderKind::LlamaCpp,
-            prompt_template: "{{context}}".to_string(),
-            resource_paths: vec!["models/DeepSeek-R1-Distill-Qwen-32B-Q4_K_M.gguf".to_string()],
-            parameters: ModelParameters {
-                temperature: Some(0.6),
-                top_p: Some(0.95),
-                num_predict: Some(512),
-                ..Default::default()
-            },
-        },
-        ModelProfile {
-            id: "qwen2.5-7b-instruct".to_string(),
-            display_name: "Qwen 2.5 7B Instruct".to_string(),
-            provider: ModelProviderKind::LlamaCpp,
-            prompt_template: "{{context}}".to_string(),
-            resource_paths: vec!["models/Qwen2.5-7B-Instruct-Q4_K_M.gguf".to_string()],
-            parameters: ModelParameters {
-                temperature: Some(0.7),
-                top_p: Some(0.8),
-                num_predict: Some(256),
-                ..Default::default()
-            },
-        },
-        ModelProfile {
-            id: "deepseek-r1-distill-qwen-1.5b".to_string(),
-            display_name: "DeepSeek R1 Distill Qwen 1.5B".to_string(),
-            provider: ModelProviderKind::LlamaCpp,
-            prompt_template: "{{context}}".to_string(),
-            resource_paths: vec!["models/DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M.gguf".to_string()],
-            parameters: ModelParameters {
-                temperature: Some(0.6),
-                top_p: Some(0.95),
-                num_predict: Some(256),
-                ..Default::default()
-            },
-        },
-        // Ollama models (fallback)
+        // Ollama models (primary - requires Ollama server)
         ModelProfile::for_ollama("llama3.2:latest", "Meta Llama 3.2 (Ollama)"),
         ModelProfile::for_ollama("mistral:7b", "Mistral 7B Instruct (Ollama)"),
+        ModelProfile::for_ollama("llama3.1:8b", "Meta Llama 3.1 8B (Ollama)"),
+        ModelProfile::for_ollama("codellama:7b", "Code Llama 7B (Ollama)"),
+        ModelProfile::for_ollama("deepseek-coder:6.7b", "DeepSeek Coder 6.7B (Ollama)"),
+        ModelProfile::for_ollama("qwen2.5:7b", "Qwen 2.5 7B (Ollama)"),
+        ModelProfile::for_ollama("phi3:14b", "Phi-3 14B (Ollama)"),
         ModelProfile::for_ollama("phi3:mini-4k-instruct", "Phi-3 Mini 4K (Ollama)"),
         ModelProfile::for_ollama("neural-chat:latest", "Intel Neural Chat (Ollama)"),
         ModelProfile::for_ollama("starcoder:latest", "StarCoder (Ollama)"),
@@ -381,10 +305,6 @@ fn default_ollama_timeout() -> u64 {
     DEFAULT_OLLAMA_TIMEOUT
 }
 
-fn default_llama_cpp_context_tokens() -> u32 {
-    DEFAULT_LLAMA_CPP_CONTEXT
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -396,9 +316,6 @@ mod tests {
         env::remove_var("PT_JOURNAL_OLLAMA_MODEL");
         env::remove_var("PT_JOURNAL_OLLAMA_ENDPOINT");
         env::remove_var("PT_JOURNAL_OLLAMA_TIMEOUT_SECONDS");
-        env::remove_var("PT_JOURNAL_LLAMA_CPP_GGUF_PATH");
-        env::remove_var("PT_JOURNAL_LLAMA_CPP_CONTEXT_SIZE");
-        env::remove_var("PT_JOURNAL_LLAMA_CPP_SERVER_URL");
     }
 
     #[test]
@@ -406,7 +323,7 @@ mod tests {
         let config = AppConfig::default();
         assert_eq!(
             config.chatbot.default_model_id,
-            "deepseek-r1-distill-qwen-32b"
+            "llama3.2:latest"
         );
         assert!(config
             .chatbot
@@ -435,7 +352,7 @@ mod tests {
         let config = AppConfig::load().unwrap();
         assert_eq!(
             config.chatbot.default_model_id,
-            "deepseek-r1-distill-qwen-32b"
+            "llama3.2:latest"
         );
         assert_eq!(config.chatbot.ollama.endpoint, "http://localhost:11434");
 
@@ -454,17 +371,12 @@ mod tests {
         let mut config = AppConfig::default();
         config.chatbot.default_model_id = "mistral:7b".to_string();
         config.chatbot.ollama.endpoint = "http://custom:8080".to_string();
-        config.chatbot.llama_cpp.gguf_path = Some("/models/custom.gguf".to_string());
 
         config.save_to_path(&config_path).unwrap();
         let loaded = AppConfig::load_from_path(&config_path).unwrap();
 
         assert_eq!(loaded.chatbot.default_model_id, "mistral:7b");
         assert_eq!(loaded.chatbot.ollama.endpoint, "http://custom:8080");
-        assert_eq!(
-            loaded.chatbot.llama_cpp.gguf_path.as_deref(),
-            Some("/models/custom.gguf")
-        );
     }
 
     #[test]
@@ -485,11 +397,6 @@ mod tests {
         assert_eq!(config.chatbot.default_model_id, "phi3:mini-4k-instruct");
         assert_eq!(config.chatbot.ollama.endpoint, "http://env:9090");
         assert_eq!(config.chatbot.ollama.timeout_seconds, 90);
-        assert_eq!(
-            config.chatbot.llama_cpp.gguf_path.as_deref(),
-            Some("/models/phi3.gguf")
-        );
-        assert_eq!(config.chatbot.llama_cpp.context_tokens, 8192);
 
         clear_chatbot_env();
         if let Ok(original) = original_xdg {
@@ -558,7 +465,6 @@ timeout_seconds = 42
             default_model_id: String::new(),
             models: Vec::new(),
             ollama: OllamaProviderConfig::default(),
-            llama_cpp: LlamaCppProviderConfig::default(),
             legacy_endpoint: None,
             legacy_model: None,
             legacy_timeout_seconds: None,

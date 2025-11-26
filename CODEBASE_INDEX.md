@@ -160,7 +160,7 @@ pt-journal/
 
 **Configuration Sources** (in priority order):
 
-1. Environment variables (`PT_JOURNAL_CHATBOT_MODEL_ID`, `PT_JOURNAL_OLLAMA_ENDPOINT`, `PT_JOURNAL_OLLAMA_MODEL`, `PT_JOURNAL_LLAMA_CPP_GGUF_PATH`, `PT_JOURNAL_LLAMA_CPP_CONTEXT_SIZE`)
+1. Environment variables (`PT_JOURNAL_CHATBOT_MODEL_ID`, `PT_JOURNAL_OLLAMA_ENDPOINT`, `PT_JOURNAL_OLLAMA_MODEL`)
 2. TOML file (`~/.config/pt-journal/config.toml`)
 3. Default values (localhost:11434 Ollama endpoint, llama3.2:latest model)
 
@@ -170,7 +170,7 @@ pt-journal/
 - Automatic directory creation
 - TOML serialization with pretty formatting
 - Environment variable overrides for containerized deployments
-- Provider-specific settings (Ollama HTTP + llama.cpp resource paths)
+- Provider-specific settings (Ollama HTTP endpoint and timeout)
 - Thread-safe loading with error handling
 
 **Usage Pattern**:
@@ -195,14 +195,13 @@ chatbot/
 ├── provider.rs      # ChatProvider trait definition (15 lines)
 ├── request.rs       # ChatRequest and StepContext (40 lines)
 ├── service.rs       # ChatService router (157 lines)
-├── ollama.rs       # OllamaProvider implementation (317 lines)
-└── llama_cpp.rs     # LlamaCppProvider implementation (459 lines)
+└── ollama.rs       # OllamaProvider implementation (317 lines)
 ```
 
 **Key Types**:
 
 - `ChatService` - Main router with provider selection
-- `ChatProvider` - Trait for different backends (Ollama, llama.cpp)
+- `ChatProvider` - Trait for different backends (Ollama)
 - `ChatRequest` - Bundles step context, history, prompt, model profile
 - `StepContext` - Current step context (phase, step, status, counts)
 - `ModelProfile` - Model configuration with provider and parameters
@@ -225,14 +224,6 @@ pub trait ChatProvider: Send + Sync {
 - Configurable timeout and endpoint
 - Handles connection errors, timeouts, invalid responses
 
-**llama.cpp Provider** (Optional Feature):
-
-- Local GGUF model inference
-- Model caching with `Arc<Mutex<HashMap>>`
-- Context window configuration
-- Feature-gated (`llama-cpp` feature)
-- Stub implementation for testing without feature
-
 **Configuration System**:
 
 - **Model Profiles**: 5 seeded Ollama models + custom profiles
@@ -248,7 +239,7 @@ pub trait ChatProvider: Send + Sync {
 
 **Testing**:
 
-- 20+ provider tests (Ollama + llama.cpp)
+- 20+ provider tests (Ollama)
 - httpmock for API mocking
 - Provider routing verification
 - Parameter handling validation
@@ -287,31 +278,17 @@ pub trait ChatProvider: Send + Sync {
 
 ### 4. Store Layer (`src/store.rs`) - 273 lines
 
-**Purpose**: Session persistence with folder structure.
+**Purpose**: Session loading functionality.
 
 **Key Functions**:
 
 - `load_session(path)` - Loads from session.json
-- `default_sessions_dir()` - Returns ~/Downloads/pt-journal-sessions/
-
-**Storage Structure**:
-
-```text
-~/Downloads/pt-journal-sessions/
-└── session-name/
-    ├── session.json     # Full session data
-    └── evidence/        # Tool outputs, screenshots
-        ├── Nov021430_0.txt
-        └── Nov021445_1.png
-```
 
 **Features**:
 
 - Accepts folder path OR file path (auto-detects)
-- Creates evidence/ subdirectory automatically
 - Preserves timestamps and UUIDs exactly
 - Handles Unicode (UTF-8) correctly
-- Creates parent directories as needed
 - Idempotent - overwriting is safe
 
 ### 3. Tools Layer (`src/tools/`) - 5 files, 2,413 lines

@@ -1,15 +1,10 @@
-# Multi-Model Setup Guide for PT Journal
+# Ollama Setup Guide for PT Journal
 
-This guide explains how to set up multiple LLM backends for PT Journal's chatbot feature, including Ollama and llama.cpp support.
+This guide explains how to set up Ollama for PT Journal's chatbot feature, providing local AI assistance for penetration testing workflows.
 
 ## Overview
 
-PT Journal integrates with multiple LLM backends to provide local AI assistance for penetration testing workflows. The chatbot helps users understand methodology, interpret results, and get guidance on next steps.
-
-## Supported Backends
-
-1. **Ollama** - Network-based LLM server (recommended for most users)
-2. **llama.cpp** - Local GGUF model inference (advanced users)
+PT Journal integrates with Ollama to provide local AI assistance for penetration testing workflows. The chatbot helps users understand methodology, interpret results, and get guidance on next steps.
 
 ## Prerequisites
 
@@ -19,8 +14,6 @@ PT Journal integrates with multiple LLM backends to provide local AI assistance 
 - Optional: GPU for accelerated inference
 
 ## Quick Start
-
-### Option 1: Ollama (Recommended)
 
 ```bash
 # Install Ollama
@@ -34,22 +27,6 @@ ollama pull llama3.2
 
 # Run PT Journal
 cargo run
-```
-
-### Option 2: llama.cpp (Advanced)
-
-```bash
-# Build PT Journal with llama-cpp support
-cargo build --features llama-cpp
-
-# Download a GGUF model (example: Phi-3 Mini)
-wget https://huggingface.co/microsoft/Phi-3-mini-4k-instruct-gguf/resolve/main/Phi-3-mini-4k-instruct-q4.gguf
-
-# Configure model path
-export PT_JOURNAL_LLAMA_CPP_GGUF_PATH="/path/to/Phi-3-mini-4k-instruct-q4.gguf"
-
-# Run PT Journal
-cargo run --features llama-cpp
 ```
 
 ## Ollama Installation
@@ -78,9 +55,9 @@ ollama serve
 
 Download the installer from [ollama.ai](https://ollama.ai) and run it.
 
-## Recommended Models
+## Model Setup
 
-PT Journal includes 5 pre-configured Ollama models. Install them with:
+PT Journal dynamically loads all available Ollama models at runtime. Simply install the models you want to use:
 
 ```bash
 # Default model (installed automatically)
@@ -89,7 +66,7 @@ ollama pull llama3.2
 # Fast, efficient model
 ollama pull mistral:7b
 
-# Small, capable model  
+# Small, capable model
 ollama pull phi3:mini-4k-instruct
 
 # Conversational model
@@ -101,7 +78,7 @@ ollama pull starcoder:latest
 
 ### Alternative Models
 
-You can use other models by adding them to the configuration:
+You can install any Ollama-compatible model:
 
 ```bash
 # Larger models (require more RAM)
@@ -111,67 +88,6 @@ ollama pull llama3.1:70b   # 70B parameters (requires significant RAM)
 # Specialized models
 ollama pull codellama      # Code-focused model
 ollama pull qwen:7b        # Multilingual model
-```
-
-## llama.cpp Setup (Advanced)
-
-### Building with llama-cpp Support
-
-PT Journal includes optional llama.cpp support for local GGUF inference:
-
-```bash
-# Build with llama-cpp feature
-cargo build --features llama-cpp
-
-# Or run directly
-cargo run --features llama-cpp
-```
-
-### Downloading GGUF Models
-
-GGUF models are single files that contain the entire model. Popular sources:
-
-1. **Hugging Face** - <https://huggingface.co/models?search=gguf>
-2. **TheBloke's Models** - <https://huggingface.co/TheBloke>
-
-**Recommended GGUF Models**:
-
-```bash
-# Phi-3 Mini (4K context, ~2GB)
-wget https://huggingface.co/microsoft/Phi-3-mini-4k-instruct-gguf/resolve/main/Phi-3-mini-4k-instruct-q4.gguf
-
-# Mistral 7B (8K context, ~4GB) 
-wget https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.2-GGUF/resolve/main/mistral-7b-instruct-v0.2.Q4_K_M.gguf
-
-# Llama 3.2 3B (128K context, ~2GB)
-wget https://huggingface.co/bartowski/Llama-3.2-3B-Instruct-GGUF/resolve/main/Llama-3.2-3B-Instruct-Q4_K_M.gguf
-```
-
-### llama.cpp Configuration
-
-Create `~/.config/pt-journal/config.toml`:
-
-```toml
-[chatbot]
-default_model_id = "local-phi3"
-
-[[chatbot.models]]
-id = "local-phi3"
-display_name = "Phi-3 Mini (Local)"
-provider = "llama-cpp"
-prompt_template = "{{context}}"
-resource_paths = ["/path/to/Phi-3-mini-4k-instruct-q4.gguf"]
-
-[chatbot.llama_cpp]
-gguf_path = "/path/to/Phi-3-mini-4k-instruct-q4.gguf"
-context_tokens = 4096
-```
-
-**Environment Variables**:
-
-```bash
-export PT_JOURNAL_LLAMA_CPP_GGUF_PATH="/path/to/model.gguf"
-export PT_JOURNAL_LLAMA_CPP_CONTEXT_SIZE="8192"
 ```
 
 ## Testing the Setup
@@ -185,39 +101,22 @@ curl http://localhost:11434/api/tags
 
 You should see JSON output listing available models.
 
-### Verify GGUF Models (llama.cpp)
-
-```bash
-# Check if GGUF file exists and is readable
-ls -la /path/to/model.gguf
-file /path/to/model.gguf
-
-# Test with PT Journal (with llama-cpp feature)
-cargo run --features llama-cpp
-```
-
 ### Test with PT Journal
 
 1. Start PT Journal: `cargo run`
 2. Navigate to any tutorial step
 3. Open the chat panel (should show model selector)
-4. Select a model from the dropdown
+4. Select a model from the dropdown (all available Ollama models will be listed)
 5. Ask a question about the current step
 6. The assistant should respond with pentesting guidance
 
 ### Verify Model Selection
 
-The model selector dropdown should show:
-
-- All configured Ollama models (if Ollama is running)
-- All configured llama.cpp models (if GGUF paths are valid)
-- Default model should be pre-selected
+The model selector dropdown will dynamically show all available Ollama models. The first available model will be pre-selected as default.
 
 ## Troubleshooting
 
-### Backend-Specific Issues
-
-#### Ollama Backend
+### Ollama Backend Issues
 
 | Symptom | Cause | Solution |
 |---------|-------|----------|
@@ -225,15 +124,6 @@ The model selector dropdown should show:
 | "Model not found" | Model not downloaded | Run `ollama pull <model>` |
 | Slow responses | Model too large for RAM | Use smaller model or increase RAM |
 | Timeout errors | Slow inference or network | Increase `timeout_seconds` in config |
-
-#### llama.cpp Backend
-
-| Symptom | Cause | Solution |
-|---------|-------|----------|
-| "GGUF path not found" | Invalid file path | Check `gguf_path` in config or env var |
-| "Model load error" | Corrupted GGUF file | Re-download model file |
-| "Inference error" | Insufficient RAM | Use smaller context or model |
-| "Provider not available" | llama-cpp feature disabled | Build with `--features llama-cpp` |
 
 ### Common Issues
 
@@ -284,29 +174,6 @@ ollama list
 - Increase timeout in config: `timeout_seconds = 60`
 - Use a faster model
 - Check system resources (CPU/RAM usage)
-
-#### llama.cpp Issues
-
-**GGUF File Problems**:
-
-```bash
-# Verify file integrity
-md5sum model.gguf
-# Compare with expected hash from source
-
-# Check file permissions
-chmod 644 model.gguf
-```
-
-**Memory Issues**:
-
-```bash
-# Reduce context size
-export PT_JOURNAL_LLAMA_CPP_CONTEXT_SIZE="2048"
-
-# Use smaller model
-# Download a quantized version (Q2, Q3)
-```
 
 ### Performance Tuning
 
@@ -367,7 +234,7 @@ Ensure the remote server has proper authentication and network security.
 
 ### Multiple Models
 
-Configure different models for different purposes:
+Install different models for different purposes:
 
 ```bash
 # Download multiple models
@@ -376,7 +243,7 @@ ollama pull codellama     # Code analysis
 ollama pull mistral       # Fast responses
 ```
 
-Switch models by updating the configuration file.
+All models will be available in the PT Journal model selector.
 
 ## Security Considerations
 

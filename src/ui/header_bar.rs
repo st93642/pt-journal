@@ -1,21 +1,17 @@
-/// Header bar module with Open/Save/Save As buttons and sidebar toggle
+/// Header bar module with sidebar toggle
 use gtk4::prelude::*;
 use gtk4::{Button, HeaderBar};
 
 /// Create the application header bar
-pub fn create_header_bar() -> (HeaderBar, Button, Button) {
+pub fn create_header_bar() -> (HeaderBar, Button) {
     let header = HeaderBar::new();
-
-    let btn_open = Button::from_icon_name("document-open-symbolic");
-    btn_open.set_tooltip_text(Some("Open session"));
 
     let btn_sidebar = Button::from_icon_name("view-sidebar-start-symbolic");
     btn_sidebar.set_tooltip_text(Some("Toggle sidebar"));
 
-    header.pack_start(&btn_open);
     header.pack_start(&btn_sidebar);
 
-    (header, btn_open, btn_sidebar)
+    (header, btn_sidebar)
 }
 
 #[cfg(test)]

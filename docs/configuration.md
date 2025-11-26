@@ -1,8 +1,8 @@
-# PT Journal Multi-Model Configuration Guide
+# PT Journal Configuration Guide
 
 ## Overview
 
-PT Journal supports configurable settings for multi-model chatbot integration and other features through a TOML configuration file. Configuration can be customized per-user and supports environment variable overrides for containerized deployments. The system supports both Ollama and llama.cpp backends.
+PT Journal supports configurable settings for Ollama chatbot integration and other features through a TOML configuration file. Configuration can be customized per-user and supports environment variable overrides for containerized deployments.
 
 ## Configuration File Location
 
@@ -17,42 +17,27 @@ The directory is created automatically when the application first saves configur
 
 ```toml
 [chatbot]
-default_model_id = "llama3.2:latest"
+default_model_id = "llama3.2"
 
 [[chatbot.models]]
-id = "llama3.2:latest"
+id = "llama3.2"
 display_name = "Meta Llama 3.2"
 provider = "ollama"
 prompt_template = "{{context}}"
 
-[[chatbot.models]]
-id = "local-phi3"
-display_name = "Phi-3 Mini (Local)"
-provider = "llama-cpp"
-prompt_template = "{{context}}"
-resource_paths = ["/models/phi3.gguf"]
-
 [chatbot.ollama]
 endpoint = "http://localhost:11434"
 timeout_seconds = 180
-
-[chatbot.llama_cpp]
-gguf_path = "/opt/llms/custom.gguf"
-context_tokens = 4096
-server_url = "http://localhost:8081"  # Optional
 ```
 
 ### Chatbot Configuration
 
 | Setting | Type | Default | Description |
 |---------|------|---------|-------------|
-| `default_model_id` | string | `"llama3.2:latest"` | Model profile ID used for chats |
+| `default_model_id` | string | `"llama3.2"` | Model profile ID used for chats |
 | `[[chatbot.models]]` | array of tables | 5 seed profiles | Offline model definitions (id, provider, template, resources) |
 | `[chatbot.ollama].endpoint` | string | `"http://localhost:11434"` | Ollama API endpoint URL |
 | `[chatbot.ollama].timeout_seconds` | integer | `180` | HTTP timeout for Ollama requests |
-| `[chatbot.llama_cpp].gguf_path` | string | `null` | Optional llama.cpp GGUF path |
-| `[chatbot.llama_cpp].context_tokens` | integer | `4096` | llama.cpp context window (tokens) |
-| `[chatbot.llama_cpp].server_url` | string | `null` | Optional llama.cpp server URL |
 
 ### Model Profile Configuration
 
@@ -62,7 +47,7 @@ Each `[[chatbot.models]]` entry supports these fields:
 |-------|------|----------|-------------|
 | `id` | string | Yes | Unique model identifier |
 | `display_name` | string | Yes | Human-readable name for UI |
-| `provider` | string | Yes | `"ollama"` or `"llama-cpp"` |
+| `provider` | string | Yes | `"ollama"` |
 | `prompt_template` | string | Yes | Template for prompts (e.g., `"{{context}}"`) |
 | `resource_paths` | array | No | File paths for llama.cpp models |
 | `parameters` | table | No | Model parameters (temperature, top_p, etc.) |
@@ -96,20 +81,13 @@ Settings are loaded in the following priority order (highest to lowest):
 | `PT_JOURNAL_OLLAMA_ENDPOINT` | `chatbot.ollama.endpoint` | `http://custom-ollama:8080` |
 | `PT_JOURNAL_OLLAMA_MODEL` | `chatbot.default_model_id` (legacy alias) | `mistral:7b` |
 | `PT_JOURNAL_OLLAMA_TIMEOUT_SECONDS` | `chatbot.ollama.timeout_seconds` | `240` |
-| `PT_JOURNAL_LLAMA_CPP_GGUF_PATH` | `chatbot.llama_cpp.gguf_path` | `/models/phi3.gguf` |
-| `PT_JOURNAL_LLAMA_CPP_CONTEXT_SIZE` | `chatbot.llama_cpp.context_tokens` | `8192` |
-| `PT_JOURNAL_LLAMA_CPP_SERVER_URL` | `chatbot.llama_cpp.server_url` | `http://localhost:8081` |
 
 ### Usage Examples
 
 ```bash
 # Use custom Ollama instance
-export PT_JOURNAL_OLLAMA_ENDPOINT="http://192.168.1.100:11434"
+export PT_JOURNAL_OLLAMA_ENDPOINT="http://custom-ollama:8080"
 export PT_JOURNAL_CHATBOT_MODEL_ID="codellama:13b"
-
-# Use local GGUF model
-export PT_JOURNAL_LLAMA_CPP_GGUF_PATH="/models/phi3.gguf"
-export PT_JOURNAL_LLAMA_CPP_CONTEXT_SIZE="8192"
 
 # Run PT Journal
 cargo run
@@ -119,7 +97,6 @@ cargo run
 # Docker container with custom config
 docker run -e PT_JOURNAL_OLLAMA_ENDPOINT=http://host.docker.internal:11434 \
            -e PT_JOURNAL_CHATBOT_MODEL_ID=phi3:mini-4k-instruct \
-           -e PT_JOURNAL_LLAMA_CPP_GGUF_PATH=/app/models/phi3.gguf \
            pt-journal
 ```
 
@@ -147,7 +124,6 @@ If no configuration file exists and no environment variables are set, PT Journal
 - **Default Model ID**: `llama3.2:latest` (Meta Llama 3.2)
 - **Seeded Model Profiles**: 5 Ollama models (Llama 3.2, Mistral 7B, Phi-3 Mini, Intel Neural-Chat, StarCoder)
 - **Timeout**: `180s` for Ollama requests
-- **llama.cpp Context**: `4096` tokens (GGUF path unset)
 
 ### Default Seeded Models
 
@@ -155,7 +131,7 @@ PT Journal includes these pre-configured Ollama models:
 
 ```toml
 [[chatbot.models]]
-id = "llama3.2:latest"
+id = "llama3.2"
 display_name = "Meta Llama 3.2"
 provider = "ollama"
 
@@ -200,15 +176,14 @@ provider = "ollama"
 ### Chatbot Connection Issues
 
 1. **Ollama**: Verify Ollama is running: `curl http://localhost:11434/api/tags`
-2. **llama.cpp**: Check GGUF file exists and is readable
-3. Ensure model is available in the configured backend
-4. Verify provider field matches backend (`"ollama"` or `"llama-cpp"`)
+2. Ensure model is available in the configured backend
+3. Verify provider field matches backend (`"ollama"`)
 
 ### Model Selection Issues
 
 1. Check that `default_model_id` matches an entry in `[[chatbot.models]]`
 2. Verify model profile has all required fields
-3. Ensure provider-specific fields are correct (GGUF paths for llama.cpp)
+3. Ensure provider-specific fields are correct
 4. Restart application after configuration changes
 
 ### Environment Variables Not Working

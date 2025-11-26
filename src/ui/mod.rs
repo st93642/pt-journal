@@ -1,6 +1,5 @@
 pub mod chat_panel;
 pub mod detail_panel;
-pub mod file_ops;
 pub mod handlers;
 pub mod header_bar;
 pub mod main;

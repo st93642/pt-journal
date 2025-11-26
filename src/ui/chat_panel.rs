@@ -211,20 +211,33 @@ impl ChatPanel {
 
     /// Populate the model combo with available models
     pub fn populate_models(&self, models: &[(String, String)]) {
-        let model_list = StringList::new(&[]);
-        let mut model_ids = Vec::new();
-        for (model_id, display_name) in models {
-            model_list.append(display_name);
-            model_ids.push(model_id.clone());
+        if models.is_empty() {
+            // No models available - disable combo and clear it
+            let model_list = StringList::new(&["No models available"]);
+            self.model_combo.set_model(Some(&model_list));
+            *self.model_ids.borrow_mut() = Vec::new();
+            self.model_combo.set_sensitive(false);
+        } else {
+            let model_list = StringList::new(&[]);
+            let mut model_ids = Vec::new();
+            for (model_id, display_name) in models {
+                model_list.append(display_name);
+                model_ids.push(model_id.clone());
+            }
+            self.model_combo.set_model(Some(&model_list));
+            *self.model_ids.borrow_mut() = model_ids;
+            self.model_combo.set_sensitive(true);
         }
-        self.model_combo.set_model(Some(&model_list));
-        *self.model_ids.borrow_mut() = model_ids;
     }
 
     /// Set the active model in the combo by ID
-    pub fn set_active_model(&self, model_id: &str) {
+    /// Returns true if the model was found and selected, false otherwise
+    pub fn set_active_model(&self, model_id: &str) -> bool {
         if let Some(index) = self.model_ids.borrow().iter().position(|id| id == model_id) {
             self.model_combo.set_selected(index as u32);
+            true
+        } else {
+            false
         }
     }
 

@@ -5,7 +5,7 @@
 /*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
 /*                                                          TT         SS II */
 /*  Created: Nov 21 2025 23:43 st93642                      TT    SSSSSSS II */
-/*  Updated: Nov 26 2025 16:20 st93642                                       */
+/*  Updated: Nov 26 2025 18:16 st93642                                       */
 /*                                                                           */
 /*   Transport and Telecommunication Institute - Riga, Latvia                */
 /*                       https://tsi.lv                                      */
@@ -13,34 +13,11 @@
 
 use crate::model::*;
 use anyhow::Result;
-use directories::UserDirs;
-use std::fs;
-use std::path::{Path, PathBuf};
-
-#[allow(dead_code)]
-pub fn default_sessions_dir() -> PathBuf {
-    // Try to use the user's Downloads folder
-    if let Some(user_dirs) = UserDirs::new() {
-        if let Some(download_dir) = user_dirs.download_dir() {
-            let path = download_dir.join("pt-journal-sessions");
-            if let Err(e) = fs::create_dir_all(&path) {
-                eprintln!("Failed to create sessions directory in Downloads: {}", e);
-                // Fall back to current directory
-                return PathBuf::from("./pt-journal-sessions");
-            }
-            return path;
-        }
-    }
-
-    // Fallback: create in current directory
-    let path = PathBuf::from("./pt-journal-sessions");
-    let _ = fs::create_dir_all(&path);
-    path
-}
+use std::path::Path;
 
 #[allow(dead_code)]
 pub fn load_session(path: &Path) -> Result<Session> {
-    let content = fs::read_to_string(path)?;
+    let content = std::fs::read_to_string(path)?;
     let mut session: Session = serde_json::from_str(&content)?;
 
     // Migrate legacy step data to new StepContent format
@@ -58,17 +35,6 @@ mod tests {
     use super::*;
     use std::fs;
     use tempfile::TempDir;
-
-    #[test]
-    fn test_default_sessions_directory() {
-        // Test that default directory logic works
-        let path = default_sessions_dir();
-        // Should contain pt-journal-sessions in the path
-        assert!(path.to_string_lossy().contains("pt-journal-sessions"));
-        // The directory should be created and exist
-        assert!(path.exists());
-        assert!(path.is_dir());
-    }
 
     #[test]
     fn test_load_malformed_json() {

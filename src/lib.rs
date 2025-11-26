@@ -5,7 +5,7 @@
 /*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
 /*                                                          TT         SS II */
 /*  Created: Nov 21 2025 23:42 st93642                      TT    SSSSSSS II */
-/*  Updated: Nov 26 2025 16:24 st93642                                       */
+/*  Updated: Nov 26 2025 17:58 st93642                                       */
 /*                                                                           */
 /*   Transport and Telecommunication Institute - Riga, Latvia                */
 /*                       https://tsi.lv                                      */
@@ -48,7 +48,7 @@ mod tests {
             );
             assert_eq!(
                 model.config.chatbot.default_model_id,
-                "deepseek-r1-distill-qwen-32b"
+                "llama3.2:latest"
             );
         }
 

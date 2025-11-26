@@ -146,7 +146,11 @@ impl ChatProvider for OllamaProvider {
         })?;
 
         if !response.status().is_success() {
-            return Err(ChatError::ServiceUnavailable);
+            if response.status() == reqwest::StatusCode::NOT_FOUND {
+                return Err(ChatError::ModelNotFound(request.model_profile.id.clone()));
+            } else {
+                return Err(ChatError::ServiceUnavailable);
+            }
         }
 
         let resp_json: serde_json::Value = response.json().map_err(ChatError::Http)?;
@@ -174,6 +178,37 @@ impl ChatProvider for OllamaProvider {
 
     fn provider_name(&self) -> &str {
         "ollama"
+    }
+
+    /// Get list of available models from Ollama
+    fn list_available_models(&self) -> Result<Vec<String>, ChatError> {
+        let url = format!("{}/api/tags", self.config.endpoint.trim_end_matches('/'));
+
+        let response = self.client.get(&url).send().map_err(|e| {
+            if e.is_connect() {
+                ChatError::ServiceUnavailable
+            } else {
+                ChatError::Http(e)
+            }
+        })?;
+
+        if !response.status().is_success() {
+            return Err(ChatError::ServiceUnavailable);
+        }
+
+        let resp_json: serde_json::Value = response.json().map_err(ChatError::Http)?;
+
+        let models = resp_json["models"]
+            .as_array()
+            .ok_or_else(|| ChatError::InvalidResponse("Missing models array in response".to_string()))?;
+
+        let model_names = models
+            .iter()
+            .filter_map(|model| model["name"].as_str())
+            .map(|name| name.to_string())
+            .collect();
+
+        Ok(model_names)
     }
 }
 
@@ -294,15 +329,40 @@ mod tests {
     }
 
     #[test]
-    fn test_send_message_service_unavailable() {
+    fn test_list_available_models_success() {
+        let server = MockServer::start();
+        let mock = server.mock(|when, then| {
+            when.method("GET").path("/api/tags");
+            then.status(200).json_body(serde_json::json!({
+                "models": [
+                    {"name": "llama3.2:latest"},
+                    {"name": "mistral:7b"},
+                    {"name": "codellama:7b"}
+                ]
+            }));
+        });
+
+        let mut config = OllamaProviderConfig::default();
+        config.endpoint = server.url("");
+        let provider = OllamaProvider::new(config);
+
+        let result = provider.list_available_models();
+        assert!(result.is_ok());
+        let models = result.unwrap();
+        assert_eq!(models.len(), 3);
+        assert!(models.contains(&"llama3.2:latest".to_string()));
+        assert!(models.contains(&"mistral:7b".to_string()));
+        assert!(models.contains(&"codellama:7b".to_string()));
+        mock.assert();
+    }
+
+    #[test]
+    fn test_list_available_models_service_unavailable() {
         let mut config = OllamaProviderConfig::default();
         config.endpoint = "http://invalid:1234".to_string();
-        config.timeout_seconds = 1;
-
-        let (request, _) = create_test_request("mistral:7b", "http://invalid:1234");
         let provider = OllamaProvider::new(config);
-        let result = provider.send_message(&request);
 
+        let result = provider.list_available_models();
         assert!(matches!(result, Err(ChatError::ServiceUnavailable)));
     }
 }

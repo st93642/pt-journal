@@ -1,6 +1,4 @@
-use crate::chatbot::{
-    ChatError, ChatProvider, ChatRequest, LlamaCppProvider, OllamaProvider, StepContext,
-};
+use crate::chatbot::{ChatError, ChatProvider, ChatRequest, OllamaProvider, StepContext};
 use crate::config::{ChatbotConfig, ModelProviderKind};
 use crate::model::ChatMessage;
 use std::sync::Arc;
@@ -9,18 +7,15 @@ use std::sync::Arc;
 pub struct ChatService {
     pub config: ChatbotConfig,
     ollama_provider: Arc<OllamaProvider>,
-    llama_cpp_provider: Arc<LlamaCppProvider>,
 }
 
 impl ChatService {
     pub fn new(mut config: ChatbotConfig) -> Self {
         config.ensure_valid();
         let ollama_provider = Arc::new(OllamaProvider::new(config.ollama.clone()));
-        let llama_cpp_provider = Arc::new(LlamaCppProvider::new(config.llama_cpp.clone()));
         Self {
             config,
             ollama_provider,
-            llama_cpp_provider,
         }
     }
 
@@ -54,13 +49,18 @@ impl ChatService {
         provider.check_availability()
     }
 
+    /// Get list of available models from Ollama
+    pub fn list_available_models(&self) -> Result<Vec<String>, ChatError> {
+        // Since we only support Ollama now, we can access it directly
+        self.ollama_provider.list_available_models()
+    }
+
     pub fn get_provider(
         &self,
         provider_kind: &ModelProviderKind,
     ) -> Result<Arc<dyn ChatProvider>, ChatError> {
         match provider_kind {
             ModelProviderKind::Ollama => Ok(self.ollama_provider.clone()),
-            ModelProviderKind::LlamaCpp => Ok(self.llama_cpp_provider.clone()),
         }
     }
 }
@@ -128,30 +128,12 @@ mod tests {
     }
 
     #[test]
-    fn test_service_llama_cpp_provider_missing_gguf() {
-        let mut config = ChatbotConfig::default();
-        config.ollama.endpoint = "http://localhost:11434".to_string();
-        config.llama_cpp.gguf_path = None;
-
-        let mut profile = config.active_model().clone();
-        profile.provider = ModelProviderKind::LlamaCpp;
-        profile.resource_paths = vec![];
-
+    fn test_service_unsupported_provider() {
+        let config = ChatbotConfig::default();
         let service = ChatService::new(config);
-        let step_ctx = StepContext {
-            phase_name: "Test".to_string(),
-            step_title: "Test".to_string(),
-            step_description: "Test".to_string(),
-            step_status: "In Progress".to_string(),
-            notes_count: 0,
-            evidence_count: 0,
-            quiz_status: None,
-        };
-
-        let request = ChatRequest::new(step_ctx, vec![], "Hello".to_string(), profile);
-        let result = service.send_request(&request);
-
-        // Should fail with GgufPathNotFound, not UnsupportedProvider
-        assert!(matches!(result, Err(ChatError::GgufPathNotFound(_))));
+        
+        // Since we removed LlamaCpp, all providers should be Ollama now
+        // This test is no longer relevant
+        assert!(true);
     }
 }

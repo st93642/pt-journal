@@ -92,7 +92,7 @@ pub fn build_ui(app: &Application, model: AppModel) {
     );
 
     // Header bar with Open/Save and Sidebar toggle
-    let (header, btn_open, btn_sidebar) = crate::ui::header_bar::create_header_bar();
+    let (header, btn_sidebar) = crate::ui::header_bar::create_header_bar();
     window.set_titlebar(Some(&header));
 
     // Left panel: phase selector + steps list
@@ -161,17 +161,6 @@ pub fn build_ui(app: &Application, model: AppModel) {
 
     // Chat panel handlers
     crate::ui::handlers::setup_chat_handlers(detail_panel_ref.clone(), state.clone());
-
-    // File operation handlers
-    crate::ui::handlers::setup_file_handlers(
-        &btn_open,
-        &window,
-        state.clone(),
-        detail_panel_ref.clone(),
-        &phase_combo,
-        phase_handler_id,
-        &steps_list,
-    );
 
     // Sidebar toggle handler
     crate::ui::handlers::setup_sidebar_handler(&btn_sidebar, &left_box);

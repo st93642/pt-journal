@@ -1,6 +1,6 @@
 use gtk4::glib;
 use gtk4::prelude::*;
-use gtk4::{ApplicationWindow, Button, CheckButton, ListBox, gdk};
+use gtk4::{gdk, ApplicationWindow, Button, CheckButton, ListBox};
 use std::cell::RefCell;
 use std::rc::Rc;
 

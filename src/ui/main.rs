@@ -84,7 +84,7 @@ pub fn build_ui(app: &Application, model: AppModel) {
         }
         "#,
     );
-    
+
     gtk4::style_context_add_provider_for_display(
         &gtk4::gdk::Display::default().unwrap(),
         &css_provider,
@@ -92,8 +92,7 @@ pub fn build_ui(app: &Application, model: AppModel) {
     );
 
     // Header bar with Open/Save and Sidebar toggle
-    let (header, btn_open, btn_sidebar) =
-        crate::ui::header_bar::create_header_bar();
+    let (header, btn_open, btn_sidebar) = crate::ui::header_bar::create_header_bar();
     window.set_titlebar(Some(&header));
 
     // Left panel: phase selector + steps list

@@ -1,4 +1,6 @@
-use crate::chatbot::{ChatError, ChatProvider, ChatRequest, OllamaProvider, LlamaCppProvider, StepContext};
+use crate::chatbot::{
+    ChatError, ChatProvider, ChatRequest, LlamaCppProvider, OllamaProvider, StepContext,
+};
 use crate::config::{ChatbotConfig, ModelProviderKind};
 use crate::model::ChatMessage;
 use std::sync::Arc;
@@ -115,6 +117,7 @@ mod tests {
 
         let mut config = ChatbotConfig::default();
         config.ollama.endpoint = server.url("");
+        config.default_model_id = "llama3.2:latest".to_string(); // Use Ollama model for this test
 
         let service = ChatService::new(config);
         let result = service.check_availability();
@@ -149,9 +152,6 @@ mod tests {
         let result = service.send_request(&request);
 
         // Should fail with GgufPathNotFound, not UnsupportedProvider
-        assert!(matches!(
-            result,
-            Err(ChatError::GgufPathNotFound(_))
-        ));
+        assert!(matches!(result, Err(ChatError::GgufPathNotFound(_))));
     }
 }

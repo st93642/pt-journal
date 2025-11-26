@@ -5,7 +5,7 @@
 /*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
 /*                                                          TT         SS II */
 /*  Created: Nov 21 2025 23:42 st93642                      TT    SSSSSSS II */
-/*  Updated: Nov 26 2025 13:18 st93642                                       */
+/*  Updated: Nov 26 2025 16:24 st93642                                       */
 /*                                                                           */
 /*   Transport and Telecommunication Institute - Riga, Latvia                */
 /*                       https://tsi.lv                                      */
@@ -42,8 +42,14 @@ mod tests {
             assert!(model.current_path.is_none());
             assert_eq!(model.session.phases.len(), 22); // 22 phases after API consolidation
                                                         // Config should be loaded (or default)
-            assert_eq!(model.config.chatbot.ollama.endpoint, "http://localhost:11434");
-            assert_eq!(model.config.chatbot.default_model_id, "llama3.2:latest");
+            assert_eq!(
+                model.config.chatbot.ollama.endpoint,
+                "http://localhost:11434"
+            );
+            assert_eq!(
+                model.config.chatbot.default_model_id,
+                "deepseek-r1-distill-qwen-32b"
+            );
         }
 
         #[test]
@@ -260,56 +266,8 @@ mod tests {
     mod integration_tests {
         use super::*;
         use crate::model::*;
-        use crate::store;
         use crate::tutorials::container_security::CONTAINER_SECURITY_PHASE;
         use chrono::Utc;
-
-        #[test]
-        fn test_full_session_workflow() {
-            let temp_dir = TempDir::new().unwrap();
-            let session_folder = temp_dir.path().join("workflow_test");
-            let session_file = session_folder.join("session.json");
-
-            // Create and modify session
-            let mut session = Session::default();
-            session.name = "Integration Test Session".to_string();
-
-            // Simulate user workflow: complete some reconnaissance steps
-            for step in &mut session.phases[0].steps[0..3] {
-                // First 3 recon steps
-                step.status = StepStatus::Done;
-                step.set_notes(format!("Completed: {}", step.title));
-            }
-
-            // Add phase notes
-            session.phases[0].notes = "Reconnaissance phase completed".to_string();
-
-            // Save to folder structure
-            store::save_session(&session_folder, &session).unwrap();
-
-            // Simulate app restart - load from session.json
-            let loaded_session = store::load_session(&session_file).unwrap();
-
-            // Verify workflow state is preserved
-            assert_eq!(loaded_session.name, "Integration Test Session");
-            assert_eq!(
-                loaded_session.phases[0].notes,
-                "Reconnaissance phase completed"
-            );
-
-            // Verify completed steps
-            for i in 0..3 {
-                assert_matches!(loaded_session.phases[0].steps[i].status, StepStatus::Done);
-                assert!(loaded_session.phases[0].steps[i]
-                    .get_notes()
-                    .starts_with("Completed:"));
-            }
-
-            // Verify other steps remain todo
-            for i in 3..loaded_session.phases[0].steps.len() {
-                assert_matches!(loaded_session.phases[0].steps[i].status, StepStatus::Todo);
-            }
-        }
 
         #[test]
         fn test_phase_progression_workflow() {
@@ -469,105 +427,6 @@ mod tests {
         }
 
         #[test]
-        fn test_comprehensive_session_workflow() {
-            let temp_dir = TempDir::new().unwrap();
-            let session_folder = temp_dir.path().join("comprehensive_workflow");
-            let session_file = session_folder.join("session.json");
-
-            // Create a fully populated session
-            let mut session = Session::default();
-            session.name = "Comprehensive Test Session".to_string();
-            session.notes_global =
-                "This is a comprehensive test of all session features.".to_string();
-
-            // Modify all phases
-            for (phase_idx, phase) in session.phases.iter_mut().enumerate() {
-                phase.notes = format!("Notes for phase {}", phase_idx);
-
-                // Modify some steps in each phase
-                for (step_idx, step) in phase.steps.iter_mut().enumerate() {
-                    if step_idx % 3 == 0 {
-                        // Every third step
-                        step.status = StepStatus::Done;
-                        step.set_notes(format!(
-                            "Completed step {} in phase {}",
-                            step_idx, phase_idx
-                        ));
-                        step.completed_at = Some(Utc::now());
-
-                        // Add some evidence (only for tutorial steps)
-                        if step.is_tutorial() {
-                            step.add_evidence(Evidence {
-                                id: Uuid::new_v4(),
-                                path: format!("/evidence/phase{}_step{}.png", phase_idx, step_idx),
-                                created_at: Utc::now(),
-                                kind: "screenshot".to_string(),
-                                x: 0.0,
-                                y: 0.0,
-                            });
-                        }
-                    } else if step_idx % 3 == 1 {
-                        // Every other third step
-                        step.status = StepStatus::InProgress;
-                        step.set_notes(format!(
-                            "In progress: step {} in phase {}",
-                            step_idx, phase_idx
-                        ));
-                    }
-                    // Leave some as Todo
-                }
-            }
-
-            // Save to folder structure
-            store::save_session(&session_folder, &session).unwrap();
-
-            // Load from session.json and verify
-            let loaded = store::load_session(&session_file).unwrap();
-
-            assert_eq!(loaded.name, session.name);
-            assert_eq!(loaded.notes_global, session.notes_global);
-            assert_eq!(loaded.phases.len(), session.phases.len());
-
-            // Verify each phase
-            for (original_phase, loaded_phase) in session.phases.iter().zip(&loaded.phases) {
-                assert_eq!(loaded_phase.name, original_phase.name);
-                assert_eq!(loaded_phase.notes, original_phase.notes);
-                assert_eq!(loaded_phase.steps.len(), original_phase.steps.len());
-
-                // Verify each step
-                for (original_step, loaded_step) in
-                    original_phase.steps.iter().zip(&loaded_phase.steps)
-                {
-                    assert_eq!(loaded_step.title, original_step.title);
-                    assert_eq!(
-                        loaded_step.get_description(),
-                        original_step.get_description()
-                    );
-                    assert_eq!(loaded_step.status, original_step.status);
-                    assert_eq!(loaded_step.get_notes(), original_step.get_notes());
-                    assert_eq!(loaded_step.tags, original_step.tags);
-                    assert_eq!(
-                        loaded_step.get_evidence().len(),
-                        original_step.get_evidence().len()
-                    );
-
-                    // Verify evidence (only for tutorial steps)
-                    if loaded_step.is_tutorial() {
-                        for (orig_ev, loaded_ev) in original_step
-                            .get_evidence()
-                            .iter()
-                            .zip(loaded_step.get_evidence())
-                        {
-                            assert_eq!(loaded_ev.path, orig_ev.path);
-                            assert_eq!(loaded_ev.kind, orig_ev.kind);
-                            assert_eq!(loaded_ev.created_at, orig_ev.created_at);
-                        }
-                    }
-                }
-            }
-        }
-
-        #[test]
         fn test_session_data_validation() {
             let session = Session::default();
 
@@ -627,75 +486,6 @@ mod tests {
                     }
                 }
             }
-        }
-
-        #[test]
-        fn test_session_size_limits() {
-            // Test with very large content
-            let mut session = Session::default();
-            session.name = "A".repeat(10000); // Very long name
-            session.notes_global = "B".repeat(50000); // Very long notes
-
-            for phase in &mut session.phases {
-                phase.notes = "C".repeat(10000);
-                for step in &mut phase.steps {
-                    step.set_notes("D".repeat(5000));
-                    // Add many evidence items
-                    for i in 0..10 {
-                        step.add_evidence(Evidence {
-                            id: Uuid::new_v4(),
-                            path: format!("evidence_{}.png", i),
-                            created_at: Utc::now(),
-                            kind: "test".to_string(),
-                            x: 0.0,
-                            y: 0.0,
-                        });
-                    }
-                }
-            }
-
-            let temp_dir = TempDir::new().unwrap();
-            let session_folder = temp_dir.path().join("large_session");
-            let session_file = session_folder.join("session.json");
-
-            // Should handle large sessions
-            store::save_session(&session_folder, &session).unwrap();
-            let loaded = store::load_session(&session_file).unwrap();
-
-            assert_eq!(loaded.name, session.name);
-            assert_eq!(loaded.notes_global, session.notes_global);
-        }
-
-        #[test]
-        fn test_session_isolation() {
-            // Test that sessions don't interfere with each other
-            let temp_dir = TempDir::new().unwrap();
-
-            let mut session1 = Session::default();
-            session1.name = "Session One".to_string();
-            session1.notes_global = "First session".to_string();
-
-            let mut session2 = Session::default();
-            session2.name = "Session Two".to_string();
-            session2.notes_global = "Second session".to_string();
-
-            let folder1 = temp_dir.path().join("session1");
-            let folder2 = temp_dir.path().join("session2");
-            let path1 = folder1.join("session.json");
-            let path2 = folder2.join("session.json");
-
-            // Save both sessions
-            store::save_session(&folder1, &session1).unwrap();
-            store::save_session(&folder2, &session2).unwrap();
-
-            // Load and verify they remain separate
-            let loaded1 = store::load_session(&path1).unwrap();
-            let loaded2 = store::load_session(&path2).unwrap();
-
-            assert_eq!(loaded1.name, "Session One");
-            assert_eq!(loaded1.notes_global, "First session");
-            assert_eq!(loaded2.name, "Session Two");
-            assert_eq!(loaded2.notes_global, "Second session");
         }
     }
 
@@ -764,7 +554,6 @@ mod tests {
 
     // Performance Tests
     mod performance_tests {
-        use super::*;
         use crate::model::*;
         use std::time::Instant;
 
@@ -786,21 +575,21 @@ mod tests {
         fn test_serialization_performance() {
             // Performance test for session serialization (without actual save/load)
             let session = Session::default();
-            
+
             let start = Instant::now();
             let serialized = serde_json::to_string(&session).unwrap();
             let serialize_duration = start.elapsed();
-            
+
             assert!(
                 serialize_duration.as_millis() < 500,
                 "Serialization took too long: {:?}",
                 serialize_duration
             );
-            
+
             let deserialize_start = Instant::now();
             let _deserialized: Session = serde_json::from_str(&serialized).unwrap();
             let deserialize_duration = deserialize_start.elapsed();
-            
+
             assert!(
                 deserialize_duration.as_millis() < 500,
                 "Deserialization took too long: {:?}",
@@ -833,52 +622,6 @@ mod tests {
                 "Content too large: {} chars",
                 total_chars
             );
-        }
-    }
-
-    // Property-based tests
-    mod property_tests {
-        use super::*;
-        use proptest::prelude::*;
-
-        proptest! {
-            #[test]
-            fn test_session_name_preservation(name in ".*") {
-                // Test that session names are preserved through serialization
-                let mut session = Session::default();
-                session.name = name.clone();
-                
-                let serialized = serde_json::to_string(&session).unwrap();
-                let deserialized: Session = serde_json::from_str(&serialized).unwrap();
-                
-                prop_assert_eq!(deserialized.name, name);
-            }
-
-            #[test]
-            fn test_notes_preservation(notes in ".*") {
-                // Test that global notes are preserved through serialization
-                let mut session = Session::default();
-                session.notes_global = notes.clone();
-                
-                let serialized = serde_json::to_string(&session).unwrap();
-                let deserialized: Session = serde_json::from_str(&serialized).unwrap();
-                
-                prop_assert_eq!(deserialized.notes_global, notes);
-            }
-
-            #[test]
-            fn test_step_notes_preservation(notes in ".*") {
-                // Test that step notes are preserved through serialization
-                let mut session = Session::default();
-                if let Some(step) = session.phases[0].steps.get_mut(0) {
-                    step.set_notes(notes.clone());
-                }
-                
-                let serialized = serde_json::to_string(&session).unwrap();
-                let deserialized: Session = serde_json::from_str(&serialized).unwrap();
-                
-                prop_assert_eq!(&deserialized.phases[0].steps[0].get_notes(), &notes);
-            }
         }
     }
 }

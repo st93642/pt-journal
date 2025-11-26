@@ -133,10 +133,7 @@ impl ChatProvider for OllamaProvider {
             payload["num_predict"] = serde_json::json!(num_predict);
         }
 
-        let url = format!(
-            "{}/api/chat",
-            self.config.endpoint.trim_end_matches('/')
-        );
+        let url = format!("{}/api/chat", self.config.endpoint.trim_end_matches('/'));
 
         let response = self.client.post(&url).json(&payload).send().map_err(|e| {
             if e.is_timeout() {
@@ -164,17 +161,13 @@ impl ChatProvider for OllamaProvider {
     fn check_availability(&self) -> Result<bool, ChatError> {
         let url = format!("{}/api/tags", self.config.endpoint.trim_end_matches('/'));
 
-        let response = self
-            .client
-            .get(&url)
-            .send()
-            .map_err(|e| {
-                if e.is_connect() {
-                    ChatError::ServiceUnavailable
-                } else {
-                    ChatError::Http(e)
-                }
-            })?;
+        let response = self.client.get(&url).send().map_err(|e| {
+            if e.is_connect() {
+                ChatError::ServiceUnavailable
+            } else {
+                ChatError::Http(e)
+            }
+        })?;
 
         Ok(response.status().is_success())
     }
@@ -244,11 +237,10 @@ mod tests {
     #[test]
     fn test_send_message_with_parameters() {
         let server = MockServer::start();
-        
+
         // Just verify the request is made successfully when parameters are set
         let mock = server.mock(|when, then| {
-            when.method("POST")
-                .path("/api/chat");
+            when.method("POST").path("/api/chat");
             then.status(200).json_body(serde_json::json!({
                 "message": {
                     "content": "Response with params"
@@ -266,7 +258,7 @@ mod tests {
 
         assert!(result.is_ok());
         mock.assert();
-        
+
         // The important part is that the code doesn't fail when parameters are present
         // The actual parameter values are applied in the payload construction (lines 116-127)
     }

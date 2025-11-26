@@ -291,7 +291,6 @@ pub trait ChatProvider: Send + Sync {
 
 **Key Functions**:
 
-- `save_session(path, session)` - Saves to JSON with evidence folder
 - `load_session(path)` - Loads from session.json
 - `default_sessions_dir()` - Returns ~/Downloads/pt-journal-sessions/
 
@@ -374,7 +373,7 @@ let config = ToolConfig::builder()
 - `chat_panel.rs` - Chat history, input, and message display
 - `quiz_widget.rs` - MCQ display + statistics
 - `tool_execution.rs` - Nmap/Gobuster UI with terminal output
-- `header_bar.rs` - Open/Save buttons
+- `header_bar.rs` - App toolbar (39 lines)
 - `file_ops.rs` - File dialogs (async)
 
 **Removed Components** (replaced by chatbot):
@@ -514,7 +513,6 @@ What is the CIA triad?|Confidentiality, Integrity, Availability|...|...|...|0|Th
 |------------|---------|---------|
 | `tempfile` | 3.8 | Temporary test directories |
 | `assert_matches` | 1.5 | Pattern matching assertions |
-| `proptest` | 1.0 | Property-based testing |
 
 ## 🧪 Testing Infrastructure
 
@@ -534,10 +532,6 @@ tests/
 │   ├── Full session workflow
 │   ├── Tool execution pipeline
 │   └── UI interaction scenarios
-└── Property tests (proptest)
-    ├── Session name preservation
-    ├── Notes preservation
-    └── Unicode handling
 ```
 
 ### Test Coverage
@@ -546,7 +540,7 @@ tests/
 - **Pass Rate**: 100%
 - **Coverage Areas**:
   - Model layer: Session, Phase, Step, Evidence, Quiz
-  - Store layer: Save, load, migration, folder structure
+  - Store layer: Load, migration, folder structure
   - Tools layer: Nmap (8 scan types), Gobuster (3 modes)
   - Quiz layer: Question parsing, progress tracking
   - Dispatcher: Event routing and handling
@@ -729,14 +723,13 @@ pub enum NmapScanType {
 | Category | Tests | Coverage |
 |----------|-------|----------|
 | Model Tests | 20+ | Session, Phase, Step, Evidence, Quiz |
-| Store Tests | 15+ | Save, load, migration, Unicode |
+| Store Tests | 15+ | Load, migration, Unicode |
 | Chatbot Tests | 25+ | Multi-provider integration, llama.cpp, Ollama, error handling |
 | Tool Tests | 50+ | Nmap (8 types), Gobuster (3 modes) |
 | Quiz Tests | 10+ | Parsing, progress, scoring |
 | Dispatcher Tests | 8+ | Event routing, handlers |
 | Tutorial Tests | 5+ | Phase loading, validation |
 | Integration Tests | 10+ | End-to-end workflows |
-| Property Tests | 10+ | Randomized input validation |
 | UI Tests | 8+ | Chat functionality, text input, state persistence |
 
 **Total**: 189+ tests with 100% pass rate
@@ -778,7 +771,6 @@ cargo test --test integration_tests
 ### Performance Targets
 
 - Session creation: < 100ms ✅
-- Save operations: < 500ms ✅
 - Load operations: < 500ms ✅
 - UI handler response: < 16ms (60 FPS) ✅
 - Large sessions (5MB): < 1s ✅

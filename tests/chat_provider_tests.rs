@@ -1,5 +1,11 @@
-use pt_journal::chatbot::{ChatProvider, ChatRequest, ChatService, ChatError, OllamaProvider, LlamaCppProvider, StepContext};
-use pt_journal::config::{ChatbotConfig, ModelParameters, ModelProfile, OllamaProviderConfig, LlamaCppProviderConfig, ModelProviderKind};
+use pt_journal::chatbot::{
+    ChatError, ChatProvider, ChatRequest, ChatService, LlamaCppProvider, OllamaProvider,
+    StepContext,
+};
+use pt_journal::config::{
+    ChatbotConfig, LlamaCppProviderConfig, ModelParameters, ModelProfile, ModelProviderKind,
+    OllamaProviderConfig,
+};
 use pt_journal::model::{ChatMessage, ChatRole};
 
 #[cfg(test)]
@@ -113,8 +119,7 @@ mod chat_provider_tests {
     fn test_ollama_provider_honors_all_parameters() {
         let server = MockServer::start();
         let mock = server.mock(|when, then| {
-            when.method("POST")
-                .path("/api/chat");
+            when.method("POST").path("/api/chat");
             then.status(200).json_body(serde_json::json!({
                 "message": {
                     "content": "Response"
@@ -210,8 +215,7 @@ mod chat_provider_tests {
     fn test_chat_service_applies_profile_parameters() {
         let server = MockServer::start();
         let mock = server.mock(|when, then| {
-            when.method("POST")
-                .path("/api/chat");
+            when.method("POST").path("/api/chat");
             then.status(200).json_body(serde_json::json!({
                 "message": {
                     "content": "Response"
@@ -221,9 +225,13 @@ mod chat_provider_tests {
 
         let mut config = ChatbotConfig::default();
         config.ollama.endpoint = server.url("");
-        
+
         // Find and modify the default model profile
-        if let Some(profile) = config.models.iter_mut().find(|p| p.id == config.default_model_id) {
+        if let Some(profile) = config
+            .models
+            .iter_mut()
+            .find(|p| p.id == config.default_model_id)
+        {
             profile.parameters.temperature = Some(0.5);
             profile.parameters.top_p = Some(0.9);
         }
@@ -379,12 +387,7 @@ mod chat_provider_tests {
             quiz_status: Some("1/3 correct".to_string()),
         };
 
-        let request = ChatRequest::new(
-            step_ctx,
-            vec![],
-            "What should I do?".to_string(),
-            profile,
-        );
+        let request = ChatRequest::new(step_ctx, vec![], "What should I do?".to_string(), profile);
 
         // The provider should successfully process this request
         // (either with real inference if llama-cpp feature is enabled, or mock response)
@@ -526,7 +529,7 @@ mod chat_provider_tests {
     #[test]
     fn test_provider_selection_errors() {
         let mut config = ChatbotConfig::default();
-        
+
         // Test with invalid provider in model profile
         let invalid_profile = ModelProfile {
             id: "invalid-model".to_string(),
@@ -541,11 +544,11 @@ mod chat_provider_tests {
 
         let service = ChatService::new(config);
         let step_ctx = create_test_step_context();
-        
+
         // Should fail because llama.cpp provider has no GGUF path
         let result = service.send_message(&step_ctx, &[], "test");
         assert!(result.is_err());
-        
+
         // Check that it's the right error type
         match result.unwrap_err() {
             ChatError::GgufPathNotFound(_) => {
@@ -558,26 +561,24 @@ mod chat_provider_tests {
     #[test]
     fn test_seeded_model_list_configuration() {
         let config = ChatbotConfig::default();
-        
+
         // Should have 5 seeded models
         assert_eq!(config.models.len(), 5);
-        
+
         // Check all expected model IDs are present
-        let model_ids: Vec<String> = config.models.iter()
-            .map(|m| m.id.clone())
-            .collect();
-        
+        let model_ids: Vec<String> = config.models.iter().map(|m| m.id.clone()).collect();
+
         assert!(model_ids.contains(&"llama3.2:latest".to_string()));
         assert!(model_ids.contains(&"mistral:7b".to_string()));
         assert!(model_ids.contains(&"phi3:mini-4k-instruct".to_string()));
         assert!(model_ids.contains(&"neural-chat:latest".to_string()));
         assert!(model_ids.contains(&"starcoder:latest".to_string()));
-        
+
         // All should be Ollama providers
         for model in &config.models {
             assert_eq!(model.provider, ModelProviderKind::Ollama);
         }
-        
+
         // Default model should be in the list
         let default_model = config.active_model();
         assert_eq!(default_model.id, "llama3.2:latest");
@@ -592,13 +593,13 @@ mod chat_provider_tests {
         assert_eq!(valid_profile.display_name, "Test Model");
         assert_eq!(valid_profile.provider, ModelProviderKind::Ollama);
         assert!(!valid_profile.prompt_template.is_empty());
-        
+
         // Test profile with parameters
         let mut profile_with_params = ModelProfile::for_ollama("param:model", "Param Model");
         profile_with_params.parameters.temperature = Some(0.5);
         profile_with_params.parameters.top_p = Some(0.8);
         profile_with_params.parameters.num_predict = Some(100);
-        
+
         assert_eq!(profile_with_params.parameters.temperature, Some(0.5));
         assert_eq!(profile_with_params.parameters.top_p, Some(0.8));
         assert_eq!(profile_with_params.parameters.num_predict, Some(100));
@@ -607,7 +608,7 @@ mod chat_provider_tests {
     #[test]
     fn test_provider_routing_consistency() {
         let server = MockServer::start();
-        
+
         // Mock Ollama endpoint
         let mock = server.mock(|when, then| {
             when.method("POST").path("/api/chat");
@@ -631,7 +632,7 @@ mod chat_provider_tests {
             resource_paths: vec!["/fake/path.gguf".to_string()],
             parameters: Default::default(),
         };
-        
+
         config.models = vec![ollama_profile, llama_cpp_profile.clone()];
         let service = ChatService::new(config);
         let step_ctx = create_test_step_context();
@@ -646,7 +647,7 @@ mod chat_provider_tests {
         llama_config.models = vec![llama_cpp_profile];
         llama_config.default_model_id = "test-llamacpp".to_string();
         let llama_service = ChatService::new(llama_config);
-        
+
         let result = llama_service.send_message(&step_ctx, &[], "test");
         assert!(result.is_err()); // Should fail due to missing GGUF file
     }

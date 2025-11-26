@@ -1,6 +1,9 @@
 use crate::model::{ChatMessage, ChatRole};
 use gtk4::prelude::*;
-use gtk4::{Box as GtkBox, Button, DropDown, Label, ListBox, Orientation, ScrolledWindow, Spinner, StringList, TextView, TextBuffer};
+use gtk4::{
+    Box as GtkBox, Button, DropDown, Label, ListBox, Orientation, ScrolledWindow, Spinner,
+    StringList, TextBuffer, TextView,
+};
 
 /// Chat panel widget for displaying chat history and input
 #[derive(Clone)]
@@ -41,25 +44,25 @@ impl ChatPanel {
 
         // Input area
         let input_box = GtkBox::new(Orientation::Vertical, 4);
-        
+
         // Create a scrolled window for the text input
         let input_scroll = ScrolledWindow::new();
         input_scroll.set_min_content_height(60); // Make it taller
         input_scroll.set_max_content_height(120); // But not too tall
-        
+
         let input_buffer = TextBuffer::new(None);
         let input_textview = TextView::new();
         input_textview.set_buffer(Some(&input_buffer));
         input_textview.set_wrap_mode(gtk4::WrapMode::Word);
         input_textview.set_accepts_tab(false);
         input_textview.add_css_class("chat-input");
-        
+
         // Add placeholder text by setting initial buffer content
         input_buffer.set_text("Ask about this step...");
         input_textview.add_css_class("placeholder");
-        
+
         input_scroll.set_child(Some(&input_textview));
-        
+
         let send_button = Button::with_label("Send");
         send_button.set_sensitive(false); // Disabled until text is entered
 
@@ -73,13 +76,15 @@ impl ChatPanel {
         // Error banner
         let error_label = Label::new(None);
         error_label.set_visible(false);
+        error_label.set_selectable(true); // Make error messages copyable
         error_label.add_css_class("error");
 
         // Connect input buffer to enable/disable send button
         let send_button_clone = send_button.clone();
         let buffer_clone = input_buffer.clone();
         input_buffer.connect_changed(move |_| {
-            let text = buffer_clone.text(&buffer_clone.start_iter(), &buffer_clone.end_iter(), false);
+            let text =
+                buffer_clone.text(&buffer_clone.start_iter(), &buffer_clone.end_iter(), false);
             send_button_clone.set_sensitive(!text.trim().is_empty());
         });
 
@@ -143,7 +148,7 @@ impl ChatPanel {
         content_label.set_max_width_chars(80);
         content_label.set_selectable(true);
         content_label.add_css_class("chat-message-content");
-        
+
         // Add specific class for assistant messages to increase font size
         if matches!(message.role, ChatRole::Assistant) {
             content_label.add_css_class("assistant-content");
@@ -195,7 +200,11 @@ impl ChatPanel {
 
     /// Get the current input text and clear the entry
     pub fn take_input(&self) -> String {
-        let text = self.input_buffer.text(&self.input_buffer.start_iter(), &self.input_buffer.end_iter(), false);
+        let text = self.input_buffer.text(
+            &self.input_buffer.start_iter(),
+            &self.input_buffer.end_iter(),
+            false,
+        );
         self.input_buffer.set_text("");
         text.to_string()
     }

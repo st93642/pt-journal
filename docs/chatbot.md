@@ -143,6 +143,15 @@ export PT_JOURNAL_OLLAMA_TIMEOUT_SECONDS="240"
 
 For local GGUF model inference.
 
+**Features**:
+
+- Local GGUF model inference with threading
+- 30-second timeout to prevent hanging on slow models
+- Model caching with `Arc<Mutex<HashMap>>`
+- Context window configuration
+- Feature-gated (`llama-cpp` feature)
+- Stub implementation for testing without feature
+
 **Configuration**:
 
 ```toml
@@ -330,6 +339,7 @@ pub trait ChatProvider {
 | "GGUF path not found" | Invalid file path | Check `gguf_path` in config or env var |
 | "Model load error" | Corrupted GGUF file | Re-download model file |
 | "Inference error" | Insufficient RAM | Use smaller context or model |
+| "Timeout error" | Model inference taking too long | Wait or use faster model (30s timeout) |
 | "Provider not available" | llama-cpp feature disabled | Build with `--features llama-cpp` |
 
 ### Common Issues

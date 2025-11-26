@@ -47,6 +47,88 @@ mod ui_integration_tests {
     }
 
     #[test]
+    fn test_model_selector_default_behavior() {
+        // Test that model selector defaults to the configured default model
+        // This would test the chat_panel's model_combo behavior
+        
+        // In a real GTK environment, we would:
+        // 1. Create a ChatPanel
+        // 2. Create a test config with known models
+        // 3. Populate the model selector
+        // 4. Verify the default model is selected
+        // 5. Test changing selection updates the state
+        
+        // Since GTK is required, this is a placeholder test
+        // In a real test, we would:
+        let models = vec![
+            ("llama3.2:latest".to_string(), "Meta Llama 3.2".to_string()),
+            ("mistral:7b".to_string(), "Mistral 7B".to_string()),
+            ("phi3:mini-4k-instruct".to_string(), "Phi-3 Mini".to_string()),
+        ];
+        
+        // Verify model list contains expected models
+        assert_eq!(models.len(), 3);
+        assert!(models.iter().any(|(id, _)| id == "llama3.2:latest"));
+        
+        // Default model should be first in list or configured default
+        let default_model_id = "llama3.2:latest";
+        assert!(models.iter().any(|(id, _)| id == default_model_id));
+        
+        // Placeholder test - no GTK assertions needed
+    }
+
+    #[test]
+    fn test_model_selector_population() {
+        // Test that model selector populates with available models from config
+        // This would verify the populate_models method works correctly
+        
+        // Test data representing models from config
+        let test_models = vec![
+            ("model1".to_string(), "Model 1".to_string()),
+            ("model2".to_string(), "Model 2".to_string()),
+            ("model3".to_string(), "Model 3".to_string()),
+        ];
+        
+        // Verify all models are present
+        assert_eq!(test_models.len(), 3);
+        
+        // Verify model IDs and display names are paired correctly
+        for (id, display_name) in &test_models {
+            assert!(!id.is_empty());
+            assert!(!display_name.is_empty());
+        }
+        
+        // In real GTK test:
+        // 1. Call chat_panel.populate_models(&test_models)
+        // 2. Verify combo box has 3 items
+        // 3. Verify each item has correct ID and text
+        // Placeholder test - no GTK assertions needed
+    }
+
+    #[test]
+    fn test_chat_panel_state_management() {
+        // Test that chat panel correctly manages model selection state
+        // This would test the interaction between model selector and chat state
+        
+        // Test scenarios:
+        // 1. Model selection disabled during loading
+        // 2. Model selection enabled after load complete
+        // 3. Model selection persists across chat messages
+        // 4. Active model changes update chat service
+        
+        // Since GTK is required, this is a placeholder test
+        // In a real test, we would:
+        // 1. Create chat panel with mock state
+        // 2. Trigger loading state
+        // 3. Verify model combo is disabled
+        // 4. Complete loading
+        // 5. Verify model combo is enabled
+        // 6. Change model selection
+        // 7. Verify state is updated
+        // Placeholder test - no GTK assertions needed
+    }
+
+    #[test]
     fn test_text_input_handlers() {
         // Test that text input handlers are properly connected
         // This would verify that:

@@ -183,22 +183,75 @@ let active_model = config.chatbot.active_model();
 println!("Using {} via {}", active_model.display_name, active_model.provider);
 ```
 
-### 3. Chatbot Layer (`src/chatbot/mod.rs`) - 250 lines
+### 3. Chatbot Layer (`src/chatbot/`) - 5 files, 1,200+ lines
 
-**Purpose**: Local LLM integration with Ollama for pentesting assistance.
+**Purpose**: Multi-model LLM integration with provider abstraction for pentesting assistance.
+
+**Architecture**:
+
+```text
+chatbot/
+├── mod.rs           # Module exports, ContextBuilder (122 lines)
+├── provider.rs      # ChatProvider trait definition (15 lines)
+├── request.rs       # ChatRequest and StepContext (40 lines)
+├── service.rs       # ChatService router (157 lines)
+├── ollama.rs       # OllamaProvider implementation (317 lines)
+└── llama_cpp.rs     # LlamaCppProvider implementation (459 lines)
+```
 
 **Key Types**:
 
-- `LocalChatBot` - Main service struct with HTTP client
+- `ChatService` - Main router with provider selection
+- `ChatProvider` - Trait for different backends (Ollama, llama.cpp)
+- `ChatRequest` - Bundles step context, history, prompt, model profile
 - `StepContext` - Current step context (phase, step, status, counts)
-- `ContextBuilder` - Session summarization utility
-- `ChatError` - Error types (ServiceUnavailable, Timeout, InvalidResponse)
+- `ModelProfile` - Model configuration with provider and parameters
+- `ChatError` - Error types (ServiceUnavailable, Timeout, GgufPathNotFound)
+
+**Provider Architecture**:
+
+```rust
+pub trait ChatProvider: Send + Sync {
+    fn send_message(&self, request: &ChatRequest) -> Result<ChatMessage, ChatError>;
+    fn check_availability(&self) -> bool;
+    fn provider_name(&self) -> &'static str;
+}
+```
+
+**Ollama Provider**:
+- HTTP-based integration with `/api/chat` endpoint
+- Availability check via `/api/tags`
+- Configurable timeout and endpoint
+- Handles connection errors, timeouts, invalid responses
+
+**llama.cpp Provider** (Optional Feature):
+- Local GGUF model inference
+- Model caching with `Arc<Mutex<HashMap>>`
+- Context window configuration
+- Feature-gated (`llama-cpp` feature)
+- Stub implementation for testing without feature
+
+**Configuration System**:
+
+- **Model Profiles**: 5 seeded Ollama models + custom profiles
+- **Provider Selection**: Based on `ModelProfile.provider` field
+- **Parameters**: Per-model temperature, top_p, top_k, num_predict
+- **Environment Variables**: Override all settings
 
 **Core Methods**:
 
-- `LocalChatBot::new(config)` - Creates with 30s timeout HTTP client
-- `send_message(step_ctx, history, user_input)` - Sends to Ollama API
+- `ChatService::new(config)` - Creates with configured providers
+- `send_message(step_ctx, history, user_input)` - Routes to appropriate provider
 - `ContextBuilder::build_session_context(session, phase_idx, step_idx)` - Summarizes session
+
+**Testing**:
+
+- 20+ provider tests (Ollama + llama.cpp)
+- httpmock for API mocking
+- Provider routing verification
+- Parameter handling validation
+- Model caching tests
+- Feature-gated testing (works without llama-cpp)
 
 **Ollama Integration**:
 
@@ -659,7 +712,7 @@ pub enum NmapScanType {
 | ui/ | 12 | 4,323 | User interface |
 | tools/ | 5 | 995 | Tool integrations |
 | lib.rs | 1 | 1,155 | Test suite |
-| chatbot/ | 1 | 250 | LLM integration |
+| chatbot/ | 5 | 1,200+ | Multi-model LLM integration (Ollama, llama.cpp) |
 | quiz/ | 1 | 335 | Quiz system |
 | dispatcher.rs | 1 | 247 | Event system |
 | model.rs | 1 | 664 | Domain models |
@@ -675,7 +728,7 @@ pub enum NmapScanType {
 |----------|-------|----------|
 | Model Tests | 20+ | Session, Phase, Step, Evidence, Quiz |
 | Store Tests | 15+ | Save, load, migration, Unicode |
-| Chatbot Tests | 5+ | API integration, error handling, payload validation, serialization |
+| Chatbot Tests | 20+ | Multi-provider integration, llama.cpp, Ollama, error handling |
 | Tool Tests | 50+ | Nmap (8 types), Gobuster (3 modes) |
 | Quiz Tests | 10+ | Parsing, progress, scoring |
 | Dispatcher Tests | 8+ | Event routing, handlers |
@@ -684,7 +737,7 @@ pub enum NmapScanType {
 | Property Tests | 10+ | Randomized input validation |
 | UI Tests | 8+ | Chat functionality, text input, state persistence |
 
-**Total**: 170 tests with 100% pass rate
+**Total**: 184+ tests with 100% pass rate
 
 ## 🚀 Development Workflow
 

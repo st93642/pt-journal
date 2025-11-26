@@ -257,7 +257,7 @@ mod tests {
             quiz_status: None,
         };
 
-        let mut profile = ModelProfile {
+        let profile = ModelProfile {
             id: model_id.to_string(),
             display_name: "Test Model".to_string(),
             provider: ModelProviderKind::LlamaCpp,

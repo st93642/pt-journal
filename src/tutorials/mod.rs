@@ -4,8 +4,7 @@ pub mod ceh;
 // pub mod cloud_identity; // Now loaded from JSON
 pub mod cloud_native;
 pub mod comptia_secplus;
-pub mod container_security;
-// pub mod exploitation; // Now loaded from JSON
+// pub mod container_security; // Now loaded from JSON
 pub mod modern_web;
 pub mod pentest_exam;
 // pub mod post_exploitation; // Now loaded from JSON
@@ -52,7 +51,7 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         load_tutorial_phase("sso_federation"),
         load_tutorial_phase("api_security"),
         load_tutorial_phase("reporting"),
-        create_container_security_phase(),
+        load_tutorial_phase("container_security"),
         create_serverless_security_phase(),
         create_bug_bounty_hunting_phase(),
         create_comptia_secplus_phase(),
@@ -173,17 +172,6 @@ fn load_tutorial_phase(phase_name: &str) -> Phase {
                 notes: format!("File not found: {}", e),
             }
         }
-    }
-}
-
-fn create_container_security_phase() -> Phase {
-    let steps = container_security::get_container_security_steps();
-
-    Phase {
-        id: Uuid::new_v4(),
-        name: "Container & Kubernetes Security".to_string(),
-        steps,
-        notes: String::new(),
     }
 }
 
@@ -430,6 +418,10 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     let reporting_phase = load_tutorial_phase("reporting");
     validate_step_structure(&reporting_phase.steps, "reporting")?;
 
+    // Validate container security module (loaded from JSON)
+    let container_security_phase = load_tutorial_phase("container_security");
+    validate_step_structure(&container_security_phase.steps, "container_security")?;
+
     // Validate that all modules have at least one step
     if recon_phase.steps.is_empty() {
         return Err("Reconnaissance module has no steps".to_string());
@@ -457,6 +449,9 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     }
     if reporting_phase.steps.is_empty() {
         return Err("Reporting module has no steps".to_string());
+    }
+    if container_security_phase.steps.is_empty() {
+        return Err("Container Security module has no steps".to_string());
     }
 
     Ok(())

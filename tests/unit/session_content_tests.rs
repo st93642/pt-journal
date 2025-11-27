@@ -7,7 +7,6 @@ use uuid::Uuid;
 
 use pt_journal::model::*;
 use pt_journal::store;
-use pt_journal::tutorials::container_security::CONTAINER_SECURITY_PHASE;
 
 #[cfg(test)]
 mod tests {
@@ -344,7 +343,7 @@ mod tests {
                                 "Step '{}' missing educational sections",
                                 step.title
                             );
-                        } else if phase.name.as_str() == CONTAINER_SECURITY_PHASE {
+                        } else if phase.name.as_str() == "Container & Kubernetes Security" {
                             // Container security tutorials should have WHAT TO LOOK FOR or COMMON PITFALLS
                             assert!(
                                 description.contains("WHAT TO LOOK FOR")

@@ -5,7 +5,7 @@
 /*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
 /*                                                          TT         SS II */
 /*  Created: Nov 21 2025 23:43 st93642                      TT    SSSSSSS II */
-/*  Updated: Nov 27 2025 12:48 st93642                                       */
+/*  Updated: Nov 27 2025 18:18 st93642                                       */
 /*                                                                           */
 /*   Transport and Telecommunication Institute - Riga, Latvia                */
 /*                       https://tsi.lv                                      */
@@ -15,7 +15,6 @@ use crate::model::*;
 use anyhow::Result;
 use std::path::Path;
 
-#[allow(dead_code)]
 pub fn load_session(path: &Path) -> Result<Session> {
     let content = std::fs::read_to_string(path)?;
     let session: Session = serde_json::from_str(&content)?;

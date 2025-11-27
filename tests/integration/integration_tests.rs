@@ -115,7 +115,7 @@ fn test_state_manager_step_notes_update() {
     let borrowed = model.borrow();
     let phase = &borrowed.session().phases[0];
     let step = &phase.steps[0];
-    assert_eq!(step.get_notes(), test_notes);
+    assert_eq!(step.notes.clone(), test_notes);
 }
 
 fn test_state_manager_step_status_update() {

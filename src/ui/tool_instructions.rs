@@ -47,12 +47,8 @@ pub fn get_instructions(id: &str) -> Option<&'static ToolInstructions> {
 }
 
 fn registry() -> &'static ToolInstructionRegistry {
-    REGISTRY.get_or_init(|| {
-        load_registry().unwrap_or_else(|err| {
-            eprintln!("[tool_instructions] Failed to load instruction data: {err}");
-            ToolInstructionRegistry::default()
-        })
-    })
+    REGISTRY
+        .get_or_init(|| load_registry().unwrap_or_else(|_err| ToolInstructionRegistry::default()))
 }
 
 fn load_registry() -> Result<ToolInstructionRegistry> {
@@ -77,9 +73,7 @@ fn load_registry() -> Result<ToolInstructionRegistry> {
             .map(|entry| (&entry.id, entry))
             .collect();
         for key in instructions.keys() {
-            if !manifest_ids.contains_key(key) {
-                eprintln!("[tool_instructions] Instruction file contains unused tool id '{key}'");
-            }
+            if !manifest_ids.contains_key(key) {}
         }
     }
 

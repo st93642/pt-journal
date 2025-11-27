@@ -24,102 +24,188 @@ impl StateManager {
     pub fn select_phase(&self, phase_idx: usize) {
         if let Err(e) = self.model.borrow_mut().select_phase(phase_idx) {
             log::error!("Failed to select phase {}: {}", phase_idx, e);
-            self.dispatcher.borrow().emit(AppEvent::Error(format!("Failed to select phase: {}", e)));
+            self.dispatcher
+                .borrow()
+                .emit(AppEvent::Error(format!("Failed to select phase: {}", e)));
             return;
         }
 
         // Emit events after successful state change
-        self.dispatcher.borrow().emit(AppEvent::PhaseSelected(phase_idx));
-        self.dispatcher.borrow().emit(AppEvent::RefreshStepList(phase_idx));
+        self.dispatcher
+            .borrow()
+            .emit(AppEvent::PhaseSelected(phase_idx));
+        self.dispatcher
+            .borrow()
+            .emit(AppEvent::RefreshStepList(phase_idx));
     }
 
     /// Select a step within current phase
     pub fn select_step(&self, step_idx: usize) {
         let phase_idx = self.model.borrow().selected_phase();
-        
+
         if let Err(e) = self.model.borrow_mut().select_step(step_idx) {
             log::error!("Failed to select step {}: {}", step_idx, e);
-            self.dispatcher.borrow().emit(AppEvent::Error(format!("Failed to select step: {}", e)));
+            self.dispatcher
+                .borrow()
+                .emit(AppEvent::Error(format!("Failed to select step: {}", e)));
             return;
         }
 
         // Emit events after successful state change
-        self.dispatcher.borrow().emit(AppEvent::StepSelected(step_idx));
-        self.dispatcher.borrow().emit(AppEvent::RefreshDetailView(phase_idx, step_idx));
+        self.dispatcher
+            .borrow()
+            .emit(AppEvent::StepSelected(step_idx));
+        self.dispatcher
+            .borrow()
+            .emit(AppEvent::RefreshDetailView(phase_idx, step_idx));
     }
-
-
 
     /// Update step status
     pub fn update_step_status(&self, phase_idx: usize, step_idx: usize, status: StepStatus) {
-        if let Err(e) = self.model.borrow_mut().update_step_status(phase_idx, step_idx, status.clone()) {
-            log::error!("Failed to update step status for phase {}, step {}: {}", phase_idx, step_idx, e);
-            self.dispatcher.borrow().emit(AppEvent::Error(format!("Failed to update step status: {}", e)));
+        if let Err(e) =
+            self.model
+                .borrow_mut()
+                .update_step_status(phase_idx, step_idx, status.clone())
+        {
+            log::error!(
+                "Failed to update step status for phase {}, step {}: {}",
+                phase_idx,
+                step_idx,
+                e
+            );
+            self.dispatcher.borrow().emit(AppEvent::Error(format!(
+                "Failed to update step status: {}",
+                e
+            )));
             return;
         }
 
         // Emit event after successful state change
-        self.dispatcher.borrow().emit(AppEvent::StepStatusChanged(phase_idx, step_idx, status));
+        self.dispatcher
+            .borrow()
+            .emit(AppEvent::StepStatusChanged(phase_idx, step_idx, status));
     }
 
     /// Update step notes
     pub fn update_step_notes(&self, phase_idx: usize, step_idx: usize, notes: String) {
-        if let Err(e) = self.model.borrow_mut().update_step_notes(phase_idx, step_idx, notes.clone()) {
-            log::error!("Failed to update step notes for phase {}, step {}: {}", phase_idx, step_idx, e);
-            self.dispatcher.borrow().emit(AppEvent::Error(format!("Failed to update step notes: {}", e)));
+        if let Err(e) =
+            self.model
+                .borrow_mut()
+                .update_step_notes(phase_idx, step_idx, notes.clone())
+        {
+            log::error!(
+                "Failed to update step notes for phase {}, step {}: {}",
+                phase_idx,
+                step_idx,
+                e
+            );
+            self.dispatcher.borrow().emit(AppEvent::Error(format!(
+                "Failed to update step notes: {}",
+                e
+            )));
             return;
         }
 
         // Emit event after successful state change
-        self.dispatcher.borrow().emit(AppEvent::StepNotesUpdated(phase_idx, step_idx, notes));
+        self.dispatcher
+            .borrow()
+            .emit(AppEvent::StepNotesUpdated(phase_idx, step_idx, notes));
     }
 
     /// Update step description notes
     pub fn update_step_description_notes(&self, phase_idx: usize, step_idx: usize, notes: String) {
-        if let Err(e) = self.model.borrow_mut().update_step_description_notes(phase_idx, step_idx, notes.clone()) {
-            log::error!("Failed to update step description notes for phase {}, step {}: {}", phase_idx, step_idx, e);
-            self.dispatcher.borrow().emit(AppEvent::Error(format!("Failed to update step description notes: {}", e)));
+        if let Err(e) = self.model.borrow_mut().update_step_description_notes(
+            phase_idx,
+            step_idx,
+            notes.clone(),
+        ) {
+            log::error!(
+                "Failed to update step description notes for phase {}, step {}: {}",
+                phase_idx,
+                step_idx,
+                e
+            );
+            self.dispatcher.borrow().emit(AppEvent::Error(format!(
+                "Failed to update step description notes: {}",
+                e
+            )));
             return;
         }
 
         // Emit event after successful state change
-        self.dispatcher.borrow().emit(AppEvent::StepDescriptionNotesUpdated(phase_idx, step_idx, notes));
+        self.dispatcher
+            .borrow()
+            .emit(AppEvent::StepDescriptionNotesUpdated(
+                phase_idx, step_idx, notes,
+            ));
     }
 
     /// Update phase notes
     pub fn update_phase_notes(&self, phase_idx: usize, notes: String) {
-        if let Err(e) = self.model.borrow_mut().update_phase_notes(phase_idx, notes.clone()) {
-            log::error!("Failed to update phase notes for phase {}: {}", phase_idx, e);
-            self.dispatcher.borrow().emit(AppEvent::Error(format!("Failed to update phase notes: {}", e)));
+        if let Err(e) = self
+            .model
+            .borrow_mut()
+            .update_phase_notes(phase_idx, notes.clone())
+        {
+            log::error!(
+                "Failed to update phase notes for phase {}: {}",
+                phase_idx,
+                e
+            );
+            self.dispatcher.borrow().emit(AppEvent::Error(format!(
+                "Failed to update phase notes: {}",
+                e
+            )));
             return;
         }
 
         // Emit event after successful state change
-        self.dispatcher.borrow().emit(AppEvent::PhaseNotesUpdated(phase_idx, notes));
+        self.dispatcher
+            .borrow()
+            .emit(AppEvent::PhaseNotesUpdated(phase_idx, notes));
     }
 
     /// Update global notes
     pub fn update_global_notes(&self, notes: String) {
         if let Err(e) = self.model.borrow_mut().update_global_notes(notes.clone()) {
             log::error!("Failed to update global notes: {}", e);
-            self.dispatcher.borrow().emit(AppEvent::Error(format!("Failed to update global notes: {}", e)));
+            self.dispatcher.borrow().emit(AppEvent::Error(format!(
+                "Failed to update global notes: {}",
+                e
+            )));
             return;
         }
 
         // Emit event after successful state change
-        self.dispatcher.borrow().emit(AppEvent::GlobalNotesUpdated(notes));
+        self.dispatcher
+            .borrow()
+            .emit(AppEvent::GlobalNotesUpdated(notes));
     }
 
     /// Add chat message to a step
     pub fn add_chat_message(&self, phase_idx: usize, step_idx: usize, message: ChatMessage) {
-        if let Err(e) = self.model.borrow_mut().add_chat_message(phase_idx, step_idx, message.clone()) {
-            log::error!("Failed to add chat message for phase {}, step {}: {}", phase_idx, step_idx, e);
-            self.dispatcher.borrow().emit(AppEvent::Error(format!("Failed to add chat message: {}", e)));
+        if let Err(e) =
+            self.model
+                .borrow_mut()
+                .add_chat_message(phase_idx, step_idx, message.clone())
+        {
+            log::error!(
+                "Failed to add chat message for phase {}, step {}: {}",
+                phase_idx,
+                step_idx,
+                e
+            );
+            self.dispatcher.borrow().emit(AppEvent::Error(format!(
+                "Failed to add chat message: {}",
+                e
+            )));
             return;
         }
 
         // Emit event after successful state change
-        self.dispatcher.borrow().emit(AppEvent::ChatMessageAdded(phase_idx, step_idx, message));
+        self.dispatcher
+            .borrow()
+            .emit(AppEvent::ChatMessageAdded(phase_idx, step_idx, message));
     }
 
     /// Start a chat request
@@ -155,26 +241,52 @@ impl StateManager {
 
     /// Add evidence to a step
     pub fn add_evidence(&self, phase_idx: usize, step_idx: usize, evidence: Evidence) {
-        if let Err(e) = self.model.borrow_mut().add_evidence(phase_idx, step_idx, evidence.clone()) {
-            log::error!("Failed to add evidence for phase {}, step {}: {}", phase_idx, step_idx, e);
-            self.dispatcher.borrow().emit(AppEvent::Error(format!("Failed to add evidence: {}", e)));
+        if let Err(e) = self
+            .model
+            .borrow_mut()
+            .add_evidence(phase_idx, step_idx, evidence.clone())
+        {
+            log::error!(
+                "Failed to add evidence for phase {}, step {}: {}",
+                phase_idx,
+                step_idx,
+                e
+            );
+            self.dispatcher
+                .borrow()
+                .emit(AppEvent::Error(format!("Failed to add evidence: {}", e)));
             return;
         }
 
         // Emit event after successful state change
-        self.dispatcher.borrow().emit(AppEvent::EvidenceAdded(phase_idx, step_idx, evidence));
+        self.dispatcher
+            .borrow()
+            .emit(AppEvent::EvidenceAdded(phase_idx, step_idx, evidence));
     }
 
     /// Remove evidence from a step
     pub fn remove_evidence(&self, phase_idx: usize, step_idx: usize, evidence_id: Uuid) {
-        if let Err(e) = self.model.borrow_mut().remove_evidence(phase_idx, step_idx, evidence_id) {
-            log::error!("Failed to remove evidence for phase {}, step {}: {}", phase_idx, step_idx, e);
-            self.dispatcher.borrow().emit(AppEvent::Error(format!("Failed to remove evidence: {}", e)));
+        if let Err(e) = self
+            .model
+            .borrow_mut()
+            .remove_evidence(phase_idx, step_idx, evidence_id)
+        {
+            log::error!(
+                "Failed to remove evidence for phase {}, step {}: {}",
+                phase_idx,
+                step_idx,
+                e
+            );
+            self.dispatcher
+                .borrow()
+                .emit(AppEvent::Error(format!("Failed to remove evidence: {}", e)));
             return;
         }
 
         // Emit event after successful state change
-        self.dispatcher.borrow().emit(AppEvent::EvidenceRemoved(phase_idx, step_idx, evidence_id));
+        self.dispatcher
+            .borrow()
+            .emit(AppEvent::EvidenceRemoved(phase_idx, step_idx, evidence_id));
     }
 
     /// Get current phase index
@@ -201,7 +313,10 @@ impl StateManager {
     pub fn toggle_step_completion(&self, phase_idx: usize, step_idx: usize) {
         let current_status = {
             let model = self.model.borrow();
-            model.session().phases.get(phase_idx)
+            model
+                .session()
+                .phases
+                .get(phase_idx)
                 .and_then(|phase| phase.steps.get(step_idx))
                 .map(|step| step.status.clone())
         };
@@ -232,7 +347,10 @@ impl StateManager {
     ) -> Option<bool> {
         let is_correct = {
             let mut model = self.model.borrow_mut();
-            model.session_mut().phases.get_mut(phase_idx)
+            model
+                .session_mut()
+                .phases
+                .get_mut(phase_idx)
                 .and_then(|phase| phase.steps.get_mut(step_idx))
                 .and_then(|step| step.quiz_mut_safe())
                 .and_then(|quiz_step| {
@@ -267,14 +385,12 @@ impl StateManager {
         };
 
         if let Some(correct) = is_correct {
-            self.dispatcher
-                .borrow()
-                .emit(AppEvent::QuizAnswerChecked(
-                    phase_idx,
-                    step_idx,
-                    question_idx,
-                    correct,
-                ));
+            self.dispatcher.borrow().emit(AppEvent::QuizAnswerChecked(
+                phase_idx,
+                step_idx,
+                question_idx,
+                correct,
+            ));
             self.dispatcher
                 .borrow()
                 .emit(AppEvent::QuizStatisticsUpdated(phase_idx, step_idx));
@@ -287,8 +403,12 @@ impl StateManager {
     /// Mark that a user viewed the explanation before answering
     pub fn view_explanation(&self, phase_idx: usize, step_idx: usize, question_idx: usize) {
         let mut model = self.model.borrow_mut();
-        if let Some(step) = model.session_mut().phases.get_mut(phase_idx)
-            .and_then(|phase| phase.steps.get_mut(step_idx)) {
+        if let Some(step) = model
+            .session_mut()
+            .phases
+            .get_mut(phase_idx)
+            .and_then(|phase| phase.steps.get_mut(step_idx))
+        {
             if let Some(quiz_step) = step.quiz_mut_safe() {
                 if let Some(progress) = quiz_step.progress.get_mut(question_idx) {
                     if !progress.answered {
@@ -309,25 +429,27 @@ impl StateManager {
 
     /// Change current question in quiz
     pub fn change_quiz_question(&self, phase_idx: usize, step_idx: usize, question_idx: usize) {
-        self.dispatcher
-            .borrow()
-            .emit(AppEvent::QuizQuestionChanged(
-                phase_idx,
-                step_idx,
-                question_idx,
-            ));
+        self.dispatcher.borrow().emit(AppEvent::QuizQuestionChanged(
+            phase_idx,
+            step_idx,
+            question_idx,
+        ));
     }
 
     /// Set the active chat model and persist to config
     pub fn set_chat_model(&self, model_id: String) {
         if let Err(e) = self.model.borrow_mut().set_chat_model(model_id.clone()) {
             log::error!("Failed to set chat model: {}", e);
-            self.dispatcher.borrow().emit(AppEvent::Error(format!("Failed to set chat model: {}", e)));
+            self.dispatcher
+                .borrow()
+                .emit(AppEvent::Error(format!("Failed to set chat model: {}", e)));
             return;
         }
 
         // Emit event after successful state change
-        self.dispatcher.borrow().emit(AppEvent::ChatModelChanged(model_id));
+        self.dispatcher
+            .borrow()
+            .emit(AppEvent::ChatModelChanged(model_id));
     }
 }
 
@@ -454,10 +576,14 @@ mod tests {
         let messages = Arc::new(Mutex::new(Vec::new()));
         let msg_clone = messages.clone();
 
-        state.dispatcher.borrow_mut().on_step_status_changed = Box::new(move |phase_idx, step_idx, status| {
-            let status_str = format!("Phase: {}, Step: {}, Status: {:?}", phase_idx, step_idx, status);
-            msg_clone.lock().unwrap().push(status_str);
-        });
+        state.dispatcher.borrow_mut().on_step_status_changed =
+            Box::new(move |phase_idx, step_idx, status| {
+                let status_str = format!(
+                    "Phase: {}, Step: {}, Status: {:?}",
+                    phase_idx, step_idx, status
+                );
+                msg_clone.lock().unwrap().push(status_str);
+            });
 
         state.update_step_status(0, 0, StepStatus::Done);
 
@@ -468,7 +594,6 @@ mod tests {
         assert!(matches!(status, StepStatus::Done));
 
         let msgs = messages.lock().unwrap();
-        println!("All messages: {:?}", msgs);
         assert!(msgs.iter().any(|m| m.contains("Phase: 0, Step: 0")));
     }
 
@@ -479,7 +604,7 @@ mod tests {
 
         let notes = {
             let model = state.model.borrow();
-            model.session().phases[0].steps[0].get_notes()
+            model.session().phases[0].steps[0].notes.clone()
         };
         assert_eq!(notes, "Test notes");
     }
@@ -498,7 +623,7 @@ mod tests {
 
         let notes = {
             let model = state.model.borrow();
-            model.session().phases[0].steps[0].get_description_notes()
+            model.session().phases[0].steps[0].description_notes.clone()
         };
         assert_eq!(notes, "Description notes");
     }
@@ -520,7 +645,7 @@ mod tests {
 
         let count = {
             let model = state.model.borrow();
-            model.session().phases[0].steps[0].get_evidence().len()
+            model.session().phases[0].steps[0].evidence.clone().len()
         };
         assert_eq!(count, 1);
 
@@ -528,7 +653,7 @@ mod tests {
 
         let count = {
             let model = state.model.borrow();
-            model.session().phases[0].steps[0].get_evidence().len()
+            model.session().phases[0].steps[0].evidence.clone().len()
         };
         assert_eq!(count, 0);
     }
@@ -542,22 +667,35 @@ mod tests {
         let msg_clone3 = messages.clone();
         let msg_clone4 = messages.clone();
 
-        state.dispatcher.borrow_mut().on_chat_message_added = Box::new(move |phase_idx, step_idx, message| {
-            let msg_str = format!("ChatMessageAdded: phase={}, step={}, content={}", phase_idx, step_idx, message.content);
-            msg_clone1.lock().unwrap().push(msg_str);
-        });
-        state.dispatcher.borrow_mut().on_chat_request_started = Box::new(move |phase_idx, step_idx| {
-            let msg_str = format!("ChatRequestStarted: phase={}, step={}", phase_idx, step_idx);
-            msg_clone2.lock().unwrap().push(msg_str);
-        });
-        state.dispatcher.borrow_mut().on_chat_request_completed = Box::new(move |phase_idx, step_idx| {
-            let msg_str = format!("ChatRequestCompleted: phase={}, step={}", phase_idx, step_idx);
-            msg_clone3.lock().unwrap().push(msg_str);
-        });
-        state.dispatcher.borrow_mut().on_chat_request_failed = Box::new(move |phase_idx, step_idx, error| {
-            let msg_str = format!("ChatRequestFailed: phase={}, step={}, error={}", phase_idx, step_idx, error);
-            msg_clone4.lock().unwrap().push(msg_str);
-        });
+        state.dispatcher.borrow_mut().on_chat_message_added =
+            Box::new(move |phase_idx, step_idx, message| {
+                let msg_str = format!(
+                    "ChatMessageAdded: phase={}, step={}, content={}",
+                    phase_idx, step_idx, message.content
+                );
+                msg_clone1.lock().unwrap().push(msg_str);
+            });
+        state.dispatcher.borrow_mut().on_chat_request_started =
+            Box::new(move |phase_idx, step_idx| {
+                let msg_str = format!("ChatRequestStarted: phase={}, step={}", phase_idx, step_idx);
+                msg_clone2.lock().unwrap().push(msg_str);
+            });
+        state.dispatcher.borrow_mut().on_chat_request_completed =
+            Box::new(move |phase_idx, step_idx| {
+                let msg_str = format!(
+                    "ChatRequestCompleted: phase={}, step={}",
+                    phase_idx, step_idx
+                );
+                msg_clone3.lock().unwrap().push(msg_str);
+            });
+        state.dispatcher.borrow_mut().on_chat_request_failed =
+            Box::new(move |phase_idx, step_idx, error| {
+                let msg_str = format!(
+                    "ChatRequestFailed: phase={}, step={}, error={}",
+                    phase_idx, step_idx, error
+                );
+                msg_clone4.lock().unwrap().push(msg_str);
+            });
 
         // Test adding chat message
         let message = ChatMessage::new(ChatRole::User, "Hello".to_string());
@@ -609,14 +747,22 @@ mod tests {
         let msg_clone1 = messages.clone();
         let msg_clone2 = messages.clone();
 
-        state.dispatcher.borrow_mut().on_quiz_answer_checked = Box::new(move |phase_idx, step_idx, question_idx, is_correct| {
-            let msg_str = format!("QuizAnswerChecked: phase={}, step={}, question={}, correct={}", phase_idx, step_idx, question_idx, is_correct);
-            msg_clone1.lock().unwrap().push(msg_str);
-        });
-        state.dispatcher.borrow_mut().on_quiz_statistics_updated = Box::new(move |phase_idx, step_idx| {
-            let msg_str = format!("QuizStatisticsUpdated: phase={}, step={}", phase_idx, step_idx);
-            msg_clone2.lock().unwrap().push(msg_str);
-        });
+        state.dispatcher.borrow_mut().on_quiz_answer_checked =
+            Box::new(move |phase_idx, step_idx, question_idx, is_correct| {
+                let msg_str = format!(
+                    "QuizAnswerChecked: phase={}, step={}, question={}, correct={}",
+                    phase_idx, step_idx, question_idx, is_correct
+                );
+                msg_clone1.lock().unwrap().push(msg_str);
+            });
+        state.dispatcher.borrow_mut().on_quiz_statistics_updated =
+            Box::new(move |phase_idx, step_idx| {
+                let msg_str = format!(
+                    "QuizStatisticsUpdated: phase={}, step={}",
+                    phase_idx, step_idx
+                );
+                msg_clone2.lock().unwrap().push(msg_str);
+            });
 
         // Check correct answer (index 1 for first question)
         let result = state.check_answer(0, 0, 0, 1);
@@ -625,7 +771,7 @@ mod tests {
         // Verify progress was updated
         let model = state.model.borrow();
         let step = &model.session().phases[0].steps[0];
-        if let Some(quiz_data) = step.get_quiz_step() {
+        if let Some(quiz_data) = step.quiz_data.as_ref() {
             let progress = &quiz_data.progress[0];
             assert!(progress.answered);
             assert_eq!(progress.selected_answer_index, Some(1));
@@ -653,7 +799,7 @@ mod tests {
         // Verify progress
         let model = state.model.borrow();
         let step = &model.session().phases[0].steps[0];
-        if let Some(quiz_data) = step.get_quiz_step() {
+        if let Some(quiz_data) = step.quiz_data.as_ref() {
             let progress = &quiz_data.progress[0];
             assert!(progress.answered);
             assert_eq!(progress.is_correct, Some(false));
@@ -677,7 +823,7 @@ mod tests {
         // Verify attempts count and first_attempt_correct flag
         let model = state.model.borrow();
         let step = &model.session().phases[0].steps[0];
-        if let Some(quiz_data) = step.get_quiz_step() {
+        if let Some(quiz_data) = step.quiz_data.as_ref() {
             let progress = &quiz_data.progress[0];
             assert_eq!(progress.attempts, 2);
             assert_eq!(progress.is_correct, Some(true)); // Last attempt was correct
@@ -711,10 +857,14 @@ mod tests {
         let messages = Arc::new(Mutex::new(Vec::new()));
         let msg_clone = messages.clone();
 
-        state.dispatcher.borrow_mut().on_quiz_explanation_viewed = Box::new(move |phase_idx, step_idx, question_idx| {
-            let msg_str = format!("QuizExplanationViewed: phase={}, step={}, question={}", phase_idx, step_idx, question_idx);
-            msg_clone.lock().unwrap().push(msg_str);
-        });
+        state.dispatcher.borrow_mut().on_quiz_explanation_viewed =
+            Box::new(move |phase_idx, step_idx, question_idx| {
+                let msg_str = format!(
+                    "QuizExplanationViewed: phase={}, step={}, question={}",
+                    phase_idx, step_idx, question_idx
+                );
+                msg_clone.lock().unwrap().push(msg_str);
+            });
 
         // View explanation before answering
         state.view_explanation(0, 0, 0);
@@ -723,7 +873,7 @@ mod tests {
         {
             let model = state.model.borrow();
             let step = &model.session().phases[0].steps[0];
-            if let Some(quiz_data) = step.get_quiz_step() {
+            if let Some(quiz_data) = step.quiz_data.as_ref() {
                 let progress = &quiz_data.progress[0];
                 assert!(progress.explanation_viewed_before_answer);
             } else {
@@ -744,7 +894,7 @@ mod tests {
         {
             let model = state.model.borrow();
             let step = &model.session().phases[0].steps[0];
-            if let Some(quiz_data) = step.get_quiz_step() {
+            if let Some(quiz_data) = step.quiz_data.as_ref() {
                 let progress = &quiz_data.progress[0];
                 assert!(!progress.first_attempt_correct);
                 assert!(!progress.awards_points()); // Should not award points
@@ -767,7 +917,7 @@ mod tests {
         // Verify flag was NOT set (because already answered)
         let model = state.model.borrow();
         let step = &model.session().phases[0].steps[0];
-        if let Some(quiz_data) = step.get_quiz_step() {
+        if let Some(quiz_data) = step.quiz_data.as_ref() {
             let progress = &quiz_data.progress[0];
             assert!(!progress.explanation_viewed_before_answer);
         } else {
@@ -789,10 +939,14 @@ mod tests {
         let messages = Arc::new(Mutex::new(Vec::new()));
         let msg_clone = messages.clone();
 
-        state.dispatcher.borrow_mut().on_quiz_question_changed = Box::new(move |phase_idx, step_idx, question_idx| {
-            let msg_str = format!("QuizQuestionChanged: phase={}, step={}, question={}", phase_idx, step_idx, question_idx);
-            msg_clone.lock().unwrap().push(msg_str);
-        });
+        state.dispatcher.borrow_mut().on_quiz_question_changed =
+            Box::new(move |phase_idx, step_idx, question_idx| {
+                let msg_str = format!(
+                    "QuizQuestionChanged: phase={}, step={}, question={}",
+                    phase_idx, step_idx, question_idx
+                );
+                msg_clone.lock().unwrap().push(msg_str);
+            });
 
         // Change to second question
         state.change_quiz_question(0, 0, 1);

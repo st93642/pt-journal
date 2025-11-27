@@ -11,6 +11,38 @@ use adw::prelude::*;
 use adw::{ExpanderRow, PreferencesGroup};
 use gtk4::{gdk, Align, Box as GtkBox, Button, Label, LinkButton, ListBoxRow, Orientation};
 
+fn find_expander_image(widget: &gtk4::Widget) -> Option<gtk4::Image> {
+    if widget.has_css_class("expander-row-arrow") {
+        if let Ok(image) = widget.clone().downcast::<gtk4::Image>() {
+            return Some(image);
+        }
+    }
+    let mut child = widget.first_child();
+    while let Some(ch) = child {
+        if let Some(img) = find_expander_image(&ch) {
+            return Some(img);
+        }
+        child = ch.next_sibling();
+    }
+    None
+}
+
+fn setup_expander_icons(expander: &ExpanderRow) {
+    let widget = expander.upcast_ref::<gtk4::Widget>();
+    if let Some(image) = find_expander_image(widget) {
+        image.set_icon_name(Some("go-next-symbolic"));
+        let image_clone = image.clone();
+        expander.connect_expanded_notify(move |exp| {
+            let icon = if exp.is_expanded() {
+                "go-down-symbolic"
+            } else {
+                "go-next-symbolic"
+            };
+            image_clone.set_icon_name(Some(icon));
+        });
+    }
+}
+
 /// Represents the resolved instruction content for the current selection.
 #[derive(Debug, Clone)]
 pub enum InstructionState<'a> {
@@ -176,6 +208,7 @@ fn build_installation_guides_section(
     for guide in guides {
         let expander = ExpanderRow::new();
         expander.set_title(&guide.platform);
+        setup_expander_icons(&expander);
 
         if let Some(summary) = &guide.summary {
             let summary_label = create_instruction_label(summary);
@@ -205,6 +238,7 @@ fn build_examples_section(examples: &[tool_instructions::CommandExample]) -> Pre
     for example in examples {
         let expander = ExpanderRow::new();
         expander.set_title(&format!("• {}", example.description));
+        setup_expander_icons(&expander);
 
         let command_row = create_copyable_command_row(&example.command);
         expander.add_row(&command_row);
@@ -238,7 +272,7 @@ fn build_flags_section(flags: &[tool_instructions::FlagEntry]) -> PreferencesGro
 
 fn build_tips_section(tips: &[String]) -> PreferencesGroup {
     let group = PreferencesGroup::new();
-    group.set_title("Tips & Best Practices");
+    group.set_title("Tips &amp; Best Practices");
 
     for tip in tips {
         let row = ListBoxRow::new();
@@ -259,6 +293,7 @@ fn build_sequences_section(
     for sequence in sequences {
         let expander = ExpanderRow::new();
         expander.set_title(&sequence.title);
+        setup_expander_icons(&expander);
 
         for (idx, step) in sequence.steps.iter().enumerate() {
             let step_box = GtkBox::new(Orientation::Vertical, 4);
@@ -295,6 +330,7 @@ fn build_workflow_section(workflows: &[tool_instructions::WorkflowGuide]) -> Pre
     for workflow in workflows {
         let expander = ExpanderRow::new();
         expander.set_title(&workflow.name);
+        setup_expander_icons(&expander);
 
         for (idx, stage) in workflow.stages.iter().enumerate() {
             let stage_box = GtkBox::new(Orientation::Vertical, 4);
@@ -356,6 +392,7 @@ fn build_advanced_section(examples: &[tool_instructions::AdvancedExample]) -> Pr
     for example in examples {
         let expander = ExpanderRow::new();
         expander.set_title(&example.title);
+        setup_expander_icons(&expander);
 
         if let Some(scenario) = &example.scenario {
             let scenario_label = create_instruction_label(scenario);
@@ -447,8 +484,7 @@ fn create_copyable_command_row(command: &str) -> GtkBox {
     cmd_label.add_css_class("monospace");
 
     let command_text = command.to_string();
-    let copy_button = Button::with_label("📋 Copy");
-    copy_button.add_css_class("flat");
+    let copy_button = Button::from_icon_name("edit-copy-symbolic");
     copy_button.set_tooltip_text(Some("Copy full command to clipboard"));
     copy_button.connect_clicked(move |_| {
         if let Some(display) = gdk::Display::default() {

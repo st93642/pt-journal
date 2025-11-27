@@ -159,14 +159,14 @@ mod text_input_tests {
 
         // Simulate text input to notes
         if let Some(step) = model.session_mut().phases[0].steps.get_mut(0) {
-            step.set_notes("Test notes content".to_string());
-            assert_eq!(step.get_notes(), "Test notes content");
+            step.notes = "Test notes content".to_string();
+            assert_eq!(step.notes.clone(), "Test notes content");
         }
 
         // Simulate text input to description_notes
         if let Some(step) = model.session_mut().phases[0].steps.get_mut(0) {
-            step.set_description_notes("Test description notes".to_string());
-            assert_eq!(step.get_description_notes(), "Test description notes");
+            step.description_notes = "Test description notes".to_string();
+            assert_eq!(step.description_notes, "Test description notes");
         }
     }
 
@@ -178,27 +178,27 @@ mod text_input_tests {
         // Set text for first step
         model.set_selected_step(Some(0));
         if let Some(step) = model.session_mut().phases[0].steps.get_mut(0) {
-            step.set_notes("Notes for step 0".to_string());
-            step.set_description_notes("Description notes for step 0".to_string());
+            step.notes = "Notes for step 0".to_string();
+            step.description_notes = "Description notes for step 0".to_string();
         }
 
         // Switch to second step
         model.set_selected_step(Some(1));
         if let Some(step) = model.session_mut().phases[0].steps.get_mut(1) {
-            step.set_notes("Notes for step 1".to_string());
-            step.set_description_notes("Description notes for step 1".to_string());
+            step.notes = "Notes for step 1".to_string();
+            step.description_notes = "Description notes for step 1".to_string();
         }
 
         // Verify first step still has its text
         if let Some(step) = model.session_mut().phases[0].steps.first() {
-            assert_eq!(step.get_notes(), "Notes for step 0");
-            assert_eq!(step.get_description_notes(), "Description notes for step 0");
+            assert_eq!(step.notes.clone(), "Notes for step 0");
+            assert_eq!(step.description_notes, "Description notes for step 0");
         }
 
         // Verify second step has its text
         if let Some(step) = model.session_mut().phases[0].steps.get(1) {
-            assert_eq!(step.get_notes(), "Notes for step 1");
-            assert_eq!(step.get_description_notes(), "Description notes for step 1");
+            assert_eq!(step.notes.clone(), "Notes for step 1");
+            assert_eq!(step.description_notes, "Description notes for step 1");
         }
     }
 

@@ -128,7 +128,8 @@ pub fn load_step_into_panel(state: &Rc<StateManager>, detail_panel: &Rc<DetailPa
             let phase_name = {
                 let model = state.model();
                 let model_ref = model.borrow();
-                model_ref.current_phase()
+                model_ref
+                    .current_phase()
                     .map(|phase| phase.name.clone())
                     .unwrap_or_else(|| "Quiz".to_string())
             };
@@ -194,5 +195,4 @@ pub fn clear_detail_panel(detail_panel: &Rc<DetailPanel>) {
     detail_panel.set_title("");
     detail_panel.desc_view().buffer().set_text("");
     detail_panel.chat_panel().clear_history();
-    // TODO: Clear any pending chat requests if applicable
 }

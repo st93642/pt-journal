@@ -211,14 +211,14 @@ mod tests {
             y: 10.0,
         });
 
-        assert_eq!(step.get_evidence().len(), 2);
+        assert_eq!(step.evidence.clone().len(), 2);
 
         step.remove_evidence(ev1_id);
-        assert_eq!(step.get_evidence().len(), 1);
-        assert_eq!(step.get_evidence()[0].id, ev2_id);
+        assert_eq!(step.evidence.clone().len(), 1);
+        assert_eq!(step.evidence.clone()[0].id, ev2_id);
 
         step.remove_evidence(ev2_id);
-        assert_eq!(step.get_evidence().len(), 0);
+        assert_eq!(step.evidence.clone().len(), 0);
     }
 
     #[test]
@@ -242,7 +242,7 @@ mod tests {
 
         let nonexistent_id = Uuid::new_v4();
         step.remove_evidence(nonexistent_id);
-        assert_eq!(step.get_evidence().len(), 1);
+        assert_eq!(step.evidence.clone().len(), 1);
     }
 
     #[test]
@@ -267,7 +267,7 @@ mod tests {
         let updated = step.update_evidence_position(ev_id, 50.0, 100.0);
         assert!(updated);
 
-        let evidence = step.get_evidence();
+        let evidence = step.evidence.clone();
         assert_eq!(evidence[0].x, 50.0);
         assert_eq!(evidence[0].y, 100.0);
     }
@@ -295,23 +295,23 @@ mod tests {
             vec![],
         );
 
-        assert_eq!(step.get_chat_history().len(), 0);
+        assert_eq!(step.chat_history.clone().len(), 0);
 
         let msg1 = pt_journal::model::chat::ChatMessage::new(
             pt_journal::model::chat::ChatRole::User,
             "First message".to_string(),
         );
         step.add_chat_message(msg1);
-        assert_eq!(step.get_chat_history().len(), 1);
+        assert_eq!(step.chat_history.clone().len(), 1);
 
         let msg2 = pt_journal::model::chat::ChatMessage::new(
             pt_journal::model::chat::ChatRole::Assistant,
             "Response".to_string(),
         );
         step.add_chat_message(msg2);
-        assert_eq!(step.get_chat_history().len(), 2);
+        assert_eq!(step.chat_history.clone().len(), 2);
 
-        let history = step.get_chat_history();
+        let history = step.chat_history.clone();
         assert_eq!(history[0].content, "First message");
         assert!(matches!(
             history[0].role,
@@ -341,10 +341,10 @@ mod tests {
             pt_journal::model::chat::ChatRole::User,
             "Message 2".to_string(),
         ));
-        assert_eq!(step.get_chat_history().len(), 2);
+        assert_eq!(step.chat_history.clone().len(), 2);
 
         step.clear_chat_history();
-        assert_eq!(step.get_chat_history().len(), 0);
+        assert_eq!(step.chat_history.clone().len(), 0);
     }
 
     #[test]

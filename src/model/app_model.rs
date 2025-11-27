@@ -1,7 +1,7 @@
+use crate::error::PtError;
+use crate::error::Result as PtResult;
 use chrono::{DateTime, Utc};
 use std::path::PathBuf;
-use crate::error::Result as PtResult;
-use crate::error::PtError;
 
 use super::chat::ChatMessage;
 use super::quiz::QuizStep;
@@ -158,18 +158,17 @@ impl AppModel {
             .unwrap_or_default()
     }
 
-    /// Get a snapshot of the currently active step
     pub fn get_active_step_snapshot(&self) -> Option<ActiveStepSnapshot> {
         self.current_step().map(|step| ActiveStepSnapshot {
             title: step.title.clone(),
-            description: step.get_description(),
-            description_notes: step.get_description_notes(),
+            description: step.description.clone(),
+            description_notes: step.description_notes.clone(),
             status: step.status.clone(),
             completed_at: step.completed_at,
             is_quiz: step.is_quiz(),
-            quiz_data: step.get_quiz_step().cloned(),
-            chat_history: step.get_chat_history(),
-            evidence: step.get_evidence(),
+            quiz_data: step.quiz_data.clone(),
+            chat_history: step.chat_history.clone(),
+            evidence: step.evidence.clone(),
         })
     }
 
@@ -191,7 +190,10 @@ impl AppModel {
     pub fn select_step(&mut self, step_idx: usize) -> PtResult<()> {
         // Validate step exists
         if step_idx >= self.session.phases[self.selected_phase].steps.len() {
-            return Err(PtError::InvalidStepIndex { phase_idx: self.selected_phase, step_idx });
+            return Err(PtError::InvalidStepIndex {
+                phase_idx: self.selected_phase,
+                step_idx,
+            });
         }
 
         self.selected_step = Some(step_idx);
@@ -199,10 +201,21 @@ impl AppModel {
     }
 
     /// Update step status
-    pub fn update_step_status(&mut self, phase_idx: usize, step_idx: usize, status: StepStatus) -> PtResult<()> {
-        let step = self.session.phases.get_mut(phase_idx)
+    pub fn update_step_status(
+        &mut self,
+        phase_idx: usize,
+        step_idx: usize,
+        status: StepStatus,
+    ) -> PtResult<()> {
+        let step = self
+            .session
+            .phases
+            .get_mut(phase_idx)
             .and_then(|phase| phase.steps.get_mut(step_idx))
-            .ok_or_else(|| PtError::InvalidStepIndex { phase_idx, step_idx })?;
+            .ok_or_else(|| PtError::InvalidStepIndex {
+                phase_idx,
+                step_idx,
+            })?;
 
         step.status = status.clone();
         if matches!(status, StepStatus::Done) {
@@ -215,28 +228,53 @@ impl AppModel {
     }
 
     /// Update step notes
-    pub fn update_step_notes(&mut self, phase_idx: usize, step_idx: usize, notes: String) -> PtResult<()> {
-        let step = self.session.phases.get_mut(phase_idx)
+    pub fn update_step_notes(
+        &mut self,
+        phase_idx: usize,
+        step_idx: usize,
+        notes: String,
+    ) -> PtResult<()> {
+        let step = self
+            .session
+            .phases
+            .get_mut(phase_idx)
             .and_then(|phase| phase.steps.get_mut(step_idx))
-            .ok_or_else(|| PtError::InvalidStepIndex { phase_idx, step_idx })?;
+            .ok_or_else(|| PtError::InvalidStepIndex {
+                phase_idx,
+                step_idx,
+            })?;
 
-        step.set_notes(notes);
+        step.notes = notes;
         Ok(())
     }
 
     /// Update step description notes
-    pub fn update_step_description_notes(&mut self, phase_idx: usize, step_idx: usize, notes: String) -> PtResult<()> {
-        let step = self.session.phases.get_mut(phase_idx)
+    pub fn update_step_description_notes(
+        &mut self,
+        phase_idx: usize,
+        step_idx: usize,
+        notes: String,
+    ) -> PtResult<()> {
+        let step = self
+            .session
+            .phases
+            .get_mut(phase_idx)
             .and_then(|phase| phase.steps.get_mut(step_idx))
-            .ok_or_else(|| PtError::InvalidStepIndex { phase_idx, step_idx })?;
+            .ok_or_else(|| PtError::InvalidStepIndex {
+                phase_idx,
+                step_idx,
+            })?;
 
-        step.set_description_notes(notes);
+        step.description_notes = notes;
         Ok(())
     }
 
     /// Update phase notes
     pub fn update_phase_notes(&mut self, phase_idx: usize, notes: String) -> PtResult<()> {
-        let phase = self.session.phases.get_mut(phase_idx)
+        let phase = self
+            .session
+            .phases
+            .get_mut(phase_idx)
             .ok_or_else(|| PtError::InvalidPhaseIndex { phase_idx })?;
 
         phase.notes = notes;
@@ -250,30 +288,63 @@ impl AppModel {
     }
 
     /// Add chat message to a step
-    pub fn add_chat_message(&mut self, phase_idx: usize, step_idx: usize, message: ChatMessage) -> PtResult<()> {
-        let step = self.session.phases.get_mut(phase_idx)
+    pub fn add_chat_message(
+        &mut self,
+        phase_idx: usize,
+        step_idx: usize,
+        message: ChatMessage,
+    ) -> PtResult<()> {
+        let step = self
+            .session
+            .phases
+            .get_mut(phase_idx)
             .and_then(|phase| phase.steps.get_mut(step_idx))
-            .ok_or_else(|| PtError::InvalidStepIndex { phase_idx, step_idx })?;
+            .ok_or_else(|| PtError::InvalidStepIndex {
+                phase_idx,
+                step_idx,
+            })?;
 
         step.add_chat_message(message);
         Ok(())
     }
 
     /// Add evidence to a step
-    pub fn add_evidence(&mut self, phase_idx: usize, step_idx: usize, evidence: Evidence) -> PtResult<()> {
-        let step = self.session.phases.get_mut(phase_idx)
+    pub fn add_evidence(
+        &mut self,
+        phase_idx: usize,
+        step_idx: usize,
+        evidence: Evidence,
+    ) -> PtResult<()> {
+        let step = self
+            .session
+            .phases
+            .get_mut(phase_idx)
             .and_then(|phase| phase.steps.get_mut(step_idx))
-            .ok_or_else(|| PtError::InvalidStepIndex { phase_idx, step_idx })?;
+            .ok_or_else(|| PtError::InvalidStepIndex {
+                phase_idx,
+                step_idx,
+            })?;
 
         step.add_evidence(evidence);
         Ok(())
     }
 
     /// Remove evidence from a step
-    pub fn remove_evidence(&mut self, phase_idx: usize, step_idx: usize, evidence_id: uuid::Uuid) -> PtResult<()> {
-        let step = self.session.phases.get_mut(phase_idx)
+    pub fn remove_evidence(
+        &mut self,
+        phase_idx: usize,
+        step_idx: usize,
+        evidence_id: uuid::Uuid,
+    ) -> PtResult<()> {
+        let step = self
+            .session
+            .phases
+            .get_mut(phase_idx)
             .and_then(|phase| phase.steps.get_mut(step_idx))
-            .ok_or_else(|| PtError::InvalidStepIndex { phase_idx, step_idx })?;
+            .ok_or_else(|| PtError::InvalidStepIndex {
+                phase_idx,
+                step_idx,
+            })?;
 
         step.remove_evidence(evidence_id);
         Ok(())
@@ -288,9 +359,11 @@ impl AppModel {
 
     /// Get chat history for a step
     pub fn get_chat_history(&self, phase_idx: usize, step_idx: usize) -> Vec<ChatMessage> {
-        self.session.phases.get(phase_idx)
+        self.session
+            .phases
+            .get(phase_idx)
             .and_then(|phase| phase.steps.get(step_idx))
-            .map(|step| step.get_chat_history().clone())
+            .map(|step| step.chat_history.clone())
             .unwrap_or_default()
     }
 }

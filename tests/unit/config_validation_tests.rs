@@ -1,8 +1,11 @@
 //! Tests for configuration validation
 
+use pt_journal::config::validation::{
+    validate_app_config, validate_manifest_instructions_cross_refs, validate_tool_manifest,
+    ValidationError,
+};
 use std::fs;
 use tempfile::TempDir;
-use pt_journal::config::validation::{validate_app_config, validate_tool_manifest, validate_manifest_instructions_cross_refs, ValidationError};
 
 #[cfg(test)]
 mod tests {
@@ -63,7 +66,10 @@ mod tests {
         fs::write(&manifest_path, invalid_manifest).unwrap();
 
         let result = validate_tool_manifest(&manifest_path);
-        assert!(matches!(result, Err(ValidationError::MissingRequiredField(_))));
+        assert!(matches!(
+            result,
+            Err(ValidationError::MissingRequiredField(_))
+        ));
     }
 
     #[test]
@@ -159,7 +165,10 @@ timeout_seconds = 180
         fs::write(&config_path, invalid_config).unwrap();
 
         let result = validate_app_config(&config_path);
-        assert!(matches!(result, Err(ValidationError::MissingRequiredField(_))));
+        assert!(matches!(
+            result,
+            Err(ValidationError::MissingRequiredField(_))
+        ));
     }
 
     #[test]
@@ -185,7 +194,10 @@ timeout_seconds = 180
         fs::write(&config_path, invalid_config).unwrap();
 
         let result = validate_app_config(&config_path);
-        assert!(matches!(result, Err(ValidationError::CrossReferenceError(_))));
+        assert!(matches!(
+            result,
+            Err(ValidationError::CrossReferenceError(_))
+        ));
     }
 
     #[test]
@@ -308,7 +320,10 @@ timeout_seconds = 180
         // Don't create the instruction file
 
         let result = validate_manifest_instructions_cross_refs(&manifest_path, &instructions_dir);
-        assert!(matches!(result, Err(ValidationError::CrossReferenceError(_))));
+        assert!(matches!(
+            result,
+            Err(ValidationError::CrossReferenceError(_))
+        ));
     }
 
     #[test]
@@ -342,6 +357,9 @@ timeout_seconds = 180
         fs::write(instructions_dir.join("orphaned.md"), "# Orphaned").unwrap();
 
         let result = validate_manifest_instructions_cross_refs(&manifest_path, &instructions_dir);
-        assert!(matches!(result, Err(ValidationError::CrossReferenceError(_))));
+        assert!(matches!(
+            result,
+            Err(ValidationError::CrossReferenceError(_))
+        ));
     }
 }

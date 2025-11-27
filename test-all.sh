@@ -16,6 +16,9 @@ cargo test --test integration_tests
 echo "🔍 Running clippy..."
 cargo clippy
 
+echo "📝 Formatting code..."
+cargo fmt
+
 echo "📝 Checking formatting..."
 cargo fmt --check
 

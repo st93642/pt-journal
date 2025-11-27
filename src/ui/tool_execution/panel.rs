@@ -86,6 +86,10 @@ impl ToolExecutionPanel {
         terminal_scroll.set_hexpand(true);
         // Set minimum size for terminal to prevent it from becoming too small
         terminal.set_size_request(400, 300);
+
+        // Set terminal colors
+        terminal.set_color_background(&gtk4::gdk::RGBA::new(0.4, 0.4, 0.4, 1.0));
+        terminal.set_color_foreground(&gtk4::gdk::RGBA::new(1.0, 1.0, 1.0, 1.0));
         container.append(&terminal_box);
 
         // Set up terminal
@@ -99,9 +103,7 @@ impl ToolExecutionPanel {
             -1,
             None::<&gtk4::gio::Cancellable>,
             |result| {
-                if let Err(e) = result {
-                    eprintln!("Failed to spawn terminal: {}", e);
-                }
+                if let Err(_e) = result {}
             },
         );
 

@@ -1,7 +1,7 @@
 use crate::chatbot::{ChatProvider, ChatRequest, OllamaProvider, ProviderRegistry, StepContext};
 use crate::config::{ChatbotConfig, ModelProviderKind};
-use crate::model::ChatMessage;
 use crate::error::Result as PtResult;
+use crate::model::ChatMessage;
 use std::sync::Arc;
 
 /// Chat service that routes requests to appropriate providers
@@ -19,19 +19,14 @@ impl ChatService {
         // Register default providers
         Self::register_default_providers(&registry, &config);
 
-        Self {
-            config,
-            registry,
-        }
+        Self { config, registry }
     }
 
     /// Register the default providers with the registry.
     fn register_default_providers(registry: &ProviderRegistry, config: &ChatbotConfig) {
         // Register Ollama provider
         let ollama_provider = Arc::new(OllamaProvider::new(config.ollama.clone()));
-        if let Err(e) = registry.register(ollama_provider) {
-            eprintln!("Warning: Failed to register Ollama provider: {}", e);
-        }
+        if let Err(_e) = registry.register(ollama_provider) {}
     }
 
     /// Send a chat message using the appropriate provider based on the profile

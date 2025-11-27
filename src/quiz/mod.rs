@@ -88,14 +88,12 @@ pub fn parse_question_line(line: &str) -> Result<QuizQuestion> {
 pub fn parse_question_file(content: &str) -> Result<Vec<QuizQuestion>> {
     let mut questions = Vec::new();
 
-    for (line_num, line) in content.lines().enumerate() {
+    for line in content.lines() {
         match parse_question_line(line) {
             Ok(question) => questions.push(question),
-            Err(e) => {
+            Err(_e) => {
                 // Skip empty lines and comments silently
-                if !line.trim().is_empty() && !line.trim().starts_with('#') {
-                    eprintln!("Warning: Failed to parse line {}: {}", line_num + 1, e);
-                }
+                if !line.trim().is_empty() && !line.trim().starts_with('#') {}
             }
         }
     }
@@ -311,7 +309,6 @@ Invalid line 2|C|D
 
         // Skip test if file doesn't exist (e.g., in CI environment)
         if !std::path::Path::new(sample_path).exists() {
-            eprintln!("Sample file not found, skipping test");
             return;
         }
 

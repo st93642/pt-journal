@@ -67,7 +67,7 @@ impl QuizController {
                             .and_then(|p| p.steps.get(step_idx));
 
                         if let Some(step) = step {
-                            if let Some(quiz_step) = step.get_quiz_step() {
+                            if let Some(quiz_step) = step.quiz_data.as_ref() {
                                 let explanation = quiz_step
                                     .questions
                                     .get(question_idx)
@@ -130,7 +130,7 @@ impl QuizController {
                         .phases
                         .get(phase_idx)
                         .and_then(|phase| phase.steps.get(step_idx))
-                        .and_then(|step| step.get_quiz_step())
+                        .and_then(|step| step.quiz_data.as_ref())
                         .and_then(|quiz_step| quiz_step.questions.get(question_idx))
                         .map(|q| q.explanation.clone())
                 };
@@ -183,7 +183,7 @@ impl QuizController {
                                 .selected_step()
                                 .and_then(|sidx| phase.steps.get(sidx))
                         })
-                        .and_then(|step| step.get_quiz_step().cloned())
+                        .and_then(|step| step.quiz_data.as_ref().cloned())
                 };
 
                 if let Some(quiz_step) = quiz_step_opt {
@@ -213,7 +213,7 @@ impl QuizController {
                             .selected_step()
                             .and_then(|sidx| phase.steps.get(sidx))
                     })
-                    .and_then(|step| step.get_quiz_step())
+                    .and_then(|step| step.quiz_data.as_ref())
                     .map(|quiz_step| quiz_step.questions.len())
                     .unwrap_or(0);
                 (current, total)
@@ -246,7 +246,7 @@ impl QuizController {
                                 .selected_step()
                                 .and_then(|sidx| phase.steps.get(sidx))
                         })
-                        .and_then(|step| step.get_quiz_step().cloned())
+                        .and_then(|step| step.quiz_data.as_ref().cloned())
                 };
 
                 if let Some(quiz_step) = quiz_step_opt {
@@ -284,7 +284,7 @@ impl QuizController {
                         .and_then(|phase| phase.steps.get(step_idx));
 
                     if let Some(step) = step {
-                        if let Some(quiz_step) = step.get_quiz_step() {
+                        if let Some(quiz_step) = step.quiz_data.as_ref() {
                             (Some(quiz_step.statistics()), Some(quiz_step.clone()))
                         } else {
                             (None, None)

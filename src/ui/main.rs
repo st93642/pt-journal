@@ -36,7 +36,6 @@ pub fn build_ui(app: &Application, model: AppModel) {
         if let Some(_surface) = window_clone.surface() {
             // Use a simple approach - the window manager may still override this
             // In production, you might want to use window manager hints or environment variables
-            eprintln!("Attempting to position window at (0,0)");
         }
     });
 
@@ -98,6 +97,10 @@ pub fn build_ui(app: &Application, model: AppModel) {
             border-radius: 4px;
             padding: 4px;
         }
+        vte-terminal {
+            background-color: #f0f0f0;
+            color: #000000;
+        }
         "#,
     );
 
@@ -136,13 +139,14 @@ pub fn build_ui(app: &Application, model: AppModel) {
     // Register UI update handlers
     let detail_panel_update = detail_panel_ref.clone();
     let state_update = state.clone();
-    dispatcher.borrow_mut().on_chat_message_added = Box::new(move |phase_idx, step_idx, message| {
-        let current_phase = state_update.current_phase();
-        let current_step = state_update.current_step().unwrap_or(0);
-        if phase_idx == current_phase && step_idx == current_step {
-            detail_panel_update.chat_panel().add_message(&message);
-        }
-    });
+    dispatcher.borrow_mut().on_chat_message_added =
+        Box::new(move |phase_idx, step_idx, message| {
+            let current_phase = state_update.current_phase();
+            let current_step = state_update.current_step().unwrap_or(0);
+            if phase_idx == current_phase && step_idx == current_step {
+                detail_panel_update.chat_panel().add_message(&message);
+            }
+        });
 
     // === SETUP SIGNAL HANDLERS ===
 

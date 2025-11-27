@@ -126,7 +126,7 @@ pub fn load_step_into_panel(panel: &DetailPanel, step: &Step) {
         panel.content_stack.set_visible_child_name("quiz");
 
         // Load quiz content
-        if let Some(quiz_step) = step.get_quiz_step() {
+        if let Some(quiz_step) = step.quiz_data.as_ref() {
             panel.quiz_widget.hide_explanation(); // Clear explanation from previous quiz
             panel.quiz_widget.load_quiz_step(quiz_step);
             panel.quiz_widget.update_statistics(quiz_step);
@@ -136,11 +136,11 @@ pub fn load_step_into_panel(panel: &DetailPanel, step: &Step) {
         panel.content_stack.set_visible_child_name("tutorial");
 
         // Load tutorial content
-        let description = step.get_description();
-        let chat_history = step.get_chat_history();
+        let description = &step.description;
+        let chat_history = &step.chat_history;
 
-        panel.desc_view.buffer().set_text(&description);
-        panel.chat_panel.load_history(&chat_history);
+        panel.desc_view.buffer().set_text(description);
+        panel.chat_panel.load_history(chat_history);
     }
 }
 

@@ -103,44 +103,9 @@ impl Step {
         self.quiz_data.as_mut()
     }
 
-    /// Get description (for backward compatibility)
-    pub fn get_description(&self) -> String {
-        self.description.clone()
-    }
-
-    /// Get description notes (for backward compatibility)
-    pub fn get_description_notes(&self) -> String {
-        self.description_notes.clone()
-    }
-
-    /// Get notes (for backward compatibility)
-    pub fn get_notes(&self) -> String {
-        self.notes.clone()
-    }
-
-    /// Get evidence (for backward compatibility)
-    pub fn get_evidence(&self) -> Vec<Evidence> {
-        self.evidence.clone()
-    }
-
-    /// Set description notes (for backward compatibility)
-    pub fn set_description_notes(&mut self, text: String) {
-        self.description_notes = text;
-    }
-
-    /// Set notes (for backward compatibility)
-    pub fn set_notes(&mut self, text: String) {
-        self.notes = text;
-    }
-
-    /// Add evidence (for backward compatibility)
+    /// Add evidence
     pub fn add_evidence(&mut self, evidence: Evidence) {
         self.evidence.push(evidence);
-    }
-
-    /// Get quiz step data (for backward compatibility)
-    pub fn get_quiz_step(&self) -> Option<&QuizStep> {
-        self.quiz_data.as_ref()
     }
 
     /// Remove evidence by ID
@@ -156,11 +121,6 @@ impl Step {
             return true;
         }
         false
-    }
-
-    /// Get chat history (for backward compatibility)
-    pub fn get_chat_history(&self) -> Vec<ChatMessage> {
-        self.chat_history.clone()
     }
 
     /// Add a chat message to history

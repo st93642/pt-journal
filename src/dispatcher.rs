@@ -5,7 +5,7 @@
 /*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
 /*                                                          TT         SS II */
 /*  Created: Nov 21 2025 23:42 st93642                      TT    SSSSSSS II */
-/*  Updated: Nov 27 2025 12:33 st93642                                       */
+/*  Updated: Nov 27 2025 18:18 st93642                                       */
 /*                                                                           */
 /*   Transport and Telecommunication Institute - Riga, Latvia                */
 /*                       https://tsi.lv                                      */
@@ -15,7 +15,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 /// Events that can be emitted throughout the application
-/// 
+///
 /// This enum consolidates the previous AppMessage and AppMessageKind enums
 /// into a single, clear event system.
 #[derive(Debug, Clone)]
@@ -66,7 +66,7 @@ pub enum AppEvent {
 }
 
 /// Direct event bus with simplified callback architecture
-/// 
+///
 /// Replaces the complex HashMap-based dispatcher with direct function calls.
 /// Each event type has its own callback field for clear, traceable event flow.
 pub struct EventBus {
@@ -155,7 +155,7 @@ impl EventBus {
     }
 
     /// Emit an event to the appropriate handler
-    /// 
+    ///
     /// This replaces the complex dispatcher routing with a simple match statement
     /// that calls the appropriate callback directly.
     pub fn emit(&self, event: AppEvent) {
@@ -165,7 +165,9 @@ impl EventBus {
             AppEvent::SessionLoaded(path) => (self.on_session_loaded)(path),
             AppEvent::SessionSaved(path) => (self.on_session_saved)(path),
             AppEvent::SessionCreated => (self.on_session_created)(),
-            AppEvent::StepCompleted(phase_idx, step_idx) => (self.on_step_completed)(phase_idx, step_idx),
+            AppEvent::StepCompleted(phase_idx, step_idx) => {
+                (self.on_step_completed)(phase_idx, step_idx)
+            }
             AppEvent::StepStatusChanged(phase_idx, step_idx, status) => {
                 (self.on_step_status_changed)(phase_idx, step_idx, status)
             }
@@ -175,13 +177,19 @@ impl EventBus {
             AppEvent::StepDescriptionNotesUpdated(phase_idx, step_idx, notes) => {
                 (self.on_step_description_notes_updated)(phase_idx, step_idx, notes)
             }
-            AppEvent::PhaseNotesUpdated(phase_idx, notes) => (self.on_phase_notes_updated)(phase_idx, notes),
+            AppEvent::PhaseNotesUpdated(phase_idx, notes) => {
+                (self.on_phase_notes_updated)(phase_idx, notes)
+            }
             AppEvent::GlobalNotesUpdated(notes) => (self.on_global_notes_updated)(notes),
             AppEvent::ChatMessageAdded(phase_idx, step_idx, message) => {
                 (self.on_chat_message_added)(phase_idx, step_idx, message)
             }
-            AppEvent::ChatRequestStarted(phase_idx, step_idx) => (self.on_chat_request_started)(phase_idx, step_idx),
-            AppEvent::ChatRequestCompleted(phase_idx, step_idx) => (self.on_chat_request_completed)(phase_idx, step_idx),
+            AppEvent::ChatRequestStarted(phase_idx, step_idx) => {
+                (self.on_chat_request_started)(phase_idx, step_idx)
+            }
+            AppEvent::ChatRequestCompleted(phase_idx, step_idx) => {
+                (self.on_chat_request_completed)(phase_idx, step_idx)
+            }
             AppEvent::ChatRequestFailed(phase_idx, step_idx, error) => {
                 (self.on_chat_request_failed)(phase_idx, step_idx, error)
             }
@@ -193,7 +201,9 @@ impl EventBus {
                 (self.on_evidence_removed)(phase_idx, step_idx, evidence_id)
             }
             AppEvent::RefreshStepList(phase_idx) => (self.on_refresh_step_list)(phase_idx),
-            AppEvent::RefreshDetailView(phase_idx, step_idx) => (self.on_refresh_detail_view)(phase_idx, step_idx),
+            AppEvent::RefreshDetailView(phase_idx, step_idx) => {
+                (self.on_refresh_detail_view)(phase_idx, step_idx)
+            }
             AppEvent::QuizAnswerChecked(phase_idx, step_idx, question_idx, is_correct) => {
                 (self.on_quiz_answer_checked)(phase_idx, step_idx, question_idx, is_correct)
             }
@@ -203,7 +213,9 @@ impl EventBus {
             AppEvent::QuizQuestionChanged(phase_idx, step_idx, question_idx) => {
                 (self.on_quiz_question_changed)(phase_idx, step_idx, question_idx)
             }
-            AppEvent::QuizStatisticsUpdated(phase_idx, step_idx) => (self.on_quiz_statistics_updated)(phase_idx, step_idx),
+            AppEvent::QuizStatisticsUpdated(phase_idx, step_idx) => {
+                (self.on_quiz_statistics_updated)(phase_idx, step_idx)
+            }
             AppEvent::Error(error) => (self.on_error)(error),
             AppEvent::Info(info) => (self.on_info)(info),
         }
@@ -306,7 +318,7 @@ mod tests {
 
     #[test]
     fn test_event_bus_creation() {
-        let bus = EventBus::new();
+        let _bus = EventBus::new();
         // Should create without panicking
         assert!(true);
     }
@@ -348,7 +360,10 @@ mod tests {
 
         bus.emit(AppEvent::StepNotesUpdated(1, 2, "test notes".to_string()));
         let received_val = received.lock().unwrap();
-        assert_eq!(received_val.as_ref().unwrap(), &(1, 2, "test notes".to_string()));
+        assert_eq!(
+            received_val.as_ref().unwrap(),
+            &(1, 2, "test notes".to_string())
+        );
     }
 
     #[test]
@@ -380,7 +395,7 @@ mod tests {
     #[test]
     fn test_chat_message_added_event() {
         use crate::model::{ChatMessage, ChatRole};
-        
+
         let received = Arc::new(Mutex::new(None));
         let received_clone = received.clone();
 
@@ -402,7 +417,7 @@ mod tests {
     fn test_multiple_handlers() {
         let phase_received = Arc::new(Mutex::new(None));
         let step_received = Arc::new(Mutex::new(None));
-        
+
         let phase_clone = phase_received.clone();
         let step_clone = step_received.clone();
 
@@ -440,7 +455,7 @@ mod tests {
         // Test that legacy type aliases work
         let _dispatcher: SharedDispatcher = create_dispatcher();
         let _message: AppMessage = AppEvent::Info("test".to_string());
-        
+
         // Should compile and work
         assert!(true);
     }
@@ -453,7 +468,7 @@ mod tests {
         use uuid::Uuid;
 
         let bus = EventBus::new();
-        
+
         // Test each event variant to ensure they all work
         bus.emit(AppEvent::PhaseSelected(0));
         bus.emit(AppEvent::StepSelected(0));
@@ -463,17 +478,21 @@ mod tests {
         bus.emit(AppEvent::StepCompleted(0, 0));
         bus.emit(AppEvent::StepStatusChanged(0, 0, StepStatus::Done));
         bus.emit(AppEvent::StepNotesUpdated(0, 0, "test".to_string()));
-        bus.emit(AppEvent::StepDescriptionNotesUpdated(0, 0, "test".to_string()));
+        bus.emit(AppEvent::StepDescriptionNotesUpdated(
+            0,
+            0,
+            "test".to_string(),
+        ));
         bus.emit(AppEvent::PhaseNotesUpdated(0, "test".to_string()));
         bus.emit(AppEvent::GlobalNotesUpdated("test".to_string()));
-        
+
         let message = ChatMessage::new(ChatRole::User, "test".to_string());
         bus.emit(AppEvent::ChatMessageAdded(0, 0, message));
         bus.emit(AppEvent::ChatRequestStarted(0, 0));
         bus.emit(AppEvent::ChatRequestCompleted(0, 0));
         bus.emit(AppEvent::ChatRequestFailed(0, 0, "error".to_string()));
         bus.emit(AppEvent::ChatModelChanged("test".to_string()));
-        
+
         let evidence = Evidence {
             id: Uuid::new_v4(),
             path: "/test".to_string(),
@@ -484,7 +503,7 @@ mod tests {
         };
         bus.emit(AppEvent::EvidenceAdded(0, 0, evidence));
         bus.emit(AppEvent::EvidenceRemoved(0, 0, Uuid::new_v4()));
-        
+
         bus.emit(AppEvent::RefreshStepList(0));
         bus.emit(AppEvent::RefreshDetailView(0, 0));
         bus.emit(AppEvent::QuizAnswerChecked(0, 0, 0, true));

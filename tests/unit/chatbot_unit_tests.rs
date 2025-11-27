@@ -3,8 +3,8 @@ mod tests {
     use httpmock::prelude::*;
     use pt_journal::chatbot::{ChatProvider, ChatRequest, OllamaProvider, StepContext};
     use pt_journal::config::{ModelProfile, OllamaProviderConfig};
-    use pt_journal::model::ChatRole;
     use pt_journal::error::PtError;
+    use pt_journal::model::ChatRole;
 
     fn create_test_request(model_id: &str, endpoint: &str) -> (ChatRequest, OllamaProviderConfig) {
         let mut config = OllamaProviderConfig::default();
@@ -112,7 +112,10 @@ mod tests {
         let provider = OllamaProvider::new(config);
 
         let result = provider.check_availability();
-        assert!(matches!(result, Err(PtError::ChatServiceUnavailable { .. })));
+        assert!(matches!(
+            result,
+            Err(PtError::ChatServiceUnavailable { .. })
+        ));
     }
 
     #[test]
@@ -150,7 +153,10 @@ mod tests {
         let provider = OllamaProvider::new(config);
 
         let result = provider.list_available_models();
-        assert!(matches!(result, Err(PtError::ChatServiceUnavailable { .. })));
+        assert!(matches!(
+            result,
+            Err(PtError::ChatServiceUnavailable { .. })
+        ));
     }
 }
 

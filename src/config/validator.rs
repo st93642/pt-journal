@@ -9,19 +9,14 @@ use std::path::Path;
 
 /// Validates all configuration files at startup
 pub fn validate_all_configs() -> Result<(), Box<dyn std::error::Error>> {
-    println!("🔍 Validating configuration files...");
-
     // Validate main application config
     let config_path = AppConfig::config_file_path();
     match validate_app_config(&config_path) {
-        Ok(()) => println!("✅ Application config validation passed"),
+        Ok(()) => {}
         Err(e) => {
             // If config file doesn't exist, that's OK - defaults will be used
             if config_path.exists() {
-                eprintln!("❌ Application config validation failed: {}", e);
                 return Err(Box::new(e));
-            } else {
-                println!("ℹ️  Config file not found, using defaults (validation skipped)");
             }
         }
     }
@@ -31,21 +26,17 @@ pub fn validate_all_configs() -> Result<(), Box<dyn std::error::Error>> {
     let instructions_dir = Path::new("data/tool_instructions/categories");
 
     match validate_manifest_instructions_cross_refs(manifest_path, instructions_dir) {
-        Ok(()) => println!("✅ Tool manifest validation passed"),
+        Ok(()) => {}
         Err(e) => {
-            eprintln!("❌ Tool manifest validation failed: {}", e);
             return Err(Box::new(e));
         }
     }
 
-    println!("🎉 All configuration validations passed!");
     Ok(())
 }
 
 /// Validates configuration files for CI/CD pipelines
 pub fn validate_for_ci() -> Result<(), Box<dyn std::error::Error>> {
-    println!("🚀 Running CI configuration validation...");
-
     // In CI, we expect all required files to exist
     validate_all_configs()?;
 
@@ -53,7 +44,6 @@ pub fn validate_for_ci() -> Result<(), Box<dyn std::error::Error>> {
     // For example: check that all required environment variables are set
     // or validate against stricter schemas
 
-    println!("✅ CI validation completed successfully");
     Ok(())
 }
 
@@ -75,10 +65,8 @@ macro_rules! validate_config_at_compile_time {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use std::fs;
     use tempfile::TempDir;
-    use crate::dispatcher::create_event_bus;
 
     #[test]
     fn test_validate_all_configs_with_valid_files() {

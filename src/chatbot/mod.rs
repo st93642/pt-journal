@@ -52,8 +52,8 @@ impl ContextBuilder {
                     } else {
                         ""
                     };
-                    let notes = step.get_notes();
-                    let evidence = step.get_evidence();
+                    let notes = step.notes.clone();
+                    let evidence = step.evidence.clone();
                     context.push_str(&format!(
                         "  - Step {}: {} ({}){}\n",
                         sidx + 1,
@@ -69,7 +69,7 @@ impl ContextBuilder {
                         context.push_str(&format!("    Evidence: {} items\n", evidence.len()));
                     }
                     if step.is_quiz() {
-                        if let Some(quiz) = step.get_quiz_step() {
+                        if let Some(quiz) = step.quiz_data.as_ref() {
                             let stats = quiz.statistics();
                             context.push_str(&format!(
                                 "    Quiz: {}/{} correct\n",

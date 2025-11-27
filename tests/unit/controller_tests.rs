@@ -38,7 +38,7 @@ fn test_build_step_context() {
     step.status = StepStatus::InProgress;
 
     // Add notes and evidence
-    step.set_notes("Test note 1\nTest note 2".to_string());
+    step.notes = "Test note 1\nTest note 2".to_string();
     step.add_evidence(Evidence {
         id: Uuid::new_v4(),
         path: "Test evidence".to_string(),
@@ -67,10 +67,10 @@ fn test_build_step_context() {
     let _config = model_borrow.config().chatbot.clone();
     let phase = &model_borrow.session().phases[phase_idx];
     let step = &phase.steps[step_idx];
-    let notes = step.get_notes();
-    let evidence = step.get_evidence();
+    let notes = step.notes.clone();
+    let evidence = step.evidence.clone();
     let quiz_status = if step.is_quiz() {
-        step.get_quiz_step().map(|q| {
+        step.quiz_data.as_ref().map(|q| {
             format!(
                 "{}/{} correct",
                 q.statistics().correct,
@@ -83,7 +83,7 @@ fn test_build_step_context() {
     let step_ctx = StepContext {
         phase_name: phase.name.clone(),
         step_title: step.title.clone(),
-        step_description: step.get_description(),
+        step_description: step.description.clone(),
         step_status: match step.status {
             StepStatus::Done => "Done".to_string(),
             StepStatus::InProgress => "In Progress".to_string(),
@@ -94,7 +94,7 @@ fn test_build_step_context() {
         evidence_count: evidence.len(),
         quiz_status,
     };
-    let history = step.get_chat_history().clone();
+    let history = step.chat_history.clone();
 
     // Verify the context was built correctly
     assert_eq!(step_ctx.phase_name, "Test Phase");
@@ -202,7 +202,7 @@ fn test_build_step_context_with_quiz() {
     let step_idx = model_borrow.selected_step().unwrap_or(0);
     let step = &model_borrow.session().phases[phase_idx].steps[step_idx];
     let quiz_status = if step.is_quiz() {
-        step.get_quiz_step().map(|q| {
+        step.quiz_data.as_ref().map(|q| {
             format!(
                 "{}/{} correct",
                 q.statistics().correct,

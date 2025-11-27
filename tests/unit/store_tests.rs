@@ -71,7 +71,7 @@ mod tests {
         assert_eq!(loaded.name, "Legacy Session");
 
         if let Some(step) = loaded.phases[0].steps.first() {
-            let history = step.get_chat_history();
+            let history = step.chat_history.clone();
             assert!(history.is_empty()); // Should default to empty vec
         }
     }

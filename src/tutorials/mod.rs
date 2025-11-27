@@ -16,9 +16,9 @@
 // pub mod vulnerability_analysis; // Now loaded from JSON
 
 use crate::model::{Phase, Step};
-use uuid::Uuid;
 use serde::{Deserialize, Serialize};
 use std::fs;
+use uuid::Uuid;
 
 /// JSON structure for tutorial data loaded from files
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -76,16 +76,14 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
 fn load_quiz_from_file(file_path: &str) -> Result<Vec<crate::model::QuizQuestion>, String> {
     // Construct path relative to data directory
     let full_path = format!("data/{}", file_path);
-    
+
     // Read file content
-    let content = fs::read_to_string(&full_path).map_err(|e| {
-        format!("Failed to read quiz file {}: {}", full_path, e)
-    })?;
+    let content = fs::read_to_string(&full_path)
+        .map_err(|e| format!("Failed to read quiz file {}: {}", full_path, e))?;
 
     // Parse questions
-    crate::quiz::parse_question_file(&content).map_err(|e| {
-        format!("Failed to parse questions from {}: {}", full_path, e)
-    })
+    crate::quiz::parse_question_file(&content)
+        .map_err(|e| format!("Failed to parse questions from {}: {}", full_path, e))
 }
 
 /// Load a tutorial phase from JSON file
@@ -95,44 +93,56 @@ fn load_tutorial_phase(phase_name: &str) -> Phase {
         Ok(content) => {
             match serde_json::from_str::<TutorialData>(&content) {
                 Ok(tutorial_data) => {
-                    let steps = tutorial_data.steps.into_iter().map(|step_data| {
-                        // Check if this is a quiz step
-                        if step_data.tags.contains(&"quiz".to_string()) {
-                            // For quiz steps, load the quiz data from the referenced file
-                            // The content field contains the path to the quiz file
-                            if step_data.content.starts_with("Quiz content loaded from ") {
-                                let quiz_file_path = step_data.content
-                                    .strip_prefix("Quiz content loaded from ")
-                                    .unwrap_or(&step_data.content);
-                                
-                                match load_quiz_from_file(quiz_file_path) {
-                                    Ok(questions) => {
-                                        let quiz_step = crate::model::QuizStep::new(
-                                            Uuid::new_v4(),
-                                            step_data.title.clone(),
-                                            phase_name.to_string(),
-                                            questions,
-                                        );
-                                        Step::new_quiz(
-                                            Uuid::new_v4(),
-                                            step_data.title,
-                                            step_data.tags,
-                                            quiz_step,
-                                        )
+                    let steps = tutorial_data
+                        .steps
+                        .into_iter()
+                        .map(|step_data| {
+                            // Check if this is a quiz step
+                            if step_data.tags.contains(&"quiz".to_string()) {
+                                // For quiz steps, load the quiz data from the referenced file
+                                // The content field contains the path to the quiz file
+                                if step_data.content.starts_with("Quiz content loaded from ") {
+                                    let quiz_file_path = step_data
+                                        .content
+                                        .strip_prefix("Quiz content loaded from ")
+                                        .unwrap_or(&step_data.content);
+
+                                    match load_quiz_from_file(quiz_file_path) {
+                                        Ok(questions) => {
+                                            let quiz_step = crate::model::QuizStep::new(
+                                                Uuid::new_v4(),
+                                                step_data.title.clone(),
+                                                phase_name.to_string(),
+                                                questions,
+                                            );
+                                            Step::new_quiz(
+                                                Uuid::new_v4(),
+                                                step_data.title,
+                                                step_data.tags,
+                                                quiz_step,
+                                            )
+                                        }
+                                        Err(_e) => {
+                                            // Fallback to tutorial step
+                                            Step::new_tutorial(
+                                                Uuid::new_v4(),
+                                                step_data.title,
+                                                format!("Error loading quiz: {}", _e),
+                                                step_data.tags,
+                                            )
+                                        }
                                     }
-                                    Err(e) => {
-                                        eprintln!("Failed to load quiz from {}: {}", quiz_file_path, e);
-                                        // Fallback to tutorial step
-                                        Step::new_tutorial(
-                                            Uuid::new_v4(),
-                                            step_data.title,
-                                            format!("Error loading quiz: {}", e),
-                                            step_data.tags,
-                                        )
-                                    }
+                                } else {
+                                    // Fallback to tutorial step if content doesn't reference a file
+                                    Step::new_tutorial(
+                                        Uuid::new_v4(),
+                                        step_data.title,
+                                        step_data.content,
+                                        step_data.tags,
+                                    )
                                 }
                             } else {
-                                // Fallback to tutorial step if content doesn't reference a file
+                                // Regular tutorial step
                                 Step::new_tutorial(
                                     Uuid::new_v4(),
                                     step_data.title,
@@ -140,16 +150,8 @@ fn load_tutorial_phase(phase_name: &str) -> Phase {
                                     step_data.tags,
                                 )
                             }
-                        } else {
-                            // Regular tutorial step
-                            Step::new_tutorial(
-                                Uuid::new_v4(),
-                                step_data.title,
-                                step_data.content,
-                                step_data.tags,
-                            )
-                        }
-                    }).collect();
+                        })
+                        .collect();
 
                     Phase {
                         id: Uuid::new_v4(),
@@ -158,220 +160,28 @@ fn load_tutorial_phase(phase_name: &str) -> Phase {
                         notes: String::new(),
                     }
                 }
-                Err(e) => {
-                    eprintln!("Failed to parse {}: {}", json_path, e);
+                Err(_e) => {
                     // Fallback to empty phase
                     Phase {
                         id: Uuid::new_v4(),
                         name: phase_name.to_string(),
                         steps: Vec::new(),
-                        notes: format!("Error loading tutorial: {}", e),
+                        notes: format!("Error loading tutorial: {}", _e),
                     }
                 }
             }
         }
-        Err(e) => {
-            eprintln!("Failed to read {}: {}", json_path, e);
+        Err(_e) => {
             // Fallback to empty phase
             Phase {
                 id: Uuid::new_v4(),
                 name: phase_name.to_string(),
                 steps: Vec::new(),
-                notes: format!("File not found: {}", e),
+                notes: format!("File not found: {}", _e),
             }
         }
     }
 }
-
-// fn create_cicd_pipeline_attacks_phase() -> Phase {
-//     let steps = vec![cloud_native::cicd_pipeline_attacks_phase()];
-
-//     Phase {
-//         id: Uuid::new_v4(),
-//         name: "CI-CD Pipeline Attacks".to_string(),
-//         steps,
-//         notes: String::new(),
-//     }
-// }
-
-// fn create_sbom_analysis_phase() -> Phase {
-//     let steps = vec![supply_chain::sbom_analysis_phase()];
-
-//     Phase {
-//         id: Uuid::new_v4(),
-//         name: "SBOM Generation & Analysis".to_string(),
-//         steps,
-//         notes: String::new(),
-//     }
-// }
-
-// fn create_dependency_confusion_phase() -> Phase {
-//     let steps = vec![supply_chain::dependency_confusion_phase()];
-
-//     Phase {
-//         id: Uuid::new_v4(),
-//         name: "Dependency Confusion & Typosquatting".to_string(),
-//         steps,
-//         notes: String::new(),
-//     }
-// }
-
-// fn create_artifact_integrity_phase() -> Phase {
-//     let steps = vec![supply_chain::artifact_integrity_phase()];
-
-//     Phase {
-//         id: Uuid::new_v4(),
-//         name: "Artifact Integrity Checks".to_string(),
-//         steps,
-//         notes: String::new(),
-//     }
-// }
-
-// fn create_comptia_secplus_phase() -> Phase {
-//     let steps = comptia_secplus::get_all_comptia_steps();
-
-//     Phase {
-//         id: Uuid::new_v4(),
-//         name: "CompTIA Security+".to_string(),
-//         steps,
-//         notes: String::new(),
-//     }
-// }
-
-// fn create_pentest_exam_phase() -> Phase {
-//     let steps = pentest_exam::get_all_pentest_steps();
-
-//     Phase {
-//         id: Uuid::new_v4(),
-//         name: "CompTIA PenTest+".to_string(),
-//         steps,
-//         notes: String::new(),
-//     }
-// }
-
-// fn create_ceh_phase() -> Phase {
-//     let steps = ceh::get_all_ceh_steps();
-
-//     Phase {
-//         id: Uuid::new_v4(),
-//         name: "Certified Ethical Hacker (CEH)".to_string(),
-//         steps,
-//         notes: String::new(),
-//     }
-// }
-
-// fn create_red_team_tradecraft_phase() -> Phase {
-//     let steps = red_team_tradecraft::create_red_team_steps();
-
-//     Phase {
-//         id: Uuid::new_v4(),
-//         name: "Red Team Tradecraft".to_string(),
-//         steps,
-//         notes: String::new(),
-//     }
-// }
-
-// fn create_purple_team_threat_hunting_phase() -> Phase {
-//     let steps = purple_team_threat_hunting::create_purple_team_steps();
-
-//     Phase {
-//         id: Uuid::new_v4(),
-//         name: "Purple Team/Threat Hunting".to_string(),
-//         steps,
-//         notes: String::new(),
-//     }
-// }
-
-// fn create_ai_security_phase() -> Phase {
-//     let mut steps = Vec::new();
-
-//     // Add Model Threat Modeling steps
-//     for (title, description) in ai_security::MODEL_THREAT_MODELING_STEPS.iter() {
-//         steps.push(Step::new_tutorial(
-//             Uuid::new_v4(),
-//             title.to_string(),
-//             description.to_string(),
-//             vec![
-//                 "ai".to_string(),
-//                 "threat-modeling".to_string(),
-//                 "security".to_string(),
-//             ],
-//         ));
-//     }
-
-//     // Add Prompt Injection & Jailbreaks steps
-//     for (title, description) in ai_security::PROMPT_INJECTION_STEPS.iter() {
-//         steps.push(Step::new_tutorial(
-//             Uuid::new_v4(),
-//             title.to_string(),
-//             description.to_string(),
-//             vec![
-//                 "ai".to_string(),
-//                 "llm".to_string(),
-//                 "prompt-injection".to_string(),
-//             ],
-//         ));
-//     }
-
-//     // Add Model Poisoning & Dataset Attacks steps
-//     for (title, description) in ai_security::MODEL_POISONING_STEPS.iter() {
-//         steps.push(Step::new_tutorial(
-//             Uuid::new_v4(),
-//             title.to_string(),
-//             description.to_string(),
-//             vec!["ai".to_string(), "ml".to_string(), "poisoning".to_string()],
-//         ));
-//     }
-
-//     // Add Data Exfiltration & Model Inversion steps
-//     for (title, description) in ai_security::DATA_EXFILTRATION_STEPS.iter() {
-//         steps.push(Step::new_tutorial(
-//             Uuid::new_v4(),
-//             title.to_string(),
-//             description.to_string(),
-//             vec![
-//                 "ai".to_string(),
-//                 "llm".to_string(),
-//                 "data-exfiltration".to_string(),
-//             ],
-//         ));
-//     }
-
-//     // Add Adversarial Example Crafting steps
-//     for (title, description) in ai_security::ADVERSARIAL_EXAMPLES_STEPS.iter() {
-//         steps.push(Step::new_tutorial(
-//             Uuid::new_v4(),
-//             title.to_string(),
-//             description.to_string(),
-//             vec![
-//                 "ai".to_string(),
-//                 "ml".to_string(),
-//                 "adversarial".to_string(),
-//             ],
-//         ));
-//     }
-
-//     // Add Guardrail Validation steps
-//     for (title, description) in ai_security::GUARDRAIL_VALIDATION_STEPS.iter() {
-//         steps.push(Step::new_tutorial(
-//             Uuid::new_v4(),
-//             title.to_string(),
-//             description.to_string(),
-//             vec![
-//                 "ai".to_string(),
-//                 "safety".to_string(),
-//                 "guardrails".to_string(),
-//             ],
-//         ));
-//     }
-
-//     Phase {
-//         id: Uuid::new_v4(),
-//         name: "AI/ML Security Integrations".to_string(),
-//         steps,
-//         notes: String::new(),
-//     }
-// }
 
 /// Validate tutorial structure consistency across all modules
 pub fn validate_tutorial_structure() -> Result<(), String> {
@@ -532,21 +342,15 @@ fn validate_step_structure(steps: &[Step], module_name: &str) -> Result<(), Stri
     for (index, step) in steps.iter().enumerate() {
         // Check that step has a non-empty title
         if step.title.trim().is_empty() {
-            return Err(format!(
-                "{}: Step {} has empty title",
-                module_name, index
-            ));
+            return Err(format!("{}: Step {} has empty title", module_name, index));
         }
 
         // Check that step has a description (tutorial steps only)
-        if step.is_tutorial() {
-            let description = step.get_description();
-            if description.trim().is_empty() {
-                return Err(format!(
-                    "{}: Step '{}' has empty description",
-                    module_name, step.title
-                ));
-            }
+        if step.is_tutorial() && step.description.trim().is_empty() {
+            return Err(format!(
+                "{}: Step '{}' has empty description",
+                module_name, step.title
+            ));
         }
 
         // Check that step has appropriate tags

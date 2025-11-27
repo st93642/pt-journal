@@ -22,7 +22,7 @@ mod tests {
             assert_eq!(model.selected_phase(), 0);
             assert_eq!(model.selected_step(), Some(0));
             assert!(model.current_path().is_none());
-            assert_eq!(model.session().phases.len(), 22); // 22 phases after API consolidation
+            assert_eq!(model.session().phases.len(), 21); // 21 phases loaded from JSON
                                                           // Config should be loaded (or default)
             assert_eq!(
                 model.config().chatbot.ollama.endpoint,
@@ -35,7 +35,7 @@ mod tests {
         fn test_session_creation() {
             let session = Session::default();
             assert!(!session.name.is_empty());
-            assert_eq!(session.phases.len(), 22); // 22 phases after API consolidation
+            assert_eq!(session.phases.len(), 21); // 21 phases loaded from JSON
             assert!(session.notes_global.is_empty());
         }
 
@@ -99,12 +99,12 @@ mod tests {
 
             // Test basic properties
             assert!(!first_step.title.is_empty());
-            assert!(!first_step.get_description().is_empty()); // Use get_description() for StepContent
+            assert!(!first_step.description.is_empty()); // Use description for StepContent
             assert!(first_step.id != Uuid::nil());
             assert_eq!(first_step.status, StepStatus::Todo);
             assert!(first_step.completed_at.is_none());
-            assert!(first_step.get_notes().is_empty()); // Use get_notes() for StepContent
-            assert!(first_step.get_evidence().is_empty()); // Use get_evidence() for StepContent
+            assert!(first_step.notes.clone().is_empty()); // Use get_notes() for StepContent
+            assert!(first_step.evidence.clone().is_empty()); // Use get_evidence() for StepContent
         }
 
         #[test]
@@ -137,7 +137,7 @@ mod tests {
 
                     // Only check tutorial steps for description format
                     if step.is_tutorial() {
-                        let description = step.get_description();
+                        let description = step.description.clone();
                         // Each tutorial step should have detailed description
                         assert!(
                             description.len() > 100,
@@ -168,7 +168,7 @@ mod tests {
                         );
                     } else if step.is_quiz() {
                         // Quiz steps should have questions
-                        if let Some(quiz_step) = step.get_quiz_step() {
+                        if let Some(quiz_step) = step.quiz_data.as_ref() {
                             assert!(
                                 !quiz_step.questions.is_empty(),
                                 "Quiz step has no questions: {}",
@@ -266,13 +266,12 @@ mod tests {
                 "CompTIA Security+",
                 "CompTIA PenTest+",
                 "Certified Ethical Hacker (CEH)",
-                "CI-CD Pipeline Attacks",
-                "SBOM Generation & Analysis",
-                "Dependency Confusion & Typosquatting",
-                "Artifact Integrity Checks",
-                "Red Team Tradecraft",
+                "Cloud Native Security",
+                "AI/ML Security",
+                "Supply Chain Security",
                 "Purple Team/Threat Hunting",
-                "AI/ML Security Integrations",
+                "Red Team Tradecraft",
+                "Modern Web Application Security",
             ];
             for (idx, expected_name) in phase_names.iter().enumerate() {
                 assert_eq!(session.phases[idx].name, *expected_name);
@@ -280,8 +279,8 @@ mod tests {
 
             // Verify step counts are reasonable for the core pentesting phases
             let expected_step_counts = [
-                16, 5, 4, 4, 2, 1, 1, 7, 4, 6, 7, 8, 23, 32, 24, 1, 1, 1, 1, 10, 10, 12,
-            ]; // Updated for AI/ML Security Integrations (22 total phases)
+                16, 5, 4, 4, 2, 1, 1, 7, 4, 6, 7, 8, 23, 32, 24, 15, 13, 15, 10, 10, 7,
+            ]; // 21 phases loaded from JSON
             for (idx, &expected_count) in expected_step_counts.iter().enumerate() {
                 assert_eq!(session.phases[idx].steps.len(), expected_count);
             }
@@ -317,7 +316,7 @@ mod tests {
                 for step in &phase.steps {
                     // Only check tutorial steps
                     if step.is_tutorial() {
-                        let description = step.get_description();
+                        let description = step.description.clone();
 
                         // All tutorials must have OBJECTIVE
                         assert!(
@@ -388,7 +387,7 @@ mod tests {
             let recon_descriptions: Vec<String> = session.phases[0]
                 .steps
                 .iter()
-                .map(|s| s.get_description())
+                .map(|s| s.description.clone())
                 .collect();
 
             for technique in &expected_recon_techniques {
@@ -433,16 +432,16 @@ mod tests {
                     assert!(!step.title.is_empty());
                     // Tutorial steps have descriptions, quiz steps have questions
                     if step.is_tutorial() {
-                        assert!(!step.get_description().is_empty());
+                        assert!(!step.description.is_empty());
                     } else if step.is_quiz() {
-                        assert!(!step.get_quiz_step().unwrap().questions.is_empty());
+                        assert!(!step.quiz_data.as_ref().unwrap().questions.is_empty());
                     }
                     assert!(step.id != Uuid::nil());
                     assert!(!step.tags.is_empty()); // All steps should have at least one tag
 
                     // Test that tutorial steps contain required sections
                     if step.is_tutorial() {
-                        let description = step.get_description();
+                        let description = step.description.clone();
                         assert!(description.contains("OBJECTIVE"));
                         assert!(description.contains("STEP-BY-STEP"));
                         if CLOUD_IDENTITY_PHASES.contains(&phase.name.as_str()) {
@@ -580,8 +579,8 @@ mod tests {
                 total_chars += phase.notes.len();
                 for step in &phase.steps {
                     total_chars += step.title.len();
-                    total_chars += step.get_description().len();
-                    total_chars += step.get_notes().len();
+                    total_chars += step.description.len();
+                    total_chars += step.notes.clone().len();
                     for tag in &step.tags {
                         total_chars += tag.len();
                     }

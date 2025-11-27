@@ -23,7 +23,7 @@
 
 use crate::chatbot::ChatProvider;
 use crate::config::ModelProviderKind;
-use crate::error::{Result as PtResult, PtError};
+use crate::error::{PtError, Result as PtResult};
 use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
 
@@ -66,8 +66,8 @@ impl ProviderRegistry {
         let provider_name = provider.provider_name();
         let kind = Self::provider_name_to_kind(provider_name)?;
 
-        let mut providers = self.providers.write().map_err(|_| {
-            PtError::Internal { message: "Failed to acquire registry write lock".to_string() }
+        let mut providers = self.providers.write().map_err(|_| PtError::Internal {
+            message: "Failed to acquire registry write lock".to_string(),
         })?;
 
         providers.insert(kind.clone(), provider);
@@ -82,13 +82,16 @@ impl ProviderRegistry {
     /// # Returns
     /// The registered provider, or an error if not found
     pub fn get_provider(&self, kind: &ModelProviderKind) -> PtResult<Arc<dyn ChatProvider>> {
-        let providers = self.providers.read().map_err(|_| {
-            PtError::Internal { message: "Failed to acquire registry read lock".to_string() }
+        let providers = self.providers.read().map_err(|_| PtError::Internal {
+            message: "Failed to acquire registry read lock".to_string(),
         })?;
 
-        providers.get(kind).cloned().ok_or_else(|| {
-            PtError::NotSupported { operation: format!("Provider '{}' is not registered", kind) }
-        })
+        providers
+            .get(kind)
+            .cloned()
+            .ok_or_else(|| PtError::NotSupported {
+                operation: format!("Provider '{}' is not registered", kind),
+            })
     }
 
     /// Check if a provider is registered for the given kind.
@@ -99,7 +102,10 @@ impl ProviderRegistry {
     /// # Returns
     /// true if a provider is registered, false otherwise
     pub fn has_provider(&self, kind: &ModelProviderKind) -> bool {
-        self.providers.read().map(|providers| providers.contains_key(kind)).unwrap_or(false)
+        self.providers
+            .read()
+            .map(|providers| providers.contains_key(kind))
+            .unwrap_or(false)
     }
 
     /// Get a list of all registered provider kinds.
@@ -110,7 +116,10 @@ impl ProviderRegistry {
     /// # Returns
     /// A vector of all provider kinds that have registered providers
     pub fn registered_providers(&self) -> Vec<ModelProviderKind> {
-        self.providers.read().map(|providers| providers.keys().cloned().collect()).unwrap_or_default()
+        self.providers
+            .read()
+            .map(|providers| providers.keys().cloned().collect())
+            .unwrap_or_default()
     }
 
     /// Unregister a provider for the given kind.
@@ -121,8 +130,8 @@ impl ProviderRegistry {
     /// # Returns
     /// true if a provider was removed, false if none was registered
     pub fn unregister(&self, kind: &ModelProviderKind) -> PtResult<bool> {
-        let mut providers = self.providers.write().map_err(|_| {
-            PtError::Internal { message: "Failed to acquire registry write lock".to_string() }
+        let mut providers = self.providers.write().map_err(|_| PtError::Internal {
+            message: "Failed to acquire registry write lock".to_string(),
         })?;
 
         Ok(providers.remove(kind).is_some())
@@ -130,8 +139,8 @@ impl ProviderRegistry {
 
     /// Clear all registered providers.
     pub fn clear(&self) -> PtResult<()> {
-        let mut providers = self.providers.write().map_err(|_| {
-            PtError::Internal { message: "Failed to acquire registry write lock".to_string() }
+        let mut providers = self.providers.write().map_err(|_| PtError::Internal {
+            message: "Failed to acquire registry write lock".to_string(),
         })?;
 
         providers.clear();
@@ -148,10 +157,12 @@ impl ProviderRegistry {
     fn provider_name_to_kind(name: &str) -> PtResult<ModelProviderKind> {
         match name.to_lowercase().as_str() {
             "ollama" => Ok(ModelProviderKind::Ollama),
-            _ => Err(PtError::NotSupported { operation: format!(
-                "Unknown provider name: '{}'. Supported providers: ollama",
-                name
-            ) }),
+            _ => Err(PtError::NotSupported {
+                operation: format!(
+                    "Unknown provider name: '{}'. Supported providers: ollama",
+                    name
+                ),
+            }),
         }
     }
 }
@@ -165,8 +176,6 @@ impl Default for ProviderRegistry {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::chatbot::OllamaProvider;
-    use crate::config::OllamaProviderConfig;
 
     // Mock provider for testing
     struct MockProvider {
@@ -180,7 +189,10 @@ mod tests {
     }
 
     impl ChatProvider for MockProvider {
-        fn send_message(&self, _request: &crate::chatbot::ChatRequest) -> PtResult<crate::model::ChatMessage> {
+        fn send_message(
+            &self,
+            _request: &crate::chatbot::ChatRequest,
+        ) -> PtResult<crate::model::ChatMessage> {
             unimplemented!()
         }
 
@@ -211,7 +223,10 @@ mod tests {
 
         // Check that it's registered
         assert!(registry.has_provider(&ModelProviderKind::Ollama));
-        assert_eq!(registry.registered_providers(), vec![ModelProviderKind::Ollama]);
+        assert_eq!(
+            registry.registered_providers(),
+            vec![ModelProviderKind::Ollama]
+        );
 
         // Get the provider back
         let retrieved = registry.get_provider(&ModelProviderKind::Ollama).unwrap();
@@ -263,8 +278,14 @@ mod tests {
 
     #[test]
     fn test_provider_name_to_kind() {
-        assert_eq!(ProviderRegistry::provider_name_to_kind("ollama").unwrap(), ModelProviderKind::Ollama);
-        assert_eq!(ProviderRegistry::provider_name_to_kind("OLLAMA").unwrap(), ModelProviderKind::Ollama);
+        assert_eq!(
+            ProviderRegistry::provider_name_to_kind("ollama").unwrap(),
+            ModelProviderKind::Ollama
+        );
+        assert_eq!(
+            ProviderRegistry::provider_name_to_kind("OLLAMA").unwrap(),
+            ModelProviderKind::Ollama
+        );
         assert!(ProviderRegistry::provider_name_to_kind("unknown").is_err());
     }
 

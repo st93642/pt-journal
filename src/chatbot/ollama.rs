@@ -1,7 +1,7 @@
 use crate::chatbot::{ChatProvider, ChatRequest};
 use crate::config::{ModelProviderKind, OllamaProviderConfig};
+use crate::error::{PtError, Result as PtResult};
 use crate::model::{ChatMessage, ChatRole};
-use crate::error::{Result as PtResult, PtError};
 use reqwest::blocking::Client;
 use std::time::Duration;
 
@@ -152,7 +152,9 @@ impl ChatProvider for OllamaProvider {
 
         if !response.status().is_success() {
             if response.status() == reqwest::StatusCode::NOT_FOUND {
-                return Err(PtError::ChatModelNotFound { model_id: request.model_profile.id.clone() });
+                return Err(PtError::ChatModelNotFound {
+                    model_id: request.model_profile.id.clone(),
+                });
             } else {
                 return Err(PtError::ChatServiceUnavailable {
                     message: "Ollama service returned error status".to_string(),
@@ -160,11 +162,16 @@ impl ChatProvider for OllamaProvider {
             }
         }
 
-        let resp_json: serde_json::Value = response.json().map_err(|e| PtError::io_with_source("Failed to parse Ollama response", e))?;
+        let resp_json: serde_json::Value = response
+            .json()
+            .map_err(|e| PtError::io_with_source("Failed to parse Ollama response", e))?;
 
         let content = resp_json["message"]["content"]
             .as_str()
-            .ok_or_else(|| PtError::Chat { message: "Missing content in response".to_string(), source: None })?;
+            .ok_or_else(|| PtError::Chat {
+                message: "Missing content in response".to_string(),
+                source: None,
+            })?;
 
         Ok(ChatMessage::new(ChatRole::Assistant, content.to_string()))
     }
@@ -209,11 +216,16 @@ impl ChatProvider for OllamaProvider {
             });
         }
 
-        let resp_json: serde_json::Value = response.json().map_err(|e| PtError::io_with_source("Failed to parse Ollama response", e))?;
+        let resp_json: serde_json::Value = response
+            .json()
+            .map_err(|e| PtError::io_with_source("Failed to parse Ollama response", e))?;
 
-        let models = resp_json["models"].as_array().ok_or_else(|| {
-            PtError::Chat { message: "Missing models array in response".to_string(), source: None }
-        })?;
+        let models = resp_json["models"]
+            .as_array()
+            .ok_or_else(|| PtError::Chat {
+                message: "Missing models array in response".to_string(),
+                source: None,
+            })?;
 
         let model_names = models
             .iter()

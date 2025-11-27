@@ -46,7 +46,10 @@ pub type Result<T> = std::result::Result<T, PtError>;
 pub enum PtError {
     // Configuration errors
     #[error("Configuration error: {message}")]
-    Config { message: String, source: Option<Box<dyn std::error::Error + Send + Sync>> },
+    Config {
+        message: String,
+        source: Option<Box<dyn std::error::Error + Send + Sync>>,
+    },
 
     #[error("Configuration file not found: {path}")]
     ConfigFileNotFound { path: String },
@@ -62,7 +65,11 @@ pub enum PtError {
     InvalidStepIndex { phase_idx: usize, step_idx: usize },
 
     #[error("Invalid question index: phase={phase_idx}, step={step_idx}, question={question_idx}")]
-    InvalidQuestionIndex { phase_idx: usize, step_idx: usize, question_idx: usize },
+    InvalidQuestionIndex {
+        phase_idx: usize,
+        step_idx: usize,
+        question_idx: usize,
+    },
 
     #[error("State mutation error: {message}")]
     StateMutation { message: String },
@@ -76,7 +83,10 @@ pub enum PtError {
 
     // Chat/LLM errors
     #[error("Chat service error: {message}")]
-    Chat { message: String, source: Option<Box<dyn std::error::Error + Send + Sync>> },
+    Chat {
+        message: String,
+        source: Option<Box<dyn std::error::Error + Send + Sync>>,
+    },
 
     #[error("Chat model not found: {model_id}")]
     ChatModelNotFound { model_id: String },
@@ -86,7 +96,10 @@ pub enum PtError {
 
     // I/O errors
     #[error("I/O error: {message}")]
-    Io { message: String, source: Option<Box<dyn std::error::Error + Send + Sync>> },
+    Io {
+        message: String,
+        source: Option<Box<dyn std::error::Error + Send + Sync>>,
+    },
 
     #[error("File not found: {path}")]
     FileNotFound { path: String },
@@ -135,7 +148,10 @@ impl PtError {
     }
 
     /// Create a new configuration error with source
-    pub fn config_with_source<S: Into<String>, E: std::error::Error + Send + Sync + 'static>(message: S, source: E) -> Self {
+    pub fn config_with_source<S: Into<String>, E: std::error::Error + Send + Sync + 'static>(
+        message: S,
+        source: E,
+    ) -> Self {
         PtError::Config {
             message: message.into(),
             source: Some(Box::new(source)),
@@ -151,7 +167,10 @@ impl PtError {
     }
 
     /// Create a new I/O error with source
-    pub fn io_with_source<S: Into<String>, E: std::error::Error + Send + Sync + 'static>(message: S, source: E) -> Self {
+    pub fn io_with_source<S: Into<String>, E: std::error::Error + Send + Sync + 'static>(
+        message: S,
+        source: E,
+    ) -> Self {
         PtError::Io {
             message: message.into(),
             source: Some(Box::new(source)),
@@ -160,43 +179,50 @@ impl PtError {
 
     /// Create a new validation error
     pub fn validation<S: Into<String>>(message: S) -> Self {
-        PtError::Validation { message: message.into() }
+        PtError::Validation {
+            message: message.into(),
+        }
     }
 
     /// Create a new internal error
     pub fn internal<S: Into<String>>(message: S) -> Self {
-        PtError::Internal { message: message.into() }
+        PtError::Internal {
+            message: message.into(),
+        }
     }
 
     /// Check if this error represents a "not found" condition
     pub fn is_not_found(&self) -> bool {
-        matches!(self,
-            PtError::ConfigFileNotFound { .. } |
-            PtError::FileNotFound { .. } |
-            PtError::ToolNotFound { .. } |
-            PtError::ChatModelNotFound { .. }
+        matches!(
+            self,
+            PtError::ConfigFileNotFound { .. }
+                | PtError::FileNotFound { .. }
+                | PtError::ToolNotFound { .. }
+                | PtError::ChatModelNotFound { .. }
         )
     }
 
     /// Check if this error represents a validation failure
     pub fn is_validation_error(&self) -> bool {
-        matches!(self,
-            PtError::Validation { .. } |
-            PtError::MissingRequiredField { .. } |
-            PtError::InvalidFieldValue { .. } |
-            PtError::DuplicateEntry { .. } |
-            PtError::InvalidPhaseIndex { .. } |
-            PtError::InvalidStepIndex { .. } |
-            PtError::InvalidQuestionIndex { .. }
+        matches!(
+            self,
+            PtError::Validation { .. }
+                | PtError::MissingRequiredField { .. }
+                | PtError::InvalidFieldValue { .. }
+                | PtError::DuplicateEntry { .. }
+                | PtError::InvalidPhaseIndex { .. }
+                | PtError::InvalidStepIndex { .. }
+                | PtError::InvalidQuestionIndex { .. }
         )
     }
 
     /// Check if this error represents a configuration issue
     pub fn is_config_error(&self) -> bool {
-        matches!(self,
-            PtError::Config { .. } |
-            PtError::ConfigFileNotFound { .. } |
-            PtError::ConfigFormat { .. }
+        matches!(
+            self,
+            PtError::Config { .. }
+                | PtError::ConfigFileNotFound { .. }
+                | PtError::ConfigFormat { .. }
         )
     }
 }
@@ -206,14 +232,30 @@ impl PtError {
 impl From<crate::config::validation::ValidationError> for PtError {
     fn from(err: crate::config::validation::ValidationError) -> Self {
         match err {
-            crate::config::validation::ValidationError::FileNotFound(path) => PtError::FileNotFound { path },
-            crate::config::validation::ValidationError::InvalidJson(msg) => PtError::ConfigFormat { message: msg },
-            crate::config::validation::ValidationError::InvalidToml(msg) => PtError::ConfigFormat { message: msg },
-            crate::config::validation::ValidationError::SchemaValidationFailed(msg) => PtError::Validation { message: msg },
-            crate::config::validation::ValidationError::MissingRequiredField(field) => PtError::MissingRequiredField { field },
-            crate::config::validation::ValidationError::InvalidFieldValue(msg) => PtError::Validation { message: msg },
-            crate::config::validation::ValidationError::DuplicateEntry(entry) => PtError::DuplicateEntry { entry },
-            crate::config::validation::ValidationError::CrossReferenceError(msg) => PtError::Validation { message: msg },
+            crate::config::validation::ValidationError::FileNotFound(path) => {
+                PtError::FileNotFound { path }
+            }
+            crate::config::validation::ValidationError::InvalidJson(msg) => {
+                PtError::ConfigFormat { message: msg }
+            }
+            crate::config::validation::ValidationError::InvalidToml(msg) => {
+                PtError::ConfigFormat { message: msg }
+            }
+            crate::config::validation::ValidationError::SchemaValidationFailed(msg) => {
+                PtError::Validation { message: msg }
+            }
+            crate::config::validation::ValidationError::MissingRequiredField(field) => {
+                PtError::MissingRequiredField { field }
+            }
+            crate::config::validation::ValidationError::InvalidFieldValue(msg) => {
+                PtError::Validation { message: msg }
+            }
+            crate::config::validation::ValidationError::DuplicateEntry(entry) => {
+                PtError::DuplicateEntry { entry }
+            }
+            crate::config::validation::ValidationError::CrossReferenceError(msg) => {
+                PtError::Validation { message: msg }
+            }
         }
     }
 }
@@ -260,7 +302,9 @@ mod tests {
         assert!(err.is_validation_error());
         assert!(!err.is_not_found());
 
-        let err = PtError::FileNotFound { path: "/test".to_string() };
+        let err = PtError::FileNotFound {
+            path: "/test".to_string(),
+        };
         assert!(!err.is_config_error());
         assert!(!err.is_validation_error());
         assert!(err.is_not_found());
@@ -271,14 +315,17 @@ mod tests {
         let err = PtError::InvalidPhaseIndex { phase_idx: 5 };
         assert_eq!(format!("{}", err), "Invalid phase index: 5");
 
-        let err = PtError::FileNotFound { path: "/missing/file".to_string() };
+        let err = PtError::FileNotFound {
+            path: "/missing/file".to_string(),
+        };
         assert_eq!(format!("{}", err), "File not found: /missing/file");
     }
 
     #[test]
     fn test_error_conversions() {
         // Test ValidationError conversion
-        let validation_err = crate::config::validation::ValidationError::FileNotFound("test.toml".to_string());
+        let validation_err =
+            crate::config::validation::ValidationError::FileNotFound("test.toml".to_string());
         let pt_err: PtError = validation_err.into();
         assert!(matches!(pt_err, PtError::FileNotFound { .. }));
     }

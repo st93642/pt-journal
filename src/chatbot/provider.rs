@@ -1,6 +1,6 @@
 use crate::chatbot::ChatRequest;
-use crate::model::ChatMessage;
 use crate::error::Result as PtResult;
+use crate::model::ChatMessage;
 
 /// Trait for different chat backend providers
 pub trait ChatProvider: Send + Sync {

@@ -6,8 +6,9 @@
 use std::rc::Rc;
 use gtk4::prelude::*;
 
-use crate::ui::handler_base::{Handler, HandlerContext, UIUpdate, HandlerError, EventData};
+use crate::ui::handler_base::{Handler, HandlerContext, UIUpdate, EventData};
 use crate::ui::state::StateManager;
+use crate::error::{Result as PtResult, PtError};
 
 /// Handler for toggling sidebar visibility.
 ///
@@ -24,7 +25,7 @@ impl SidebarToggleHandler {
 
 impl Handler for SidebarToggleHandler {
     type Context = HandlerContext;
-    type Result = Result<UIUpdate, HandlerError>;
+    type Result = PtResult<UIUpdate>;
 
     fn handle(&self, _context: Self::Context) -> Self::Result {
         // Toggle sidebar visibility
@@ -58,17 +59,17 @@ impl PhaseSelectionHandler {
 
 impl Handler for PhaseSelectionHandler {
     type Context = HandlerContext;
-    type Result = Result<UIUpdate, HandlerError>;
+    type Result = PtResult<UIUpdate>;
 
     fn handle(&self, context: Self::Context) -> Self::Result {
         let state = context.state.ok_or_else(|| {
-            HandlerError::StateError("Phase selection handler requires state access".to_string())
+            PtError::StateMutation { message: "Phase selection handler requires state access".to_string() }
         })?;
 
         // Extract the selected phase index from event data
         let phase_idx = match context.event_data {
             EventData::Index(idx) => idx,
-            _ => return Err(HandlerError::ValidationError("Expected Index event data".to_string())),
+            _ => return Err(PtError::Validation { message: "Expected Index event data".to_string() }),
         };
 
         // Update application state
@@ -97,11 +98,11 @@ impl QuizAnswerHandler {
 
 impl Handler for QuizAnswerHandler {
     type Context = HandlerContext;
-    type Result = Result<UIUpdate, HandlerError>;
+    type Result = PtResult<UIUpdate>;
 
     fn handle(&self, context: Self::Context) -> Self::Result {
         let state = context.state.ok_or_else(|| {
-            HandlerError::StateError("Quiz answer handler requires state access".to_string())
+            PtError::StateMutation { message: "Quiz answer handler requires state access".to_string() }
         })?;
 
         // Extract quiz answer data from event context
@@ -111,10 +112,10 @@ impl Handler for QuizAnswerHandler {
                 let selected_answer = self.detail_panel.quiz_widget().get_selected_answer();
                 match selected_answer {
                     Some(ans_idx) => (p, s, q, ans_idx),
-                    None => return Err(HandlerError::ValidationError("No answer selected".to_string())),
+                    None => return Err(PtError::Validation { message: "No answer selected".to_string() }),
                 }
             }
-            _ => return Err(HandlerError::ValidationError("Expected Triple event data".to_string())),
+            _ => return Err(PtError::Validation { message: "Expected Triple event data".to_string() }),
         };
 
         // Check the answer using state manager
@@ -127,7 +128,7 @@ impl Handler for QuizAnswerHandler {
                 // and update the quiz widget to show it)
                 Ok(UIUpdate::UpdateQuizStats)
             }
-            None => Err(HandlerError::StateError("Failed to check answer".to_string())),
+            None => Err(PtError::StateMutation { message: "Failed to check answer".to_string() }),
         }
     }
 }
@@ -143,17 +144,5 @@ mod tests {
         // let box = gtk4::Box::new(gtk4::Orientation::Horizontal, 0);
         // let handler = SidebarToggleHandler::new(box);
         // assert!(!handler.left_box.is_visible()); // Would fail without display
-    }
-
-    #[test]
-    fn test_handler_error_variants() {
-        assert!(matches!(
-            HandlerError::ValidationError("test".to_string()),
-            HandlerError::ValidationError(_)
-        ));
-        assert!(matches!(
-            HandlerError::StateError("test".to_string()),
-            HandlerError::StateError(_)
-        ));
     }
 }

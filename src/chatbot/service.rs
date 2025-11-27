@@ -1,6 +1,7 @@
-use crate::chatbot::{ChatError, ChatProvider, ChatRequest, OllamaProvider, ProviderRegistry, StepContext};
+use crate::chatbot::{ChatProvider, ChatRequest, OllamaProvider, ProviderRegistry, StepContext};
 use crate::config::{ChatbotConfig, ModelProviderKind};
 use crate::model::ChatMessage;
+use crate::error::Result as PtResult;
 use std::sync::Arc;
 
 /// Chat service that routes requests to appropriate providers
@@ -39,7 +40,7 @@ impl ChatService {
         step_ctx: &StepContext,
         history: &[ChatMessage],
         user_input: &str,
-    ) -> Result<ChatMessage, ChatError> {
+    ) -> PtResult<ChatMessage> {
         let profile = self.config.active_model();
         let request = ChatRequest::new(
             step_ctx.clone(),
@@ -51,20 +52,20 @@ impl ChatService {
     }
 
     /// Send a chat request using the appropriate provider
-    pub fn send_request(&self, request: &ChatRequest) -> Result<ChatMessage, ChatError> {
+    pub fn send_request(&self, request: &ChatRequest) -> PtResult<ChatMessage> {
         let provider = self.get_provider(&request.model_profile.provider)?;
         provider.send_message(request)
     }
 
     /// Check if the provider for the active model is available
-    pub fn check_availability(&self) -> Result<bool, ChatError> {
+    pub fn check_availability(&self) -> PtResult<bool> {
         let profile = self.config.active_model();
         let provider = self.get_provider(&profile.provider)?;
         provider.check_availability()
     }
 
     /// Get list of available models from Ollama
-    pub fn list_available_models(&self) -> Result<Vec<String>, ChatError> {
+    pub fn list_available_models(&self) -> PtResult<Vec<String>> {
         // Since we only support Ollama now, we can access it directly
         // In the future, this could be made more generic
         self.get_provider(&ModelProviderKind::Ollama)?
@@ -75,7 +76,7 @@ impl ChatService {
     pub fn get_provider(
         &self,
         provider_kind: &ModelProviderKind,
-    ) -> Result<Arc<dyn ChatProvider>, ChatError> {
+    ) -> PtResult<Arc<dyn ChatProvider>> {
         self.registry.get_provider(provider_kind)
     }
 

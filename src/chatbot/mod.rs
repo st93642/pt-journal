@@ -13,26 +13,6 @@ pub use service::ChatService;
 // Re-export for backward compatibility
 pub use service::ChatService as LocalChatBot;
 
-use thiserror::Error;
-
-#[derive(Error, Debug)]
-pub enum ChatError {
-    #[error("HTTP request failed: {0}")]
-    Http(#[from] reqwest::Error),
-    #[error("Ollama service is not running or unreachable. Please ensure Ollama is installed and running. Visit https://ollama.ai for setup instructions.")]
-    ServiceUnavailable,
-    #[error(
-        "Model '{0}' is not available in Ollama. Please pull the model first: ollama pull {0}"
-    )]
-    ModelNotFound(String),
-    #[error("Invalid response from Ollama: {0}")]
-    InvalidResponse(String),
-    #[error("Connection timeout - Ollama took too long to respond")]
-    Timeout,
-    #[error("The configured chatbot provider '{0}' is not supported yet")]
-    UnsupportedProvider(String),
-}
-
 pub struct ContextBuilder;
 
 impl ContextBuilder {

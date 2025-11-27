@@ -5,7 +5,8 @@
 //! complex RefCell patterns in the StateManager into cleaner, testable updates.
 
 use crate::model::{StepStatus, ChatMessage, Evidence};
-use crate::state::updater::{StateUpdater, UpdateContext, UpdateResult, ModelAccessor, EventDispatcher};
+use crate::state::updater::{StateUpdater, UpdateContext, ModelAccessor, EventDispatcher};
+use crate::error::Result as PtResult;
 use uuid::Uuid;
 
 /// State update for selecting a phase.
@@ -16,7 +17,7 @@ pub struct SelectPhase {
 impl StateUpdater for SelectPhase {
     type Result = ();
 
-    fn update(&self, context: &UpdateContext) -> UpdateResult<()> {
+    fn update(&self, context: &UpdateContext) -> PtResult<()> {
         // Validate phase exists
         context.model.with_phase(self.phase_idx, |_| ())?;
 
@@ -43,7 +44,7 @@ pub struct SelectStep {
 impl StateUpdater for SelectStep {
     type Result = ();
 
-    fn update(&self, context: &UpdateContext) -> UpdateResult<()> {
+    fn update(&self, context: &UpdateContext) -> PtResult<()> {
         let phase_idx = {
             let model = context.model.borrow();
             model.selected_phase()
@@ -76,7 +77,7 @@ pub struct UpdateStepStatus {
 impl StateUpdater for UpdateStepStatus {
     type Result = ();
 
-    fn update(&self, context: &UpdateContext) -> UpdateResult<()> {
+    fn update(&self, context: &UpdateContext) -> PtResult<()> {
         context.model.with_step_mut(self.phase_idx, self.step_idx, |step| {
             step.status = self.status.clone();
             if matches!(self.status, StepStatus::Done) {
@@ -102,7 +103,7 @@ pub struct UpdateStepNotes {
 impl StateUpdater for UpdateStepNotes {
     type Result = ();
 
-    fn update(&self, context: &UpdateContext) -> UpdateResult<()> {
+    fn update(&self, context: &UpdateContext) -> PtResult<()> {
         context.model.with_step_mut(self.phase_idx, self.step_idx, |step| {
             step.set_notes(self.notes.clone());
         })?;
@@ -123,7 +124,7 @@ pub struct UpdateStepDescriptionNotes {
 impl StateUpdater for UpdateStepDescriptionNotes {
     type Result = ();
 
-    fn update(&self, context: &UpdateContext) -> UpdateResult<()> {
+    fn update(&self, context: &UpdateContext) -> PtResult<()> {
         context.model.with_step_mut(self.phase_idx, self.step_idx, |step| {
             step.set_description_notes(self.notes.clone());
         })?;
@@ -145,7 +146,7 @@ pub struct UpdatePhaseNotes {
 impl StateUpdater for UpdatePhaseNotes {
     type Result = ();
 
-    fn update(&self, context: &UpdateContext) -> UpdateResult<()> {
+    fn update(&self, context: &UpdateContext) -> PtResult<()> {
         context.model.with_phase_mut(self.phase_idx, |phase| {
             phase.notes = self.notes.clone();
         })?;
@@ -164,7 +165,7 @@ pub struct UpdateGlobalNotes {
 impl StateUpdater for UpdateGlobalNotes {
     type Result = ();
 
-    fn update(&self, context: &UpdateContext) -> UpdateResult<()> {
+    fn update(&self, context: &UpdateContext) -> PtResult<()> {
         {
             let mut model = context.model.borrow_mut();
             model.session_mut().notes_global = self.notes.clone();
@@ -186,7 +187,7 @@ pub struct AddChatMessage {
 impl StateUpdater for AddChatMessage {
     type Result = ();
 
-    fn update(&self, context: &UpdateContext) -> UpdateResult<()> {
+    fn update(&self, context: &UpdateContext) -> PtResult<()> {
         context.model.with_step_mut(self.phase_idx, self.step_idx, |step| {
             step.add_chat_message(self.message.clone());
         })?;
@@ -209,7 +210,7 @@ pub struct AddEvidence {
 impl StateUpdater for AddEvidence {
     type Result = ();
 
-    fn update(&self, context: &UpdateContext) -> UpdateResult<()> {
+    fn update(&self, context: &UpdateContext) -> PtResult<()> {
         context.model.with_step_mut(self.phase_idx, self.step_idx, |step| {
             step.add_evidence(self.evidence.clone());
         })?;
@@ -232,7 +233,7 @@ pub struct RemoveEvidence {
 impl StateUpdater for RemoveEvidence {
     type Result = ();
 
-    fn update(&self, context: &UpdateContext) -> UpdateResult<()> {
+    fn update(&self, context: &UpdateContext) -> PtResult<()> {
         context.model.with_step_mut(self.phase_idx, self.step_idx, |step| {
             step.remove_evidence(self.evidence_id);
         })?;
@@ -253,7 +254,7 @@ pub struct SetChatModel {
 impl StateUpdater for SetChatModel {
     type Result = ();
 
-    fn update(&self, context: &UpdateContext) -> UpdateResult<()> {
+    fn update(&self, context: &UpdateContext) -> PtResult<()> {
         {
             let mut model = context.model.borrow_mut();
             model.set_active_chat_model_id(self.model_id.clone());

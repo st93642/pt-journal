@@ -34,6 +34,7 @@ use std::rc::Rc;
 use gtk4::glib;
 
 use crate::ui::state::StateManager;
+use crate::error::Result as PtResult;
 
 /// Context passed to handlers containing event information and dependencies.
 #[derive(Clone)]
@@ -83,19 +84,6 @@ pub enum UIUpdate {
     RefreshQuizQuestion,
     /// Custom update with specific data
     Custom(String),
-}
-
-/// Errors that can occur during handler execution.
-#[derive(Debug, thiserror::Error)]
-pub enum HandlerError {
-    #[error("Invalid state: {0}")]
-    InvalidState(String),
-    #[error("UI error: {0}")]
-    UiError(String),
-    #[error("State mutation error: {0}")]
-    StateError(String),
-    #[error("Validation error: {0}")]
-    ValidationError(String),
 }
 
 /// Trait for UI event handlers.
@@ -154,9 +142,9 @@ pub fn create_context(state: Option<Rc<StateManager>>, event_data: EventData) ->
 pub fn execute_handler<H, C, R>(
     handler: &H,
     context: C,
-) -> Result<(), HandlerError>
+) -> PtResult<()>
 where
-    H: Handler<Context = C, Result = Result<R, HandlerError>>,
+    H: Handler<Context = C, Result = PtResult<R>>,
     R: Into<UIUpdate>,
 {
     let result = handler.handle(context)?;
@@ -180,7 +168,7 @@ where
         }
         UIUpdate::RefreshPhaseCombo => {
             // Schedule phase combo refresh on main thread
-            glib::idle_add_local_once(|| {
+            glib::idle_add_local_once(move || {
                 // TODO: Implement phase combo refresh logic
             });
         }

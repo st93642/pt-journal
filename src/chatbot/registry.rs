@@ -21,8 +21,9 @@
 //! let provider = registry.get_provider(&ModelProviderKind::Ollama);
 //! ```
 
-use crate::chatbot::{ChatError, ChatProvider};
+use crate::chatbot::ChatProvider;
 use crate::config::ModelProviderKind;
+use crate::error::{Result as PtResult, PtError};
 use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
 
@@ -58,7 +59,7 @@ impl ProviderRegistry {
     /// The provider kind is determined by calling `provider.provider_name()`
     /// and converting it to a `ModelProviderKind`. This assumes the provider
     /// name matches the enum variant name.
-    pub fn register<P>(&self, provider: Arc<P>) -> Result<ModelProviderKind, ChatError>
+    pub fn register<P>(&self, provider: Arc<P>) -> PtResult<ModelProviderKind>
     where
         P: ChatProvider + 'static,
     {
@@ -66,7 +67,7 @@ impl ProviderRegistry {
         let kind = Self::provider_name_to_kind(provider_name)?;
 
         let mut providers = self.providers.write().map_err(|_| {
-            ChatError::InvalidResponse("Failed to acquire registry write lock".to_string())
+            PtError::Internal { message: "Failed to acquire registry write lock".to_string() }
         })?;
 
         providers.insert(kind.clone(), provider);
@@ -80,13 +81,13 @@ impl ProviderRegistry {
     ///
     /// # Returns
     /// The registered provider, or an error if not found
-    pub fn get_provider(&self, kind: &ModelProviderKind) -> Result<Arc<dyn ChatProvider>, ChatError> {
+    pub fn get_provider(&self, kind: &ModelProviderKind) -> PtResult<Arc<dyn ChatProvider>> {
         let providers = self.providers.read().map_err(|_| {
-            ChatError::InvalidResponse("Failed to acquire registry read lock".to_string())
+            PtError::Internal { message: "Failed to acquire registry read lock".to_string() }
         })?;
 
         providers.get(kind).cloned().ok_or_else(|| {
-            ChatError::UnsupportedProvider(format!("Provider '{}' is not registered", kind))
+            PtError::NotSupported { operation: format!("Provider '{}' is not registered", kind) }
         })
     }
 
@@ -119,18 +120,18 @@ impl ProviderRegistry {
     ///
     /// # Returns
     /// true if a provider was removed, false if none was registered
-    pub fn unregister(&self, kind: &ModelProviderKind) -> Result<bool, ChatError> {
+    pub fn unregister(&self, kind: &ModelProviderKind) -> PtResult<bool> {
         let mut providers = self.providers.write().map_err(|_| {
-            ChatError::InvalidResponse("Failed to acquire registry write lock".to_string())
+            PtError::Internal { message: "Failed to acquire registry write lock".to_string() }
         })?;
 
         Ok(providers.remove(kind).is_some())
     }
 
     /// Clear all registered providers.
-    pub fn clear(&self) -> Result<(), ChatError> {
+    pub fn clear(&self) -> PtResult<()> {
         let mut providers = self.providers.write().map_err(|_| {
-            ChatError::InvalidResponse("Failed to acquire registry write lock".to_string())
+            PtError::Internal { message: "Failed to acquire registry write lock".to_string() }
         })?;
 
         providers.clear();
@@ -144,13 +145,13 @@ impl ProviderRegistry {
     ///
     /// # Returns
     /// The corresponding ModelProviderKind, or an error if unknown
-    fn provider_name_to_kind(name: &str) -> Result<ModelProviderKind, ChatError> {
+    fn provider_name_to_kind(name: &str) -> PtResult<ModelProviderKind> {
         match name.to_lowercase().as_str() {
             "ollama" => Ok(ModelProviderKind::Ollama),
-            _ => Err(ChatError::UnsupportedProvider(format!(
+            _ => Err(PtError::NotSupported { operation: format!(
                 "Unknown provider name: '{}'. Supported providers: ollama",
                 name
-            ))),
+            ) }),
         }
     }
 }
@@ -179,11 +180,11 @@ mod tests {
     }
 
     impl ChatProvider for MockProvider {
-        fn send_message(&self, _request: &crate::chatbot::ChatRequest) -> Result<crate::model::ChatMessage, ChatError> {
+        fn send_message(&self, _request: &crate::chatbot::ChatRequest) -> PtResult<crate::model::ChatMessage> {
             unimplemented!()
         }
 
-        fn check_availability(&self) -> Result<bool, ChatError> {
+        fn check_availability(&self) -> PtResult<bool> {
             Ok(true)
         }
 
@@ -224,8 +225,8 @@ mod tests {
         assert!(result.is_err());
         // Check that it's an UnsupportedProvider error
         match result {
-            Err(ChatError::UnsupportedProvider(_)) => (),
-            _ => panic!("Expected UnsupportedProvider error"),
+            Err(PtError::NotSupported { .. }) => (),
+            _ => panic!("Expected NotSupported error"),
         }
     }
 
@@ -274,6 +275,6 @@ mod tests {
 
         let result = registry.register(unknown_provider);
         assert!(result.is_err());
-        assert!(matches!(result.unwrap_err(), ChatError::UnsupportedProvider(_)));
+        assert!(matches!(result.unwrap_err(), PtError::NotSupported { .. }));
     }
 }

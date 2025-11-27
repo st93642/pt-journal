@@ -6,7 +6,7 @@
 pub mod updater;
 pub mod updates;
 
-pub use updater::{StateUpdater, UpdateContext, UpdateResult, UpdateError, ModelAccessor, EventDispatcher};
+pub use updater::{StateUpdater, UpdateContext, UpdateResult, ModelAccessor, EventDispatcher};
 pub use updates::{
     SelectPhase, SelectStep, UpdateStepStatus, UpdateStepNotes, UpdateStepDescriptionNotes,
     UpdatePhaseNotes, UpdateGlobalNotes, AddChatMessage, AddEvidence, RemoveEvidence, SetChatModel

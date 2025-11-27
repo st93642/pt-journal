@@ -32,6 +32,7 @@
 //! ```
 
 use crate::dispatcher::{AppMessage, SharedDispatcher};
+use crate::error::{PtError, Result as PtResult};
 use crate::model::StepStatus;
 use crate::ui::state::SharedModel;
 
@@ -52,22 +53,7 @@ impl UpdateContext {
 }
 
 /// Result type for state update operations.
-pub type UpdateResult<T> = Result<T, UpdateError>;
-
-/// Errors that can occur during state updates.
-#[derive(Debug, thiserror::Error)]
-pub enum UpdateError {
-    #[error("Invalid phase index: {phase_idx}")]
-    InvalidPhaseIndex { phase_idx: usize },
-    #[error("Invalid step index: phase={phase_idx}, step={step_idx}")]
-    InvalidStepIndex { phase_idx: usize, step_idx: usize },
-    #[error("Invalid question index: phase={phase_idx}, step={step_idx}, question={question_idx}")]
-    InvalidQuestionIndex { phase_idx: usize, step_idx: usize, question_idx: usize },
-    #[error("State mutation error: {message}")]
-    StateMutationError { message: String },
-    #[error("Validation error: {message}")]
-    ValidationError { message: String },
-}
+pub type UpdateResult<T> = PtResult<T>;
 
 /// Trait for state update operations.
 ///
@@ -84,34 +70,34 @@ pub trait StateUpdater {
     ///
     /// # Returns
     /// Result of the update operation
-    fn update(&self, context: &UpdateContext) -> UpdateResult<Self::Result>;
+    fn update(&self, context: &UpdateContext) -> PtResult<Self::Result>;
 }
 
 /// Helper trait for accessing model data with validation.
 pub trait ModelAccessor {
     /// Access a phase immutably with validation, passing the result to a closure.
-    fn with_phase<F, T>(&self, phase_idx: usize, f: F) -> UpdateResult<T>
+    fn with_phase<F, T>(&self, phase_idx: usize, f: F) -> PtResult<T>
     where
         F: FnOnce(&crate::model::Phase) -> T;
 
     /// Access a phase mutably with validation, passing the result to a closure.
-    fn with_phase_mut<F, T>(&self, phase_idx: usize, f: F) -> UpdateResult<T>
+    fn with_phase_mut<F, T>(&self, phase_idx: usize, f: F) -> PtResult<T>
     where
         F: FnOnce(&mut crate::model::Phase) -> T;
 
     /// Access a step immutably with validation, passing the result to a closure.
-    fn with_step<F, T>(&self, phase_idx: usize, step_idx: usize, f: F) -> UpdateResult<T>
+    fn with_step<F, T>(&self, phase_idx: usize, step_idx: usize, f: F) -> PtResult<T>
     where
         F: FnOnce(&crate::model::Step) -> T;
 
     /// Access a step mutably with validation, passing the result to a closure.
-    fn with_step_mut<F, T>(&self, phase_idx: usize, step_idx: usize, f: F) -> UpdateResult<T>
+    fn with_step_mut<F, T>(&self, phase_idx: usize, step_idx: usize, f: F) -> PtResult<T>
     where
         F: FnOnce(&mut crate::model::Step) -> T;
 }
 
 impl ModelAccessor for SharedModel {
-    fn with_phase<F, T>(&self, phase_idx: usize, f: F) -> UpdateResult<T>
+    fn with_phase<F, T>(&self, phase_idx: usize, f: F) -> PtResult<T>
     where
         F: FnOnce(&crate::model::Phase) -> T,
     {
@@ -119,11 +105,11 @@ impl ModelAccessor for SharedModel {
         if let Some(phase) = model.session().phases.get(phase_idx) {
             Ok(f(phase))
         } else {
-            Err(UpdateError::InvalidPhaseIndex { phase_idx })
+            Err(PtError::InvalidPhaseIndex { phase_idx })
         }
     }
 
-    fn with_phase_mut<F, T>(&self, phase_idx: usize, f: F) -> UpdateResult<T>
+    fn with_phase_mut<F, T>(&self, phase_idx: usize, f: F) -> PtResult<T>
     where
         F: FnOnce(&mut crate::model::Phase) -> T,
     {
@@ -131,11 +117,11 @@ impl ModelAccessor for SharedModel {
         if let Some(phase) = model.session_mut().phases.get_mut(phase_idx) {
             Ok(f(phase))
         } else {
-            Err(UpdateError::InvalidPhaseIndex { phase_idx })
+            Err(PtError::InvalidPhaseIndex { phase_idx })
         }
     }
 
-    fn with_step<F, T>(&self, phase_idx: usize, step_idx: usize, f: F) -> UpdateResult<T>
+    fn with_step<F, T>(&self, phase_idx: usize, step_idx: usize, f: F) -> PtResult<T>
     where
         F: FnOnce(&crate::model::Step) -> T,
     {
@@ -144,14 +130,14 @@ impl ModelAccessor for SharedModel {
             if let Some(step) = phase.steps.get(step_idx) {
                 Ok(f(step))
             } else {
-                Err(UpdateError::InvalidStepIndex { phase_idx, step_idx })
+                Err(PtError::InvalidStepIndex { phase_idx, step_idx })
             }
         } else {
-            Err(UpdateError::InvalidPhaseIndex { phase_idx })
+            Err(PtError::InvalidPhaseIndex { phase_idx })
         }
     }
 
-    fn with_step_mut<F, T>(&self, phase_idx: usize, step_idx: usize, f: F) -> UpdateResult<T>
+    fn with_step_mut<F, T>(&self, phase_idx: usize, step_idx: usize, f: F) -> PtResult<T>
     where
         F: FnOnce(&mut crate::model::Step) -> T,
     {
@@ -160,10 +146,10 @@ impl ModelAccessor for SharedModel {
             if let Some(step) = phase.steps.get_mut(step_idx) {
                 Ok(f(step))
             } else {
-                Err(UpdateError::InvalidStepIndex { phase_idx, step_idx })
+                Err(PtError::InvalidStepIndex { phase_idx, step_idx })
             }
         } else {
-            Err(UpdateError::InvalidPhaseIndex { phase_idx })
+            Err(PtError::InvalidPhaseIndex { phase_idx })
         }
     }
 }
@@ -257,7 +243,7 @@ mod tests {
     fn test_model_accessor_invalid_phase() {
         let context = create_test_context();
         let result = context.model.with_phase(99, |_| ());
-        assert!(matches!(result, Err(UpdateError::InvalidPhaseIndex { phase_idx: 99 })));
+        assert!(matches!(result, Err(PtError::InvalidPhaseIndex { phase_idx: 99 })));
     }
 
     #[test]
@@ -271,15 +257,15 @@ mod tests {
     fn test_model_accessor_invalid_step() {
         let context = create_test_context();
         let result = context.model.with_step(0, 99, |_| ());
-        assert!(matches!(result, Err(UpdateError::InvalidStepIndex { phase_idx: 0, step_idx: 99 })));
+        assert!(matches!(result, Err(PtError::InvalidStepIndex { phase_idx: 0, step_idx: 99 })));
     }
 
     #[test]
     fn test_update_error_display() {
-        let err = UpdateError::InvalidPhaseIndex { phase_idx: 5 };
+        let err = PtError::InvalidPhaseIndex { phase_idx: 5 };
         assert_eq!(format!("{}", err), "Invalid phase index: 5");
 
-        let err = UpdateError::InvalidStepIndex { phase_idx: 1, step_idx: 2 };
+        let err = PtError::InvalidStepIndex { phase_idx: 1, step_idx: 2 };
         assert_eq!(format!("{}", err), "Invalid step index: phase=1, step=2");
     }
 }

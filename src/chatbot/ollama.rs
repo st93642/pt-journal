@@ -1,6 +1,7 @@
-use crate::chatbot::{ChatError, ChatProvider, ChatRequest};
+use crate::chatbot::{ChatProvider, ChatRequest};
 use crate::config::{ModelProviderKind, OllamaProviderConfig};
 use crate::model::{ChatMessage, ChatRole};
+use crate::error::{Result as PtResult, PtError};
 use reqwest::blocking::Client;
 use std::time::Duration;
 
@@ -83,11 +84,11 @@ impl OllamaProvider {
 }
 
 impl ChatProvider for OllamaProvider {
-    fn send_message(&self, request: &ChatRequest) -> Result<ChatMessage, ChatError> {
+    fn send_message(&self, request: &ChatRequest) -> PtResult<ChatMessage> {
         if request.model_profile.provider != ModelProviderKind::Ollama {
-            return Err(ChatError::UnsupportedProvider(
-                request.model_profile.provider.to_string(),
-            ));
+            return Err(PtError::NotSupported {
+                operation: request.model_profile.provider.to_string(),
+            });
         }
 
         let system_prompt = self.build_system_prompt(request);
@@ -137,39 +138,47 @@ impl ChatProvider for OllamaProvider {
 
         let response = self.client.post(&url).json(&payload).send().map_err(|e| {
             if e.is_timeout() {
-                ChatError::Timeout
+                PtError::Timeout {
+                    operation: "Ollama chat request".to_string(),
+                }
             } else if e.is_connect() {
-                ChatError::ServiceUnavailable
+                PtError::ChatServiceUnavailable {
+                    message: "Ollama service is not running or unreachable".to_string(),
+                }
             } else {
-                ChatError::Http(e)
+                PtError::io_with_source("HTTP request failed", e)
             }
         })?;
 
         if !response.status().is_success() {
             if response.status() == reqwest::StatusCode::NOT_FOUND {
-                return Err(ChatError::ModelNotFound(request.model_profile.id.clone()));
+                return Err(PtError::ChatModelNotFound { model_id: request.model_profile.id.clone() });
             } else {
-                return Err(ChatError::ServiceUnavailable);
+                return Err(PtError::ChatServiceUnavailable {
+                    message: "Ollama service returned error status".to_string(),
+                });
             }
         }
 
-        let resp_json: serde_json::Value = response.json().map_err(ChatError::Http)?;
+        let resp_json: serde_json::Value = response.json().map_err(|e| PtError::io_with_source("Failed to parse Ollama response", e))?;
 
         let content = resp_json["message"]["content"]
             .as_str()
-            .ok_or_else(|| ChatError::InvalidResponse("Missing content in response".to_string()))?;
+            .ok_or_else(|| PtError::Chat { message: "Missing content in response".to_string(), source: None })?;
 
         Ok(ChatMessage::new(ChatRole::Assistant, content.to_string()))
     }
 
-    fn check_availability(&self) -> Result<bool, ChatError> {
+    fn check_availability(&self) -> PtResult<bool> {
         let url = format!("{}/api/tags", self.config.endpoint.trim_end_matches('/'));
 
         let response = self.client.get(&url).send().map_err(|e| {
             if e.is_connect() {
-                ChatError::ServiceUnavailable
+                PtError::ChatServiceUnavailable {
+                    message: "Ollama service is not running or unreachable".to_string(),
+                }
             } else {
-                ChatError::Http(e)
+                PtError::io_with_source("HTTP request failed", e)
             }
         })?;
 
@@ -181,25 +190,29 @@ impl ChatProvider for OllamaProvider {
     }
 
     /// Get list of available models from Ollama
-    fn list_available_models(&self) -> Result<Vec<String>, ChatError> {
+    fn list_available_models(&self) -> PtResult<Vec<String>> {
         let url = format!("{}/api/tags", self.config.endpoint.trim_end_matches('/'));
 
         let response = self.client.get(&url).send().map_err(|e| {
             if e.is_connect() {
-                ChatError::ServiceUnavailable
+                PtError::ChatServiceUnavailable {
+                    message: "Ollama service is not running or unreachable".to_string(),
+                }
             } else {
-                ChatError::Http(e)
+                PtError::io_with_source("HTTP request failed", e)
             }
         })?;
 
         if !response.status().is_success() {
-            return Err(ChatError::ServiceUnavailable);
+            return Err(PtError::ChatServiceUnavailable {
+                message: "Ollama service returned error status".to_string(),
+            });
         }
 
-        let resp_json: serde_json::Value = response.json().map_err(ChatError::Http)?;
+        let resp_json: serde_json::Value = response.json().map_err(|e| PtError::io_with_source("Failed to parse Ollama response", e))?;
 
         let models = resp_json["models"].as_array().ok_or_else(|| {
-            ChatError::InvalidResponse("Missing models array in response".to_string())
+            PtError::Chat { message: "Missing models array in response".to_string(), source: None }
         })?;
 
         let model_names = models

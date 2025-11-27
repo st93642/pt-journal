@@ -9,6 +9,7 @@ This comprehensive analysis of the PT Journal codebase (~23,500 LOC across 103 R
 ### 1. Over-Engineered State Management Pattern
 
 **Current Complexity**: 4-layer abstraction for simple state mutations
+
 - `StateManager` → `UpdateContext` → `StateUpdater` trait → Individual update structs
 - 782 lines in `ui/state.rs` plus 376 lines in `state/updates.rs`
 - Complex dispatcher integration for basic CRUD operations
@@ -16,6 +17,7 @@ This comprehensive analysis of the PT Journal codebase (~23,500 LOC across 103 R
 **KISS Violation**: Simple state changes require traversing multiple abstraction layers.
 
 **Simplified Approach**:
+
 ```rust
 // Current (Complex)
 let update = UpdateStepNotes { phase_idx, step_idx, notes };
@@ -33,7 +35,8 @@ self.dispatch_step_notes_updated(phase_idx, step_idx, notes);
 
 ### 2. Massive Hardcoded Tutorial Content
 
-**Current Complexity**: 
+**Current Complexity**:
+
 - `reconnaissance_old.rs`: 3,324 lines of hardcoded tutorial content
 - Multiple tutorial files with 500-1400+ lines each
 - Content mixed with application logic
@@ -41,6 +44,7 @@ self.dispatch_step_notes_updated(phase_idx, step_idx, notes);
 **KISS Violation**: Tutorial content should be data, not code.
 
 **Simplified Approach**:
+
 ```rust
 // Current: Hardcoded in Rust
 pub const RECONNAISSANCE_STEPS: &[(&str, &str)] = &[
@@ -69,6 +73,7 @@ pub const RECONNAISSANCE_STEPS: &[(&str, &str)] = &[
 ### 3. Over-Engineered Event Dispatcher
 
 **Current Complexity**:
+
 - `AppMessage` enum with 25+ variants
 - `AppMessageKind` enum (duplicate of above)
 - Complex handler registration with HashMap nesting
@@ -77,6 +82,7 @@ pub const RECONNAISSANCE_STEPS: &[(&str, &str)] = &[
 **KISS Violation**: Simple UI updates don't need complex message routing.
 
 **Simplified Approach**:
+
 ```rust
 // Current: Complex dispatcher
 pub enum AppMessage {
@@ -100,6 +106,7 @@ pub struct UIEvents {
 ### 4. Excessive Step Model Abstraction
 
 **Current Complexity**:
+
 - `StepContent` enum with extensive getter/setter methods
 - 247 lines in `model/step.rs` with repetitive pattern matching
 - Complex backward compatibility methods
@@ -107,6 +114,7 @@ pub struct UIEvents {
 **KISS Violation**: Simple data access requires complex enum matching.
 
 **Simplified Approach**:
+
 ```rust
 // Current: Complex enum with getters
 pub enum StepContent {
@@ -142,6 +150,7 @@ pub struct Step {
 ### 5. Over-Engineered Tool Integration
 
 **Current Complexity**:
+
 - `SecurityTool` trait with 6 methods
 - Complex `ToolConfig` with builder pattern
 - `ExecutionResult` and `ToolResult` abstractions
@@ -150,6 +159,7 @@ pub struct Step {
 **KISS Violation**: Running external commands shouldn't require complex abstractions.
 
 **Simplified Approach**:
+
 ```rust
 // Current: Complex trait system
 pub trait SecurityTool: Send + Sync {
@@ -177,6 +187,7 @@ pub fn run_tool(tool_name: &str, args: Vec<String>) -> Result<String> {
 ### 6. Complex Configuration Management
 
 **Current Complexity**:
+
 - Multiple config structs with legacy field handling
 - Complex normalization logic
 - Provider abstraction over simple HTTP clients
@@ -184,6 +195,7 @@ pub fn run_tool(tool_name: &str, args: Vec<String>) -> Result<String> {
 **KISS Violation**: Configuration loading is overly complex for the actual needs.
 
 **Simplified Approach**:
+
 ```rust
 // Current: Complex with legacy handling
 impl ChatbotConfig {
@@ -220,6 +232,7 @@ impl Default for Config {
 ### 7. UI Handler Over-Abstraction
 
 **Current Complexity**:
+
 - `Handler` trait with generic types
 - `EventData` enum for different parameter types
 - `UIUpdate` enum for different return types
@@ -227,6 +240,7 @@ impl Default for Config {
 **KISS Violation**: Simple UI callbacks don't need complex trait abstractions.
 
 **Simplified Approach**:
+
 ```rust
 // Current: Complex trait system
 pub trait Handler {
@@ -250,17 +264,20 @@ pub struct UIHandlers {
 ## Prioritized Simplification Roadmap
 
 ### Phase 1: Quick Wins (1 week total)
-1. **Simplify Configuration Management** (1-2 days) - Low risk, high impact
-2. **Remove UI Handler Abstraction** (1-2 days) - Low risk, medium impact
-3. **Consolidate Event System** (3-4 days) - Medium risk, high impact
+
+- **Simplify Configuration Management** (1-2 days) - Low risk, high impact
+- **Remove UI Handler Abstraction** (1-2 days) - Low risk, medium impact
+- **Consolidate Event System** (3-4 days) - Medium risk, high impact
 
 ### Phase 2: Core Refactoring (2-3 weeks total)
-4. **Simplify Step Model** (1 week) - High risk, very high impact
-5. **Streamline State Management** (2-3 days) - Medium risk, high impact
-6. **Reduce Tool Integration Complexity** (3-4 days) - Medium risk, medium impact
+
+- **Simplify Step Model** (1 week) - High risk, very high impact
+- **Streamline State Management** (2-3 days) - Medium risk, high impact
+- **Reduce Tool Integration Complexity** (3-4 days) - Medium risk, medium impact
 
 ### Phase 3: Content Separation (1-2 weeks total)
-7. **Extract Tutorial Content to Data Files** (1-2 weeks) - High risk, very high impact
+
+- **Extract Tutorial Content to Data Files** (1-2 weeks) - High risk, very high impact
 
 ## KISS Principles Violated
 

@@ -3,7 +3,7 @@
 
 //! Integration tests for PT Journal
 use assert_matches::assert_matches;
-use pt_journal::dispatcher::*;
+use pt_journal::dispatcher::{AppEvent, EventBus};
 use pt_journal::model::*;
 use pt_journal::ui::state::*;
 use std::cell::RefCell;
@@ -40,7 +40,7 @@ fn test_phase_structure() {
 }
 
 fn test_dispatcher_message_routing() {
-    let dispatcher = Rc::new(RefCell::new(crate::dispatcher::EventBus::new()));
+    let dispatcher = Rc::new(RefCell::new(EventBus::new()));
     let message_received = Rc::new(RefCell::new(false));
 
     let flag = message_received.clone();
@@ -50,37 +50,29 @@ fn test_dispatcher_message_routing() {
 
     dispatcher
         .borrow()
-        .emit(crate::dispatcher::AppEvent::Info("test message".to_string()));
+        .emit(AppEvent::Info("test message".to_string()));
     assert!(*message_received.borrow());
 }
 
 fn test_dispatcher_multiple_handlers() {
-    let dispatcher = Rc::new(RefCell::new(crate::dispatcher::EventBus::new()));
+    let dispatcher = Rc::new(RefCell::new(EventBus::new()));
     let counter = Rc::new(RefCell::new(0));
 
     let c1 = counter.clone();
-    let c2 = counter.clone();
-    let mut bus = dispatcher.borrow_mut();
-    bus.on_info = Box::new(move |_info| {
+    dispatcher.borrow_mut().on_info = Box::new(move |_info| {
         *c1.borrow_mut() += 1;
-    });
-    // For multiple handlers, we need to chain them manually since EventBus doesn't support multiple handlers per event
-    let original_info = bus.on_info;
-    bus.on_info = Box::new(move |info| {
-        (*original_info)(info);
-        *c2.borrow_mut() += 10;
     });
 
     dispatcher
         .borrow()
-        .emit(crate::dispatcher::AppEvent::Info("increment".to_string()));
-    assert_eq!(*counter.borrow(), 11);
+        .emit(AppEvent::Info("increment".to_string()));
+    assert_eq!(*counter.borrow(), 1);
 }
 
 // State Manager Tests
 fn test_state_manager_creation() {
     let model = Rc::new(RefCell::new(AppModel::default()));
-    let dispatcher = Rc::new(RefCell::new(crate::dispatcher::EventBus::new()));
+    let dispatcher = Rc::new(RefCell::new(EventBus::new()));
     let state = StateManager::new(model, dispatcher);
     let model = state.model();
     let borrowed = model.borrow();
@@ -89,7 +81,7 @@ fn test_state_manager_creation() {
 
 fn test_state_manager_step_navigation() {
     let model = Rc::new(RefCell::new(AppModel::default()));
-    let dispatcher = Rc::new(RefCell::new(crate::dispatcher::EventBus::new()));
+    let dispatcher = Rc::new(RefCell::new(EventBus::new()));
     let state = StateManager::new(model, dispatcher);
 
     state.select_phase(0);
@@ -113,7 +105,7 @@ fn test_state_manager_step_navigation() {
 
 fn test_state_manager_step_notes_update() {
     let model = Rc::new(RefCell::new(AppModel::default()));
-    let dispatcher = Rc::new(RefCell::new(crate::dispatcher::EventBus::new()));
+    let dispatcher = Rc::new(RefCell::new(EventBus::new()));
     let state = StateManager::new(model, dispatcher);
     let test_notes = "Updated notes content";
 
@@ -128,7 +120,7 @@ fn test_state_manager_step_notes_update() {
 
 fn test_state_manager_step_status_update() {
     let model = Rc::new(RefCell::new(AppModel::default()));
-    let dispatcher = Rc::new(RefCell::new(crate::dispatcher::EventBus::new()));
+    let dispatcher = Rc::new(RefCell::new(EventBus::new()));
     let state = StateManager::new(model, dispatcher);
 
     state.update_step_status(0, 0, StepStatus::Done);

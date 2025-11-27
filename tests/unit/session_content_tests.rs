@@ -67,11 +67,6 @@ mod tests {
             assert_eq!(cloud_iam_phase.name, "Cloud IAM Abuse 101");
             assert!(!cloud_iam_phase.steps.is_empty()); // Has tutorial and quiz steps
 
-            // Test Reporting phase
-            let report_phase = &session.phases[8];
-            assert_eq!(report_phase.name, "Reporting");
-            assert_eq!(report_phase.steps.len(), 4); // 4 reporting steps
-
             // Test Container & Kubernetes Security phase
             let container_security_phase = &session.phases[9];
             assert_eq!(
@@ -81,12 +76,17 @@ mod tests {
             assert!(!container_security_phase.steps.is_empty()); // Has tutorial and quiz steps
 
             // Test Bug Bounty Hunting phase
-            let bug_bounty_phase = &session.phases[11];
+            let bug_bounty_phase = &session.phases[16];
             assert_eq!(bug_bounty_phase.name, "Bug Bounty Hunting");
             assert!(!bug_bounty_phase.steps.is_empty()); // Has steps
 
-            // Test CompTIA Security+ phase
-            let comptia_phase = &session.phases[12];
+            // Test Reporting phase (moved to position 17)
+            let report_phase = &session.phases[17];
+            assert_eq!(report_phase.name, "Reporting");
+            assert_eq!(report_phase.steps.len(), 4); // 4 reporting steps
+
+            // Test CompTIA Security+ phase (moved to position 18)
+            let comptia_phase = &session.phases[18];
             assert_eq!(comptia_phase.name, "CompTIA Security+");
             assert_eq!(comptia_phase.steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
         }
@@ -246,7 +246,8 @@ mod tests {
         fn test_phase_progression_workflow() {
             let session = Session::default();
 
-            // Verify logical phase progression (first 10 phases are pentesting methodology, next are specialized)
+            // Verify logical phase progression (reordered to reflect real-world workflow)
+            // Phases are ordered: recon first, core pentesting, modern topics, advanced topics, reporting, quizzes last
             let phase_names = [
                 "Reconnaissance",
                 "Vulnerability Analysis",
@@ -256,27 +257,27 @@ mod tests {
                 "Practical OAuth/OIDC Abuse",
                 "SSO & Federation Misconfigurations",
                 "API Security",
-                "Reporting",
+                "Modern Web Application Security",
                 "Container & Kubernetes Security",
                 "Serverless Security",
+                "Cloud Native Security",
+                "Supply Chain Security",
+                "AI/ML Security",
+                "Red Team Tradecraft",
+                "Purple Team/Threat Hunting",
                 "Bug Bounty Hunting",
+                "Reporting",
                 "CompTIA Security+",
                 "CompTIA PenTest+",
                 "Certified Ethical Hacker (CEH)",
-                "Cloud Native Security",
-                "AI/ML Security",
-                "Supply Chain Security",
-                "Purple Team/Threat Hunting",
-                "Red Team Tradecraft",
-                "Modern Web Application Security",
             ];
             for (idx, expected_name) in phase_names.iter().enumerate() {
                 assert_eq!(session.phases[idx].name, *expected_name);
             }
 
-            // Verify step counts are reasonable for the core pentesting phases
+            // Verify step counts are reasonable for all phases
             let expected_step_counts = [
-                16, 5, 4, 4, 2, 1, 1, 7, 4, 6, 7, 8, 23, 32, 24, 15, 13, 15, 10, 10, 7,
+                16, 5, 4, 4, 2, 1, 1, 7, 7, 6, 7, 15, 15, 13, 10, 10, 8, 4, 23, 32, 24,
             ]; // 21 phases loaded from JSON
             for (idx, &expected_count) in expected_step_counts.iter().enumerate() {
                 assert_eq!(session.phases[idx].steps.len(), expected_count);
@@ -289,10 +290,10 @@ mod tests {
             assert!(!session.phases[9].steps.is_empty());
 
             // Bug Bounty Hunting phase should have steps
-            assert!(!session.phases[11].steps.is_empty());
+            assert!(!session.phases[16].steps.is_empty());
 
-            // CompTIA Security+ phase should have quiz steps
-            assert_eq!(session.phases[12].steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
+            // CompTIA Security+ phase should have quiz steps (now at position 18)
+            assert_eq!(session.phases[18].steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
         }
 
         #[test]

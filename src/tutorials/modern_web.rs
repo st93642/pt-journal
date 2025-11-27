@@ -950,9 +950,6 @@ mod tests {
         assert!(quiz_result.is_ok(), "Quiz step creation should succeed");
 
         let quiz_step = quiz_result.unwrap();
-        match quiz_step.content {
-            crate::model::StepContent::Quiz { quiz_data: _ } => {} // Expected
-            _ => panic!("Quiz step should have Quiz content"),
-        }
+        assert!(quiz_step.is_quiz(), "Quiz step should have quiz data");
     }
 }

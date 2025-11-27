@@ -488,17 +488,15 @@ mod tests {
             );
 
             // Test note updates
-            if let StepContent::Tutorial { notes, .. } = &mut step.content {
-                *notes = "Initial notes".to_string();
-                assert_eq!(*notes, "Initial notes");
+            step.notes = "Initial notes".to_string();
+            assert_eq!(step.notes, "Initial notes");
 
-                *notes = "Updated notes with more content".to_string();
-                assert_eq!(*notes, "Updated notes with more content");
+            step.notes = "Updated notes with more content".to_string();
+            assert_eq!(step.notes, "Updated notes with more content");
 
-                // Test clearing notes
-                notes.clear();
-                assert!(notes.is_empty());
-            }
+            // Test clearing notes
+            step.notes.clear();
+            assert!(step.notes.is_empty());
         }
 
         #[test]

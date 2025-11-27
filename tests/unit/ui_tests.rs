@@ -213,28 +213,14 @@ mod text_input_tests {
         );
 
         // Empty strings should be handled
-        if let StepContent::Tutorial {
-            notes,
-            description_notes,
-            ..
-        } = &step.content
-        {
-            assert!(notes.is_empty());
-            assert!(description_notes.is_empty());
-        }
+        assert!(step.notes.is_empty());
+        assert!(step.description_notes.is_empty());
 
         // Setting to empty should work
-        if let StepContent::Tutorial {
-            notes,
-            description_notes,
-            ..
-        } = &mut step.content
-        {
-            *notes = "".to_string();
-            *description_notes = "".to_string();
-            assert!(notes.is_empty());
-            assert!(description_notes.is_empty());
-        }
+        step.notes = "".to_string();
+        step.description_notes = "".to_string();
+        assert!(step.notes.is_empty());
+        assert!(step.description_notes.is_empty());
     }
 }
 
@@ -335,31 +321,25 @@ mod chat_tests {
         };
 
         if let Some(step) = model.session_mut().phases[0].steps.get_mut(0) {
-            if let StepContent::Tutorial { chat_history, .. } = &mut step.content {
-                chat_history.push(message1.clone());
-                chat_history.push(message2.clone());
-                assert_eq!(chat_history.len(), 2);
-                assert_eq!(chat_history[0].content, "User question");
-                assert_eq!(chat_history[1].content, "Assistant response");
-            }
+            step.chat_history.push(message1.clone());
+            step.chat_history.push(message2.clone());
+            assert_eq!(step.chat_history.len(), 2);
+            assert_eq!(step.chat_history[0].content, "User question");
+            assert_eq!(step.chat_history[1].content, "Assistant response");
         }
 
         // Switch to another step - should have empty chat history
         model.set_selected_step(Some(1));
         if let Some(step) = model.session_mut().phases[0].steps.get(1) {
-            if let StepContent::Tutorial { chat_history, .. } = &step.content {
-                assert_eq!(chat_history.len(), 0);
-            }
+            assert_eq!(step.chat_history.len(), 0);
         }
 
         // Switch back - should still have chat history
         model.set_selected_step(Some(0));
         if let Some(step) = model.session_mut().phases[0].steps.first() {
-            if let StepContent::Tutorial { chat_history, .. } = &step.content {
-                assert_eq!(chat_history.len(), 2);
-                assert_eq!(chat_history[0].content, "User question");
-                assert_eq!(chat_history[1].content, "Assistant response");
-            }
+            assert_eq!(step.chat_history.len(), 2);
+            assert_eq!(step.chat_history[0].content, "User question");
+            assert_eq!(step.chat_history[1].content, "Assistant response");
         }
     }
 }

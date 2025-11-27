@@ -25,35 +25,7 @@ pub struct Evidence {
     pub y: f64,
 }
 
-/// Content type for a step - either tutorial-based or quiz-based
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum StepContent {
-    /// Traditional tutorial step with description, notes, evidence, and chat history
-    Tutorial {
-        description: String,
-        description_notes: String,
-        notes: String,
-        evidence: Vec<Evidence>,
-        #[serde(default)]
-        chat_history: Vec<ChatMessage>,
-    },
-    /// Quiz-based learning step with questions and progress tracking
-    Quiz { quiz_data: QuizStep },
-}
-
-impl Default for StepContent {
-    fn default() -> Self {
-        StepContent::Tutorial {
-            description: String::new(),
-            description_notes: String::new(),
-            notes: String::new(),
-            evidence: Vec::new(),
-            chat_history: Vec::new(),
-        }
-    }
-}
-
-/// A step in a tutorial or quiz phase
+/// A step in a tutorial or quiz phase with direct field access
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Step {
     pub id: Uuid,
@@ -62,9 +34,16 @@ pub struct Step {
     pub status: StepStatus,
     pub completed_at: Option<DateTime<Utc>>,
 
-    /// The content of this step - either tutorial or quiz
+    // Tutorial fields
+    pub description: String,
+    pub description_notes: String,
+    pub notes: String,
+    pub evidence: Vec<Evidence>,
     #[serde(default)]
-    pub content: StepContent,
+    pub chat_history: Vec<ChatMessage>,
+
+    // Quiz field (optional, present only for quiz steps)
+    pub quiz_data: Option<QuizStep>,
 }
 
 impl Step {
@@ -76,13 +55,12 @@ impl Step {
             tags,
             status: StepStatus::Todo,
             completed_at: None,
-            content: StepContent::Tutorial {
-                description,
-                description_notes: String::new(),
-                notes: String::new(),
-                evidence: Vec::new(),
-                chat_history: Vec::new(),
-            },
+            description,
+            description_notes: String::new(),
+            notes: String::new(),
+            evidence: Vec::new(),
+            chat_history: Vec::new(),
+            quiz_data: None,
         }
     }
 
@@ -94,145 +72,105 @@ impl Step {
             tags,
             status: StepStatus::Todo,
             completed_at: None,
-            content: StepContent::Quiz { quiz_data },
+            description: String::new(),
+            description_notes: String::new(),
+            notes: String::new(),
+            evidence: Vec::new(),
+            chat_history: Vec::new(),
+            quiz_data: Some(quiz_data),
         }
     }
 
     /// Check if this is a tutorial step
     pub fn is_tutorial(&self) -> bool {
-        matches!(self.content, StepContent::Tutorial { .. })
+        self.quiz_data.is_none()
     }
 
     /// Check if this is a quiz step
     pub fn is_quiz(&self) -> bool {
-        matches!(self.content, StepContent::Quiz { .. })
+        self.quiz_data.is_some()
     }
 
     /// Get mutable reference to quiz content (panics if tutorial step)
     pub fn quiz_mut(&mut self) -> &mut QuizStep {
-        match &mut self.content {
-            StepContent::Quiz { quiz_data } => quiz_data,
-            StepContent::Tutorial { .. } => {
-                panic!("Attempted to access quiz content on tutorial step")
-            }
-        }
+        self.quiz_data
+            .as_mut()
+            .expect("Attempted to access quiz content on tutorial step")
     }
 
     /// Get mutable reference to quiz content safely (returns None if tutorial step)
     pub fn quiz_mut_safe(&mut self) -> Option<&mut QuizStep> {
-        match &mut self.content {
-            StepContent::Quiz { quiz_data } => Some(quiz_data),
-            StepContent::Tutorial { .. } => None,
-        }
+        self.quiz_data.as_mut()
     }
 
-    // Helper methods for backward compatibility with UI code
-
-    /// Get description (for tutorial steps)
+    /// Get description (for backward compatibility)
     pub fn get_description(&self) -> String {
-        match &self.content {
-            StepContent::Tutorial { description, .. } => description.clone(),
-            StepContent::Quiz { .. } => String::new(),
-        }
+        self.description.clone()
     }
 
-    /// Get description notes (for tutorial steps)
+    /// Get description notes (for backward compatibility)
     pub fn get_description_notes(&self) -> String {
-        match &self.content {
-            StepContent::Tutorial {
-                description_notes, ..
-            } => description_notes.clone(),
-            StepContent::Quiz { .. } => String::new(),
-        }
+        self.description_notes.clone()
     }
 
-    /// Get notes (for tutorial steps)
+    /// Get notes (for backward compatibility)
     pub fn get_notes(&self) -> String {
-        match &self.content {
-            StepContent::Tutorial { notes, .. } => notes.clone(),
-            StepContent::Quiz { .. } => String::new(),
-        }
+        self.notes.clone()
     }
 
-    /// Get evidence (for tutorial steps)
+    /// Get evidence (for backward compatibility)
     pub fn get_evidence(&self) -> Vec<Evidence> {
-        match &self.content {
-            StepContent::Tutorial { evidence, .. } => evidence.clone(),
-            StepContent::Quiz { .. } => Vec::new(),
-        }
+        self.evidence.clone()
     }
 
-    /// Set description notes (for tutorial steps)
+    /// Set description notes (for backward compatibility)
     pub fn set_description_notes(&mut self, text: String) {
-        if let StepContent::Tutorial {
-            description_notes, ..
-        } = &mut self.content
-        {
-            *description_notes = text;
-        }
+        self.description_notes = text;
     }
 
-    /// Set notes (for tutorial steps)
+    /// Set notes (for backward compatibility)
     pub fn set_notes(&mut self, text: String) {
-        if let StepContent::Tutorial { notes, .. } = &mut self.content {
-            *notes = text;
-        }
+        self.notes = text;
     }
 
-    /// Add evidence (for tutorial steps)
+    /// Add evidence (for backward compatibility)
     pub fn add_evidence(&mut self, evidence: Evidence) {
-        if let StepContent::Tutorial { evidence: ev, .. } = &mut self.content {
-            ev.push(evidence);
-        }
+        self.evidence.push(evidence);
     }
 
-    /// Get quiz step data (for quiz steps)
+    /// Get quiz step data (for backward compatibility)
     pub fn get_quiz_step(&self) -> Option<&QuizStep> {
-        match &self.content {
-            StepContent::Quiz { quiz_data } => Some(quiz_data),
-            StepContent::Tutorial { .. } => None,
-        }
+        self.quiz_data.as_ref()
     }
 
-    /// Remove evidence by ID (for tutorial steps)
+    /// Remove evidence by ID
     pub fn remove_evidence(&mut self, evidence_id: Uuid) {
-        if let StepContent::Tutorial { evidence, .. } = &mut self.content {
-            evidence.retain(|e| e.id != evidence_id);
-        }
+        self.evidence.retain(|e| e.id != evidence_id);
     }
 
-    /// Update evidence position (for tutorial steps)
+    /// Update evidence position
     pub fn update_evidence_position(&mut self, evidence_id: Uuid, x: f64, y: f64) -> bool {
-        if let StepContent::Tutorial { evidence, .. } = &mut self.content {
-            if let Some(ev) = evidence.iter_mut().find(|e| e.id == evidence_id) {
-                ev.x = x;
-                ev.y = y;
-                return true;
-            }
+        if let Some(ev) = self.evidence.iter_mut().find(|e| e.id == evidence_id) {
+            ev.x = x;
+            ev.y = y;
+            return true;
         }
         false
     }
 
-    /// Get chat history (for tutorial steps)
+    /// Get chat history (for backward compatibility)
     pub fn get_chat_history(&self) -> Vec<ChatMessage> {
-        match &self.content {
-            StepContent::Tutorial { chat_history, .. } => chat_history.clone(),
-            StepContent::Quiz { .. } => Vec::new(),
-        }
+        self.chat_history.clone()
     }
 
-    /// Add a chat message to history (for tutorial steps)
+    /// Add a chat message to history
     pub fn add_chat_message(&mut self, message: ChatMessage) {
-        if let StepContent::Tutorial { chat_history, .. } = &mut self.content {
-            chat_history.push(message);
-        }
+        self.chat_history.push(message);
     }
 
-    /// Clear chat history (for tutorial steps)
+    /// Clear chat history
     pub fn clear_chat_history(&mut self) {
-        if let StepContent::Tutorial { chat_history, .. } = &mut self.content {
-            chat_history.clear();
-        }
+        self.chat_history.clear();
     }
 }
 

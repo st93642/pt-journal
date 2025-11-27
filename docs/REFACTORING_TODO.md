@@ -123,18 +123,18 @@ This TODO plan outlines the systematic refactoring of the PT Journal codebase to
 ### ✅ STEP 4: Refactor ChatService Router Pattern
 
 **Priority:** Medium  
-**Status:** Not Started  
+**Status:** ✅ Completed  
 **Estimated Effort:** 4 days  
 **Risk Level:** Medium  
 
 **Tasks:**
 
-- [ ] Create `src/chatbot/registry.rs` with provider registry pattern
-- [ ] Implement trait object registry using `Arc<dyn ChatProvider>`
-- [ ] Update ChatService to use registry lookup instead of match statements
-- [ ] Add dynamic provider discovery capability
-- [ ] Update all tests to verify registry behavior
-- [ ] Add tests for provider registration/deregistration
+- [x] Create `src/chatbot/registry.rs` with provider registry pattern
+- [x] Implement trait object registry using `Arc<dyn ChatProvider>`
+- [x] Update ChatService to use registry lookup instead of match statements
+- [x] Add dynamic provider discovery capability
+- [x] Update all tests to verify registry behavior
+- [x] Add tests for provider registration/deregistration
 
 **Success Criteria:**
 
@@ -144,6 +144,17 @@ This TODO plan outlines the systematic refactoring of the PT Journal codebase to
 
 **Dependencies:** Step 1 (test suite)  
 **Testing:** Registry unit tests, provider integration tests
+
+**Completion Notes:**
+
+- Created comprehensive `ProviderRegistry` with thread-safe `RwLock<HashMap>` for provider storage
+- Implemented dynamic provider registration and lookup by `ModelProviderKind`
+- Updated `ChatService` to use registry instead of hardcoded match statements
+- Added `Hash` derive to `ModelProviderKind` for use in HashMap
+- Created 7 comprehensive unit tests for registry functionality
+- Added integration test verifying ChatService uses registry correctly
+- All existing ChatService functionality preserved with backward compatibility
+- Registry enables easy addition of new providers without modifying core service logic
 
 ### ✅ STEP 5: Break Up Large Tutorial Files
 
@@ -289,8 +300,7 @@ This TODO plan outlines the systematic refactoring of the PT Journal codebase to
 
 - [x] **Week 1:** Test suite unified, basic validation in place
 - [x] **Week 2:** Handler abstraction working, 2-3 handlers converted
-- [ ] **Week 3:** ChatService registry implemented, tutorial breakup started
-- [ ] **Week 3:** ChatService registry implemented, tutorial breakup started
+- [x] **Week 3:** ChatService registry implemented, tutorial breakup started
 - [ ] **Week 4:** Large tutorial files fully broken up, state patterns emerging
 - [ ] **Week 5:** Tool stubs cleaned up, error handling unified
 - [ ] **Week 6:** Tutorial structure unified, integration testing begins

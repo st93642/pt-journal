@@ -5,7 +5,7 @@
 /*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
 /*                                                          TT         SS II */
 /*  Created: Nov 25 2025 14:30 st93642                      TT    SSSSSSS II */
-/*  Updated: Nov 27 2025 03:18 st93642                                       */
+/*  Updated: Nov 27 2025 03:23 st93642                                       */
 /*                                                                           */
 /*   Transport and Telecommunication Institute - Riga, Latvia                */
 /*                       https://tsi.lv                                      */
@@ -162,7 +162,7 @@ impl ModelProfile {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 #[serde(rename_all = "kebab-case")]
 pub enum ModelProviderKind {
     Ollama,

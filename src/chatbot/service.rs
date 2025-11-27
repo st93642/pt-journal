@@ -1,4 +1,4 @@
-use crate::chatbot::{ChatError, ChatProvider, ChatRequest, OllamaProvider, StepContext};
+use crate::chatbot::{ChatError, ChatProvider, ChatRequest, OllamaProvider, ProviderRegistry, StepContext};
 use crate::config::{ChatbotConfig, ModelProviderKind};
 use crate::model::ChatMessage;
 use std::sync::Arc;
@@ -6,16 +6,30 @@ use std::sync::Arc;
 /// Chat service that routes requests to appropriate providers
 pub struct ChatService {
     pub config: ChatbotConfig,
-    ollama_provider: Arc<OllamaProvider>,
+    registry: ProviderRegistry,
 }
 
 impl ChatService {
     pub fn new(mut config: ChatbotConfig) -> Self {
         config.ensure_valid();
-        let ollama_provider = Arc::new(OllamaProvider::new(config.ollama.clone()));
+
+        let registry = ProviderRegistry::new();
+
+        // Register default providers
+        Self::register_default_providers(&registry, &config);
+
         Self {
             config,
-            ollama_provider,
+            registry,
+        }
+    }
+
+    /// Register the default providers with the registry.
+    fn register_default_providers(registry: &ProviderRegistry, config: &ChatbotConfig) {
+        // Register Ollama provider
+        let ollama_provider = Arc::new(OllamaProvider::new(config.ollama.clone()));
+        if let Err(e) = registry.register(ollama_provider) {
+            eprintln!("Warning: Failed to register Ollama provider: {}", e);
         }
     }
 
@@ -52,15 +66,24 @@ impl ChatService {
     /// Get list of available models from Ollama
     pub fn list_available_models(&self) -> Result<Vec<String>, ChatError> {
         // Since we only support Ollama now, we can access it directly
-        self.ollama_provider.list_available_models()
+        // In the future, this could be made more generic
+        self.get_provider(&ModelProviderKind::Ollama)?
+            .list_available_models()
     }
 
+    /// Get a provider for the specified provider kind using the registry.
     pub fn get_provider(
         &self,
         provider_kind: &ModelProviderKind,
     ) -> Result<Arc<dyn ChatProvider>, ChatError> {
-        match provider_kind {
-            ModelProviderKind::Ollama => Ok(self.ollama_provider.clone()),
-        }
+        self.registry.get_provider(provider_kind)
+    }
+
+    /// Get access to the provider registry for advanced operations.
+    ///
+    /// This allows external code to register additional providers or
+    /// inspect the current provider registrations.
+    pub fn registry(&self) -> &ProviderRegistry {
+        &self.registry
     }
 }

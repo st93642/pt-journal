@@ -1,10 +1,12 @@
 mod ollama;
 mod provider;
+mod registry;
 mod request;
 mod service;
 
 pub use ollama::OllamaProvider;
 pub use provider::ChatProvider;
+pub use registry::ProviderRegistry;
 pub use request::{ChatRequest, StepContext};
 pub use service::ChatService;
 

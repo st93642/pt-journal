@@ -224,6 +224,24 @@ mod service_tests {
         // This test is no longer relevant
         assert!(true);
     }
+
+    #[test]
+    fn test_service_registry_functionality() {
+        let config = ChatbotConfig::default();
+        let service = ChatService::new(config);
+
+        // Test that Ollama provider is registered
+        let registry = service.registry();
+        assert!(registry.has_provider(&pt_journal::config::ModelProviderKind::Ollama));
+
+        // Test that we can get the provider
+        let provider = service.get_provider(&pt_journal::config::ModelProviderKind::Ollama);
+        assert!(provider.is_ok());
+
+        // Test that registered providers list includes Ollama
+        let registered = registry.registered_providers();
+        assert!(registered.contains(&pt_journal::config::ModelProviderKind::Ollama));
+    }
 }
 
 #[cfg(test)]

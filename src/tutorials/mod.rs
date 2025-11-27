@@ -8,11 +8,11 @@
 // pub mod modern_web; // Now loaded from JSON
 // pub mod pentest_exam; // Now loaded from JSON
 // pub mod post_exploitation; // Now loaded from JSON
-pub mod purple_team_threat_hunting;
+// pub mod purple_team_threat_hunting; // Now loaded from JSON
 // pub mod reconnaissance; // Now loaded from JSON
-pub mod red_team_tradecraft;
+// pub mod red_team_tradecraft; // Now loaded from JSON
 // pub mod serverless_security; // Now loaded from JSON
-pub mod supply_chain;
+// pub mod supply_chain; // Now loaded from JSON
 // pub mod vulnerability_analysis; // Now loaded from JSON
 
 use crate::model::{Phase, Step};
@@ -58,12 +58,16 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         load_tutorial_phase("ceh"),
         load_tutorial_phase("cloud_native"),
         load_tutorial_phase("ai_security"),
+        load_tutorial_phase("supply_chain"),
+        load_tutorial_phase("purple_team_threat_hunting"),
+        load_tutorial_phase("red_team_tradecraft"),
+        load_tutorial_phase("modern_web"),
         // create_cicd_pipeline_attacks_phase(), // Now part of cloud_native JSON
-        create_sbom_analysis_phase(),
-        create_dependency_confusion_phase(),
-        create_artifact_integrity_phase(),
-        create_red_team_tradecraft_phase(),
-        create_purple_team_threat_hunting_phase(),
+        // create_sbom_analysis_phase(), // Now part of supply_chain JSON
+        // create_dependency_confusion_phase(), // Now part of supply_chain JSON
+        // create_artifact_integrity_phase(), // Now part of supply_chain JSON
+        // create_red_team_tradecraft_phase(), // Now loaded from JSON
+        // create_purple_team_threat_hunting_phase(), // Now loaded from JSON
         // create_ai_security_phase(), // Now loaded from JSON
     ]
 }
@@ -190,38 +194,38 @@ fn load_tutorial_phase(phase_name: &str) -> Phase {
 //     }
 // }
 
-fn create_sbom_analysis_phase() -> Phase {
-    let steps = vec![supply_chain::sbom_analysis_phase()];
+// fn create_sbom_analysis_phase() -> Phase {
+//     let steps = vec![supply_chain::sbom_analysis_phase()];
 
-    Phase {
-        id: Uuid::new_v4(),
-        name: "SBOM Generation & Analysis".to_string(),
-        steps,
-        notes: String::new(),
-    }
-}
+//     Phase {
+//         id: Uuid::new_v4(),
+//         name: "SBOM Generation & Analysis".to_string(),
+//         steps,
+//         notes: String::new(),
+//     }
+// }
 
-fn create_dependency_confusion_phase() -> Phase {
-    let steps = vec![supply_chain::dependency_confusion_phase()];
+// fn create_dependency_confusion_phase() -> Phase {
+//     let steps = vec![supply_chain::dependency_confusion_phase()];
 
-    Phase {
-        id: Uuid::new_v4(),
-        name: "Dependency Confusion & Typosquatting".to_string(),
-        steps,
-        notes: String::new(),
-    }
-}
+//     Phase {
+//         id: Uuid::new_v4(),
+//         name: "Dependency Confusion & Typosquatting".to_string(),
+//         steps,
+//         notes: String::new(),
+//     }
+// }
 
-fn create_artifact_integrity_phase() -> Phase {
-    let steps = vec![supply_chain::artifact_integrity_phase()];
+// fn create_artifact_integrity_phase() -> Phase {
+//     let steps = vec![supply_chain::artifact_integrity_phase()];
 
-    Phase {
-        id: Uuid::new_v4(),
-        name: "Artifact Integrity Checks".to_string(),
-        steps,
-        notes: String::new(),
-    }
-}
+//     Phase {
+//         id: Uuid::new_v4(),
+//         name: "Artifact Integrity Checks".to_string(),
+//         steps,
+//         notes: String::new(),
+//     }
+// }
 
 // fn create_comptia_secplus_phase() -> Phase {
 //     let steps = comptia_secplus::get_all_comptia_steps();
@@ -256,27 +260,27 @@ fn create_artifact_integrity_phase() -> Phase {
 //     }
 // }
 
-fn create_red_team_tradecraft_phase() -> Phase {
-    let steps = red_team_tradecraft::create_red_team_steps();
+// fn create_red_team_tradecraft_phase() -> Phase {
+//     let steps = red_team_tradecraft::create_red_team_steps();
 
-    Phase {
-        id: Uuid::new_v4(),
-        name: "Red Team Tradecraft".to_string(),
-        steps,
-        notes: String::new(),
-    }
-}
+//     Phase {
+//         id: Uuid::new_v4(),
+//         name: "Red Team Tradecraft".to_string(),
+//         steps,
+//         notes: String::new(),
+//     }
+// }
 
-fn create_purple_team_threat_hunting_phase() -> Phase {
-    let steps = purple_team_threat_hunting::create_purple_team_steps();
+// fn create_purple_team_threat_hunting_phase() -> Phase {
+//     let steps = purple_team_threat_hunting::create_purple_team_steps();
 
-    Phase {
-        id: Uuid::new_v4(),
-        name: "Purple Team/Threat Hunting".to_string(),
-        steps,
-        notes: String::new(),
-    }
-}
+//     Phase {
+//         id: Uuid::new_v4(),
+//         name: "Purple Team/Threat Hunting".to_string(),
+//         steps,
+//         notes: String::new(),
+//     }
+// }
 
 // fn create_ai_security_phase() -> Phase {
 //     let mut steps = Vec::new();
@@ -439,6 +443,22 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     let ai_security_phase = load_tutorial_phase("ai_security");
     validate_step_structure(&ai_security_phase.steps, "ai_security")?;
 
+    // Validate Supply Chain module (loaded from JSON)
+    let supply_chain_phase = load_tutorial_phase("supply_chain");
+    validate_step_structure(&supply_chain_phase.steps, "supply_chain")?;
+
+    // Validate Purple Team Threat Hunting module (loaded from JSON)
+    let purple_team_phase = load_tutorial_phase("purple_team_threat_hunting");
+    validate_step_structure(&purple_team_phase.steps, "purple_team_threat_hunting")?;
+
+    // Validate Red Team Tradecraft module (loaded from JSON)
+    let red_team_phase = load_tutorial_phase("red_team_tradecraft");
+    validate_step_structure(&red_team_phase.steps, "red_team_tradecraft")?;
+
+    // Validate Modern Web module (loaded from JSON)
+    let modern_web_phase = load_tutorial_phase("modern_web");
+    validate_step_structure(&modern_web_phase.steps, "modern_web")?;
+
     // Validate that all modules have at least one step
     if recon_phase.steps.is_empty() {
         return Err("Reconnaissance module has no steps".to_string());
@@ -490,6 +510,18 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     }
     if ai_security_phase.steps.is_empty() {
         return Err("AI Security module has no steps".to_string());
+    }
+    if supply_chain_phase.steps.is_empty() {
+        return Err("Supply Chain module has no steps".to_string());
+    }
+    if purple_team_phase.steps.is_empty() {
+        return Err("Purple Team Threat Hunting module has no steps".to_string());
+    }
+    if red_team_phase.steps.is_empty() {
+        return Err("Red Team Tradecraft module has no steps".to_string());
+    }
+    if modern_web_phase.steps.is_empty() {
+        return Err("Modern Web module has no steps".to_string());
     }
 
     Ok(())

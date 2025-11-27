@@ -1,7 +1,7 @@
 pub mod ai_security;
 pub mod bug_bounty_hunting;
 pub mod ceh;
-pub mod cloud_identity;
+// pub mod cloud_identity; // Now loaded from JSON
 pub mod cloud_native;
 pub mod comptia_secplus;
 pub mod container_security;
@@ -12,7 +12,6 @@ pub mod pentest_exam;
 pub mod purple_team_threat_hunting;
 // pub mod reconnaissance; // Now loaded from JSON
 pub mod red_team_tradecraft;
-pub mod reporting;
 pub mod serverless_security;
 pub mod supply_chain;
 // pub mod vulnerability_analysis; // Now loaded from JSON
@@ -21,6 +20,7 @@ use crate::model::{Phase, Step};
 use uuid::Uuid;
 use serde::{Deserialize, Serialize};
 use std::fs;
+use std::path::Path;
 
 /// JSON structure for tutorial data loaded from files
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -47,11 +47,11 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         load_tutorial_phase("vulnerability_analysis"),
         load_tutorial_phase("exploitation"),
         load_tutorial_phase("post_exploitation"),
-        create_cloud_iam_phase(),
-        create_practical_oauth_phase(),
-        create_sso_federation_phase(),
-        create_api_security_phase(),
-        create_reporting_phase(),
+        load_tutorial_phase("cloud_iam"),
+        load_tutorial_phase("practical_oauth"),
+        load_tutorial_phase("sso_federation"),
+        load_tutorial_phase("api_security"),
+        load_tutorial_phase("reporting"),
         create_container_security_phase(),
         create_serverless_security_phase(),
         create_bug_bounty_hunting_phase(),
@@ -68,6 +68,19 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
     ]
 }
 
+/// Load quiz questions from a file
+fn load_quiz_from_file(file_path: &str) -> Result<Vec<crate::model::QuizQuestion>, String> {
+    // Read file content
+    let content = fs::read_to_string(file_path).map_err(|e| {
+        format!("Failed to read quiz file {}: {}", file_path, e)
+    })?;
+
+    // Parse questions
+    crate::quiz::parse_question_file(&content).map_err(|e| {
+        format!("Failed to parse questions from {}: {}", file_path, e)
+    })
+}
+
 /// Load a tutorial phase from JSON file
 fn load_tutorial_phase(phase_name: &str) -> Phase {
     let json_path = format!("data/tutorials/{}.json", phase_name);
@@ -76,12 +89,59 @@ fn load_tutorial_phase(phase_name: &str) -> Phase {
             match serde_json::from_str::<TutorialData>(&content) {
                 Ok(tutorial_data) => {
                     let steps = tutorial_data.steps.into_iter().map(|step_data| {
-                        Step::new_tutorial(
-                            Uuid::new_v4(),
-                            step_data.title,
-                            step_data.content,
-                            step_data.tags,
-                        )
+                        // Check if this is a quiz step
+                        if step_data.tags.contains(&"quiz".to_string()) {
+                            // For quiz steps, load the quiz data from the referenced file
+                            // The content field contains the path to the quiz file
+                            if step_data.content.starts_with("Quiz content loaded from ") {
+                                let quiz_file_path = step_data.content
+                                    .strip_prefix("Quiz content loaded from ")
+                                    .unwrap_or(&step_data.content);
+                                
+                                match load_quiz_from_file(quiz_file_path) {
+                                    Ok(questions) => {
+                                        let quiz_step = crate::model::QuizStep::new(
+                                            Uuid::new_v4(),
+                                            step_data.title.clone(),
+                                            phase_name.to_string(),
+                                            questions,
+                                        );
+                                        Step::new_quiz(
+                                            Uuid::new_v4(),
+                                            step_data.title,
+                                            step_data.tags,
+                                            quiz_step,
+                                        )
+                                    }
+                                    Err(e) => {
+                                        eprintln!("Failed to load quiz from {}: {}", quiz_file_path, e);
+                                        // Fallback to tutorial step
+                                        Step::new_tutorial(
+                                            Uuid::new_v4(),
+                                            step_data.title,
+                                            format!("Error loading quiz: {}", e),
+                                            step_data.tags,
+                                        )
+                                    }
+                                }
+                            } else {
+                                // Fallback to tutorial step if content doesn't reference a file
+                                Step::new_tutorial(
+                                    Uuid::new_v4(),
+                                    step_data.title,
+                                    step_data.content,
+                                    step_data.tags,
+                                )
+                            }
+                        } else {
+                            // Regular tutorial step
+                            Step::new_tutorial(
+                                Uuid::new_v4(),
+                                step_data.title,
+                                step_data.content,
+                                step_data.tags,
+                            )
+                        }
                     }).collect();
 
                     Phase {
@@ -113,50 +173,6 @@ fn load_tutorial_phase(phase_name: &str) -> Phase {
                 notes: format!("File not found: {}", e),
             }
         }
-    }
-}
-
-fn create_cloud_iam_phase() -> Phase {
-    let steps = cloud_identity::get_cloud_iam_steps();
-
-    Phase {
-        id: Uuid::new_v4(),
-        name: "Cloud IAM Abuse 101".to_string(),
-        steps,
-        notes: String::new(),
-    }
-}
-
-fn create_practical_oauth_phase() -> Phase {
-    let steps = cloud_identity::get_practical_oauth_steps();
-
-    Phase {
-        id: Uuid::new_v4(),
-        name: "Practical OAuth/OIDC Abuse".to_string(),
-        steps,
-        notes: String::new(),
-    }
-}
-
-fn create_sso_federation_phase() -> Phase {
-    let steps = cloud_identity::get_sso_federation_steps();
-
-    Phase {
-        id: Uuid::new_v4(),
-        name: "SSO & Federation Misconfigurations".to_string(),
-        steps,
-        notes: String::new(),
-    }
-}
-
-fn create_api_security_phase() -> Phase {
-    let steps = modern_web::get_api_security_steps();
-
-    Phase {
-        id: Uuid::new_v4(),
-        name: "API Security".to_string(),
-        steps,
-        notes: String::new(),
     }
 }
 
@@ -221,17 +237,6 @@ fn create_artifact_integrity_phase() -> Phase {
     Phase {
         id: Uuid::new_v4(),
         name: "Artifact Integrity Checks".to_string(),
-        steps,
-        notes: String::new(),
-    }
-}
-
-fn create_reporting_phase() -> Phase {
-    let steps = reporting::create_reporting_steps();
-
-    Phase {
-        id: Uuid::new_v4(),
-        name: "Reporting".to_string(),
         steps,
         notes: String::new(),
     }
@@ -405,9 +410,25 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     let post_phase = load_tutorial_phase("post_exploitation");
     validate_step_structure(&post_phase.steps, "post_exploitation")?;
 
-    // Validate reporting module
-    let report_steps = reporting::create_reporting_steps();
-    validate_step_structure(&report_steps, "reporting")?;
+    // Validate cloud IAM module (loaded from JSON)
+    let cloud_iam_phase = load_tutorial_phase("cloud_iam");
+    validate_step_structure(&cloud_iam_phase.steps, "cloud_iam")?;
+
+    // Validate practical OAuth module (loaded from JSON)
+    let oauth_phase = load_tutorial_phase("practical_oauth");
+    validate_step_structure(&oauth_phase.steps, "practical_oauth")?;
+
+    // Validate SSO federation module (loaded from JSON)
+    let federation_phase = load_tutorial_phase("sso_federation");
+    validate_step_structure(&federation_phase.steps, "sso_federation")?;
+
+    // Validate API security module (loaded from JSON)
+    let api_security_phase = load_tutorial_phase("api_security");
+    validate_step_structure(&api_security_phase.steps, "api_security")?;
+
+    // Validate reporting module (loaded from JSON)
+    let reporting_phase = load_tutorial_phase("reporting");
+    validate_step_structure(&reporting_phase.steps, "reporting")?;
 
     // Validate that all modules have at least one step
     if recon_phase.steps.is_empty() {
@@ -422,7 +443,19 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     if post_phase.steps.is_empty() {
         return Err("Post-exploitation module has no steps".to_string());
     }
-    if report_steps.is_empty() {
+    if cloud_iam_phase.steps.is_empty() {
+        return Err("Cloud IAM module has no steps".to_string());
+    }
+    if oauth_phase.steps.is_empty() {
+        return Err("Practical OAuth module has no steps".to_string());
+    }
+    if federation_phase.steps.is_empty() {
+        return Err("SSO Federation module has no steps".to_string());
+    }
+    if api_security_phase.steps.is_empty() {
+        return Err("API Security module has no steps".to_string());
+    }
+    if reporting_phase.steps.is_empty() {
         return Err("Reporting module has no steps".to_string());
     }
 
@@ -440,13 +473,15 @@ fn validate_step_structure(steps: &[Step], module_name: &str) -> Result<(), Stri
             ));
         }
 
-        // Check that step has a description
-        let description = step.get_description();
-        if description.trim().is_empty() {
-            return Err(format!(
-                "{}: Step '{}' has empty description",
-                module_name, step.title
-            ));
+        // Check that step has a description (tutorial steps only)
+        if step.is_tutorial() {
+            let description = step.get_description();
+            if description.trim().is_empty() {
+                return Err(format!(
+                    "{}: Step '{}' has empty description",
+                    module_name, step.title
+                ));
+            }
         }
 
         // Check that step has appropriate tags

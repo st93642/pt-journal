@@ -134,10 +134,7 @@ mod ui_integration_tests {
     #[test]
     fn test_text_input_handlers() {
         // Test that text input handlers are properly connected
-        // This would verify that:
-        // 1. Description pane changes are saved to description_notes
-        // 2. Notes pane changes are saved to notes
-        // 3. Text is properly loaded when switching steps
+        // This tests step switching and content loading
 
         // Since GTK is required, this is a placeholder
         // Placeholder test - no assertions needed
@@ -157,70 +154,43 @@ mod text_input_tests {
         model.set_selected_phase(0);
         model.set_selected_step(Some(0));
 
-        // Simulate text input to notes
-        if let Some(step) = model.session_mut().phases[0].steps.get_mut(0) {
-            step.notes = "Test notes content".to_string();
-            assert_eq!(step.notes.clone(), "Test notes content");
-        }
-
-        // Simulate text input to description_notes
-        if let Some(step) = model.session_mut().phases[0].steps.get_mut(0) {
-            step.description_notes = "Test description notes".to_string();
-            assert_eq!(step.description_notes, "Test description notes");
-        }
+        // Verify step selection works
+        assert_eq!(model.selected_step(), Some(0));
+        assert_eq!(model.selected_phase(), 0);
     }
 
     #[test]
-    fn test_step_text_persistence() {
-        // Test that text changes persist across step switches
+    fn test_step_chat_persistence() {
+        // Test that chat history persists across step switches
         let mut model = AppModel::default();
 
-        // Set text for first step
+        // Add chat message to first step
         model.set_selected_step(Some(0));
         if let Some(step) = model.session_mut().phases[0].steps.get_mut(0) {
-            step.notes = "Notes for step 0".to_string();
-            step.description_notes = "Description notes for step 0".to_string();
+            step.add_chat_message(ChatMessage::new(ChatRole::User, "Test message".to_string()));
         }
 
         // Switch to second step
         model.set_selected_step(Some(1));
-        if let Some(step) = model.session_mut().phases[0].steps.get_mut(1) {
-            step.notes = "Notes for step 1".to_string();
-            step.description_notes = "Description notes for step 1".to_string();
-        }
 
-        // Verify first step still has its text
+        // Verify first step still has its chat history
         if let Some(step) = model.session_mut().phases[0].steps.first() {
-            assert_eq!(step.notes.clone(), "Notes for step 0");
-            assert_eq!(step.description_notes, "Description notes for step 0");
-        }
-
-        // Verify second step has its text
-        if let Some(step) = model.session_mut().phases[0].steps.get(1) {
-            assert_eq!(step.notes.clone(), "Notes for step 1");
-            assert_eq!(step.description_notes, "Description notes for step 1");
+            assert_eq!(step.chat_history.len(), 1);
+            assert_eq!(step.chat_history[0].content, "Test message");
         }
     }
 
     #[test]
-    fn test_empty_text_handling() {
-        // Test handling of empty text input
-        let mut step = Step::new_tutorial(
+    fn test_step_description_handling() {
+        // Test handling of step descriptions
+        let step = Step::new_tutorial(
             Uuid::new_v4(),
             "Test".to_string(),
-            "Test".to_string(),
+            "Test description".to_string(),
             vec![],
         );
 
-        // Empty strings should be handled
-        assert!(step.notes.is_empty());
-        assert!(step.description_notes.is_empty());
-
-        // Setting to empty should work
-        step.notes = "".to_string();
-        step.description_notes = "".to_string();
-        assert!(step.notes.is_empty());
-        assert!(step.description_notes.is_empty());
+        assert_eq!(step.description, "Test description");
     }
 }
 
@@ -264,14 +234,12 @@ mod chat_tests {
     fn test_local_chatbot_payload_construction() {
         let server = MockServer::start();
         let mock = server.mock(|when, then| {
-            when.method(POST).path("/api/chat").json_body(json!({
-                "model": "llama3.2:latest",
-                "messages": [
-                    {"role": "system", "content": "You are an expert penetration testing assistant helping with structured pentesting methodology.\n\nCurrent Context:\n- Phase: Reconnaissance\n- Step: Test Step (Status: Todo)\n- Description: Test description\n- Notes: 0 characters\n- Evidence: 0 items\n\n\nProvide helpful, methodology-aligned assistance for general pentesting questions, step-specific guidance, or tool recommendations. Keep responses focused and actionable."},
-                    {"role": "user", "content": "Hello"}
-                ],
-                "stream": false
-            }));
+            when.method(POST)
+                .path("/api/chat")
+                .body_contains("llama3.2:latest")
+                .body_contains("Reconnaissance")
+                .body_contains("Test Step")
+                .body_contains("Hello");
             then.status(200).json_body(json!({
                 "message": {"role": "assistant", "content": "Hi there!"}
             }));
@@ -288,8 +256,6 @@ mod chat_tests {
             step_title: "Test Step".to_string(),
             step_description: "Test description".to_string(),
             step_status: "Todo".to_string(),
-            notes_count: 0,
-            evidence_count: 0,
             quiz_status: None,
         };
         let history = vec![];

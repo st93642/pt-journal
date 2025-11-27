@@ -5,7 +5,7 @@
 /*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
 /*                                                          TT         SS II */
 /*  Created: Nov 21 2025 23:42 st93642                      TT    SSSSSSS II */
-/*  Updated: Nov 27 2025 18:18 st93642                                       */
+/*  Updated: Nov 27 2025 21:02 st93642                                       */
 /*                                                                           */
 /*   Transport and Telecommunication Institute - Riga, Latvia                */
 /*                       https://tsi.lv                                      */
@@ -33,22 +33,12 @@ pub enum AppEvent {
     StepCompleted(usize, usize), // (phase_idx, step_idx)
     StepStatusChanged(usize, usize, crate::model::StepStatus),
 
-    // Text Updates
-    StepNotesUpdated(usize, usize, String),
-    StepDescriptionNotesUpdated(usize, usize, String),
-    PhaseNotesUpdated(usize, String),
-    GlobalNotesUpdated(String),
-
     // Chat Operations
     ChatMessageAdded(usize, usize, crate::model::ChatMessage),
     ChatRequestStarted(usize, usize),
     ChatRequestCompleted(usize, usize),
     ChatRequestFailed(usize, usize, String),
     ChatModelChanged(String), // model_id
-
-    // Evidence Operations
-    EvidenceAdded(usize, usize, crate::model::Evidence),
-    EvidenceRemoved(usize, usize, uuid::Uuid),
 
     // UI Updates
     RefreshStepList(usize),
@@ -83,22 +73,12 @@ pub struct EventBus {
     pub on_step_completed: Box<dyn Fn(usize, usize)>,
     pub on_step_status_changed: Box<dyn Fn(usize, usize, crate::model::StepStatus)>,
 
-    // Text Updates
-    pub on_step_notes_updated: Box<dyn Fn(usize, usize, String)>,
-    pub on_step_description_notes_updated: Box<dyn Fn(usize, usize, String)>,
-    pub on_phase_notes_updated: Box<dyn Fn(usize, String)>,
-    pub on_global_notes_updated: Box<dyn Fn(String)>,
-
     // Chat Operations
     pub on_chat_message_added: Box<dyn Fn(usize, usize, crate::model::ChatMessage)>,
     pub on_chat_request_started: Box<dyn Fn(usize, usize)>,
     pub on_chat_request_completed: Box<dyn Fn(usize, usize)>,
     pub on_chat_request_failed: Box<dyn Fn(usize, usize, String)>,
     pub on_chat_model_changed: Box<dyn Fn(String)>,
-
-    // Evidence Operations
-    pub on_evidence_added: Box<dyn Fn(usize, usize, crate::model::Evidence)>,
-    pub on_evidence_removed: Box<dyn Fn(usize, usize, uuid::Uuid)>,
 
     // UI Updates
     pub on_refresh_step_list: Box<dyn Fn(usize)>,
@@ -125,17 +105,11 @@ impl Default for EventBus {
             on_session_created: Box::new(|| {}),
             on_step_completed: Box::new(|_, _| {}),
             on_step_status_changed: Box::new(|_, _, _| {}),
-            on_step_notes_updated: Box::new(|_, _, _| {}),
-            on_step_description_notes_updated: Box::new(|_, _, _| {}),
-            on_phase_notes_updated: Box::new(|_, _| {}),
-            on_global_notes_updated: Box::new(|_| {}),
             on_chat_message_added: Box::new(|_, _, _| {}),
             on_chat_request_started: Box::new(|_, _| {}),
             on_chat_request_completed: Box::new(|_, _| {}),
             on_chat_request_failed: Box::new(|_, _, _| {}),
             on_chat_model_changed: Box::new(|_| {}),
-            on_evidence_added: Box::new(|_, _, _| {}),
-            on_evidence_removed: Box::new(|_, _, _| {}),
             on_refresh_step_list: Box::new(|_| {}),
             on_refresh_detail_view: Box::new(|_, _| {}),
             on_quiz_answer_checked: Box::new(|_, _, _, _| {}),
@@ -171,16 +145,6 @@ impl EventBus {
             AppEvent::StepStatusChanged(phase_idx, step_idx, status) => {
                 (self.on_step_status_changed)(phase_idx, step_idx, status)
             }
-            AppEvent::StepNotesUpdated(phase_idx, step_idx, notes) => {
-                (self.on_step_notes_updated)(phase_idx, step_idx, notes)
-            }
-            AppEvent::StepDescriptionNotesUpdated(phase_idx, step_idx, notes) => {
-                (self.on_step_description_notes_updated)(phase_idx, step_idx, notes)
-            }
-            AppEvent::PhaseNotesUpdated(phase_idx, notes) => {
-                (self.on_phase_notes_updated)(phase_idx, notes)
-            }
-            AppEvent::GlobalNotesUpdated(notes) => (self.on_global_notes_updated)(notes),
             AppEvent::ChatMessageAdded(phase_idx, step_idx, message) => {
                 (self.on_chat_message_added)(phase_idx, step_idx, message)
             }
@@ -194,12 +158,6 @@ impl EventBus {
                 (self.on_chat_request_failed)(phase_idx, step_idx, error)
             }
             AppEvent::ChatModelChanged(model_id) => (self.on_chat_model_changed)(model_id),
-            AppEvent::EvidenceAdded(phase_idx, step_idx, evidence) => {
-                (self.on_evidence_added)(phase_idx, step_idx, evidence)
-            }
-            AppEvent::EvidenceRemoved(phase_idx, step_idx, evidence_id) => {
-                (self.on_evidence_removed)(phase_idx, step_idx, evidence_id)
-            }
             AppEvent::RefreshStepList(phase_idx) => (self.on_refresh_step_list)(phase_idx),
             AppEvent::RefreshDetailView(phase_idx, step_idx) => {
                 (self.on_refresh_detail_view)(phase_idx, step_idx)
@@ -236,15 +194,6 @@ impl EventBus {
         F: Fn(usize) + 'static,
     {
         self.on_step_selected = Box::new(handler);
-        self
-    }
-
-    /// Builder-style method to set the step notes updated handler
-    pub fn with_step_notes_updated<F>(mut self, handler: F) -> Self
-    where
-        F: Fn(usize, usize, String) + 'static,
-    {
-        self.on_step_notes_updated = Box::new(handler);
         self
     }
 
@@ -350,23 +299,6 @@ mod tests {
     }
 
     #[test]
-    fn test_step_notes_updated_event() {
-        let received = Arc::new(Mutex::new(None));
-        let received_clone = received.clone();
-
-        let bus = EventBus::new().with_step_notes_updated(move |phase_idx, step_idx, notes| {
-            *received_clone.lock().unwrap() = Some((phase_idx, step_idx, notes));
-        });
-
-        bus.emit(AppEvent::StepNotesUpdated(1, 2, "test notes".to_string()));
-        let received_val = received.lock().unwrap();
-        assert_eq!(
-            received_val.as_ref().unwrap(),
-            &(1, 2, "test notes".to_string())
-        );
-    }
-
-    #[test]
     fn test_error_event() {
         let received = Arc::new(Mutex::new(None));
         let received_clone = received.clone();
@@ -463,9 +395,8 @@ mod tests {
     #[test]
     fn test_all_event_types() {
         // Test that all event types can be emitted without panicking
-        use crate::model::{ChatMessage, ChatRole, Evidence, StepStatus};
+        use crate::model::{ChatMessage, ChatRole, StepStatus};
         use std::path::PathBuf;
-        use uuid::Uuid;
 
         let bus = EventBus::new();
 
@@ -477,14 +408,6 @@ mod tests {
         bus.emit(AppEvent::SessionCreated);
         bus.emit(AppEvent::StepCompleted(0, 0));
         bus.emit(AppEvent::StepStatusChanged(0, 0, StepStatus::Done));
-        bus.emit(AppEvent::StepNotesUpdated(0, 0, "test".to_string()));
-        bus.emit(AppEvent::StepDescriptionNotesUpdated(
-            0,
-            0,
-            "test".to_string(),
-        ));
-        bus.emit(AppEvent::PhaseNotesUpdated(0, "test".to_string()));
-        bus.emit(AppEvent::GlobalNotesUpdated("test".to_string()));
 
         let message = ChatMessage::new(ChatRole::User, "test".to_string());
         bus.emit(AppEvent::ChatMessageAdded(0, 0, message));
@@ -492,17 +415,6 @@ mod tests {
         bus.emit(AppEvent::ChatRequestCompleted(0, 0));
         bus.emit(AppEvent::ChatRequestFailed(0, 0, "error".to_string()));
         bus.emit(AppEvent::ChatModelChanged("test".to_string()));
-
-        let evidence = Evidence {
-            id: Uuid::new_v4(),
-            path: "/test".to_string(),
-            created_at: chrono::Utc::now(),
-            kind: "test".to_string(),
-            x: 0.0,
-            y: 0.0,
-        };
-        bus.emit(AppEvent::EvidenceAdded(0, 0, evidence));
-        bus.emit(AppEvent::EvidenceRemoved(0, 0, Uuid::new_v4()));
 
         bus.emit(AppEvent::RefreshStepList(0));
         bus.emit(AppEvent::RefreshDetailView(0, 0));

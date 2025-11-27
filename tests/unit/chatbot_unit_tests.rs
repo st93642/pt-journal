@@ -19,8 +19,6 @@ mod tests {
             step_title: "Test Step".to_string(),
             step_description: "Test desc".to_string(),
             step_status: "In Progress".to_string(),
-            notes_count: 0,
-            evidence_count: 0,
             quiz_status: None,
         };
 
@@ -190,8 +188,6 @@ mod service_tests {
             step_title: "Test".to_string(),
             step_description: "Test".to_string(),
             step_status: "In Progress".to_string(),
-            notes_count: 0,
-            evidence_count: 0,
             quiz_status: None,
         };
 

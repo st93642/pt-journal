@@ -27,7 +27,6 @@ fn test_session_creation() {
     let session = Session::default();
     assert!(!session.name.is_empty());
     assert_eq!(session.phases.len(), 21); // Updated: migrated all tutorial modules to JSON
-    assert!(session.notes_global.is_empty());
 }
 
 fn test_phase_structure() {
@@ -103,21 +102,6 @@ fn test_state_manager_step_navigation() {
     }
 }
 
-fn test_state_manager_step_notes_update() {
-    let model = Rc::new(RefCell::new(AppModel::default()));
-    let dispatcher = Rc::new(RefCell::new(EventBus::new()));
-    let state = StateManager::new(model, dispatcher);
-    let test_notes = "Updated notes content";
-
-    state.update_step_notes(0, 0, test_notes.to_string());
-
-    let model = state.model();
-    let borrowed = model.borrow();
-    let phase = &borrowed.session().phases[0];
-    let step = &phase.steps[0];
-    assert_eq!(step.notes.clone(), test_notes);
-}
-
 fn test_state_manager_step_status_update() {
     let model = Rc::new(RefCell::new(AppModel::default()));
     let dispatcher = Rc::new(RefCell::new(EventBus::new()));
@@ -188,10 +172,6 @@ fn main() {
         (
             "test_state_manager_step_navigation",
             test_state_manager_step_navigation,
-        ),
-        (
-            "test_state_manager_step_notes_update",
-            test_state_manager_step_notes_update,
         ),
         (
             "test_state_manager_step_status_update",

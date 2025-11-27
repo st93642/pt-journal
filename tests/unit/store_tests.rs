@@ -52,16 +52,11 @@ mod tests {
                             "tags": ["test"],
                             "status": "Todo",
                             "completed_at": null,
-                            "description": "Test description",
-                            "description_notes": "",
-                            "notes": "",
-                            "evidence": []
+                            "description": "Test description"
                         }
-                    ],
-                    "notes": ""
+                    ]
                 }
-            ],
-            "notes_global": ""
+            ]
         }"#;
 
         fs::write(&session_file, legacy_json).unwrap();

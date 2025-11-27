@@ -1,6 +1,6 @@
 # PT Journal
 
-A **GTK4/Libadwaita desktop application** for penetration testing education and journaling, built with Rust and the Relm4 framework.
+A **GTK4/Libadwaita desktop application** for penetration testing education, built with Rust and the Relm4 framework.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Rust](https://img.shields.io/badge/rust-1.70%2B-orange.svg)
@@ -21,8 +21,6 @@ A **GTK4/Libadwaita desktop application** for penetration testing education and 
 - 🤖 **AI Chat Assistant** - Integrated LLM chatbot (Ollama backend) for contextual learning assistance
 
 - 🛠️ **Tool Instructions** - Registry of security tool documentation and usage guides
-
-- 📝 **Session Journaling** - Track progress, add notes, and collect evidence during learning sessions
 
 ## Screenshots
 
@@ -74,7 +72,7 @@ cargo run --release
 ### Three-Panel Layout
 
 1. **Sidebar (Left)** - Phase/tutorial selection and step navigation
-2. **Content (Center)** - Tutorial content, notes editor, and AI chat
+2. **Content (Center)** - Tutorial content and AI chat
 3. **Tools (Right)** - Security tool instructions and documentation
 
 ### Tutorials
@@ -83,8 +81,6 @@ Navigate through phases and steps to learn penetration testing concepts. Each st
 
 - Detailed instructions with academic background
 - Commands and tool usage examples
-- Notes area for personal annotations
-- Evidence collection for documenting findings
 
 ### Quizzes
 

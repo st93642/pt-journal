@@ -10,7 +10,7 @@ use gtk4::prelude::*;
 use gtk4::{ApplicationWindow, Button, ListBox};
 use std::rc::Rc;
 
-use crate::ui::controllers::{chat, navigation, notes, quiz, tool};
+use crate::ui::controllers::{chat, navigation, quiz, tool};
 use crate::ui::detail_panel::DetailPanel;
 use crate::ui::state::StateManager;
 
@@ -18,7 +18,6 @@ use crate::ui::state::StateManager;
 #[derive(Clone)]
 pub struct UIHandlers {
     pub on_step_selected: Rc<dyn Fn(usize)>,
-    pub on_note_changed: Rc<dyn Fn(usize, usize, String)>,
     pub on_panel_updated: Rc<dyn Fn(String)>,
     pub on_sidebar_toggle: Rc<dyn Fn()>,
 }
@@ -27,7 +26,6 @@ impl Default for UIHandlers {
     fn default() -> Self {
         Self {
             on_step_selected: Rc::new(|_| {}),
-            on_note_changed: Rc::new(|_, _, _| {}),
             on_panel_updated: Rc::new(|_| {}),
             on_sidebar_toggle: Rc::new(|| {}),
         }
@@ -43,10 +41,6 @@ impl UIHandlers {
         (self.on_step_selected)(idx);
     }
 
-    pub fn note_changed(&self, phase_idx: usize, step_idx: usize, notes: String) {
-        (self.on_note_changed)(phase_idx, step_idx, notes);
-    }
-
     pub fn panel_updated(&self, panel_id: String) {
         (self.on_panel_updated)(panel_id);
     }
@@ -60,14 +54,6 @@ impl UIHandlers {
         F: Fn(usize) + 'static,
     {
         self.on_step_selected = Rc::new(handler);
-        self
-    }
-
-    pub fn with_note_changed<F>(mut self, handler: F) -> Self
-    where
-        F: Fn(usize, usize, String) + 'static,
-    {
-        self.on_note_changed = Rc::new(handler);
         self
     }
 
@@ -125,12 +111,6 @@ pub fn setup_step_handlers(
     controller.bind_step_handlers(steps_list, &detail_panel);
 }
 
-/// Wire up description text view
-pub fn setup_notes_handlers(detail_panel: Rc<DetailPanel>, state: Rc<StateManager>) {
-    let controller = notes::NotesController::new(detail_panel, state);
-    controller.bind();
-}
-
 /// Wire up sidebar toggle button and return the underlying closure handle
 pub fn setup_sidebar_handler(btn_sidebar: &Button, left_box: &gtk4::Box) -> UIHandlers {
     let handlers = UIHandlers::default().with_sidebar_toggle({
@@ -163,7 +143,7 @@ pub use crate::ui::controllers::navigation::{
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::cell::{Cell, RefCell};
+    use std::cell::Cell;
     use std::rc::Rc;
 
     #[test]
@@ -193,22 +173,5 @@ mod tests {
         handlers.step_selected(5);
 
         assert_eq!(last_index.get(), 5);
-    }
-
-    #[test]
-    fn note_changed_closure_receives_payload() {
-        let captured = Rc::new(RefCell::new(None));
-        let handlers = UIHandlers::default().with_note_changed({
-            let captured = captured.clone();
-            move |phase, step, note| {
-                *captured.borrow_mut() = Some((phase, step, note));
-            }
-        });
-
-        handlers.note_changed(1, 2, "hello".to_string());
-
-        let value = captured.borrow();
-        let (phase, step, note) = value.as_ref().expect("note should be captured");
-        assert_eq!((*phase, *step, note.as_str()), (1, 2, "hello"));
     }
 }

@@ -3,11 +3,9 @@
 //! These tests focus on the business logic of controllers without requiring GTK.
 //! They test helper functions and data transformations.
 
-use chrono;
 use pt_journal::chatbot::StepContext;
 use pt_journal::model::{
-    AppModel, ChatMessage, ChatRole, Evidence, Phase, QuizAnswer, QuizQuestion, QuizStep, Step,
-    StepStatus,
+    AppModel, ChatMessage, ChatRole, Phase, QuizAnswer, QuizQuestion, QuizStep, Step, StepStatus,
 };
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -27,7 +25,6 @@ fn test_build_step_context() {
         id: Uuid::new_v4(),
         name: "Test Phase".to_string(),
         steps: vec![],
-        notes: String::new(),
     };
     let mut step = Step::new_tutorial(
         Uuid::new_v4(),
@@ -36,17 +33,6 @@ fn test_build_step_context() {
         vec![],
     );
     step.status = StepStatus::InProgress;
-
-    // Add notes and evidence
-    step.notes = "Test note 1\nTest note 2".to_string();
-    step.add_evidence(Evidence {
-        id: Uuid::new_v4(),
-        path: "Test evidence".to_string(),
-        created_at: chrono::Utc::now(),
-        kind: "test".to_string(),
-        x: 0.0,
-        y: 0.0,
-    });
 
     // Add chat history
     step.add_chat_message(ChatMessage::new(ChatRole::User, "Hello".to_string()));
@@ -67,8 +53,6 @@ fn test_build_step_context() {
     let _config = model_borrow.config().chatbot.clone();
     let phase = &model_borrow.session().phases[phase_idx];
     let step = &phase.steps[step_idx];
-    let notes = step.notes.clone();
-    let evidence = step.evidence.clone();
     let quiz_status = if step.is_quiz() {
         step.quiz_data.as_ref().map(|q| {
             format!(
@@ -90,8 +74,6 @@ fn test_build_step_context() {
             StepStatus::Todo => "Todo".to_string(),
             StepStatus::Skipped => "Skipped".to_string(),
         },
-        notes_count: notes.lines().count(),
-        evidence_count: evidence.len(),
         quiz_status,
     };
     let history = step.chat_history.clone();
@@ -101,8 +83,6 @@ fn test_build_step_context() {
     assert_eq!(step_ctx.step_title, "Test Step");
     assert_eq!(step_ctx.step_description, "Test Description");
     assert_eq!(step_ctx.step_status, "In Progress");
-    assert_eq!(step_ctx.notes_count, 2);
-    assert_eq!(step_ctx.evidence_count, 1);
     assert!(step_ctx.quiz_status.is_none()); // Not a quiz step
     assert_eq!(history.len(), 2);
     assert_eq!(history[0].role, ChatRole::User);
@@ -124,7 +104,6 @@ fn test_build_step_context_with_quiz() {
         id: Uuid::new_v4(),
         name: "Quiz Phase".to_string(),
         steps: vec![],
-        notes: String::new(),
     };
 
     // Create a simple quiz step

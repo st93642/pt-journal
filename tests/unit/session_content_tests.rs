@@ -36,7 +36,6 @@ mod tests {
             let session = Session::default();
             assert!(!session.name.is_empty());
             assert_eq!(session.phases.len(), 21); // 21 phases loaded from JSON
-            assert!(session.notes_global.is_empty());
         }
 
         #[test]
@@ -103,8 +102,6 @@ mod tests {
             assert!(first_step.id != Uuid::nil());
             assert_eq!(first_step.status, StepStatus::Todo);
             assert!(first_step.completed_at.is_none());
-            assert!(first_step.notes.clone().is_empty()); // Use get_notes() for StepContent
-            assert!(first_step.evidence.clone().is_empty()); // Use get_evidence() for StepContent
         }
 
         #[test]
@@ -477,27 +474,6 @@ mod tests {
         }
 
         #[test]
-        fn test_step_note_updates() {
-            let mut step = Step::new_tutorial(
-                Uuid::new_v4(),
-                "Test Step".to_string(),
-                "Test description".to_string(),
-                vec![],
-            );
-
-            // Test note updates
-            step.notes = "Initial notes".to_string();
-            assert_eq!(step.notes, "Initial notes");
-
-            step.notes = "Updated notes with more content".to_string();
-            assert_eq!(step.notes, "Updated notes with more content");
-
-            // Test clearing notes
-            step.notes.clear();
-            assert!(step.notes.is_empty());
-        }
-
-        #[test]
         fn test_session_metadata() {
             let session = Session::default();
 
@@ -507,20 +483,6 @@ mod tests {
             // Test session has reasonable name
             assert!(!session.name.is_empty());
             assert!(session.name.len() > 3);
-        }
-
-        #[test]
-        fn test_phase_isolation() {
-            let mut session = Session::default();
-
-            // Modify one phase's notes
-            session.phases[0].notes = "Phase 0 notes".to_string();
-            session.phases[1].notes = "Phase 1 notes".to_string();
-
-            // Verify phases maintain separate state
-            assert_eq!(session.phases[0].notes, "Phase 0 notes");
-            assert_eq!(session.phases[1].notes, "Phase 1 notes");
-            assert!(session.phases[2].notes.is_empty());
         }
     }
 
@@ -576,11 +538,9 @@ mod tests {
             let mut total_chars = 0;
             for phase in &session.phases {
                 total_chars += phase.name.len();
-                total_chars += phase.notes.len();
                 for step in &phase.steps {
                     total_chars += step.title.len();
                     total_chars += step.description.len();
-                    total_chars += step.notes.clone().len();
                     for tag in &step.tags {
                         total_chars += tag.len();
                     }

@@ -142,13 +142,8 @@ pub fn load_step_into_panel(state: &Rc<StateManager>, detail_panel: &Rc<DetailPa
             detail_panel.set_completion(matches!(snapshot.status, StepStatus::Done));
             detail_panel.set_title(&snapshot.title);
 
-            // Update description (with user notes if any)
-            let desc_text = if snapshot.description_notes.is_empty() {
-                snapshot.description
-            } else {
-                snapshot.description_notes
-            };
-            detail_panel.load_tutorial_step(&desc_text, &snapshot.chat_history);
+            // Update description
+            detail_panel.load_tutorial_step(&snapshot.description, &snapshot.chat_history);
         }
     }
 }

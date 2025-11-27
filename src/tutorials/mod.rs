@@ -157,7 +157,6 @@ fn load_tutorial_phase(phase_name: &str) -> Phase {
                         id: Uuid::new_v4(),
                         name: tutorial_data.title,
                         steps,
-                        notes: String::new(),
                     }
                 }
                 Err(_e) => {
@@ -166,7 +165,6 @@ fn load_tutorial_phase(phase_name: &str) -> Phase {
                         id: Uuid::new_v4(),
                         name: phase_name.to_string(),
                         steps: Vec::new(),
-                        notes: format!("Error loading tutorial: {}", _e),
                     }
                 }
             }
@@ -177,7 +175,6 @@ fn load_tutorial_phase(phase_name: &str) -> Phase {
                 id: Uuid::new_v4(),
                 name: phase_name.to_string(),
                 steps: Vec::new(),
-                notes: format!("File not found: {}", _e),
             }
         }
     }

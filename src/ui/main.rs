@@ -171,9 +171,6 @@ pub fn build_ui(app: &Application, model: AppModel) {
     // Step selection handlers (wired during rebuild_steps_list)
     crate::ui::handlers::setup_step_handlers(&steps_list, state.clone(), detail_panel_ref.clone());
 
-    // Notes text view handlers
-    crate::ui::handlers::setup_notes_handlers(detail_panel_ref.clone(), state.clone());
-
     // Chat panel handlers
     crate::ui::handlers::setup_chat_handlers(detail_panel_ref.clone(), state.clone());
 

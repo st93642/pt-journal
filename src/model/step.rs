@@ -14,17 +14,6 @@ pub enum StepStatus {
     Skipped,
 }
 
-/// Evidence attached to a tutorial step
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub struct Evidence {
-    pub id: Uuid,
-    pub path: String,
-    pub created_at: DateTime<Utc>,
-    pub kind: String,
-    pub x: f64,
-    pub y: f64,
-}
-
 /// A step in a tutorial or quiz phase with direct field access
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Step {
@@ -36,9 +25,6 @@ pub struct Step {
 
     // Tutorial fields
     pub description: String,
-    pub description_notes: String,
-    pub notes: String,
-    pub evidence: Vec<Evidence>,
     #[serde(default)]
     pub chat_history: Vec<ChatMessage>,
 
@@ -56,9 +42,6 @@ impl Step {
             status: StepStatus::Todo,
             completed_at: None,
             description,
-            description_notes: String::new(),
-            notes: String::new(),
-            evidence: Vec::new(),
             chat_history: Vec::new(),
             quiz_data: None,
         }
@@ -73,9 +56,6 @@ impl Step {
             status: StepStatus::Todo,
             completed_at: None,
             description: String::new(),
-            description_notes: String::new(),
-            notes: String::new(),
-            evidence: Vec::new(),
             chat_history: Vec::new(),
             quiz_data: Some(quiz_data),
         }
@@ -103,26 +83,6 @@ impl Step {
         self.quiz_data.as_mut()
     }
 
-    /// Add evidence
-    pub fn add_evidence(&mut self, evidence: Evidence) {
-        self.evidence.push(evidence);
-    }
-
-    /// Remove evidence by ID
-    pub fn remove_evidence(&mut self, evidence_id: Uuid) {
-        self.evidence.retain(|e| e.id != evidence_id);
-    }
-
-    /// Update evidence position
-    pub fn update_evidence_position(&mut self, evidence_id: Uuid, x: f64, y: f64) -> bool {
-        if let Some(ev) = self.evidence.iter_mut().find(|e| e.id == evidence_id) {
-            ev.x = x;
-            ev.y = y;
-            return true;
-        }
-        false
-    }
-
     /// Add a chat message to history
     pub fn add_chat_message(&mut self, message: ChatMessage) {
         self.chat_history.push(message);
@@ -140,5 +100,4 @@ pub struct Phase {
     pub id: Uuid,
     pub name: String,
     pub steps: Vec<Step>,
-    pub notes: String,
 }

@@ -212,8 +212,6 @@ impl ChatController {
         let config = state.model().borrow().config().chatbot.clone();
 
         if let Some(snapshot) = state.get_active_step_snapshot() {
-            let notes = snapshot.description_notes;
-            let evidence = snapshot.evidence;
             let quiz_status = snapshot.quiz_data.as_ref().map(|q| {
                 format!(
                     "{}/{} correct",
@@ -237,8 +235,6 @@ impl ChatController {
                     crate::model::StepStatus::Todo => "Todo".to_string(),
                     crate::model::StepStatus::Skipped => "Skipped".to_string(),
                 },
-                notes_count: notes.lines().count(),
-                evidence_count: evidence.len(),
                 quiz_status,
             };
             let history = snapshot.chat_history;
@@ -250,8 +246,6 @@ impl ChatController {
                 step_title: String::new(),
                 step_description: String::new(),
                 step_status: "Unknown".to_string(),
-                notes_count: 0,
-                evidence_count: 0,
                 quiz_status: None,
             };
             (phase_idx, step_idx, config, step_ctx, Vec::new())

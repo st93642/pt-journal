@@ -36,23 +36,6 @@ mod tests {
     }
 
     #[test]
-    fn test_evidence_structure() {
-        let evidence = Evidence {
-            id: Uuid::new_v4(),
-            path: "/path/to/file.png".to_string(),
-            created_at: Utc::now(),
-            kind: "screenshot".to_string(),
-            x: 100.0,
-            y: 200.0,
-        };
-
-        assert!(!evidence.path.is_empty());
-        assert!(!evidence.kind.is_empty());
-        assert!(evidence.created_at <= Utc::now());
-        assert!(evidence.id != Uuid::nil());
-    }
-
-    #[test]
     fn test_phase_with_steps() {
         let step1 = Step::new_tutorial(
             Uuid::new_v4(),
@@ -69,7 +52,6 @@ mod tests {
         );
         step2.status = StepStatus::Done;
         step2.completed_at = Some(Utc::now());
-        step2.notes = "Completed".to_string();
 
         let steps = vec![step1, step2];
 
@@ -77,12 +59,10 @@ mod tests {
             id: Uuid::new_v4(),
             name: "Test Phase".to_string(),
             steps,
-            notes: "Phase notes".to_string(),
         };
 
         assert_eq!(phase.steps.len(), 2);
         assert_eq!(phase.name, "Test Phase");
-        assert_eq!(phase.notes, "Phase notes");
         assert_matches!(phase.steps[0].status, StepStatus::Todo);
         assert_matches!(phase.steps[1].status, StepStatus::Done);
     }
@@ -120,170 +100,6 @@ mod tests {
             );
             assert!(ids.insert(step.id), "Duplicate ID generated: {}", step.id);
         }
-    }
-
-    #[test]
-    fn test_step_description_notes() {
-        let mut step = Step::new_tutorial(
-            Uuid::new_v4(),
-            "Test Step".to_string(),
-            "Test description".to_string(),
-            vec![],
-        );
-
-        // Test description_notes updates
-        step.description_notes = "User notes in description area".to_string();
-        assert_eq!(step.description_notes, "User notes in description area");
-
-        step.description_notes = "Updated description notes with more content".to_string();
-        assert_eq!(
-            step.description_notes,
-            "Updated description notes with more content"
-        );
-
-        // Test clearing description_notes
-        step.description_notes.clear();
-        assert!(step.description_notes.is_empty());
-    }
-
-    #[test]
-    fn test_evidence_attachment() {
-        let mut step = Step::new_tutorial(
-            Uuid::new_v4(),
-            "Test".to_string(),
-            "Test".to_string(),
-            vec![],
-        );
-
-        let evidence1 = Evidence {
-            id: Uuid::new_v4(),
-            path: "/tmp/ev1.png".to_string(),
-            created_at: Utc::now(),
-            kind: "screenshot".to_string(),
-            x: 0.0,
-            y: 0.0,
-        };
-
-        let evidence2 = Evidence {
-            id: Uuid::new_v4(),
-            path: "/tmp/ev2.png".to_string(),
-            created_at: Utc::now(),
-            kind: "log".to_string(),
-            x: 10.0,
-            y: 10.0,
-        };
-
-        step.evidence.push(evidence1);
-        step.evidence.push(evidence2);
-
-        assert_eq!(step.evidence.len(), 2);
-        assert_eq!(step.evidence[0].kind, "screenshot");
-        assert_eq!(step.evidence[1].kind, "log");
-    }
-
-    #[test]
-    fn test_remove_evidence() {
-        let mut step = Step::new_tutorial(
-            Uuid::new_v4(),
-            "Test".to_string(),
-            "Test".to_string(),
-            vec![],
-        );
-
-        let ev1_id = Uuid::new_v4();
-        let ev2_id = Uuid::new_v4();
-
-        step.add_evidence(Evidence {
-            id: ev1_id,
-            path: "/tmp/ev1.png".to_string(),
-            created_at: Utc::now(),
-            kind: "screenshot".to_string(),
-            x: 0.0,
-            y: 0.0,
-        });
-
-        step.add_evidence(Evidence {
-            id: ev2_id,
-            path: "/tmp/ev2.png".to_string(),
-            created_at: Utc::now(),
-            kind: "screenshot".to_string(),
-            x: 10.0,
-            y: 10.0,
-        });
-
-        assert_eq!(step.evidence.clone().len(), 2);
-
-        step.remove_evidence(ev1_id);
-        assert_eq!(step.evidence.clone().len(), 1);
-        assert_eq!(step.evidence.clone()[0].id, ev2_id);
-
-        step.remove_evidence(ev2_id);
-        assert_eq!(step.evidence.clone().len(), 0);
-    }
-
-    #[test]
-    fn test_remove_evidence_nonexistent() {
-        let mut step = Step::new_tutorial(
-            Uuid::new_v4(),
-            "Test".to_string(),
-            "Test".to_string(),
-            vec![],
-        );
-
-        let ev_id = Uuid::new_v4();
-        step.add_evidence(Evidence {
-            id: ev_id,
-            path: "/tmp/ev.png".to_string(),
-            created_at: Utc::now(),
-            kind: "screenshot".to_string(),
-            x: 0.0,
-            y: 0.0,
-        });
-
-        let nonexistent_id = Uuid::new_v4();
-        step.remove_evidence(nonexistent_id);
-        assert_eq!(step.evidence.clone().len(), 1);
-    }
-
-    #[test]
-    fn test_update_evidence_position() {
-        let mut step = Step::new_tutorial(
-            Uuid::new_v4(),
-            "Test".to_string(),
-            "Test".to_string(),
-            vec![],
-        );
-
-        let ev_id = Uuid::new_v4();
-        step.add_evidence(Evidence {
-            id: ev_id,
-            path: "/tmp/ev.png".to_string(),
-            created_at: Utc::now(),
-            kind: "screenshot".to_string(),
-            x: 5.0,
-            y: 10.0,
-        });
-
-        let updated = step.update_evidence_position(ev_id, 50.0, 100.0);
-        assert!(updated);
-
-        let evidence = step.evidence.clone();
-        assert_eq!(evidence[0].x, 50.0);
-        assert_eq!(evidence[0].y, 100.0);
-    }
-
-    #[test]
-    fn test_update_evidence_position_nonexistent() {
-        let mut step = Step::new_tutorial(
-            Uuid::new_v4(),
-            "Test".to_string(),
-            "Test".to_string(),
-            vec![],
-        );
-
-        let nonexistent_id = Uuid::new_v4();
-        let updated = step.update_evidence_position(nonexistent_id, 50.0, 100.0);
-        assert!(!updated);
     }
 
     #[test]

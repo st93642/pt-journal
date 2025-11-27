@@ -8,8 +8,6 @@ pub struct StepContext {
     pub step_title: String,
     pub step_description: String,
     pub step_status: String,
-    pub notes_count: usize,
-    pub evidence_count: usize,
     pub quiz_status: Option<String>,
 }
 

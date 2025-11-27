@@ -21,8 +21,6 @@ mod chat_provider_tests {
             step_title: "Test Step".to_string(),
             step_description: "Test description".to_string(),
             step_status: "In Progress".to_string(),
-            notes_count: 5,
-            evidence_count: 2,
             quiz_status: None,
         }
     }

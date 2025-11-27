@@ -29,8 +29,6 @@ impl OllamaProvider {
             - Phase: {}\n\
             - Step: {} (Status: {})\n\
             - Description: {}\n\
-            - Notes: {} characters\n\
-            - Evidence: {} items\n\
             {}\n\n\
             Provide helpful, methodology-aligned assistance for general pentesting questions, step-specific guidance, or tool recommendations. \
             Keep responses focused and actionable.",
@@ -38,8 +36,6 @@ impl OllamaProvider {
             step_ctx.step_title,
             step_ctx.step_status,
             step_ctx.step_description.chars().take(200).collect::<String>(),
-            step_ctx.notes_count,
-            step_ctx.evidence_count,
             step_ctx
                 .quiz_status
                 .as_ref()

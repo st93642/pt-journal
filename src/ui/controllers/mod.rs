@@ -5,6 +5,5 @@
 
 pub mod chat;
 pub mod navigation;
-pub mod notes;
 pub mod quiz;
 pub mod tool;

@@ -6,7 +6,7 @@ use std::path::PathBuf;
 use super::chat::ChatMessage;
 use super::quiz::QuizStep;
 use super::session::Session;
-use super::step::{Evidence, Phase, Step, StepStatus};
+use super::step::{Phase, Step, StepStatus};
 
 /// Core application model holding all state.
 ///
@@ -162,13 +162,11 @@ impl AppModel {
         self.current_step().map(|step| ActiveStepSnapshot {
             title: step.title.clone(),
             description: step.description.clone(),
-            description_notes: step.description_notes.clone(),
             status: step.status.clone(),
             completed_at: step.completed_at,
             is_quiz: step.is_quiz(),
             quiz_data: step.quiz_data.clone(),
             chat_history: step.chat_history.clone(),
-            evidence: step.evidence.clone(),
         })
     }
 
@@ -227,66 +225,6 @@ impl AppModel {
         Ok(())
     }
 
-    /// Update step notes
-    pub fn update_step_notes(
-        &mut self,
-        phase_idx: usize,
-        step_idx: usize,
-        notes: String,
-    ) -> PtResult<()> {
-        let step = self
-            .session
-            .phases
-            .get_mut(phase_idx)
-            .and_then(|phase| phase.steps.get_mut(step_idx))
-            .ok_or_else(|| PtError::InvalidStepIndex {
-                phase_idx,
-                step_idx,
-            })?;
-
-        step.notes = notes;
-        Ok(())
-    }
-
-    /// Update step description notes
-    pub fn update_step_description_notes(
-        &mut self,
-        phase_idx: usize,
-        step_idx: usize,
-        notes: String,
-    ) -> PtResult<()> {
-        let step = self
-            .session
-            .phases
-            .get_mut(phase_idx)
-            .and_then(|phase| phase.steps.get_mut(step_idx))
-            .ok_or_else(|| PtError::InvalidStepIndex {
-                phase_idx,
-                step_idx,
-            })?;
-
-        step.description_notes = notes;
-        Ok(())
-    }
-
-    /// Update phase notes
-    pub fn update_phase_notes(&mut self, phase_idx: usize, notes: String) -> PtResult<()> {
-        let phase = self
-            .session
-            .phases
-            .get_mut(phase_idx)
-            .ok_or_else(|| PtError::InvalidPhaseIndex { phase_idx })?;
-
-        phase.notes = notes;
-        Ok(())
-    }
-
-    /// Update global notes
-    pub fn update_global_notes(&mut self, notes: String) -> PtResult<()> {
-        self.session.notes_global = notes;
-        Ok(())
-    }
-
     /// Add chat message to a step
     pub fn add_chat_message(
         &mut self,
@@ -305,48 +243,6 @@ impl AppModel {
             })?;
 
         step.add_chat_message(message);
-        Ok(())
-    }
-
-    /// Add evidence to a step
-    pub fn add_evidence(
-        &mut self,
-        phase_idx: usize,
-        step_idx: usize,
-        evidence: Evidence,
-    ) -> PtResult<()> {
-        let step = self
-            .session
-            .phases
-            .get_mut(phase_idx)
-            .and_then(|phase| phase.steps.get_mut(step_idx))
-            .ok_or_else(|| PtError::InvalidStepIndex {
-                phase_idx,
-                step_idx,
-            })?;
-
-        step.add_evidence(evidence);
-        Ok(())
-    }
-
-    /// Remove evidence from a step
-    pub fn remove_evidence(
-        &mut self,
-        phase_idx: usize,
-        step_idx: usize,
-        evidence_id: uuid::Uuid,
-    ) -> PtResult<()> {
-        let step = self
-            .session
-            .phases
-            .get_mut(phase_idx)
-            .and_then(|phase| phase.steps.get_mut(step_idx))
-            .ok_or_else(|| PtError::InvalidStepIndex {
-                phase_idx,
-                step_idx,
-            })?;
-
-        step.remove_evidence(evidence_id);
         Ok(())
     }
 
@@ -382,11 +278,9 @@ pub struct StepSummary {
 pub struct ActiveStepSnapshot {
     pub title: String,
     pub description: String,
-    pub description_notes: String,
     pub status: StepStatus,
     pub completed_at: Option<DateTime<Utc>>,
     pub is_quiz: bool,
     pub quiz_data: Option<QuizStep>,
     pub chat_history: Vec<ChatMessage>,
-    pub evidence: Vec<Evidence>,
 }

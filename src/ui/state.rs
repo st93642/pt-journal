@@ -1,10 +1,9 @@
 use crate::dispatcher::{AppEvent, SharedEventBus};
-use crate::model::{AppModel, ChatMessage, Evidence, StepStatus};
+use crate::model::{AppModel, ChatMessage, StepStatus};
 use log;
 use std::cell::RefCell;
 /// UI state management module
 use std::rc::Rc;
-use uuid::Uuid;
 
 /// Shared app model reference for GTK
 pub type SharedModel = Rc<RefCell<AppModel>>;
@@ -86,102 +85,6 @@ impl StateManager {
             .emit(AppEvent::StepStatusChanged(phase_idx, step_idx, status));
     }
 
-    /// Update step notes
-    pub fn update_step_notes(&self, phase_idx: usize, step_idx: usize, notes: String) {
-        if let Err(e) =
-            self.model
-                .borrow_mut()
-                .update_step_notes(phase_idx, step_idx, notes.clone())
-        {
-            log::error!(
-                "Failed to update step notes for phase {}, step {}: {}",
-                phase_idx,
-                step_idx,
-                e
-            );
-            self.dispatcher.borrow().emit(AppEvent::Error(format!(
-                "Failed to update step notes: {}",
-                e
-            )));
-            return;
-        }
-
-        // Emit event after successful state change
-        self.dispatcher
-            .borrow()
-            .emit(AppEvent::StepNotesUpdated(phase_idx, step_idx, notes));
-    }
-
-    /// Update step description notes
-    pub fn update_step_description_notes(&self, phase_idx: usize, step_idx: usize, notes: String) {
-        if let Err(e) = self.model.borrow_mut().update_step_description_notes(
-            phase_idx,
-            step_idx,
-            notes.clone(),
-        ) {
-            log::error!(
-                "Failed to update step description notes for phase {}, step {}: {}",
-                phase_idx,
-                step_idx,
-                e
-            );
-            self.dispatcher.borrow().emit(AppEvent::Error(format!(
-                "Failed to update step description notes: {}",
-                e
-            )));
-            return;
-        }
-
-        // Emit event after successful state change
-        self.dispatcher
-            .borrow()
-            .emit(AppEvent::StepDescriptionNotesUpdated(
-                phase_idx, step_idx, notes,
-            ));
-    }
-
-    /// Update phase notes
-    pub fn update_phase_notes(&self, phase_idx: usize, notes: String) {
-        if let Err(e) = self
-            .model
-            .borrow_mut()
-            .update_phase_notes(phase_idx, notes.clone())
-        {
-            log::error!(
-                "Failed to update phase notes for phase {}: {}",
-                phase_idx,
-                e
-            );
-            self.dispatcher.borrow().emit(AppEvent::Error(format!(
-                "Failed to update phase notes: {}",
-                e
-            )));
-            return;
-        }
-
-        // Emit event after successful state change
-        self.dispatcher
-            .borrow()
-            .emit(AppEvent::PhaseNotesUpdated(phase_idx, notes));
-    }
-
-    /// Update global notes
-    pub fn update_global_notes(&self, notes: String) {
-        if let Err(e) = self.model.borrow_mut().update_global_notes(notes.clone()) {
-            log::error!("Failed to update global notes: {}", e);
-            self.dispatcher.borrow().emit(AppEvent::Error(format!(
-                "Failed to update global notes: {}",
-                e
-            )));
-            return;
-        }
-
-        // Emit event after successful state change
-        self.dispatcher
-            .borrow()
-            .emit(AppEvent::GlobalNotesUpdated(notes));
-    }
-
     /// Add chat message to a step
     pub fn add_chat_message(&self, phase_idx: usize, step_idx: usize, message: ChatMessage) {
         if let Err(e) =
@@ -237,56 +140,6 @@ impl StateManager {
     /// Dispatch an error message
     pub fn dispatch_error(&self, error: String) {
         self.dispatcher.borrow().emit(AppEvent::Error(error));
-    }
-
-    /// Add evidence to a step
-    pub fn add_evidence(&self, phase_idx: usize, step_idx: usize, evidence: Evidence) {
-        if let Err(e) = self
-            .model
-            .borrow_mut()
-            .add_evidence(phase_idx, step_idx, evidence.clone())
-        {
-            log::error!(
-                "Failed to add evidence for phase {}, step {}: {}",
-                phase_idx,
-                step_idx,
-                e
-            );
-            self.dispatcher
-                .borrow()
-                .emit(AppEvent::Error(format!("Failed to add evidence: {}", e)));
-            return;
-        }
-
-        // Emit event after successful state change
-        self.dispatcher
-            .borrow()
-            .emit(AppEvent::EvidenceAdded(phase_idx, step_idx, evidence));
-    }
-
-    /// Remove evidence from a step
-    pub fn remove_evidence(&self, phase_idx: usize, step_idx: usize, evidence_id: Uuid) {
-        if let Err(e) = self
-            .model
-            .borrow_mut()
-            .remove_evidence(phase_idx, step_idx, evidence_id)
-        {
-            log::error!(
-                "Failed to remove evidence for phase {}, step {}: {}",
-                phase_idx,
-                step_idx,
-                e
-            );
-            self.dispatcher
-                .borrow()
-                .emit(AppEvent::Error(format!("Failed to remove evidence: {}", e)));
-            return;
-        }
-
-        // Emit event after successful state change
-        self.dispatcher
-            .borrow()
-            .emit(AppEvent::EvidenceRemoved(phase_idx, step_idx, evidence_id));
     }
 
     /// Get current phase index
@@ -595,67 +448,6 @@ mod tests {
 
         let msgs = messages.lock().unwrap();
         assert!(msgs.iter().any(|m| m.contains("Phase: 0, Step: 0")));
-    }
-
-    #[test]
-    fn test_update_step_notes() {
-        let state = create_test_state();
-        state.update_step_notes(0, 0, "Test notes".to_string());
-
-        let notes = {
-            let model = state.model.borrow();
-            model.session().phases[0].steps[0].notes.clone()
-        };
-        assert_eq!(notes, "Test notes");
-    }
-
-    #[test_log::test]
-    fn test_update_step_notes_invalid_index() {
-        let state = create_test_state();
-        state.update_step_notes(99, 99, "notes".to_string());
-        // Log should contain warning
-    }
-
-    #[test]
-    fn test_update_description_notes() {
-        let state = create_test_state();
-        state.update_step_description_notes(0, 0, "Description notes".to_string());
-
-        let notes = {
-            let model = state.model.borrow();
-            model.session().phases[0].steps[0].description_notes.clone()
-        };
-        assert_eq!(notes, "Description notes");
-    }
-
-    #[test]
-    fn test_evidence_operations() {
-        let state = create_test_state();
-        let evidence = Evidence {
-            id: uuid::Uuid::new_v4(),
-            path: "/test/path.png".to_string(),
-            created_at: chrono::Utc::now(),
-            kind: "screenshot".to_string(),
-            x: 100.0,
-            y: 200.0,
-        };
-
-        let evidence_id = evidence.id;
-        state.add_evidence(0, 0, evidence);
-
-        let count = {
-            let model = state.model.borrow();
-            model.session().phases[0].steps[0].evidence.clone().len()
-        };
-        assert_eq!(count, 1);
-
-        state.remove_evidence(0, 0, evidence_id);
-
-        let count = {
-            let model = state.model.borrow();
-            model.session().phases[0].steps[0].evidence.clone().len()
-        };
-        assert_eq!(count, 0);
     }
 
     #[test]

@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-PT Journal is a **GTK4/Libadwaita desktop application** for penetration testing education and journaling. Built in Rust with the Relm4 framework, it provides:
+PT Journal is a **GTK4/Libadwaita desktop application** for penetration testing education. Built in Rust with the Relm4 framework, it provides:
 - Interactive tutorials covering security domains (CEH, CompTIA Security+, PenTest+)
 - Quiz system with pipe-delimited question files
 - Integrated chatbot for AI-assisted learning (Ollama/LLM backends)

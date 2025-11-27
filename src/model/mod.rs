@@ -9,4 +9,4 @@ pub use app_model::{ActiveStepSnapshot, AppModel, StepSummary};
 pub use chat::{ChatMessage, ChatRole};
 pub use quiz::{QuestionProgress, QuizAnswer, QuizQuestion, QuizStatistics, QuizStep};
 pub use session::Session;
-pub use step::{Evidence, Phase, Step, StepStatus};
+pub use step::{Phase, Step, StepStatus};

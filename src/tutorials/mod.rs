@@ -49,17 +49,7 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
 }
 
 fn create_reconnaissance_phase() -> Phase {
-    let steps = reconnaissance::RECONNAISSANCE_STEPS
-        .iter()
-        .map(|(title, description)| {
-            Step::new_tutorial(
-                Uuid::new_v4(),
-                title.to_string(),
-                description.to_string(),
-                vec!["recon".to_string()],
-            )
-        })
-        .collect();
+    let steps = reconnaissance::create_reconnaissance_steps();
 
     Phase {
         id: Uuid::new_v4(),
@@ -70,17 +60,7 @@ fn create_reconnaissance_phase() -> Phase {
 }
 
 fn create_vulnerability_analysis_phase() -> Phase {
-    let steps = vulnerability_analysis::VULNERABILITY_ANALYSIS_STEPS
-        .iter()
-        .map(|(title, description)| {
-            Step::new_tutorial(
-                Uuid::new_v4(),
-                title.to_string(),
-                description.to_string(),
-                vec!["vuln".to_string()],
-            )
-        })
-        .collect();
+    let steps = vulnerability_analysis::create_vulnerability_analysis_steps();
 
     Phase {
         id: Uuid::new_v4(),
@@ -91,17 +71,7 @@ fn create_vulnerability_analysis_phase() -> Phase {
 }
 
 fn create_exploitation_phase() -> Phase {
-    let steps = exploitation::EXPLOITATION_STEPS
-        .iter()
-        .map(|(title, description)| {
-            Step::new_tutorial(
-                Uuid::new_v4(),
-                title.to_string(),
-                description.to_string(),
-                vec!["exploit".to_string()],
-            )
-        })
-        .collect();
+    let steps = exploitation::create_exploitation_steps();
 
     Phase {
         id: Uuid::new_v4(),
@@ -112,17 +82,7 @@ fn create_exploitation_phase() -> Phase {
 }
 
 fn create_post_exploitation_phase() -> Phase {
-    let steps = post_exploitation::POST_EXPLOITATION_STEPS
-        .iter()
-        .map(|(title, description)| {
-            Step::new_tutorial(
-                Uuid::new_v4(),
-                title.to_string(),
-                description.to_string(),
-                vec!["post".to_string()],
-            )
-        })
-        .collect();
+    let steps = post_exploitation::create_post_exploitation_steps();
 
     Phase {
         id: Uuid::new_v4(),
@@ -243,17 +203,7 @@ fn create_artifact_integrity_phase() -> Phase {
 }
 
 fn create_reporting_phase() -> Phase {
-    let steps = reporting::REPORTING_STEPS
-        .iter()
-        .map(|(title, description)| {
-            Step::new_tutorial(
-                Uuid::new_v4(),
-                title.to_string(),
-                description.to_string(),
-                vec!["report".to_string()],
-            )
-        })
-        .collect();
+    let steps = reporting::create_reporting_steps();
 
     Phase {
         id: Uuid::new_v4(),
@@ -411,4 +361,102 @@ fn create_ai_security_phase() -> Phase {
         steps,
         notes: String::new(),
     }
+}
+
+/// Validate tutorial structure consistency across all modules
+pub fn validate_tutorial_structure() -> Result<(), String> {
+    // Validate reconnaissance module
+    let recon_steps = reconnaissance::create_reconnaissance_steps();
+    validate_step_structure(&recon_steps, "reconnaissance")?;
+
+    // Validate vulnerability analysis module
+    let vuln_steps = vulnerability_analysis::create_vulnerability_analysis_steps();
+    validate_step_structure(&vuln_steps, "vulnerability_analysis")?;
+
+    // Validate exploitation module
+    let exploit_steps = exploitation::create_exploitation_steps();
+    validate_step_structure(&exploit_steps, "exploitation")?;
+
+    // Validate post-exploitation module
+    let post_steps = post_exploitation::create_post_exploitation_steps();
+    validate_step_structure(&post_steps, "post_exploitation")?;
+
+    // Validate reporting module
+    let report_steps = reporting::create_reporting_steps();
+    validate_step_structure(&report_steps, "reporting")?;
+
+    // Validate that all modules have at least one step
+    if recon_steps.is_empty() {
+        return Err("Reconnaissance module has no steps".to_string());
+    }
+    if vuln_steps.is_empty() {
+        return Err("Vulnerability analysis module has no steps".to_string());
+    }
+    if exploit_steps.is_empty() {
+        return Err("Exploitation module has no steps".to_string());
+    }
+    if post_steps.is_empty() {
+        return Err("Post-exploitation module has no steps".to_string());
+    }
+    if report_steps.is_empty() {
+        return Err("Reporting module has no steps".to_string());
+    }
+
+    Ok(())
+}
+
+/// Validate the structure of tutorial steps
+fn validate_step_structure(steps: &[Step], module_name: &str) -> Result<(), String> {
+    for (index, step) in steps.iter().enumerate() {
+        // Check that step has a non-empty title
+        if step.title.trim().is_empty() {
+            return Err(format!(
+                "{}: Step {} has empty title",
+                module_name, index
+            ));
+        }
+
+        // Check that step has a description
+        let description = step.get_description();
+        if description.trim().is_empty() {
+            return Err(format!(
+                "{}: Step '{}' has empty description",
+                module_name, step.title
+            ));
+        }
+
+        // Check that step has appropriate tags
+        if step.tags.is_empty() {
+            return Err(format!(
+                "{}: Step '{}' has no tags",
+                module_name, step.title
+            ));
+        }
+
+        // Check that tags follow naming conventions (lowercase, hyphens)
+        for tag in &step.tags {
+            if tag.contains(' ') {
+                return Err(format!(
+                    "{}: Step '{}' has tag with spaces: '{}'",
+                    module_name, step.title, tag
+                ));
+            }
+            if tag.chars().any(|c| c.is_uppercase()) {
+                return Err(format!(
+                    "{}: Step '{}' has tag with uppercase: '{}'",
+                    module_name, step.title, tag
+                ));
+            }
+        }
+
+        // Check that step has a valid UUID
+        if step.id.to_string().len() != 36 {
+            return Err(format!(
+                "{}: Step '{}' has invalid UUID",
+                module_name, step.title
+            ));
+        }
+    }
+
+    Ok(())
 }

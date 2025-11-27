@@ -25,19 +25,6 @@ pub struct Evidence {
     pub y: f64,
 }
 
-/// Legacy tutorial data for backward compatibility during serde migration
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
-pub struct LegacyTutorialData {
-    #[serde(default)]
-    pub description: String,
-    #[serde(default)]
-    pub notes: String,
-    #[serde(default)]
-    pub description_notes: String,
-    #[serde(default)]
-    pub evidence: Vec<Evidence>,
-}
-
 /// Content type for a step - either tutorial-based or quiz-based
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum StepContent {
@@ -78,11 +65,6 @@ pub struct Step {
     /// The content of this step - either tutorial or quiz
     #[serde(default)]
     pub content: StepContent,
-
-    // Legacy fields for backward compatibility with existing sessions
-    // These are automatically migrated to StepContent::Tutorial on load
-    #[serde(default, skip_serializing)]
-    pub legacy: LegacyTutorialData,
 }
 
 impl Step {
@@ -95,18 +77,11 @@ impl Step {
             status: StepStatus::Todo,
             completed_at: None,
             content: StepContent::Tutorial {
-                description: description.clone(),
+                description,
                 description_notes: String::new(),
                 notes: String::new(),
                 evidence: Vec::new(),
                 chat_history: Vec::new(),
-            },
-            // Legacy fields
-            legacy: LegacyTutorialData {
-                description,
-                notes: String::new(),
-                description_notes: String::new(),
-                evidence: Vec::new(),
             },
         }
     }
@@ -120,24 +95,6 @@ impl Step {
             status: StepStatus::Todo,
             completed_at: None,
             content: StepContent::Quiz { quiz_data },
-            // Legacy fields
-            legacy: LegacyTutorialData::default(),
-        }
-    }
-
-    /// Migrate legacy step data to new content format
-    pub fn migrate_from_legacy(&mut self) {
-        // If content is default and we have legacy data, migrate it
-        if matches!(self.content, StepContent::Tutorial { ref description, .. } if description.is_empty())
-            && !self.legacy.description.is_empty()
-        {
-            self.content = StepContent::Tutorial {
-                description: std::mem::take(&mut self.legacy.description),
-                description_notes: std::mem::take(&mut self.legacy.description_notes),
-                notes: std::mem::take(&mut self.legacy.notes),
-                evidence: std::mem::take(&mut self.legacy.evidence),
-                chat_history: Vec::new(), // New field, defaults to empty
-            };
         }
     }
 

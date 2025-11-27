@@ -3,31 +3,6 @@ use uuid::Uuid;
 
 use crate::model::*;
 
-/// Create a legacy step with data for migration testing
-pub fn legacy_step_with_data() -> Step {
-    Step {
-        id: Uuid::new_v4(),
-        title: "Legacy Step".to_string(),
-        tags: vec!["legacy".to_string()],
-        status: StepStatus::Todo,
-        completed_at: None,
-        content: StepContent::default(),
-        legacy: LegacyTutorialData {
-            description: "Legacy description".to_string(),
-            notes: "Legacy notes".to_string(),
-            description_notes: "Legacy description notes".to_string(),
-            evidence: vec![Evidence {
-                id: Uuid::new_v4(),
-                path: "/tmp/evidence.png".to_string(),
-                created_at: Utc::now(),
-                kind: "screenshot".to_string(),
-                x: 5.0,
-                y: 10.0,
-            }],
-        },
-    }
-}
-
 /// Create a quiz step fixture for testing
 pub fn quiz_step_fixture() -> QuizStep {
     let question_one = QuizQuestion {

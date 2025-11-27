@@ -1018,3 +1018,24 @@ FURTHER READING:
 - NACD Cyber-Risk Oversight Handbook: https://www.nacdonline.org/"
     ),
 ];
+
+use crate::model::step::Step;
+use uuid::Uuid;
+
+pub fn create_reporting_steps() -> Vec<Step> {
+    REPORTING_STEPS
+        .iter()
+        .map(|(title, description)| {
+            Step::new_tutorial(
+                Uuid::new_v4(),
+                title.to_string(),
+                description.to_string(),
+                vec![
+                    "reporting".to_string(),
+                    "pentesting".to_string(),
+                    "security-assessment".to_string(),
+                ],
+            )
+        })
+        .collect()
+}

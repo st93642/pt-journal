@@ -191,45 +191,6 @@ mod tests {
     }
 
     #[test]
-    fn test_migrate_from_legacy() {
-        let mut step = legacy_step_with_data();
-
-        assert_eq!(step.legacy.description, "Legacy description");
-        assert_eq!(step.legacy.notes, "Legacy notes");
-        assert_eq!(step.legacy.description_notes, "Legacy description notes");
-        assert_eq!(step.legacy.evidence.len(), 1);
-
-        step.migrate_from_legacy();
-
-        assert_eq!(step.get_description(), "Legacy description");
-        assert_eq!(step.get_notes(), "Legacy notes");
-        assert_eq!(step.get_description_notes(), "Legacy description notes");
-        assert_eq!(step.get_evidence().len(), 1);
-
-        // Legacy fields should now be empty
-        assert!(step.legacy.description.is_empty());
-        assert!(step.legacy.notes.is_empty());
-        assert!(step.legacy.description_notes.is_empty());
-        assert!(step.legacy.evidence.is_empty());
-    }
-
-    #[test]
-    fn test_migrate_from_legacy_does_not_override_existing_content() {
-        let mut step = Step::new_tutorial(
-            Uuid::new_v4(),
-            "Test".to_string(),
-            "New description".to_string(),
-            vec![],
-        );
-        step.legacy.description = "Legacy description".to_string();
-
-        step.migrate_from_legacy();
-
-        // Should not override existing content
-        assert_eq!(step.get_description(), "New description");
-    }
-
-    #[test]
     fn test_remove_evidence() {
         let mut step = Step::new_tutorial(
             Uuid::new_v4(),
@@ -502,32 +463,16 @@ mod tests {
     }
 
     #[test]
-    fn test_session_with_phases() {
-        let phase1 = Phase {
-            id: Uuid::new_v4(),
-            name: "Phase 1".to_string(),
-            steps: vec![],
-            notes: String::new(),
-        };
-
-        let phase2 = Phase {
-            id: Uuid::new_v4(),
-            name: "Phase 2".to_string(),
-            steps: vec![],
-            notes: String::new(),
-        };
-
-        let session = Session {
-            id: Uuid::new_v4(),
-            name: "Test Session".to_string(),
-            created_at: Utc::now(),
-            phases: vec![phase1, phase2],
-            notes_global: "Global notes".to_string(),
-        };
-
-        assert_eq!(session.phases.len(), 2);
-        assert_eq!(session.name, "Test Session");
-        assert_eq!(session.notes_global, "Global notes");
-        assert!(session.created_at <= Utc::now());
+    fn test_tutorial_structure_validation() {
+        // This test validates that all tutorial modules follow the unified schema
+        // and have properly structured steps
+        match pt_journal::tutorials::validate_tutorial_structure() {
+            Ok(()) => {
+                // Validation passed - all tutorial modules are properly structured
+            }
+            Err(e) => {
+                panic!("Tutorial structure validation failed: {}", e);
+            }
+        }
     }
 }

@@ -32,6 +32,9 @@ pub use public_exposure_scanning::PUBLIC_EXPOSURE_SCANNING_STEPS;
 pub use whois_domain_analysis::WHOIS_DOMAIN_ANALYSIS_STEPS;
 pub use social_media_reconnaissance::SOCIAL_MEDIA_RECONNAISSANCE_STEPS;
 
+use crate::model::Step;
+use uuid::Uuid;
+
 pub const RECONNAISSANCE_STEPS: &[(&str, &str)] = &[
     SUBDOMAIN_ENUMERATION_STEPS[0],
     DNS_ENUMERATION_STEPS[0],
@@ -50,3 +53,18 @@ pub const RECONNAISSANCE_STEPS: &[(&str, &str)] = &[
     WHOIS_DOMAIN_ANALYSIS_STEPS[0],
     SOCIAL_MEDIA_RECONNAISSANCE_STEPS[0],
 ];
+
+/// Create reconnaissance tutorial steps
+pub fn create_reconnaissance_steps() -> Vec<Step> {
+    RECONNAISSANCE_STEPS
+        .iter()
+        .map(|(title, description)| {
+            Step::new_tutorial(
+                Uuid::new_v4(),
+                title.to_string(),
+                description.to_string(),
+                vec!["recon".to_string()],
+            )
+        })
+        .collect()
+}

@@ -11,4 +11,5 @@ mod domain_model_tests;
 mod session_content_tests;
 mod store_tests;
 mod tool_execution_unit_tests;
+mod tool_registry_tests;
 mod ui_tests;

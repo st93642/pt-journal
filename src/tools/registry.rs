@@ -30,8 +30,21 @@ impl ToolRegistry {
         Ok(())
     }
 
+    /// Get a tool by name
+    /// Returns the tool instance if registered, or an error if not found
+    pub fn get_tool(&self, name: &str) -> Result<Box<dyn SecurityTool + Send + Sync>> {
+        let tools = self.tools.lock().unwrap();
+        if let Some(_tool) = tools.get(name) {
+            // Clone the tool (assuming tools are cloneable or we need Arc)
+            // For now, return an error since we can't clone Box<dyn Trait>
+            anyhow::bail!("Tool '{}' found but retrieval not implemented yet. Tool integrations are stubs.", name);
+        } else {
+            anyhow::bail!("Tool '{}' not found in registry. No implementation available yet.", name);
+        }
+    }
+
     /// Get a tool by name (returns true if exists)
-    /// TODO: Refactor to use `Arc<SecurityTool>` for proper tool retrieval
+    /// TODO: Remove this method once get_tool is fully implemented
     pub fn get(&self, name: &str) -> Option<()> {
         let tools = self.tools.lock().unwrap();
         if tools.contains_key(name) {

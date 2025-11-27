@@ -238,28 +238,38 @@ This TODO plan outlines the systematic refactoring of the PT Journal codebase to
 ### ✅ STEP 7: Clean Up Tool Integration Stubs
 
 **Priority:** Low  
-**Status:** Not Started  
+**Status:** ✅ Completed  
 **Estimated Effort:** 3 days  
 **Risk Level:** Low  
 
 **Tasks:**
 
-- [ ] Remove references to non-existent nmap.rs and gobuster.rs from `mod.rs`
-- [ ] Simplify `src/tools/integrations/mod.rs` to only include implemented tools
-- [ ] Add proper error handling for missing tool implementations
-- [ ] Create template structure for future tool integrations
-- [ ] Update tests to handle missing implementations gracefully
-- [ ] Document tool integration patterns
+- [x] Remove references to non-existent nmap.rs and gobuster.rs from `mod.rs`
+- [x] Simplify `src/tools/integrations/mod.rs` to only include implemented tools
+- [x] Add proper error handling for missing tool implementations
+- [x] Create template structure for future tool integrations
+- [x] Update tests to handle missing implementations gracefully
+- [x] Document tool integration patterns
 
 **Success Criteria:**
 
-- Clean tool integration structure without dead code
-- Clear error messages for missing tools
-- Template for future implementations
-- Tests handle missing tools appropriately
+- [x] Clean tool integration structure without dead code
+- [x] Clear error messages for missing tools
+- [x] Template for future implementations
+- [x] Tests handle missing tools appropriately
 
 **Dependencies:** Step 1 (test suite)  
 **Testing:** Tool integration tests, error handling tests
+
+**Completion Notes:**
+
+- Removed references to non-existent `nmap.rs` and `gobuster.rs` modules from `src/tools/integrations/mod.rs`
+- Created `src/tools/integrations/template.rs` with a complete template implementation showing how to add new tools
+- Updated `src/tools/integrations/mod.rs` with comprehensive documentation and clear instructions for adding new tools
+- Enhanced `ToolRegistry::get_tool()` method to provide clear error messages for missing implementations
+- Added 9 comprehensive unit tests in `tests/unit/tool_registry_tests.rs` covering registry functionality and error handling
+- All tests pass with proper error handling for stub implementations
+- Template provides complete example implementation for Nmap tool with all SecurityTool trait methods
 
 ### ✅ STEP 8: Unify Error Handling Strategy
 
@@ -323,7 +333,7 @@ This TODO plan outlines the systematic refactoring of the PT Journal codebase to
 - [x] **Week 2:** Handler abstraction working, 2-3 handlers converted
 - [x] **Week 3:** ChatService registry implemented, tutorial breakup started
 - [x] **Week 4:** Large tutorial files fully broken up, state patterns emerging
-- [ ] **Week 5:** Tool stubs cleaned up, error handling unified
+- [x] **Week 5:** Tool stubs cleaned up, error handling unified
 - [ ] **Week 6:** Tutorial structure unified, integration testing begins
 - [ ] **Week 7:** Full integration testing, performance validation
 

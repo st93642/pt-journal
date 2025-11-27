@@ -1,5 +1,5 @@
 pub mod executor;
-// pub mod integrations;
+pub mod integrations;
 pub mod registry;
 /// Security tools integration module
 ///

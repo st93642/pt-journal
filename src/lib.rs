@@ -5,7 +5,7 @@
 /*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
 /*                                                          TT         SS II */
 /*  Created: Nov 21 2025 23:42 st93642                      TT    SSSSSSS II */
-/*  Updated: Nov 27 2025 00:38 st93642                                       */
+/*  Updated: Nov 27 2025 12:13 st93642                                       */
 /*                                                                           */
 /*   Transport and Telecommunication Institute - Riga, Latvia                */
 /*                       https://tsi.lv                                      */
@@ -16,6 +16,7 @@ pub mod config;
 pub mod dispatcher;
 pub mod model;
 pub mod quiz;
+pub mod state;
 pub mod store;
 pub mod support;
 pub mod test_support;

@@ -1,5 +1,6 @@
 use crate::dispatcher::{AppMessage, SharedDispatcher};
 use crate::model::{AppModel, ChatMessage, Evidence, StepStatus};
+use crate::state::{UpdateContext, SelectPhase, SelectStep, UpdateStepStatus, UpdateStepNotes, UpdateStepDescriptionNotes, UpdatePhaseNotes, UpdateGlobalNotes, AddChatMessage, AddEvidence, RemoveEvidence, SetChatModel, StateUpdater, ModelAccessor};
 use log;
 use std::cell::RefCell;
 /// UI state management module
@@ -13,193 +14,86 @@ pub type SharedModel = Rc<RefCell<AppModel>>;
 pub struct StateManager {
     model: SharedModel,
     dispatcher: SharedDispatcher,
+    update_context: UpdateContext,
 }
 
 impl StateManager {
     pub fn new(model: SharedModel, dispatcher: SharedDispatcher) -> Self {
-        Self { model, dispatcher }
+        let update_context = UpdateContext::new(model.clone(), dispatcher.clone());
+        Self { model, dispatcher, update_context }
     }
 
     /// Select a phase and update UI
     pub fn select_phase(&self, phase_idx: usize) {
-        {
-            let mut model = self.model.borrow_mut();
-            model.set_selected_phase(phase_idx);
-            model.set_selected_step(None);
+        let update = SelectPhase { phase_idx };
+        if let Err(e) = update.update(&self.update_context) {
+            log::error!("Failed to select phase {}: {}", phase_idx, e);
+            self.dispatcher.borrow().dispatch(&AppMessage::Error(format!("Failed to select phase: {}", e)));
         }
-        self.dispatcher
-            .borrow()
-            .dispatch(&AppMessage::PhaseSelected(phase_idx));
-        self.dispatcher
-            .borrow()
-            .dispatch(&AppMessage::RefreshStepList(phase_idx));
     }
 
     /// Select a step within current phase
     pub fn select_step(&self, step_idx: usize) {
-        let phase_idx = self.model.borrow().selected_phase();
-        {
-            let mut model = self.model.borrow_mut();
-            model.set_selected_step(Some(step_idx));
-        }
-        self.dispatcher
-            .borrow()
-            .dispatch(&AppMessage::StepSelected(step_idx));
-        self.dispatcher
-            .borrow()
-            .dispatch(&AppMessage::RefreshDetailView(phase_idx, step_idx));
-    }
-
-    /// Helper to access a step mutably with validation and logging
-    ///
-    /// Returns Some(T) if the step exists, None if invalid indexes.
-    /// Logs a warning on invalid indexes.
-    fn with_step_mut<F, T>(&self, phase_idx: usize, step_idx: usize, f: F) -> Option<T>
-    where
-        F: FnOnce(&mut crate::model::Step) -> T,
-    {
-        let mut model = self.model.borrow_mut();
-        if let Some(step) = model
-            .session_mut()
-            .phases
-            .get_mut(phase_idx)
-            .and_then(|p| p.steps.get_mut(step_idx))
-        {
-            Some(f(step))
-        } else {
-            log::warn!(
-                "Invalid phase/step index: phase={}, step={}",
-                phase_idx,
-                step_idx
-            );
-            None
+        let update = SelectStep { step_idx };
+        if let Err(e) = update.update(&self.update_context) {
+            log::error!("Failed to select step {}: {}", step_idx, e);
+            self.dispatcher.borrow().dispatch(&AppMessage::Error(format!("Failed to select step: {}", e)));
         }
     }
 
-    /// Helper to access a step immutably with validation and logging
-    ///
-    /// Returns Some(T) if the step exists, None if invalid indexes.
-    /// Logs a warning on invalid indexes.
-    fn with_step<F, T>(&self, phase_idx: usize, step_idx: usize, f: F) -> Option<T>
-    where
-        F: FnOnce(&crate::model::Step) -> T,
-    {
-        let model = self.model.borrow();
-        if let Some(step) = model
-            .session()
-            .phases
-            .get(phase_idx)
-            .and_then(|p| p.steps.get(step_idx))
-        {
-            Some(f(step))
-        } else {
-            log::warn!(
-                "Invalid phase/step index: phase={}, step={}",
-                phase_idx,
-                step_idx
-            );
-            None
-        }
-    }
 
-    /// Helper to access a phase mutably with validation and logging
-    ///
-    /// Returns Some(T) if the phase exists, None if invalid index.
-    /// Logs a warning on invalid index.
-    fn with_phase_mut<F, T>(&self, phase_idx: usize, f: F) -> Option<T>
-    where
-        F: FnOnce(&mut crate::model::Phase) -> T,
-    {
-        let mut model = self.model.borrow_mut();
-        if let Some(phase) = model.session_mut().phases.get_mut(phase_idx) {
-            Some(f(phase))
-        } else {
-            log::warn!("Invalid phase index: phase={}", phase_idx);
-            None
-        }
-    }
 
     /// Update step status
     pub fn update_step_status(&self, phase_idx: usize, step_idx: usize, status: StepStatus) {
-        if self
-            .with_step_mut(phase_idx, step_idx, |step| {
-                step.status = status.clone();
-                if matches!(status, StepStatus::Done) {
-                    step.completed_at = Some(chrono::Utc::now());
-                } else {
-                    step.completed_at = None;
-                }
-            })
-            .is_some()
-        {
-            self.dispatcher
-                .borrow()
-                .dispatch(&AppMessage::StepStatusChanged(phase_idx, step_idx, status));
+        let update = UpdateStepStatus { phase_idx, step_idx, status };
+        if let Err(e) = update.update(&self.update_context) {
+            log::error!("Failed to update step status for phase {}, step {}: {}", phase_idx, step_idx, e);
+            self.dispatcher.borrow().dispatch(&AppMessage::Error(format!("Failed to update step status: {}", e)));
         }
     }
 
     /// Update step notes
     pub fn update_step_notes(&self, phase_idx: usize, step_idx: usize, notes: String) {
-        if self
-            .with_step_mut(phase_idx, step_idx, |step| step.set_notes(notes.clone()))
-            .is_some()
-        {
-            self.dispatcher
-                .borrow()
-                .dispatch(&AppMessage::StepNotesUpdated(phase_idx, step_idx, notes));
+        let update = UpdateStepNotes { phase_idx, step_idx, notes };
+        if let Err(e) = update.update(&self.update_context) {
+            log::error!("Failed to update step notes for phase {}, step {}: {}", phase_idx, step_idx, e);
+            self.dispatcher.borrow().dispatch(&AppMessage::Error(format!("Failed to update step notes: {}", e)));
         }
     }
 
     /// Update step description notes
     pub fn update_step_description_notes(&self, phase_idx: usize, step_idx: usize, notes: String) {
-        if self
-            .with_step_mut(phase_idx, step_idx, |step| {
-                step.set_description_notes(notes.clone())
-            })
-            .is_some()
-        {
-            self.dispatcher
-                .borrow()
-                .dispatch(&AppMessage::StepDescriptionNotesUpdated(
-                    phase_idx, step_idx, notes,
-                ));
+        let update = UpdateStepDescriptionNotes { phase_idx, step_idx, notes };
+        if let Err(e) = update.update(&self.update_context) {
+            log::error!("Failed to update step description notes for phase {}, step {}: {}", phase_idx, step_idx, e);
+            self.dispatcher.borrow().dispatch(&AppMessage::Error(format!("Failed to update step description notes: {}", e)));
         }
     }
 
     /// Update phase notes
     pub fn update_phase_notes(&self, phase_idx: usize, notes: String) {
-        if self
-            .with_phase_mut(phase_idx, |phase| phase.notes = notes.clone())
-            .is_some()
-        {
-            self.dispatcher
-                .borrow()
-                .dispatch(&AppMessage::PhaseNotesUpdated(phase_idx, notes));
+        let update = UpdatePhaseNotes { phase_idx, notes };
+        if let Err(e) = update.update(&self.update_context) {
+            log::error!("Failed to update phase notes for phase {}: {}", phase_idx, e);
+            self.dispatcher.borrow().dispatch(&AppMessage::Error(format!("Failed to update phase notes: {}", e)));
         }
     }
 
     /// Update global notes
     pub fn update_global_notes(&self, notes: String) {
-        {
-            let mut model = self.model.borrow_mut();
-            model.session_mut().notes_global = notes.clone();
+        let update = UpdateGlobalNotes { notes };
+        if let Err(e) = update.update(&self.update_context) {
+            log::error!("Failed to update global notes: {}", e);
+            self.dispatcher.borrow().dispatch(&AppMessage::Error(format!("Failed to update global notes: {}", e)));
         }
-        self.dispatcher
-            .borrow()
-            .dispatch(&AppMessage::GlobalNotesUpdated(notes));
     }
 
     /// Add chat message to a step
     pub fn add_chat_message(&self, phase_idx: usize, step_idx: usize, message: ChatMessage) {
-        if self
-            .with_step_mut(phase_idx, step_idx, |step| {
-                step.add_chat_message(message.clone())
-            })
-            .is_some()
-        {
-            self.dispatcher
-                .borrow()
-                .dispatch(&AppMessage::ChatMessageAdded(phase_idx, step_idx, message));
+        let update = AddChatMessage { phase_idx, step_idx, message };
+        if let Err(e) = update.update(&self.update_context) {
+            log::error!("Failed to add chat message for phase {}, step {}: {}", phase_idx, step_idx, e);
+            self.dispatcher.borrow().dispatch(&AppMessage::Error(format!("Failed to add chat message: {}", e)));
         }
     }
 
@@ -226,7 +120,7 @@ impl StateManager {
 
     /// Get chat history for a step
     pub fn get_chat_history(&self, phase_idx: usize, step_idx: usize) -> Vec<ChatMessage> {
-        self.with_step(phase_idx, step_idx, |step| step.get_chat_history().clone())
+        self.update_context.model.with_step(phase_idx, step_idx, |step| step.get_chat_history().clone())
             .unwrap_or_default()
     }
 
@@ -237,33 +131,19 @@ impl StateManager {
 
     /// Add evidence to a step
     pub fn add_evidence(&self, phase_idx: usize, step_idx: usize, evidence: Evidence) {
-        if self
-            .with_step_mut(phase_idx, step_idx, |step| {
-                step.add_evidence(evidence.clone())
-            })
-            .is_some()
-        {
-            self.dispatcher
-                .borrow()
-                .dispatch(&AppMessage::EvidenceAdded(phase_idx, step_idx, evidence));
+        let update = AddEvidence { phase_idx, step_idx, evidence };
+        if let Err(e) = update.update(&self.update_context) {
+            log::error!("Failed to add evidence for phase {}, step {}: {}", phase_idx, step_idx, e);
+            self.dispatcher.borrow().dispatch(&AppMessage::Error(format!("Failed to add evidence: {}", e)));
         }
     }
 
     /// Remove evidence from a step
     pub fn remove_evidence(&self, phase_idx: usize, step_idx: usize, evidence_id: Uuid) {
-        if self
-            .with_step_mut(phase_idx, step_idx, |step| {
-                step.remove_evidence(evidence_id)
-            })
-            .is_some()
-        {
-            self.dispatcher
-                .borrow()
-                .dispatch(&AppMessage::EvidenceRemoved(
-                    phase_idx,
-                    step_idx,
-                    evidence_id,
-                ));
+        let update = RemoveEvidence { phase_idx, step_idx, evidence_id };
+        if let Err(e) = update.update(&self.update_context) {
+            log::error!("Failed to remove evidence for phase {}, step {}: {}", phase_idx, step_idx, e);
+            self.dispatcher.borrow().dispatch(&AppMessage::Error(format!("Failed to remove evidence: {}", e)));
         }
     }
 
@@ -289,8 +169,7 @@ impl StateManager {
 
     /// Toggle completion status of a step
     pub fn toggle_step_completion(&self, phase_idx: usize, step_idx: usize) {
-        let current_status = self.with_step(phase_idx, step_idx, |step| step.status.clone());
-        if let Some(status) = current_status {
+        if let Ok(status) = self.update_context.model.with_step(phase_idx, step_idx, |step| step.status.clone()) {
             let new_status = match status {
                 StepStatus::Done => StepStatus::InProgress,
                 _ => StepStatus::Done,
@@ -314,75 +193,72 @@ impl StateManager {
         question_idx: usize,
         answer_idx: usize,
     ) -> Option<bool> {
-        let is_correct = self
-            .with_step_mut(phase_idx, step_idx, |step| {
-                if let Some(quiz_step) = step.quiz_mut_safe() {
-                    if let Some(question) = quiz_step.questions.get(question_idx) {
-                        // Check if the selected answer is correct
-                        let correct = question
-                            .answers
-                            .get(answer_idx)
-                            .map(|a| a.is_correct)
-                            .unwrap_or(false);
+        let is_correct = self.update_context.model.with_step_mut(phase_idx, step_idx, |step| {
+            if let Some(quiz_step) = step.quiz_mut_safe() {
+                if let Some(question) = quiz_step.questions.get(question_idx) {
+                    // Check if the selected answer is correct
+                    let correct = question
+                        .answers
+                        .get(answer_idx)
+                        .map(|a| a.is_correct)
+                        .unwrap_or(false);
 
-                        // Update progress
-                        if let Some(progress) = quiz_step.progress.get_mut(question_idx) {
-                            let first_attempt = progress.attempts == 0;
-                            progress.answered = true;
-                            progress.selected_answer_index = Some(answer_idx);
-                            progress.is_correct = Some(correct);
-                            progress.attempts += 1;
-                            progress.last_attempted = Some(chrono::Utc::now());
+                    // Update progress
+                    if let Some(progress) = quiz_step.progress.get_mut(question_idx) {
+                        let first_attempt = progress.attempts == 0;
+                        progress.answered = true;
+                        progress.selected_answer_index = Some(answer_idx);
+                        progress.is_correct = Some(correct);
+                        progress.attempts += 1;
+                        progress.last_attempted = Some(chrono::Utc::now());
 
-                            if first_attempt
-                                && correct
-                                && !progress.explanation_viewed_before_answer
-                            {
-                                progress.first_attempt_correct = true;
-                            }
+                        if first_attempt
+                            && correct
+                            && !progress.explanation_viewed_before_answer
+                        {
+                            progress.first_attempt_correct = true;
                         }
-
-                        Some(correct)
-                    } else {
-                        None
                     }
+
+                    Some(correct)
                 } else {
                     None
                 }
-            })
-            .flatten();
+            } else {
+                None
+            }
+        });
 
-        if let Some(correct) = is_correct {
-            self.dispatcher
-                .borrow()
-                .dispatch(&AppMessage::QuizAnswerChecked(
-                    phase_idx,
-                    step_idx,
-                    question_idx,
-                    correct,
-                ));
-            self.dispatcher
-                .borrow()
-                .dispatch(&AppMessage::QuizStatisticsUpdated(phase_idx, step_idx));
+        match is_correct {
+            Ok(Some(correct)) => {
+                self.dispatcher
+                    .borrow()
+                    .dispatch(&AppMessage::QuizAnswerChecked(
+                        phase_idx,
+                        step_idx,
+                        question_idx,
+                        correct,
+                    ));
+                self.dispatcher
+                    .borrow()
+                    .dispatch(&AppMessage::QuizStatisticsUpdated(phase_idx, step_idx));
+                Some(correct)
+            }
+            _ => None,
         }
-
-        is_correct
     }
 
     /// Mark that a user viewed the explanation before answering
     pub fn view_explanation(&self, phase_idx: usize, step_idx: usize, question_idx: usize) {
-        if self
-            .with_step_mut(phase_idx, step_idx, |step| {
-                if let Some(quiz_step) = step.quiz_mut_safe() {
-                    if let Some(progress) = quiz_step.progress.get_mut(question_idx) {
-                        if !progress.answered {
-                            progress.explanation_viewed_before_answer = true;
-                        }
+        if self.update_context.model.with_step_mut(phase_idx, step_idx, |step| {
+            if let Some(quiz_step) = step.quiz_mut_safe() {
+                if let Some(progress) = quiz_step.progress.get_mut(question_idx) {
+                    if !progress.answered {
+                        progress.explanation_viewed_before_answer = true;
                     }
                 }
-            })
-            .is_some()
-        {
+            }
+        }).is_ok() {
             self.dispatcher
                 .borrow()
                 .dispatch(&AppMessage::QuizExplanationViewed(
@@ -406,14 +282,11 @@ impl StateManager {
 
     /// Set the active chat model and persist to config
     pub fn set_chat_model(&self, model_id: String) {
-        {
-            let mut model = self.model.borrow_mut();
-            model.set_active_chat_model_id(model_id.clone());
-            model.config_mut().chatbot.default_model_id = model_id.clone();
+        let update = SetChatModel { model_id };
+        if let Err(e) = update.update(&self.update_context) {
+            log::error!("Failed to set chat model: {}", e);
+            self.dispatcher.borrow().dispatch(&AppMessage::Error(format!("Failed to set chat model: {}", e)));
         }
-        self.dispatcher
-            .borrow()
-            .dispatch(&AppMessage::ChatModelChanged(model_id));
     }
 }
 

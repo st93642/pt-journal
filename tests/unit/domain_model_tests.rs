@@ -69,9 +69,7 @@ mod tests {
         );
         step2.status = StepStatus::Done;
         step2.completed_at = Some(Utc::now());
-        if let StepContent::Tutorial { notes, .. } = &mut step2.content {
-            *notes = "Completed".to_string();
-        }
+        step2.notes = "Completed".to_string();
 
         let steps = vec![step1, step2];
 
@@ -134,23 +132,18 @@ mod tests {
         );
 
         // Test description_notes updates
-        if let StepContent::Tutorial {
-            description_notes, ..
-        } = &mut step.content
-        {
-            *description_notes = "User notes in description area".to_string();
-            assert_eq!(*description_notes, "User notes in description area");
+        step.description_notes = "User notes in description area".to_string();
+        assert_eq!(step.description_notes, "User notes in description area");
 
-            *description_notes = "Updated description notes with more content".to_string();
-            assert_eq!(
-                *description_notes,
-                "Updated description notes with more content"
-            );
+        step.description_notes = "Updated description notes with more content".to_string();
+        assert_eq!(
+            step.description_notes,
+            "Updated description notes with more content"
+        );
 
-            // Test clearing description_notes
-            description_notes.clear();
-            assert!(description_notes.is_empty());
-        }
+        // Test clearing description_notes
+        step.description_notes.clear();
+        assert!(step.description_notes.is_empty());
     }
 
     #[test]
@@ -180,14 +173,12 @@ mod tests {
             y: 10.0,
         };
 
-        if let StepContent::Tutorial { evidence, .. } = &mut step.content {
-            evidence.push(evidence1);
-            evidence.push(evidence2);
+        step.evidence.push(evidence1);
+        step.evidence.push(evidence2);
 
-            assert_eq!(evidence.len(), 2);
-            assert_eq!(evidence[0].kind, "screenshot");
-            assert_eq!(evidence[1].kind, "log");
-        }
+        assert_eq!(step.evidence.len(), 2);
+        assert_eq!(step.evidence[0].kind, "screenshot");
+        assert_eq!(step.evidence[1].kind, "log");
     }
 
     #[test]

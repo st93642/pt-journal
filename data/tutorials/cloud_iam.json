@@ -13,7 +13,7 @@
     {
       "id": "cloud-iam-security-quiz",
       "title": "Cloud IAM Security Quiz",
-      "content": "Quiz content loaded from data/cloud_identity/cloud-iam-quiz.txt",
+      "content": "Quiz content loaded from cloud_identity/cloud-iam-quiz.txt",
       "tags": ["quiz", "cloud", "iam"]
     }
   ]

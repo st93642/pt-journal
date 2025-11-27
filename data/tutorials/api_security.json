@@ -43,7 +43,7 @@
     {
       "id": "api_security_quiz",
       "title": "API Security Quiz",
-      "content": "Quiz content loaded from data/api_security/api-security-quiz.txt",
+      "content": "Quiz content loaded from api_security/api-security-quiz.txt",
       "tags": ["quiz", "api", "security", "authentication", "authorization"]
     }
   ]

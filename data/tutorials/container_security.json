@@ -37,7 +37,7 @@
     {
       "id": "container-security-quiz",
       "title": "Container & Kubernetes Security Quiz",
-      "content": "Quiz content loaded from data/container_security/container-kubernetes-quiz.txt",
+      "content": "Quiz content loaded from container_security/container-kubernetes-quiz.txt",
       "tags": ["quiz", "container", "kubernetes"]
     }
   ]

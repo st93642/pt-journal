@@ -124,6 +124,16 @@ pub fn load_step_into_panel(state: &Rc<StateManager>, detail_panel: &Rc<DetailPa
     if let Some(snapshot) = state.get_active_step_snapshot() {
         // Check if this is a quiz step
         if let Some(quiz_step) = snapshot.quiz_data {
+            // For quiz steps, show the phase name as the title instead of the step title
+            let phase_name = {
+                let model = state.model();
+                let model_ref = model.borrow();
+                model_ref.current_phase()
+                    .map(|phase| phase.name.clone())
+                    .unwrap_or_else(|| "Quiz".to_string())
+            };
+            detail_panel.set_title(&phase_name);
+
             // Show quiz view and load quiz
             detail_panel.load_quiz_step(&quiz_step);
         } else {

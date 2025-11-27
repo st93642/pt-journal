@@ -1,17 +1,17 @@
 pub mod ai_security;
-pub mod bug_bounty_hunting;
+// pub mod bug_bounty_hunting; // Now loaded from JSON
 pub mod ceh;
 // pub mod cloud_identity; // Now loaded from JSON
 pub mod cloud_native;
-pub mod comptia_secplus;
+// pub mod comptia_secplus; // Now loaded from JSON
 // pub mod container_security; // Now loaded from JSON
 pub mod modern_web;
-pub mod pentest_exam;
+// pub mod pentest_exam; // Now loaded from JSON
 // pub mod post_exploitation; // Now loaded from JSON
 pub mod purple_team_threat_hunting;
 // pub mod reconnaissance; // Now loaded from JSON
 pub mod red_team_tradecraft;
-pub mod serverless_security;
+// pub mod serverless_security; // Now loaded from JSON
 pub mod supply_chain;
 // pub mod vulnerability_analysis; // Now loaded from JSON
 
@@ -19,7 +19,6 @@ use crate::model::{Phase, Step};
 use uuid::Uuid;
 use serde::{Deserialize, Serialize};
 use std::fs;
-use std::path::Path;
 
 /// JSON structure for tutorial data loaded from files
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -52,10 +51,10 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         load_tutorial_phase("api_security"),
         load_tutorial_phase("reporting"),
         load_tutorial_phase("container_security"),
-        create_serverless_security_phase(),
-        create_bug_bounty_hunting_phase(),
-        create_comptia_secplus_phase(),
-        create_pentest_exam_phase(),
+        load_tutorial_phase("serverless_security"),
+        load_tutorial_phase("bug_bounty_hunting"),
+        load_tutorial_phase("comptia_secplus"),
+        load_tutorial_phase("pentest_exam"),
         create_ceh_phase(),
         create_cicd_pipeline_attacks_phase(),
         create_sbom_analysis_phase(),
@@ -69,14 +68,17 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
 
 /// Load quiz questions from a file
 fn load_quiz_from_file(file_path: &str) -> Result<Vec<crate::model::QuizQuestion>, String> {
+    // Construct path relative to data directory
+    let full_path = format!("data/{}", file_path);
+    
     // Read file content
-    let content = fs::read_to_string(file_path).map_err(|e| {
-        format!("Failed to read quiz file {}: {}", file_path, e)
+    let content = fs::read_to_string(&full_path).map_err(|e| {
+        format!("Failed to read quiz file {}: {}", full_path, e)
     })?;
 
     // Parse questions
     crate::quiz::parse_question_file(&content).map_err(|e| {
-        format!("Failed to parse questions from {}: {}", file_path, e)
+        format!("Failed to parse questions from {}: {}", full_path, e)
     })
 }
 
@@ -175,17 +177,6 @@ fn load_tutorial_phase(phase_name: &str) -> Phase {
     }
 }
 
-fn create_serverless_security_phase() -> Phase {
-    let steps = serverless_security::get_serverless_security_steps();
-
-    Phase {
-        id: Uuid::new_v4(),
-        name: "Serverless Security".to_string(),
-        steps,
-        notes: String::new(),
-    }
-}
-
 fn create_cicd_pipeline_attacks_phase() -> Phase {
     let steps = vec![cloud_native::cicd_pipeline_attacks_phase()];
 
@@ -230,31 +221,27 @@ fn create_artifact_integrity_phase() -> Phase {
     }
 }
 
-fn create_comptia_secplus_phase() -> Phase {
-    let steps = comptia_secplus::get_all_comptia_steps();
+// fn create_comptia_secplus_phase() -> Phase {
+//     let steps = comptia_secplus::get_all_comptia_steps();
 
-    Phase {
-        id: Uuid::new_v4(),
-        name: "CompTIA Security+".to_string(),
-        steps,
-        notes: String::new(),
-    }
-}
+//     Phase {
+//         id: Uuid::new_v4(),
+//         name: "CompTIA Security+".to_string(),
+//         steps,
+//         notes: String::new(),
+//     }
+// }
 
-fn create_bug_bounty_hunting_phase() -> Phase {
-    bug_bounty_hunting::load_phase()
-}
+// fn create_pentest_exam_phase() -> Phase {
+//     let steps = pentest_exam::get_all_pentest_steps();
 
-fn create_pentest_exam_phase() -> Phase {
-    let steps = pentest_exam::get_all_pentest_steps();
-
-    Phase {
-        id: Uuid::new_v4(),
-        name: "CompTIA PenTest+".to_string(),
-        steps,
-        notes: String::new(),
-    }
-}
+//     Phase {
+//         id: Uuid::new_v4(),
+//         name: "CompTIA PenTest+".to_string(),
+//         steps,
+//         notes: String::new(),
+//     }
+// }
 
 fn create_ceh_phase() -> Phase {
     let steps = ceh::get_all_ceh_steps();
@@ -422,6 +409,22 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     let container_security_phase = load_tutorial_phase("container_security");
     validate_step_structure(&container_security_phase.steps, "container_security")?;
 
+    // Validate serverless security module (loaded from JSON)
+    let serverless_security_phase = load_tutorial_phase("serverless_security");
+    validate_step_structure(&serverless_security_phase.steps, "serverless_security")?;
+
+    // Validate bug bounty hunting module (loaded from JSON)
+    let bug_bounty_hunting_phase = load_tutorial_phase("bug_bounty_hunting");
+    validate_step_structure(&bug_bounty_hunting_phase.steps, "bug_bounty_hunting")?;
+
+    // Validate CompTIA Security+ module (loaded from JSON)
+    let comptia_secplus_phase = load_tutorial_phase("comptia_secplus");
+    validate_step_structure(&comptia_secplus_phase.steps, "comptia_secplus")?;
+
+    // Validate PenTest+ module (loaded from JSON)
+    let pentest_exam_phase = load_tutorial_phase("pentest_exam");
+    validate_step_structure(&pentest_exam_phase.steps, "pentest_exam")?;
+
     // Validate that all modules have at least one step
     if recon_phase.steps.is_empty() {
         return Err("Reconnaissance module has no steps".to_string());
@@ -452,6 +455,18 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     }
     if container_security_phase.steps.is_empty() {
         return Err("Container Security module has no steps".to_string());
+    }
+    if serverless_security_phase.steps.is_empty() {
+        return Err("Serverless Security module has no steps".to_string());
+    }
+    if bug_bounty_hunting_phase.steps.is_empty() {
+        return Err("Bug Bounty Hunting module has no steps".to_string());
+    }
+    if comptia_secplus_phase.steps.is_empty() {
+        return Err("CompTIA Security+ module has no steps".to_string());
+    }
+    if pentest_exam_phase.steps.is_empty() {
+        return Err("PenTest+ module has no steps".to_string());
     }
 
     Ok(())

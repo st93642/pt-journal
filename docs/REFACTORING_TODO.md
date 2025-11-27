@@ -14,7 +14,7 @@ This TODO plan outlines the systematic refactoring of the PT Journal codebase to
 - Maintain 100%+ test coverage throughout
 - Keep build times under 2 minutes
 - Ensure backward compatibility
-- Zero warnings and errors in CI/CD pipelines
+- Treat warnings as errors during refactoring
 
 ---
 

@@ -127,7 +127,7 @@ pub fn load_step_into_panel(state: &Rc<StateManager>, detail_panel: &Rc<DetailPa
             // Show quiz view and load quiz
             detail_panel.load_quiz_step(&quiz_step);
         } else {
-            // Show tutorial view
+            // Show tutorial view and load tutorial content
             detail_panel.set_completion(matches!(snapshot.status, StepStatus::Done));
             detail_panel.set_title(&snapshot.title);
 
@@ -137,12 +137,7 @@ pub fn load_step_into_panel(state: &Rc<StateManager>, detail_panel: &Rc<DetailPa
             } else {
                 snapshot.description_notes
             };
-            detail_panel.desc_view().buffer().set_text(&desc_text);
-
-            // Load chat history
-            detail_panel
-                .chat_panel()
-                .load_history(&snapshot.chat_history);
+            detail_panel.load_tutorial_step(&desc_text, &snapshot.chat_history);
         }
     }
 }

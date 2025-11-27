@@ -31,7 +31,7 @@
 //! }
 //! ```
 
-use crate::dispatcher::{AppMessage, SharedDispatcher};
+use crate::dispatcher::{AppEvent, SharedEventBus};
 use crate::error::{PtError, Result as PtResult};
 use crate::model::StepStatus;
 use crate::ui::state::SharedModel;
@@ -41,13 +41,13 @@ use crate::ui::state::SharedModel;
 pub struct UpdateContext {
     /// Shared model reference for state mutations
     pub model: SharedModel,
-    /// Dispatcher for sending events
-    pub dispatcher: SharedDispatcher,
+    /// Event bus for sending events
+    pub dispatcher: SharedEventBus,
 }
 
 impl UpdateContext {
     /// Create a new update context.
-    pub fn new(model: SharedModel, dispatcher: SharedDispatcher) -> Self {
+    pub fn new(model: SharedModel, dispatcher: SharedEventBus) -> Self {
         Self { model, dispatcher }
     }
 }
@@ -172,25 +172,25 @@ pub trait EventDispatcher {
     fn dispatch_error(&self, error: String);
 }
 
-impl EventDispatcher for SharedDispatcher {
+impl EventDispatcher for SharedEventBus {
     fn dispatch_phase_selected(&self, phase_idx: usize) {
-        self.borrow().dispatch(&AppMessage::PhaseSelected(phase_idx));
+        self.borrow().emit(AppEvent::PhaseSelected(phase_idx));
     }
 
     fn dispatch_step_selected(&self, step_idx: usize) {
-        self.borrow().dispatch(&AppMessage::StepSelected(step_idx));
+        self.borrow().emit(AppEvent::StepSelected(step_idx));
     }
 
     fn dispatch_step_status_changed(&self, phase_idx: usize, step_idx: usize, status: StepStatus) {
-        self.borrow().dispatch(&AppMessage::StepStatusChanged(phase_idx, step_idx, status));
+        self.borrow().emit(AppEvent::StepStatusChanged(phase_idx, step_idx, status));
     }
 
     fn dispatch_step_notes_updated(&self, phase_idx: usize, step_idx: usize, notes: String) {
-        self.borrow().dispatch(&AppMessage::StepNotesUpdated(phase_idx, step_idx, notes));
+        self.borrow().emit(AppEvent::StepNotesUpdated(phase_idx, step_idx, notes));
     }
 
     fn dispatch_error(&self, error: String) {
-        self.borrow().dispatch(&AppMessage::Error(error));
+        self.borrow().emit(AppEvent::Error(error));
     }
 }
 
@@ -214,14 +214,13 @@ macro_rules! execute_update {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::dispatcher::create_dispatcher;
     use crate::model::AppModel;
     use std::rc::Rc;
     use std::cell::RefCell;
 
     fn create_test_context() -> UpdateContext {
         let model = Rc::new(RefCell::new(AppModel::default()));
-        let dispatcher = create_dispatcher();
+        let dispatcher = crate::dispatcher::create_event_bus();
         UpdateContext::new(model, dispatcher)
     }
 

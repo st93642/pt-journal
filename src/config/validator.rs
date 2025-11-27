@@ -78,6 +78,7 @@ mod tests {
     use super::*;
     use std::fs;
     use tempfile::TempDir;
+    use crate::dispatcher::create_event_bus;
 
     #[test]
     fn test_validate_all_configs_with_valid_files() {

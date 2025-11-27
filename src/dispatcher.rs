@@ -5,20 +5,21 @@
 /*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
 /*                                                          TT         SS II */
 /*  Created: Nov 21 2025 23:42 st93642                      TT    SSSSSSS II */
-/*  Updated: Nov 27 2025 00:06 st93642                                       */
+/*  Updated: Nov 27 2025 12:33 st93642                                       */
 /*                                                                           */
 /*   Transport and Telecommunication Institute - Riga, Latvia                */
 /*                       https://tsi.lv                                      */
 /*****************************************************************************/
 
 use std::cell::RefCell;
-use std::collections::HashMap;
-/// Event-driven message dispatcher for decoupled module communication
 use std::rc::Rc;
 
-/// Messages that can be dispatched throughout the application
+/// Events that can be emitted throughout the application
+/// 
+/// This enum consolidates the previous AppMessage and AppMessageKind enums
+/// into a single, clear event system.
 #[derive(Debug, Clone)]
-pub enum AppMessage {
+pub enum AppEvent {
     // Phase/Step Selection
     PhaseSelected(usize),
     StepSelected(usize),
@@ -64,188 +65,238 @@ pub enum AppMessage {
     Info(String),
 }
 
-/// Enum representing the kind (discriminant) of AppMessage variants
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum AppMessageKind {
-    PhaseSelected,
-    StepSelected,
-    SessionLoaded,
-    SessionSaved,
-    SessionCreated,
-    StepCompleted,
-    StepStatusChanged,
-    StepNotesUpdated,
-    StepDescriptionNotesUpdated,
-    PhaseNotesUpdated,
-    GlobalNotesUpdated,
-    ChatMessageAdded,
-    ChatRequestStarted,
-    ChatRequestCompleted,
-    ChatRequestFailed,
-    ChatModelChanged,
-    EvidenceAdded,
-    EvidenceRemoved,
-    RefreshStepList,
-    RefreshDetailView,
-    QuizAnswerChecked,
-    QuizExplanationViewed,
-    QuizQuestionChanged,
-    QuizStatisticsUpdated,
-    Error,
-    Info,
+/// Direct event bus with simplified callback architecture
+/// 
+/// Replaces the complex HashMap-based dispatcher with direct function calls.
+/// Each event type has its own callback field for clear, traceable event flow.
+pub struct EventBus {
+    // Phase/Step Selection
+    pub on_phase_selected: Box<dyn Fn(usize)>,
+    pub on_step_selected: Box<dyn Fn(usize)>,
+
+    // Session Operations
+    pub on_session_loaded: Box<dyn Fn(std::path::PathBuf)>,
+    pub on_session_saved: Box<dyn Fn(std::path::PathBuf)>,
+    pub on_session_created: Box<dyn Fn()>,
+
+    // Step Status Changes
+    pub on_step_completed: Box<dyn Fn(usize, usize)>,
+    pub on_step_status_changed: Box<dyn Fn(usize, usize, crate::model::StepStatus)>,
+
+    // Text Updates
+    pub on_step_notes_updated: Box<dyn Fn(usize, usize, String)>,
+    pub on_step_description_notes_updated: Box<dyn Fn(usize, usize, String)>,
+    pub on_phase_notes_updated: Box<dyn Fn(usize, String)>,
+    pub on_global_notes_updated: Box<dyn Fn(String)>,
+
+    // Chat Operations
+    pub on_chat_message_added: Box<dyn Fn(usize, usize, crate::model::ChatMessage)>,
+    pub on_chat_request_started: Box<dyn Fn(usize, usize)>,
+    pub on_chat_request_completed: Box<dyn Fn(usize, usize)>,
+    pub on_chat_request_failed: Box<dyn Fn(usize, usize, String)>,
+    pub on_chat_model_changed: Box<dyn Fn(String)>,
+
+    // Evidence Operations
+    pub on_evidence_added: Box<dyn Fn(usize, usize, crate::model::Evidence)>,
+    pub on_evidence_removed: Box<dyn Fn(usize, usize, uuid::Uuid)>,
+
+    // UI Updates
+    pub on_refresh_step_list: Box<dyn Fn(usize)>,
+    pub on_refresh_detail_view: Box<dyn Fn(usize, usize)>,
+
+    // Quiz Operations
+    pub on_quiz_answer_checked: Box<dyn Fn(usize, usize, usize, bool)>,
+    pub on_quiz_explanation_viewed: Box<dyn Fn(usize, usize, usize)>,
+    pub on_quiz_question_changed: Box<dyn Fn(usize, usize, usize)>,
+    pub on_quiz_statistics_updated: Box<dyn Fn(usize, usize)>,
+
+    // Error/Info
+    pub on_error: Box<dyn Fn(String)>,
+    pub on_info: Box<dyn Fn(String)>,
 }
 
-impl From<&AppMessage> for AppMessageKind {
-    fn from(msg: &AppMessage) -> Self {
-        match msg {
-            AppMessage::PhaseSelected(_) => AppMessageKind::PhaseSelected,
-            AppMessage::StepSelected(_) => AppMessageKind::StepSelected,
-            AppMessage::SessionLoaded(_) => AppMessageKind::SessionLoaded,
-            AppMessage::SessionSaved(_) => AppMessageKind::SessionSaved,
-            AppMessage::SessionCreated => AppMessageKind::SessionCreated,
-            AppMessage::StepCompleted(_, _) => AppMessageKind::StepCompleted,
-            AppMessage::StepStatusChanged(_, _, _) => AppMessageKind::StepStatusChanged,
-            AppMessage::StepNotesUpdated(_, _, _) => AppMessageKind::StepNotesUpdated,
-            AppMessage::StepDescriptionNotesUpdated(_, _, _) => {
-                AppMessageKind::StepDescriptionNotesUpdated
-            }
-            AppMessage::PhaseNotesUpdated(_, _) => AppMessageKind::PhaseNotesUpdated,
-            AppMessage::GlobalNotesUpdated(_) => AppMessageKind::GlobalNotesUpdated,
-            AppMessage::ChatMessageAdded(_, _, _) => AppMessageKind::ChatMessageAdded,
-            AppMessage::ChatRequestStarted(_, _) => AppMessageKind::ChatRequestStarted,
-            AppMessage::ChatRequestCompleted(_, _) => AppMessageKind::ChatRequestCompleted,
-            AppMessage::ChatRequestFailed(_, _, _) => AppMessageKind::ChatRequestFailed,
-            AppMessage::ChatModelChanged(_) => AppMessageKind::ChatModelChanged,
-            AppMessage::EvidenceAdded(_, _, _) => AppMessageKind::EvidenceAdded,
-            AppMessage::EvidenceRemoved(_, _, _) => AppMessageKind::EvidenceRemoved,
-            AppMessage::RefreshStepList(_) => AppMessageKind::RefreshStepList,
-            AppMessage::RefreshDetailView(_, _) => AppMessageKind::RefreshDetailView,
-            AppMessage::QuizAnswerChecked(_, _, _, _) => AppMessageKind::QuizAnswerChecked,
-            AppMessage::QuizExplanationViewed(_, _, _) => AppMessageKind::QuizExplanationViewed,
-            AppMessage::QuizQuestionChanged(_, _, _) => AppMessageKind::QuizQuestionChanged,
-            AppMessage::QuizStatisticsUpdated(_, _) => AppMessageKind::QuizStatisticsUpdated,
-            AppMessage::Error(_) => AppMessageKind::Error,
-            AppMessage::Info(_) => AppMessageKind::Info,
-        }
-    }
-}
-
-/// Handler function type for messages
-pub type MessageHandler = Box<dyn Fn(&AppMessage)>;
-
-/// Central message dispatcher for event-driven communication
-///
-/// The dispatcher supports targeted message routing where handlers can subscribe
-/// to specific message kinds or listen to all messages (wildcard).
-///
-/// # Examples
-///
-/// ```rust
-/// use pt_journal::dispatcher::{Dispatcher, AppMessageKind};
-///
-/// let mut dispatcher = Dispatcher::new();
-/// let handler = |msg: &pt_journal::dispatcher::AppMessage| {
-///     println!("Received message: {:?}", msg);
-/// };
-///
-/// // Register for specific message kinds
-/// dispatcher.register(Some(AppMessageKind::ChatMessageAdded), "my_chat_handler", Box::new(handler));
-///
-/// // Register for all messages (wildcard)
-/// dispatcher.register(None, "my_wildcard_handler", Box::new(handler));
-/// ```
-pub struct Dispatcher {
-    /// Handlers organized by message kind (None = wildcard for all messages)
-    handlers: HashMap<Option<AppMessageKind>, HashMap<String, Vec<MessageHandler>>>,
-}
-
-impl Dispatcher {
-    pub fn new() -> Self {
-        Self {
-            handlers: HashMap::new(),
-        }
-    }
-
-    /// Register a handler for a specific message kind or all messages (wildcard)
-    ///
-    /// # Arguments
-    /// * `kind` - The message kind to listen for, or None to listen to all messages
-    /// * `key` - A unique identifier for this handler (used for unregistering)
-    /// * `handler` - The function to call when a matching message is dispatched
-    ///
-    /// # Examples
-    /// ```rust
-    /// use pt_journal::dispatcher::{Dispatcher, AppMessageKind};
-    ///
-    /// let mut dispatcher = Dispatcher::new();
-    /// let handler = |msg: &pt_journal::dispatcher::AppMessage| {
-    ///     println!("Received message: {:?}", msg);
-    /// };
-    ///
-    /// // Listen only to chat messages
-    /// dispatcher.register(Some(AppMessageKind::ChatMessageAdded), "my_chat_handler", Box::new(handler));
-    ///
-    /// // Listen to all messages (wildcard)
-    /// dispatcher.register(None, "my_wildcard_handler", Box::new(handler));
-    /// ```
-    pub fn register(&mut self, kind: Option<AppMessageKind>, key: &str, handler: MessageHandler) {
-        self.handlers
-            .entry(kind)
-            .or_default()
-            .entry(key.to_string())
-            .or_default()
-            .push(handler);
-    }
-
-    /// Dispatch a message to all registered handlers that match the message kind
-    /// or are registered as wildcards (listening to all messages)
-    pub fn dispatch(&self, message: &AppMessage) {
-        let kind = AppMessageKind::from(message);
-
-        // Call handlers for the specific message kind
-        if let Some(kind_handlers) = self.handlers.get(&Some(kind.clone())) {
-            for handlers in kind_handlers.values() {
-                for handler in handlers {
-                    handler(message);
-                }
-            }
-        }
-
-        // Call wildcard handlers (registered with None)
-        if let Some(wildcard_handlers) = self.handlers.get(&None) {
-            for handlers in wildcard_handlers.values() {
-                for handler in handlers {
-                    handler(message);
-                }
-            }
-        }
-    }
-
-    /// Remove all handlers for a specific key across all message kinds
-    pub fn unregister(&mut self, key: &str) {
-        for kind_handlers in self.handlers.values_mut() {
-            kind_handlers.remove(key);
-        }
-    }
-
-    /// Clear all handlers
-    pub fn clear(&mut self) {
-        self.handlers.clear();
-    }
-}
-
-impl Default for Dispatcher {
+impl Default for EventBus {
     fn default() -> Self {
-        Self::new()
+        Self {
+            on_phase_selected: Box::new(|_| {}),
+            on_step_selected: Box::new(|_| {}),
+            on_session_loaded: Box::new(|_| {}),
+            on_session_saved: Box::new(|_| {}),
+            on_session_created: Box::new(|| {}),
+            on_step_completed: Box::new(|_, _| {}),
+            on_step_status_changed: Box::new(|_, _, _| {}),
+            on_step_notes_updated: Box::new(|_, _, _| {}),
+            on_step_description_notes_updated: Box::new(|_, _, _| {}),
+            on_phase_notes_updated: Box::new(|_, _| {}),
+            on_global_notes_updated: Box::new(|_| {}),
+            on_chat_message_added: Box::new(|_, _, _| {}),
+            on_chat_request_started: Box::new(|_, _| {}),
+            on_chat_request_completed: Box::new(|_, _| {}),
+            on_chat_request_failed: Box::new(|_, _, _| {}),
+            on_chat_model_changed: Box::new(|_| {}),
+            on_evidence_added: Box::new(|_, _, _| {}),
+            on_evidence_removed: Box::new(|_, _, _| {}),
+            on_refresh_step_list: Box::new(|_| {}),
+            on_refresh_detail_view: Box::new(|_, _| {}),
+            on_quiz_answer_checked: Box::new(|_, _, _, _| {}),
+            on_quiz_explanation_viewed: Box::new(|_, _, _| {}),
+            on_quiz_question_changed: Box::new(|_, _, _| {}),
+            on_quiz_statistics_updated: Box::new(|_, _| {}),
+            on_error: Box::new(|_| {}),
+            on_info: Box::new(|_| {}),
+        }
     }
 }
 
-/// Shared dispatcher instance wrapped in Rc<RefCell<>> for GTK usage
-pub type SharedDispatcher = Rc<RefCell<Dispatcher>>;
+impl EventBus {
+    /// Create a new EventBus with default no-op handlers
+    pub fn new() -> Self {
+        Self::default()
+    }
 
-/// Create a new shared dispatcher instance
+    /// Emit an event to the appropriate handler
+    /// 
+    /// This replaces the complex dispatcher routing with a simple match statement
+    /// that calls the appropriate callback directly.
+    pub fn emit(&self, event: AppEvent) {
+        match event {
+            AppEvent::PhaseSelected(idx) => (self.on_phase_selected)(idx),
+            AppEvent::StepSelected(idx) => (self.on_step_selected)(idx),
+            AppEvent::SessionLoaded(path) => (self.on_session_loaded)(path),
+            AppEvent::SessionSaved(path) => (self.on_session_saved)(path),
+            AppEvent::SessionCreated => (self.on_session_created)(),
+            AppEvent::StepCompleted(phase_idx, step_idx) => (self.on_step_completed)(phase_idx, step_idx),
+            AppEvent::StepStatusChanged(phase_idx, step_idx, status) => {
+                (self.on_step_status_changed)(phase_idx, step_idx, status)
+            }
+            AppEvent::StepNotesUpdated(phase_idx, step_idx, notes) => {
+                (self.on_step_notes_updated)(phase_idx, step_idx, notes)
+            }
+            AppEvent::StepDescriptionNotesUpdated(phase_idx, step_idx, notes) => {
+                (self.on_step_description_notes_updated)(phase_idx, step_idx, notes)
+            }
+            AppEvent::PhaseNotesUpdated(phase_idx, notes) => (self.on_phase_notes_updated)(phase_idx, notes),
+            AppEvent::GlobalNotesUpdated(notes) => (self.on_global_notes_updated)(notes),
+            AppEvent::ChatMessageAdded(phase_idx, step_idx, message) => {
+                (self.on_chat_message_added)(phase_idx, step_idx, message)
+            }
+            AppEvent::ChatRequestStarted(phase_idx, step_idx) => (self.on_chat_request_started)(phase_idx, step_idx),
+            AppEvent::ChatRequestCompleted(phase_idx, step_idx) => (self.on_chat_request_completed)(phase_idx, step_idx),
+            AppEvent::ChatRequestFailed(phase_idx, step_idx, error) => {
+                (self.on_chat_request_failed)(phase_idx, step_idx, error)
+            }
+            AppEvent::ChatModelChanged(model_id) => (self.on_chat_model_changed)(model_id),
+            AppEvent::EvidenceAdded(phase_idx, step_idx, evidence) => {
+                (self.on_evidence_added)(phase_idx, step_idx, evidence)
+            }
+            AppEvent::EvidenceRemoved(phase_idx, step_idx, evidence_id) => {
+                (self.on_evidence_removed)(phase_idx, step_idx, evidence_id)
+            }
+            AppEvent::RefreshStepList(phase_idx) => (self.on_refresh_step_list)(phase_idx),
+            AppEvent::RefreshDetailView(phase_idx, step_idx) => (self.on_refresh_detail_view)(phase_idx, step_idx),
+            AppEvent::QuizAnswerChecked(phase_idx, step_idx, question_idx, is_correct) => {
+                (self.on_quiz_answer_checked)(phase_idx, step_idx, question_idx, is_correct)
+            }
+            AppEvent::QuizExplanationViewed(phase_idx, step_idx, question_idx) => {
+                (self.on_quiz_explanation_viewed)(phase_idx, step_idx, question_idx)
+            }
+            AppEvent::QuizQuestionChanged(phase_idx, step_idx, question_idx) => {
+                (self.on_quiz_question_changed)(phase_idx, step_idx, question_idx)
+            }
+            AppEvent::QuizStatisticsUpdated(phase_idx, step_idx) => (self.on_quiz_statistics_updated)(phase_idx, step_idx),
+            AppEvent::Error(error) => (self.on_error)(error),
+            AppEvent::Info(info) => (self.on_info)(info),
+        }
+    }
+
+    /// Builder-style method to set the phase selected handler
+    pub fn with_phase_selected<F>(mut self, handler: F) -> Self
+    where
+        F: Fn(usize) + 'static,
+    {
+        self.on_phase_selected = Box::new(handler);
+        self
+    }
+
+    /// Builder-style method to set the step selected handler
+    pub fn with_step_selected<F>(mut self, handler: F) -> Self
+    where
+        F: Fn(usize) + 'static,
+    {
+        self.on_step_selected = Box::new(handler);
+        self
+    }
+
+    /// Builder-style method to set the step notes updated handler
+    pub fn with_step_notes_updated<F>(mut self, handler: F) -> Self
+    where
+        F: Fn(usize, usize, String) + 'static,
+    {
+        self.on_step_notes_updated = Box::new(handler);
+        self
+    }
+
+    /// Builder-style method to set the error handler
+    pub fn with_error<F>(mut self, handler: F) -> Self
+    where
+        F: Fn(String) + 'static,
+    {
+        self.on_error = Box::new(handler);
+        self
+    }
+
+    /// Builder-style method to set the info handler
+    pub fn with_info<F>(mut self, handler: F) -> Self
+    where
+        F: Fn(String) + 'static,
+    {
+        self.on_info = Box::new(handler);
+        self
+    }
+
+    /// Builder-style method to set the chat message added handler
+    pub fn with_chat_message_added<F>(mut self, handler: F) -> Self
+    where
+        F: Fn(usize, usize, crate::model::ChatMessage) + 'static,
+    {
+        self.on_chat_message_added = Box::new(handler);
+        self
+    }
+
+    /// Builder-style method to set the refresh step list handler
+    pub fn with_refresh_step_list<F>(mut self, handler: F) -> Self
+    where
+        F: Fn(usize) + 'static,
+    {
+        self.on_refresh_step_list = Box::new(handler);
+        self
+    }
+
+    /// Builder-style method to set the refresh detail view handler
+    pub fn with_refresh_detail_view<F>(mut self, handler: F) -> Self
+    where
+        F: Fn(usize, usize) + 'static,
+    {
+        self.on_refresh_detail_view = Box::new(handler);
+        self
+    }
+}
+
+/// Shared event bus instance wrapped in Rc<RefCell<>> for GTK usage
+pub type SharedEventBus = Rc<RefCell<EventBus>>;
+
+/// Create a new shared event bus instance
+pub fn create_event_bus() -> SharedEventBus {
+    Rc::new(RefCell::new(EventBus::new()))
+}
+
+// Legacy type aliases for backward compatibility during migration
+pub type AppMessage = AppEvent;
+pub type SharedDispatcher = SharedEventBus;
+
+/// Create a new shared dispatcher instance (legacy compatibility)
 pub fn create_dispatcher() -> SharedDispatcher {
-    Rc::new(RefCell::new(Dispatcher::new()))
+    create_event_bus()
 }
 
 #[cfg(test)]
@@ -254,263 +305,196 @@ mod tests {
     use std::sync::{Arc, Mutex};
 
     #[test]
-    fn test_dispatcher_creation() {
-        let dispatcher = Dispatcher::new();
-        assert_eq!(dispatcher.handlers.len(), 0);
+    fn test_event_bus_creation() {
+        let bus = EventBus::new();
+        // Should create without panicking
+        assert!(true);
     }
 
     #[test]
-    fn test_register_handler() {
-        let mut dispatcher = Dispatcher::new();
-        let called = Arc::new(Mutex::new(false));
-        let called_clone = called.clone();
+    fn test_phase_selected_event() {
+        let received = Arc::new(Mutex::new(None));
+        let received_clone = received.clone();
 
-        dispatcher.register(
-            None, // wildcard
-            "test",
-            Box::new(move |_| {
-                *called_clone.lock().unwrap() = true;
-            }),
-        );
+        let bus = EventBus::new().with_phase_selected(move |idx| {
+            *received_clone.lock().unwrap() = Some(idx);
+        });
 
-        assert_eq!(dispatcher.handlers.len(), 1);
-        dispatcher.dispatch(&AppMessage::Info("test".to_string()));
-        assert!(*called.lock().unwrap());
+        bus.emit(AppEvent::PhaseSelected(5));
+        assert_eq!(*received.lock().unwrap(), Some(5));
+    }
+
+    #[test]
+    fn test_step_selected_event() {
+        let received = Arc::new(Mutex::new(None));
+        let received_clone = received.clone();
+
+        let bus = EventBus::new().with_step_selected(move |idx| {
+            *received_clone.lock().unwrap() = Some(idx);
+        });
+
+        bus.emit(AppEvent::StepSelected(3));
+        assert_eq!(*received.lock().unwrap(), Some(3));
+    }
+
+    #[test]
+    fn test_step_notes_updated_event() {
+        let received = Arc::new(Mutex::new(None));
+        let received_clone = received.clone();
+
+        let bus = EventBus::new().with_step_notes_updated(move |phase_idx, step_idx, notes| {
+            *received_clone.lock().unwrap() = Some((phase_idx, step_idx, notes));
+        });
+
+        bus.emit(AppEvent::StepNotesUpdated(1, 2, "test notes".to_string()));
+        let received_val = received.lock().unwrap();
+        assert_eq!(received_val.as_ref().unwrap(), &(1, 2, "test notes".to_string()));
+    }
+
+    #[test]
+    fn test_error_event() {
+        let received = Arc::new(Mutex::new(None));
+        let received_clone = received.clone();
+
+        let bus = EventBus::new().with_error(move |error| {
+            *received_clone.lock().unwrap() = Some(error);
+        });
+
+        bus.emit(AppEvent::Error("test error".to_string()));
+        assert_eq!(*received.lock().unwrap(), Some("test error".to_string()));
+    }
+
+    #[test]
+    fn test_info_event() {
+        let received = Arc::new(Mutex::new(None));
+        let received_clone = received.clone();
+
+        let bus = EventBus::new().with_info(move |info| {
+            *received_clone.lock().unwrap() = Some(info);
+        });
+
+        bus.emit(AppEvent::Info("test info".to_string()));
+        assert_eq!(*received.lock().unwrap(), Some("test info".to_string()));
+    }
+
+    #[test]
+    fn test_chat_message_added_event() {
+        use crate::model::{ChatMessage, ChatRole};
+        
+        let received = Arc::new(Mutex::new(None));
+        let received_clone = received.clone();
+
+        let bus = EventBus::new().with_chat_message_added(move |phase_idx, step_idx, message| {
+            *received_clone.lock().unwrap() = Some((phase_idx, step_idx, message));
+        });
+
+        let message = ChatMessage::new(ChatRole::User, "test message".to_string());
+        bus.emit(AppEvent::ChatMessageAdded(0, 1, message.clone()));
+
+        let received_val = received.lock().unwrap();
+        let (phase_idx, step_idx, received_message) = received_val.as_ref().unwrap();
+        assert_eq!(*phase_idx, 0);
+        assert_eq!(*step_idx, 1);
+        assert_eq!(received_message.content, "test message");
     }
 
     #[test]
     fn test_multiple_handlers() {
-        let mut dispatcher = Dispatcher::new();
-        let count = Arc::new(Mutex::new(0));
-        let count_clone1 = count.clone();
-        let count_clone2 = count.clone();
+        let phase_received = Arc::new(Mutex::new(None));
+        let step_received = Arc::new(Mutex::new(None));
+        
+        let phase_clone = phase_received.clone();
+        let step_clone = step_received.clone();
 
-        dispatcher.register(
-            None, // wildcard
-            "handler1",
-            Box::new(move |_| {
-                *count_clone1.lock().unwrap() += 1;
-            }),
-        );
+        let bus = EventBus::new()
+            .with_phase_selected(move |idx| {
+                *phase_clone.lock().unwrap() = Some(idx);
+            })
+            .with_step_selected(move |idx| {
+                *step_clone.lock().unwrap() = Some(idx);
+            });
 
-        dispatcher.register(
-            None, // wildcard
-            "handler2",
-            Box::new(move |_| {
-                *count_clone2.lock().unwrap() += 10;
-            }),
-        );
+        bus.emit(AppEvent::PhaseSelected(7));
+        bus.emit(AppEvent::StepSelected(8));
 
-        dispatcher.dispatch(&AppMessage::Info("test".to_string()));
-        assert_eq!(*count.lock().unwrap(), 11);
+        assert_eq!(*phase_received.lock().unwrap(), Some(7));
+        assert_eq!(*step_received.lock().unwrap(), Some(8));
     }
 
     #[test]
-    fn test_message_variants() {
-        let mut dispatcher = Dispatcher::new();
-        let messages = Arc::new(Mutex::new(Vec::new()));
-        let messages_clone = messages.clone();
+    fn test_shared_event_bus() {
+        let bus = create_event_bus();
+        let received = Arc::new(Mutex::new(None));
+        let received_clone = received.clone();
 
-        dispatcher.register(
-            None, // wildcard
-            "collector",
-            Box::new(move |msg| {
-                messages_clone.lock().unwrap().push(format!("{:?}", msg));
-            }),
-        );
+        bus.borrow_mut().on_phase_selected = Box::new(move |idx| {
+            *received_clone.lock().unwrap() = Some(idx);
+        });
 
-        dispatcher.dispatch(&AppMessage::PhaseSelected(0));
-        dispatcher.dispatch(&AppMessage::StepSelected(1));
-        dispatcher.dispatch(&AppMessage::SessionCreated);
-        dispatcher.dispatch(&AppMessage::Error("test error".to_string()));
-
-        let collected = messages.lock().unwrap();
-        assert_eq!(collected.len(), 4);
-        assert!(collected[0].contains("PhaseSelected"));
-        assert!(collected[1].contains("StepSelected"));
-        assert!(collected[2].contains("SessionCreated"));
-        assert!(collected[3].contains("Error"));
+        bus.borrow().emit(AppEvent::PhaseSelected(9));
+        assert_eq!(*received.lock().unwrap(), Some(9));
     }
 
     #[test]
-    fn test_clear_handlers() {
-        let mut dispatcher = Dispatcher::new();
-        dispatcher.register(None, "test1", Box::new(|_| {}));
-        dispatcher.register(None, "test2", Box::new(|_| {}));
-
-        assert_eq!(dispatcher.handlers.len(), 1); // Both under None key
-        dispatcher.clear();
-        assert_eq!(dispatcher.handlers.len(), 0);
+    fn test_legacy_compatibility() {
+        // Test that legacy type aliases work
+        let _dispatcher: SharedDispatcher = create_dispatcher();
+        let _message: AppMessage = AppEvent::Info("test".to_string());
+        
+        // Should compile and work
+        assert!(true);
     }
 
     #[test]
-    fn test_shared_dispatcher() {
-        let dispatcher = create_dispatcher();
-        let called = Arc::new(Mutex::new(false));
-        let called_clone = called.clone();
+    fn test_all_event_types() {
+        // Test that all event types can be emitted without panicking
+        use crate::model::{ChatMessage, ChatRole, Evidence, StepStatus};
+        use std::path::PathBuf;
+        use uuid::Uuid;
 
-        dispatcher.borrow_mut().register(
-            None, // wildcard
-            "test",
-            Box::new(move |_| {
-                *called_clone.lock().unwrap() = true;
-            }),
-        );
+        let bus = EventBus::new();
+        
+        // Test each event variant to ensure they all work
+        bus.emit(AppEvent::PhaseSelected(0));
+        bus.emit(AppEvent::StepSelected(0));
+        bus.emit(AppEvent::SessionLoaded(PathBuf::from("/test")));
+        bus.emit(AppEvent::SessionSaved(PathBuf::from("/test")));
+        bus.emit(AppEvent::SessionCreated);
+        bus.emit(AppEvent::StepCompleted(0, 0));
+        bus.emit(AppEvent::StepStatusChanged(0, 0, StepStatus::Done));
+        bus.emit(AppEvent::StepNotesUpdated(0, 0, "test".to_string()));
+        bus.emit(AppEvent::StepDescriptionNotesUpdated(0, 0, "test".to_string()));
+        bus.emit(AppEvent::PhaseNotesUpdated(0, "test".to_string()));
+        bus.emit(AppEvent::GlobalNotesUpdated("test".to_string()));
+        
+        let message = ChatMessage::new(ChatRole::User, "test".to_string());
+        bus.emit(AppEvent::ChatMessageAdded(0, 0, message));
+        bus.emit(AppEvent::ChatRequestStarted(0, 0));
+        bus.emit(AppEvent::ChatRequestCompleted(0, 0));
+        bus.emit(AppEvent::ChatRequestFailed(0, 0, "error".to_string()));
+        bus.emit(AppEvent::ChatModelChanged("test".to_string()));
+        
+        let evidence = Evidence {
+            id: Uuid::new_v4(),
+            path: "/test".to_string(),
+            created_at: chrono::Utc::now(),
+            kind: "test".to_string(),
+            x: 0.0,
+            y: 0.0,
+        };
+        bus.emit(AppEvent::EvidenceAdded(0, 0, evidence));
+        bus.emit(AppEvent::EvidenceRemoved(0, 0, Uuid::new_v4()));
+        
+        bus.emit(AppEvent::RefreshStepList(0));
+        bus.emit(AppEvent::RefreshDetailView(0, 0));
+        bus.emit(AppEvent::QuizAnswerChecked(0, 0, 0, true));
+        bus.emit(AppEvent::QuizExplanationViewed(0, 0, 0));
+        bus.emit(AppEvent::QuizQuestionChanged(0, 0, 0));
+        bus.emit(AppEvent::QuizStatisticsUpdated(0, 0));
+        bus.emit(AppEvent::Error("error".to_string()));
+        bus.emit(AppEvent::Info("info".to_string()));
 
-        dispatcher
-            .borrow()
-            .dispatch(&AppMessage::Info("test".to_string()));
-        assert!(*called.lock().unwrap());
-    }
-
-    #[test]
-    fn test_specific_kind_routing() {
-        let mut dispatcher = Dispatcher::new();
-        let chat_calls = Arc::new(Mutex::new(0));
-        let info_calls = Arc::new(Mutex::new(0));
-
-        let chat_clone = chat_calls.clone();
-        let info_clone = info_calls.clone();
-
-        // Register handler for only ChatMessageAdded
-        dispatcher.register(
-            Some(AppMessageKind::ChatMessageAdded),
-            "chat_handler",
-            Box::new(move |_| {
-                *chat_clone.lock().unwrap() += 1;
-            }),
-        );
-
-        // Register handler for only Info messages
-        dispatcher.register(
-            Some(AppMessageKind::Info),
-            "info_handler",
-            Box::new(move |_| {
-                *info_clone.lock().unwrap() += 1;
-            }),
-        );
-
-        // Dispatch ChatMessageAdded - should only call chat handler
-        dispatcher.dispatch(&AppMessage::ChatMessageAdded(
-            0,
-            0,
-            crate::model::ChatMessage::new(crate::model::ChatRole::User, "test".to_string()),
-        ));
-        assert_eq!(*chat_calls.lock().unwrap(), 1);
-        assert_eq!(*info_calls.lock().unwrap(), 0);
-
-        // Dispatch Info - should only call info handler
-        dispatcher.dispatch(&AppMessage::Info("test info".to_string()));
-        assert_eq!(*chat_calls.lock().unwrap(), 1);
-        assert_eq!(*info_calls.lock().unwrap(), 1);
-
-        // Dispatch unrelated message - should call neither
-        dispatcher.dispatch(&AppMessage::PhaseSelected(1));
-        assert_eq!(*chat_calls.lock().unwrap(), 1);
-        assert_eq!(*info_calls.lock().unwrap(), 1);
-    }
-
-    #[test]
-    fn test_wildcard_handlers_receive_all_messages() {
-        let mut dispatcher = Dispatcher::new();
-        let call_count = Arc::new(Mutex::new(0));
-        let count_clone = call_count.clone();
-
-        // Register wildcard handler
-        dispatcher.register(
-            None, // wildcard
-            "wildcard_handler",
-            Box::new(move |_| {
-                *count_clone.lock().unwrap() += 1;
-            }),
-        );
-
-        // Dispatch different message types
-        dispatcher.dispatch(&AppMessage::ChatMessageAdded(
-            0,
-            0,
-            crate::model::ChatMessage::new(crate::model::ChatRole::User, "test".to_string()),
-        ));
-        dispatcher.dispatch(&AppMessage::Info("test info".to_string()));
-        dispatcher.dispatch(&AppMessage::PhaseSelected(1));
-        dispatcher.dispatch(&AppMessage::Error("test error".to_string()));
-
-        assert_eq!(*call_count.lock().unwrap(), 4);
-    }
-
-    #[test]
-    fn test_mixed_specific_and_wildcard_handlers() {
-        let mut dispatcher = Dispatcher::new();
-        let specific_calls = Arc::new(Mutex::new(0));
-        let wildcard_calls = Arc::new(Mutex::new(0));
-
-        let specific_clone = specific_calls.clone();
-        let wildcard_clone = wildcard_calls.clone();
-
-        // Register specific handler for Info messages
-        dispatcher.register(
-            Some(AppMessageKind::Info),
-            "info_specific",
-            Box::new(move |_| {
-                *specific_clone.lock().unwrap() += 1;
-            }),
-        );
-
-        // Register wildcard handler
-        dispatcher.register(
-            None,
-            "wildcard",
-            Box::new(move |_| {
-                *wildcard_clone.lock().unwrap() += 1;
-            }),
-        );
-
-        // Dispatch Info - should call both handlers
-        dispatcher.dispatch(&AppMessage::Info("test".to_string()));
-        assert_eq!(*specific_calls.lock().unwrap(), 1);
-        assert_eq!(*wildcard_calls.lock().unwrap(), 1);
-
-        // Dispatch ChatMessageAdded - should only call wildcard
-        dispatcher.dispatch(&AppMessage::ChatMessageAdded(
-            0,
-            0,
-            crate::model::ChatMessage::new(crate::model::ChatRole::User, "test".to_string()),
-        ));
-        assert_eq!(*specific_calls.lock().unwrap(), 1);
-        assert_eq!(*wildcard_calls.lock().unwrap(), 2);
-    }
-
-    #[test]
-    fn test_unregister_removes_from_all_kinds() {
-        let mut dispatcher = Dispatcher::new();
-        let calls = Arc::new(Mutex::new(0));
-
-        // Register same key for different kinds
-        let calls1 = calls.clone();
-        dispatcher.register(
-            Some(AppMessageKind::Info),
-            "test_key",
-            Box::new(move |_| {
-                *calls1.lock().unwrap() += 1;
-            }),
-        );
-
-        let calls2 = calls.clone();
-        dispatcher.register(
-            Some(AppMessageKind::Error),
-            "test_key",
-            Box::new(move |_| {
-                *calls2.lock().unwrap() += 1;
-            }),
-        );
-
-        // Unregister by key should remove all
-        dispatcher.unregister("test_key");
-
-        dispatcher.dispatch(&AppMessage::Info("test".to_string()));
-        dispatcher.dispatch(&AppMessage::Error("test".to_string()));
-
-        // Should not have been called
-        assert_eq!(*calls.lock().unwrap(), 0);
+        // If we get here, all events worked
+        assert!(true);
     }
 }

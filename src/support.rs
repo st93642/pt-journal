@@ -1,4 +1,3 @@
-use chrono::Utc;
 use uuid::Uuid;
 
 use crate::model::*;

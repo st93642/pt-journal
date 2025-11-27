@@ -4,15 +4,15 @@ use gtk4::{Application, ApplicationWindow, Frame, Paned};
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use crate::dispatcher::create_dispatcher;
+use crate::dispatcher::create_event_bus;
 use crate::model::AppModel;
 use crate::ui::state::StateManager;
 
 pub fn build_ui(app: &Application, model: AppModel) {
     let model = Rc::new(RefCell::new(model));
 
-    // Create dispatcher for event-driven communication
-    let dispatcher = create_dispatcher();
+    // Create event bus for event-driven communication
+    let dispatcher = create_event_bus();
 
     // Create state manager
     let state = Rc::new(StateManager::new(model.clone(), dispatcher.clone()));
@@ -136,21 +136,13 @@ pub fn build_ui(app: &Application, model: AppModel) {
     // Register UI update handlers
     let detail_panel_update = detail_panel_ref.clone();
     let state_update = state.clone();
-    dispatcher.borrow_mut().register(
-        Some(crate::dispatcher::AppMessageKind::ChatMessageAdded),
-        "ui:chat_update",
-        Box::new(move |msg| {
-            if let crate::dispatcher::AppMessage::ChatMessageAdded(phase_idx, step_idx, message) =
-                msg
-            {
-                let current_phase = state_update.current_phase();
-                let current_step = state_update.current_step().unwrap_or(0);
-                if *phase_idx == current_phase && *step_idx == current_step {
-                    detail_panel_update.chat_panel().add_message(message);
-                }
-            }
-        }),
-    );
+    dispatcher.borrow_mut().on_chat_message_added = Box::new(move |phase_idx, step_idx, message| {
+        let current_phase = state_update.current_phase();
+        let current_step = state_update.current_step().unwrap_or(0);
+        if phase_idx == current_phase && step_idx == current_step {
+            detail_panel_update.chat_panel().add_message(&message);
+        }
+    });
 
     // === SETUP SIGNAL HANDLERS ===
 

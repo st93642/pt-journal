@@ -1,4 +1,4 @@
-use crate::dispatcher::{AppMessage, SharedDispatcher};
+use crate::dispatcher::{AppEvent, SharedEventBus};
 use crate::model::{AppModel, ChatMessage, Evidence, StepStatus};
 use crate::state::{UpdateContext, SelectPhase, SelectStep, UpdateStepStatus, UpdateStepNotes, UpdateStepDescriptionNotes, UpdatePhaseNotes, UpdateGlobalNotes, AddChatMessage, AddEvidence, RemoveEvidence, SetChatModel, StateUpdater, ModelAccessor};
 use log;
@@ -10,15 +10,15 @@ use uuid::Uuid;
 /// Shared app model reference for GTK
 pub type SharedModel = Rc<RefCell<AppModel>>;
 
-/// State manager for coordinating model updates and dispatcher events
+/// State manager for coordinating model updates and event bus events
 pub struct StateManager {
     model: SharedModel,
-    dispatcher: SharedDispatcher,
+    dispatcher: SharedEventBus,
     update_context: UpdateContext,
 }
 
 impl StateManager {
-    pub fn new(model: SharedModel, dispatcher: SharedDispatcher) -> Self {
+    pub fn new(model: SharedModel, dispatcher: SharedEventBus) -> Self {
         let update_context = UpdateContext::new(model.clone(), dispatcher.clone());
         Self { model, dispatcher, update_context }
     }
@@ -28,7 +28,7 @@ impl StateManager {
         let update = SelectPhase { phase_idx };
         if let Err(e) = update.update(&self.update_context) {
             log::error!("Failed to select phase {}: {}", phase_idx, e);
-            self.dispatcher.borrow().dispatch(&AppMessage::Error(format!("Failed to select phase: {}", e)));
+            self.dispatcher.borrow().emit(AppEvent::Error(format!("Failed to select phase: {}", e)));
         }
     }
 
@@ -37,7 +37,7 @@ impl StateManager {
         let update = SelectStep { step_idx };
         if let Err(e) = update.update(&self.update_context) {
             log::error!("Failed to select step {}: {}", step_idx, e);
-            self.dispatcher.borrow().dispatch(&AppMessage::Error(format!("Failed to select step: {}", e)));
+            self.dispatcher.borrow().emit(AppEvent::Error(format!("Failed to select step: {}", e)));
         }
     }
 
@@ -48,7 +48,7 @@ impl StateManager {
         let update = UpdateStepStatus { phase_idx, step_idx, status };
         if let Err(e) = update.update(&self.update_context) {
             log::error!("Failed to update step status for phase {}, step {}: {}", phase_idx, step_idx, e);
-            self.dispatcher.borrow().dispatch(&AppMessage::Error(format!("Failed to update step status: {}", e)));
+            self.dispatcher.borrow().emit(AppEvent::Error(format!("Failed to update step status: {}", e)));
         }
     }
 
@@ -57,7 +57,7 @@ impl StateManager {
         let update = UpdateStepNotes { phase_idx, step_idx, notes };
         if let Err(e) = update.update(&self.update_context) {
             log::error!("Failed to update step notes for phase {}, step {}: {}", phase_idx, step_idx, e);
-            self.dispatcher.borrow().dispatch(&AppMessage::Error(format!("Failed to update step notes: {}", e)));
+            self.dispatcher.borrow().emit(AppEvent::Error(format!("Failed to update step notes: {}", e)));
         }
     }
 
@@ -66,7 +66,7 @@ impl StateManager {
         let update = UpdateStepDescriptionNotes { phase_idx, step_idx, notes };
         if let Err(e) = update.update(&self.update_context) {
             log::error!("Failed to update step description notes for phase {}, step {}: {}", phase_idx, step_idx, e);
-            self.dispatcher.borrow().dispatch(&AppMessage::Error(format!("Failed to update step description notes: {}", e)));
+            self.dispatcher.borrow().emit(AppEvent::Error(format!("Failed to update step description notes: {}", e)));
         }
     }
 
@@ -75,7 +75,7 @@ impl StateManager {
         let update = UpdatePhaseNotes { phase_idx, notes };
         if let Err(e) = update.update(&self.update_context) {
             log::error!("Failed to update phase notes for phase {}: {}", phase_idx, e);
-            self.dispatcher.borrow().dispatch(&AppMessage::Error(format!("Failed to update phase notes: {}", e)));
+            self.dispatcher.borrow().emit(AppEvent::Error(format!("Failed to update phase notes: {}", e)));
         }
     }
 
@@ -84,7 +84,7 @@ impl StateManager {
         let update = UpdateGlobalNotes { notes };
         if let Err(e) = update.update(&self.update_context) {
             log::error!("Failed to update global notes: {}", e);
-            self.dispatcher.borrow().dispatch(&AppMessage::Error(format!("Failed to update global notes: {}", e)));
+            self.dispatcher.borrow().emit(AppEvent::Error(format!("Failed to update global notes: {}", e)));
         }
     }
 
@@ -93,7 +93,7 @@ impl StateManager {
         let update = AddChatMessage { phase_idx, step_idx, message };
         if let Err(e) = update.update(&self.update_context) {
             log::error!("Failed to add chat message for phase {}, step {}: {}", phase_idx, step_idx, e);
-            self.dispatcher.borrow().dispatch(&AppMessage::Error(format!("Failed to add chat message: {}", e)));
+            self.dispatcher.borrow().emit(AppEvent::Error(format!("Failed to add chat message: {}", e)));
         }
     }
 
@@ -101,21 +101,21 @@ impl StateManager {
     pub fn start_chat_request(&self, phase_idx: usize, step_idx: usize) {
         self.dispatcher
             .borrow()
-            .dispatch(&AppMessage::ChatRequestStarted(phase_idx, step_idx));
+            .emit(AppEvent::ChatRequestStarted(phase_idx, step_idx));
     }
 
     /// Complete a chat request
     pub fn complete_chat_request(&self, phase_idx: usize, step_idx: usize) {
         self.dispatcher
             .borrow()
-            .dispatch(&AppMessage::ChatRequestCompleted(phase_idx, step_idx));
+            .emit(AppEvent::ChatRequestCompleted(phase_idx, step_idx));
     }
 
     /// Fail a chat request
     pub fn fail_chat_request(&self, phase_idx: usize, step_idx: usize, error: String) {
         self.dispatcher
             .borrow()
-            .dispatch(&AppMessage::ChatRequestFailed(phase_idx, step_idx, error));
+            .emit(AppEvent::ChatRequestFailed(phase_idx, step_idx, error));
     }
 
     /// Get chat history for a step
@@ -126,7 +126,7 @@ impl StateManager {
 
     /// Dispatch an error message
     pub fn dispatch_error(&self, error: String) {
-        self.dispatcher.borrow().dispatch(&AppMessage::Error(error));
+        self.dispatcher.borrow().emit(AppEvent::Error(error));
     }
 
     /// Add evidence to a step
@@ -134,7 +134,7 @@ impl StateManager {
         let update = AddEvidence { phase_idx, step_idx, evidence };
         if let Err(e) = update.update(&self.update_context) {
             log::error!("Failed to add evidence for phase {}, step {}: {}", phase_idx, step_idx, e);
-            self.dispatcher.borrow().dispatch(&AppMessage::Error(format!("Failed to add evidence: {}", e)));
+            self.dispatcher.borrow().emit(AppEvent::Error(format!("Failed to add evidence: {}", e)));
         }
     }
 
@@ -143,7 +143,7 @@ impl StateManager {
         let update = RemoveEvidence { phase_idx, step_idx, evidence_id };
         if let Err(e) = update.update(&self.update_context) {
             log::error!("Failed to remove evidence for phase {}, step {}: {}", phase_idx, step_idx, e);
-            self.dispatcher.borrow().dispatch(&AppMessage::Error(format!("Failed to remove evidence: {}", e)));
+            self.dispatcher.borrow().emit(AppEvent::Error(format!("Failed to remove evidence: {}", e)));
         }
     }
 
@@ -233,7 +233,7 @@ impl StateManager {
             Ok(Some(correct)) => {
                 self.dispatcher
                     .borrow()
-                    .dispatch(&AppMessage::QuizAnswerChecked(
+                    .emit(AppEvent::QuizAnswerChecked(
                         phase_idx,
                         step_idx,
                         question_idx,
@@ -241,7 +241,7 @@ impl StateManager {
                     ));
                 self.dispatcher
                     .borrow()
-                    .dispatch(&AppMessage::QuizStatisticsUpdated(phase_idx, step_idx));
+                    .emit(AppEvent::QuizStatisticsUpdated(phase_idx, step_idx));
                 Some(correct)
             }
             _ => None,
@@ -261,7 +261,7 @@ impl StateManager {
         }).is_ok() {
             self.dispatcher
                 .borrow()
-                .dispatch(&AppMessage::QuizExplanationViewed(
+                .emit(AppEvent::QuizExplanationViewed(
                     phase_idx,
                     step_idx,
                     question_idx,
@@ -273,7 +273,7 @@ impl StateManager {
     pub fn change_quiz_question(&self, phase_idx: usize, step_idx: usize, question_idx: usize) {
         self.dispatcher
             .borrow()
-            .dispatch(&AppMessage::QuizQuestionChanged(
+            .emit(AppEvent::QuizQuestionChanged(
                 phase_idx,
                 step_idx,
                 question_idx,
@@ -285,7 +285,7 @@ impl StateManager {
         let update = SetChatModel { model_id };
         if let Err(e) = update.update(&self.update_context) {
             log::error!("Failed to set chat model: {}", e);
-            self.dispatcher.borrow().dispatch(&AppMessage::Error(format!("Failed to set chat model: {}", e)));
+            self.dispatcher.borrow().emit(AppEvent::Error(format!("Failed to set chat model: {}", e)));
         }
     }
 }
@@ -293,13 +293,12 @@ impl StateManager {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::dispatcher::create_dispatcher;
     use crate::model::{AppModel, ChatRole, QuizAnswer, QuizQuestion, QuizStep, Step};
     use std::sync::{Arc, Mutex};
 
     fn create_test_state() -> StateManager {
         let model = Rc::new(RefCell::new(AppModel::default()));
-        let dispatcher = create_dispatcher();
+        let dispatcher = crate::dispatcher::create_event_bus();
         StateManager::new(model, dispatcher)
     }
 
@@ -350,7 +349,7 @@ mod tests {
 
     fn create_test_state_with_quiz() -> StateManager {
         let model = Rc::new(RefCell::new(AppModel::default()));
-        let dispatcher = create_dispatcher();
+        let dispatcher = crate::dispatcher::create_event_bus();
 
         // Replace first step of first phase with a quiz step
         {
@@ -380,44 +379,32 @@ mod tests {
     #[test]
     fn test_select_phase() {
         let state = create_test_state();
-        let message_received = Arc::new(Mutex::new(false));
+        let message_received = Arc::new(Mutex::new(None));
         let msg_clone = message_received.clone();
 
-        state.dispatcher.borrow_mut().register(
-            None,
-            "test",
-            Box::new(move |msg| {
-                if matches!(msg, AppMessage::PhaseSelected(1)) {
-                    *msg_clone.lock().unwrap() = true;
-                }
-            }),
-        );
+        state.dispatcher.borrow_mut().on_phase_selected = Box::new(move |idx| {
+            *msg_clone.lock().unwrap() = Some(idx);
+        });
 
         state.select_phase(1);
         assert_eq!(state.current_phase(), 1);
         assert!(state.current_step().is_none());
-        assert!(*message_received.lock().unwrap());
+        assert_eq!(*message_received.lock().unwrap(), Some(1));
     }
 
     #[test]
     fn test_select_step() {
         let state = create_test_state();
-        let message_received = Arc::new(Mutex::new(false));
+        let message_received = Arc::new(Mutex::new(None));
         let msg_clone = message_received.clone();
 
-        state.dispatcher.borrow_mut().register(
-            None,
-            "test",
-            Box::new(move |msg| {
-                if matches!(msg, AppMessage::StepSelected(2)) {
-                    *msg_clone.lock().unwrap() = true;
-                }
-            }),
-        );
+        state.dispatcher.borrow_mut().on_step_selected = Box::new(move |idx| {
+            *msg_clone.lock().unwrap() = Some(idx);
+        });
 
         state.select_step(2);
         assert_eq!(state.current_step(), Some(2));
-        assert!(*message_received.lock().unwrap());
+        assert_eq!(*message_received.lock().unwrap(), Some(2));
     }
 
     #[test]
@@ -426,13 +413,10 @@ mod tests {
         let messages = Arc::new(Mutex::new(Vec::new()));
         let msg_clone = messages.clone();
 
-        state.dispatcher.borrow_mut().register(
-            None,
-            "test",
-            Box::new(move |msg| {
-                msg_clone.lock().unwrap().push(format!("{:?}", msg));
-            }),
-        );
+        state.dispatcher.borrow_mut().on_step_status_changed = Box::new(move |phase_idx, step_idx, status| {
+            let status_str = format!("Phase: {}, Step: {}, Status: {:?}", phase_idx, step_idx, status);
+            msg_clone.lock().unwrap().push(status_str);
+        });
 
         state.update_step_status(0, 0, StepStatus::Done);
 
@@ -443,7 +427,8 @@ mod tests {
         assert!(matches!(status, StepStatus::Done));
 
         let msgs = messages.lock().unwrap();
-        assert!(msgs.iter().any(|m| m.contains("StepStatusChanged")));
+        println!("All messages: {:?}", msgs);
+        assert!(msgs.iter().any(|m| m.contains("Phase: 0, Step: 0")));
     }
 
     #[test]
@@ -511,15 +496,27 @@ mod tests {
     fn test_chat_operations() {
         let state = create_test_state();
         let messages = Arc::new(Mutex::new(Vec::new()));
-        let msg_clone = messages.clone();
+        let msg_clone1 = messages.clone();
+        let msg_clone2 = messages.clone();
+        let msg_clone3 = messages.clone();
+        let msg_clone4 = messages.clone();
 
-        state.dispatcher.borrow_mut().register(
-            None,
-            "test",
-            Box::new(move |msg| {
-                msg_clone.lock().unwrap().push(format!("{:?}", msg));
-            }),
-        );
+        state.dispatcher.borrow_mut().on_chat_message_added = Box::new(move |phase_idx, step_idx, message| {
+            let msg_str = format!("ChatMessageAdded: phase={}, step={}, content={}", phase_idx, step_idx, message.content);
+            msg_clone1.lock().unwrap().push(msg_str);
+        });
+        state.dispatcher.borrow_mut().on_chat_request_started = Box::new(move |phase_idx, step_idx| {
+            let msg_str = format!("ChatRequestStarted: phase={}, step={}", phase_idx, step_idx);
+            msg_clone2.lock().unwrap().push(msg_str);
+        });
+        state.dispatcher.borrow_mut().on_chat_request_completed = Box::new(move |phase_idx, step_idx| {
+            let msg_str = format!("ChatRequestCompleted: phase={}, step={}", phase_idx, step_idx);
+            msg_clone3.lock().unwrap().push(msg_str);
+        });
+        state.dispatcher.borrow_mut().on_chat_request_failed = Box::new(move |phase_idx, step_idx, error| {
+            let msg_str = format!("ChatRequestFailed: phase={}, step={}, error={}", phase_idx, step_idx, error);
+            msg_clone4.lock().unwrap().push(msg_str);
+        });
 
         // Test adding chat message
         let message = ChatMessage::new(ChatRole::User, "Hello".to_string());
@@ -547,13 +544,10 @@ mod tests {
         let messages = Arc::new(Mutex::new(Vec::new()));
         let msg_clone = messages.clone();
 
-        state.dispatcher.borrow_mut().register(
-            None,
-            "test",
-            Box::new(move |msg| {
-                msg_clone.lock().unwrap().push(format!("{:?}", msg));
-            }),
-        );
+        state.dispatcher.borrow_mut().on_chat_model_changed = Box::new(move |model_id| {
+            let msg_str = format!("ChatModelChanged: {}", model_id);
+            msg_clone.lock().unwrap().push(msg_str);
+        });
 
         state.set_chat_model("mistral:7b".to_string());
 
@@ -571,15 +565,17 @@ mod tests {
     fn test_check_answer_correct_first_attempt() {
         let state = create_test_state_with_quiz();
         let messages = Arc::new(Mutex::new(Vec::new()));
-        let msg_clone = messages.clone();
+        let msg_clone1 = messages.clone();
+        let msg_clone2 = messages.clone();
 
-        state.dispatcher.borrow_mut().register(
-            None,
-            "test",
-            Box::new(move |msg| {
-                msg_clone.lock().unwrap().push(format!("{:?}", msg));
-            }),
-        );
+        state.dispatcher.borrow_mut().on_quiz_answer_checked = Box::new(move |phase_idx, step_idx, question_idx, is_correct| {
+            let msg_str = format!("QuizAnswerChecked: phase={}, step={}, question={}, correct={}", phase_idx, step_idx, question_idx, is_correct);
+            msg_clone1.lock().unwrap().push(msg_str);
+        });
+        state.dispatcher.borrow_mut().on_quiz_statistics_updated = Box::new(move |phase_idx, step_idx| {
+            let msg_str = format!("QuizStatisticsUpdated: phase={}, step={}", phase_idx, step_idx);
+            msg_clone2.lock().unwrap().push(msg_str);
+        });
 
         // Check correct answer (index 1 for first question)
         let result = state.check_answer(0, 0, 0, 1);
@@ -674,13 +670,10 @@ mod tests {
         let messages = Arc::new(Mutex::new(Vec::new()));
         let msg_clone = messages.clone();
 
-        state.dispatcher.borrow_mut().register(
-            None,
-            "test",
-            Box::new(move |msg| {
-                msg_clone.lock().unwrap().push(format!("{:?}", msg));
-            }),
-        );
+        state.dispatcher.borrow_mut().on_quiz_explanation_viewed = Box::new(move |phase_idx, step_idx, question_idx| {
+            let msg_str = format!("QuizExplanationViewed: phase={}, step={}, question={}", phase_idx, step_idx, question_idx);
+            msg_clone.lock().unwrap().push(msg_str);
+        });
 
         // View explanation before answering
         state.view_explanation(0, 0, 0);
@@ -755,13 +748,10 @@ mod tests {
         let messages = Arc::new(Mutex::new(Vec::new()));
         let msg_clone = messages.clone();
 
-        state.dispatcher.borrow_mut().register(
-            None,
-            "test",
-            Box::new(move |msg| {
-                msg_clone.lock().unwrap().push(format!("{:?}", msg));
-            }),
-        );
+        state.dispatcher.borrow_mut().on_quiz_question_changed = Box::new(move |phase_idx, step_idx, question_idx| {
+            let msg_str = format!("QuizQuestionChanged: phase={}, step={}, question={}", phase_idx, step_idx, question_idx);
+            msg_clone.lock().unwrap().push(msg_str);
+        });
 
         // Change to second question
         state.change_quiz_question(0, 0, 1);

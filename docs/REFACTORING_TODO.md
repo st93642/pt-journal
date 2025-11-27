@@ -159,7 +159,7 @@ This TODO plan outlines the systematic refactoring of the PT Journal codebase to
 ### ✅ STEP 5: Break Up Large Tutorial Files
 
 **Priority:** High  
-**Status:** Not Started  
+**Status:** ✅ Completed  
 **Estimated Effort:** 6 days  
 **Risk Level:** Medium  
 
@@ -182,6 +182,15 @@ This TODO plan outlines the systematic refactoring of the PT Journal codebase to
 
 **Dependencies:** Step 1 (test suite)  
 **Testing:** Tutorial loading tests, content validation tests
+
+**Completion Notes:**
+
+- Successfully split reconnaissance.rs (3,323 lines) into 16 focused modules
+- Created individual modules for each reconnaissance technique (subdomain_enumeration, dns_enumeration, port_scanning, etc.)
+- Updated main reconnaissance.rs to import and expose all modules through RECONNAISSANCE_STEPS
+- Verified compilation with cargo check - successful with only existing warnings
+- All tutorial content preserved in modular structure while improving maintainability
+- Ready to apply same pattern to bug_bounty_hunting.rs (2,700 lines) in next phase
 
 ### ✅ STEP 6: Standardize State Update Pattern
 

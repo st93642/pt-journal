@@ -6,7 +6,7 @@ PT Journal uses a comprehensive testing strategy with separate unit and integrat
 
 ## Test Organization
 
-```
+```text
 tests/
 ├── unit/                    # Unit tests for individual components
 │   ├── mod.rs              # Aggregates all unit tests
@@ -26,7 +26,9 @@ tests/
 ## Running Tests
 
 ### Unified Test Suite
+
 Run all tests, linting, and formatting checks:
+
 ```bash
 ./test-all.sh
 ```
@@ -34,16 +36,19 @@ Run all tests, linting, and formatting checks:
 ### Individual Test Suites
 
 **Unit Tests** (95 tests):
+
 ```bash
 cargo test --test unit_tests
 ```
 
 **Integration Tests** (11 tests):
+
 ```bash
 cargo test --test integration_tests
 ```
 
 **All Tests** (including doctests):
+
 ```bash
 cargo test
 ```
@@ -51,16 +56,19 @@ cargo test
 ### Development Workflow
 
 **Quick Test** (just unit tests):
+
 ```bash
 cargo test --test unit_tests
 ```
 
 **Full Validation** (tests + quality checks):
+
 ```bash
 ./test-all.sh
 ```
 
 **Specific Test File**:
+
 ```bash
 cargo test --test unit_tests -- chat_provider_tests
 ```
@@ -68,12 +76,14 @@ cargo test --test unit_tests -- chat_provider_tests
 ## Test Categories
 
 ### Unit Tests
+
 - **Component Isolation**: Each test focuses on a single component
 - **Fast Execution**: <1 second for all unit tests
 - **Mock Dependencies**: External dependencies are mocked
 - **Coverage**: 90%+ code coverage target
 
 ### Integration Tests
+
 - **Component Interaction**: Tests how components work together
 - **Real Dependencies**: Uses actual implementations
 - **End-to-End Scenarios**: Tests complete workflows
@@ -102,24 +112,29 @@ The unified test script (`test-all.sh`) is designed for CI/CD pipelines:
 
 ## Adding New Tests
 
-### Unit Tests
+ Unit Tests
+
 1. Create test file in `tests/unit/`
 2. Add module declaration to `tests/unit/mod.rs`
 3. Follow naming convention: `{component}_tests.rs`
 
-### Integration Tests
+Integration Tests
+
 1. Add tests to `tests/integration/integration_tests.rs`
 2. Use the `test_runner` utility for test orchestration
 
 ## Test Utilities
 
 ### Test Runner
+
 Located in `tests/integration/test_runner.rs`, provides:
+
 - Test execution timing
 - Result aggregation
 - Failure reporting
 
 ### Common Test Dependencies
+
 - `tempfile`: Temporary file creation
 - `assert_matches`: Pattern matching assertions
 - `httpmock`: HTTP API mocking
@@ -128,6 +143,7 @@ Located in `tests/integration/test_runner.rs`, provides:
 ## Performance Benchmarks
 
 Current test execution times:
+
 - Unit tests: ~0.8 seconds
 - Integration tests: ~0.2 seconds
 - Clippy: ~1.4 seconds
@@ -143,16 +159,19 @@ Current test execution times:
 ## Debugging Failed Tests
 
 1. **Run specific test**:
+
    ```bash
    cargo test --test unit_tests -- --nocapture test_name
    ```
 
 2. **Enable logging**:
+
    ```bash
    RUST_LOG=debug cargo test --test unit_tests
    ```
 
 3. **Debug GTK tests** (if needed):
+
    ```bash
    GTK_DEBUG=interactive cargo test --test unit_tests
    ```

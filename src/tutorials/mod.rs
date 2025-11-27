@@ -275,24 +275,7 @@ fn create_comptia_secplus_phase() -> Phase {
 }
 
 fn create_bug_bounty_hunting_phase() -> Phase {
-    let steps = bug_bounty_hunting::STEPS
-        .iter()
-        .map(|(title, description)| {
-            Step::new_tutorial(
-                Uuid::new_v4(),
-                title.to_string(),
-                description.to_string(),
-                vec!["bugbounty".to_string()],
-            )
-        })
-        .collect();
-
-    Phase {
-        id: Uuid::new_v4(),
-        name: "Bug Bounty Hunting".to_string(),
-        steps,
-        notes: String::new(),
-    }
+    bug_bounty_hunting::load_phase()
 }
 
 fn create_pentest_exam_phase() -> Phase {

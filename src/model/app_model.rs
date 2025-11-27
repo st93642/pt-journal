@@ -119,30 +119,39 @@ impl AppModel {
     /// Get a read-only view of a step within the currently selected phase
     pub fn current_step(&self) -> Option<&Step> {
         self.current_phase().and_then(|phase| {
-            self.selected_step.and_then(|step_idx| phase.steps.get(step_idx))
+            self.selected_step
+                .and_then(|step_idx| phase.steps.get(step_idx))
         })
     }
 
     /// Get a read-only view of a step by phase and step indices
     pub fn step(&self, phase_idx: usize, step_idx: usize) -> Option<&Step> {
-        self.phase(phase_idx).and_then(|phase| phase.steps.get(step_idx))
+        self.phase(phase_idx)
+            .and_then(|phase| phase.steps.get(step_idx))
     }
 
     /// Get the number of steps in the currently selected phase
     pub fn current_phase_step_count(&self) -> usize {
-        self.current_phase().map(|phase| phase.steps.len()).unwrap_or(0)
+        self.current_phase()
+            .map(|phase| phase.steps.len())
+            .unwrap_or(0)
     }
 
     /// Get summaries of steps for a given phase (for UI display)
     pub fn get_step_summaries_for_phase(&self, phase_idx: usize) -> Vec<StepSummary> {
         self.phase(phase_idx)
             .map(|phase| {
-                phase.steps.iter().enumerate().map(|(idx, step)| StepSummary {
-                    index: idx,
-                    title: step.title.clone(),
-                    status: step.status.clone(),
-                    completed_at: step.completed_at,
-                }).collect()
+                phase
+                    .steps
+                    .iter()
+                    .enumerate()
+                    .map(|(idx, step)| StepSummary {
+                        index: idx,
+                        title: step.title.clone(),
+                        status: step.status.clone(),
+                        completed_at: step.completed_at,
+                    })
+                    .collect()
             })
             .unwrap_or_default()
     }

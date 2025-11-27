@@ -29,5 +29,3 @@ pub fn load_session(path: &Path) -> Result<Session> {
 
     Ok(session)
 }
-
-

@@ -1,9 +1,9 @@
 use assert_matches::assert_matches;
+use chrono::Utc;
 use std::fs;
 use std::time::Instant;
 use tempfile::TempDir;
 use uuid::Uuid;
-use chrono::Utc;
 
 use pt_journal::model::*;
 use pt_journal::store;
@@ -24,15 +24,12 @@ mod tests {
             assert_eq!(model.selected_step(), Some(0));
             assert!(model.current_path().is_none());
             assert_eq!(model.session().phases.len(), 22); // 22 phases after API consolidation
-                                                        // Config should be loaded (or default)
+                                                          // Config should be loaded (or default)
             assert_eq!(
                 model.config().chatbot.ollama.endpoint,
                 "http://localhost:11434"
             );
-            assert_eq!(
-                model.config().chatbot.default_model_id,
-                "llama3.2:latest"
-            );
+            assert_eq!(model.config().chatbot.default_model_id, "llama3.2:latest");
         }
 
         #[test]
@@ -212,7 +209,7 @@ mod tests {
 
             // Test invalid phase bounds
             model.set_selected_phase(10); // Beyond available phases
-                                       // Should not panic, just store the value
+                                          // Should not panic, just store the value
             assert_eq!(model.selected_phase(), 10);
         }
     }

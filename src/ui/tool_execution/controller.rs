@@ -32,13 +32,17 @@ impl<P: InstructionProvider, T: TerminalInterface, V: ToolPanelView> ToolPanelCo
     /// Initializes the view with categories and tools.
     pub fn initialize(&self) {
         self.initializing.set(true);
-        
-        let categories: Vec<String> = self.provider.category_groups()
+
+        let categories: Vec<String> = self
+            .provider
+            .category_groups()
             .iter()
             .map(|group| group.name.clone())
             .collect();
 
-        self.view.borrow_mut().set_categories(&categories, self.provider.default_category_index());
+        self.view
+            .borrow_mut()
+            .set_categories(&categories, self.provider.default_category_index());
 
         // Initialize tools for the default category
         self.update_tools_for_category(None);
@@ -57,9 +61,8 @@ impl<P: InstructionProvider, T: TerminalInterface, V: ToolPanelView> ToolPanelCo
     /// Handles tool selection changes.
     pub fn on_tool_changed(&self) {
         if self.initializing.get() || self.updating.get() {
-            return;
+            // No longer updating inline instructions display
         }
-        // No longer updating inline instructions display
     }
 
     /// Shows the instructions dialog for the currently selected tool.
@@ -92,7 +95,10 @@ impl<P: InstructionProvider, T: TerminalInterface, V: ToolPanelView> ToolPanelCo
     }
 
     /// Resolves instruction state for the given tool ID (exposed for panel use).
-    pub fn resolve_instruction_state(&self, tool_id: Option<&str>) -> super::renderer::InstructionState<'_> {
+    pub fn resolve_instruction_state(
+        &self,
+        tool_id: Option<&str>,
+    ) -> super::renderer::InstructionState<'_> {
         if let Some(tool_id) = tool_id {
             if let Some(instructions) = self.provider.get_instructions(Some(tool_id)) {
                 return super::renderer::InstructionState::Available(instructions);
@@ -101,7 +107,8 @@ impl<P: InstructionProvider, T: TerminalInterface, V: ToolPanelView> ToolPanelCo
             // Fallback to first manifest entry when no tool is selected
             if let Some(first_group) = self.provider.category_groups().first() {
                 if let Some(first_tool) = first_group.tools.first() {
-                    if let Some(instructions) = self.provider.get_instructions(Some(&first_tool.id)) {
+                    if let Some(instructions) = self.provider.get_instructions(Some(&first_tool.id))
+                    {
                         return super::renderer::InstructionState::Available(instructions);
                     }
                 }
@@ -116,22 +123,24 @@ impl<P: InstructionProvider, T: TerminalInterface, V: ToolPanelView> ToolPanelCo
     /// Updates the tools for the given category (or default category if None).
     fn update_tools_for_category(&self, category_name: Option<&str>) {
         self.updating.set(true);
-        
+
         let category_name = category_name.unwrap_or_else(|| {
             let categories = self.provider.category_groups();
-            categories.get(self.provider.default_category_index())
+            categories
+                .get(self.provider.default_category_index())
                 .map(|g| g.name.as_str())
                 .unwrap_or("")
         });
 
         let tools_data = self.provider.tools_for_category(category_name);
-        let tools: Vec<(&str, &str)> = tools_data.iter()
+        let tools: Vec<(&str, &str)> = tools_data
+            .iter()
             .map(|tool| (tool.id.as_str(), tool.label.as_str()))
             .collect();
 
         let default_tool_id = Some(self.provider.default_tool_id());
         self.view.borrow_mut().set_tools(&tools, default_tool_id);
-        
+
         self.updating.set(false);
     }
 }
@@ -142,9 +151,10 @@ pub struct DefaultInstructionProvider;
 impl InstructionProvider for DefaultInstructionProvider {
     fn category_groups(&self) -> &[crate::ui::tool_instructions::CategoryGroup] {
         // Return a static reference to avoid lifetime issues
-        static CACHED_GROUPS: OnceLock<Vec<crate::ui::tool_instructions::CategoryGroup>> = OnceLock::new();
+        static CACHED_GROUPS: OnceLock<Vec<crate::ui::tool_instructions::CategoryGroup>> =
+            OnceLock::new();
 
-        CACHED_GROUPS.get_or_init(|| crate::ui::tool_instructions::grouped_manifest())
+        CACHED_GROUPS.get_or_init(crate::ui::tool_instructions::grouped_manifest)
     }
 
     fn default_category_index(&self) -> usize {
@@ -157,16 +167,26 @@ impl InstructionProvider for DefaultInstructionProvider {
         // Return a static string to avoid lifetime issues
         static CACHED_TOOL_ID: OnceLock<String> = OnceLock::new();
 
-        CACHED_TOOL_ID.get_or_init(|| ToolPickerModel::from_manifest().default_tool_id().to_string())
+        CACHED_TOOL_ID.get_or_init(|| {
+            ToolPickerModel::from_manifest()
+                .default_tool_id()
+                .to_string()
+        })
     }
 
-    fn tools_for_category(&self, category: &str) -> Vec<crate::ui::tool_instructions::ToolManifestEntry> {
+    fn tools_for_category(
+        &self,
+        category: &str,
+    ) -> Vec<crate::ui::tool_instructions::ToolManifestEntry> {
         use super::picker::ToolPickerModel;
         let model = ToolPickerModel::from_manifest();
         model.tools_for_category(category).to_vec()
     }
 
-    fn get_instructions(&self, tool_id: Option<&str>) -> Option<&crate::ui::tool_instructions::ToolInstructions> {
-        tool_id.and_then(|id| crate::ui::tool_instructions::get_instructions(id))
+    fn get_instructions(
+        &self,
+        tool_id: Option<&str>,
+    ) -> Option<&crate::ui::tool_instructions::ToolInstructions> {
+        tool_id.and_then(crate::ui::tool_instructions::get_instructions)
     }
 }

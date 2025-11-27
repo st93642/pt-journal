@@ -5,7 +5,7 @@
 /*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
 /*                                                          TT         SS II */
 /*  Created: Nov 25 2025 14:30 st93642                      TT    SSSSSSS II */
-/*  Updated: Nov 26 2025 17:58 st93642                                       */
+/*  Updated: Nov 27 2025 02:27 st93642                                       */
 /*                                                                           */
 /*   Transport and Telecommunication Institute - Riga, Latvia                */
 /*                       https://tsi.lv                                      */
@@ -321,10 +321,7 @@ mod tests {
     #[test]
     fn test_default_config() {
         let config = AppConfig::default();
-        assert_eq!(
-            config.chatbot.default_model_id,
-            "llama3.2:latest"
-        );
+        assert_eq!(config.chatbot.default_model_id, "llama3.2:latest");
         assert!(config
             .chatbot
             .models
@@ -350,10 +347,7 @@ mod tests {
         clear_chatbot_env();
 
         let config = AppConfig::load().unwrap();
-        assert_eq!(
-            config.chatbot.default_model_id,
-            "llama3.2:latest"
-        );
+        assert_eq!(config.chatbot.default_model_id, "llama3.2:latest");
         assert_eq!(config.chatbot.ollama.endpoint, "http://localhost:11434");
 
         if let Ok(original) = original_xdg {
@@ -390,8 +384,6 @@ mod tests {
         env::set_var("PT_JOURNAL_OLLAMA_MODEL", "mistral:7b");
         env::set_var("PT_JOURNAL_OLLAMA_ENDPOINT", "http://env:9090");
         env::set_var("PT_JOURNAL_OLLAMA_TIMEOUT_SECONDS", "90");
-        env::set_var("PT_JOURNAL_LLAMA_CPP_GGUF_PATH", "/models/phi3.gguf");
-        env::set_var("PT_JOURNAL_LLAMA_CPP_CONTEXT_SIZE", "8192");
 
         let config = AppConfig::load().unwrap();
         assert_eq!(config.chatbot.default_model_id, "phi3:mini-4k-instruct");

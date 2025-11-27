@@ -1,6 +1,4 @@
-use pt_journal::chatbot::{
-    ChatProvider, ChatRequest, ChatService, OllamaProvider, StepContext,
-};
+use pt_journal::chatbot::{ChatProvider, ChatRequest, ChatService, OllamaProvider, StepContext};
 use pt_journal::config::{
     ChatbotConfig, ModelParameters, ModelProfile, ModelProviderKind, OllamaProviderConfig,
 };

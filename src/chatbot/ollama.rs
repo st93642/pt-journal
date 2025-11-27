@@ -198,9 +198,9 @@ impl ChatProvider for OllamaProvider {
 
         let resp_json: serde_json::Value = response.json().map_err(ChatError::Http)?;
 
-        let models = resp_json["models"]
-            .as_array()
-            .ok_or_else(|| ChatError::InvalidResponse("Missing models array in response".to_string()))?;
+        let models = resp_json["models"].as_array().ok_or_else(|| {
+            ChatError::InvalidResponse("Missing models array in response".to_string())
+        })?;
 
         let model_names = models
             .iter()

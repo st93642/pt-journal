@@ -1,10 +1,10 @@
 use crate::dispatcher::{AppMessage, SharedDispatcher};
 use crate::model::{AppModel, ChatMessage, Evidence, StepStatus};
+use log;
 use std::cell::RefCell;
 /// UI state management module
 use std::rc::Rc;
 use uuid::Uuid;
-use log;
 
 /// Shared app model reference for GTK
 pub type SharedModel = Rc<RefCell<AppModel>>;
@@ -67,7 +67,11 @@ impl StateManager {
         {
             Some(f(step))
         } else {
-            log::warn!("Invalid phase/step index: phase={}, step={}", phase_idx, step_idx);
+            log::warn!(
+                "Invalid phase/step index: phase={}, step={}",
+                phase_idx,
+                step_idx
+            );
             None
         }
     }
@@ -89,7 +93,11 @@ impl StateManager {
         {
             Some(f(step))
         } else {
-            log::warn!("Invalid phase/step index: phase={}, step={}", phase_idx, step_idx);
+            log::warn!(
+                "Invalid phase/step index: phase={}, step={}",
+                phase_idx,
+                step_idx
+            );
             None
         }
     }
@@ -113,14 +121,17 @@ impl StateManager {
 
     /// Update step status
     pub fn update_step_status(&self, phase_idx: usize, step_idx: usize, status: StepStatus) {
-        if self.with_step_mut(phase_idx, step_idx, |step| {
-            step.status = status.clone();
-            if matches!(status, StepStatus::Done) {
-                step.completed_at = Some(chrono::Utc::now());
-            } else {
-                step.completed_at = None;
-            }
-        }).is_some() {
+        if self
+            .with_step_mut(phase_idx, step_idx, |step| {
+                step.status = status.clone();
+                if matches!(status, StepStatus::Done) {
+                    step.completed_at = Some(chrono::Utc::now());
+                } else {
+                    step.completed_at = None;
+                }
+            })
+            .is_some()
+        {
             self.dispatcher
                 .borrow()
                 .dispatch(&AppMessage::StepStatusChanged(phase_idx, step_idx, status));
@@ -129,7 +140,10 @@ impl StateManager {
 
     /// Update step notes
     pub fn update_step_notes(&self, phase_idx: usize, step_idx: usize, notes: String) {
-        if self.with_step_mut(phase_idx, step_idx, |step| step.set_notes(notes.clone())).is_some() {
+        if self
+            .with_step_mut(phase_idx, step_idx, |step| step.set_notes(notes.clone()))
+            .is_some()
+        {
             self.dispatcher
                 .borrow()
                 .dispatch(&AppMessage::StepNotesUpdated(phase_idx, step_idx, notes));
@@ -138,7 +152,12 @@ impl StateManager {
 
     /// Update step description notes
     pub fn update_step_description_notes(&self, phase_idx: usize, step_idx: usize, notes: String) {
-        if self.with_step_mut(phase_idx, step_idx, |step| step.set_description_notes(notes.clone())).is_some() {
+        if self
+            .with_step_mut(phase_idx, step_idx, |step| {
+                step.set_description_notes(notes.clone())
+            })
+            .is_some()
+        {
             self.dispatcher
                 .borrow()
                 .dispatch(&AppMessage::StepDescriptionNotesUpdated(
@@ -149,7 +168,10 @@ impl StateManager {
 
     /// Update phase notes
     pub fn update_phase_notes(&self, phase_idx: usize, notes: String) {
-        if self.with_phase_mut(phase_idx, |phase| phase.notes = notes.clone()).is_some() {
+        if self
+            .with_phase_mut(phase_idx, |phase| phase.notes = notes.clone())
+            .is_some()
+        {
             self.dispatcher
                 .borrow()
                 .dispatch(&AppMessage::PhaseNotesUpdated(phase_idx, notes));
@@ -169,7 +191,12 @@ impl StateManager {
 
     /// Add chat message to a step
     pub fn add_chat_message(&self, phase_idx: usize, step_idx: usize, message: ChatMessage) {
-        if self.with_step_mut(phase_idx, step_idx, |step| step.add_chat_message(message.clone())).is_some() {
+        if self
+            .with_step_mut(phase_idx, step_idx, |step| {
+                step.add_chat_message(message.clone())
+            })
+            .is_some()
+        {
             self.dispatcher
                 .borrow()
                 .dispatch(&AppMessage::ChatMessageAdded(phase_idx, step_idx, message));
@@ -210,7 +237,12 @@ impl StateManager {
 
     /// Add evidence to a step
     pub fn add_evidence(&self, phase_idx: usize, step_idx: usize, evidence: Evidence) {
-        if self.with_step_mut(phase_idx, step_idx, |step| step.add_evidence(evidence.clone())).is_some() {
+        if self
+            .with_step_mut(phase_idx, step_idx, |step| {
+                step.add_evidence(evidence.clone())
+            })
+            .is_some()
+        {
             self.dispatcher
                 .borrow()
                 .dispatch(&AppMessage::EvidenceAdded(phase_idx, step_idx, evidence));
@@ -219,7 +251,12 @@ impl StateManager {
 
     /// Remove evidence from a step
     pub fn remove_evidence(&self, phase_idx: usize, step_idx: usize, evidence_id: Uuid) {
-        if self.with_step_mut(phase_idx, step_idx, |step| step.remove_evidence(evidence_id)).is_some() {
+        if self
+            .with_step_mut(phase_idx, step_idx, |step| {
+                step.remove_evidence(evidence_id)
+            })
+            .is_some()
+        {
             self.dispatcher
                 .borrow()
                 .dispatch(&AppMessage::EvidenceRemoved(
@@ -277,38 +314,43 @@ impl StateManager {
         question_idx: usize,
         answer_idx: usize,
     ) -> Option<bool> {
-        let is_correct = self.with_step_mut(phase_idx, step_idx, |step| {
-            if let Some(quiz_step) = step.quiz_mut_safe() {
-                if let Some(question) = quiz_step.questions.get(question_idx) {
-                    // Check if the selected answer is correct
-                    let correct = question
-                        .answers
-                        .get(answer_idx)
-                        .map(|a| a.is_correct)
-                        .unwrap_or(false);
+        let is_correct = self
+            .with_step_mut(phase_idx, step_idx, |step| {
+                if let Some(quiz_step) = step.quiz_mut_safe() {
+                    if let Some(question) = quiz_step.questions.get(question_idx) {
+                        // Check if the selected answer is correct
+                        let correct = question
+                            .answers
+                            .get(answer_idx)
+                            .map(|a| a.is_correct)
+                            .unwrap_or(false);
 
-                    // Update progress
-                    if let Some(progress) = quiz_step.progress.get_mut(question_idx) {
-                        let first_attempt = progress.attempts == 0;
-                        progress.answered = true;
-                        progress.selected_answer_index = Some(answer_idx);
-                        progress.is_correct = Some(correct);
-                        progress.attempts += 1;
-                        progress.last_attempted = Some(chrono::Utc::now());
+                        // Update progress
+                        if let Some(progress) = quiz_step.progress.get_mut(question_idx) {
+                            let first_attempt = progress.attempts == 0;
+                            progress.answered = true;
+                            progress.selected_answer_index = Some(answer_idx);
+                            progress.is_correct = Some(correct);
+                            progress.attempts += 1;
+                            progress.last_attempted = Some(chrono::Utc::now());
 
-                        if first_attempt && correct && !progress.explanation_viewed_before_answer {
-                            progress.first_attempt_correct = true;
+                            if first_attempt
+                                && correct
+                                && !progress.explanation_viewed_before_answer
+                            {
+                                progress.first_attempt_correct = true;
+                            }
                         }
-                    }
 
-                    Some(correct)
+                        Some(correct)
+                    } else {
+                        None
+                    }
                 } else {
                     None
                 }
-            } else {
-                None
-            }
-        }).flatten();
+            })
+            .flatten();
 
         if let Some(correct) = is_correct {
             self.dispatcher
@@ -329,15 +371,18 @@ impl StateManager {
 
     /// Mark that a user viewed the explanation before answering
     pub fn view_explanation(&self, phase_idx: usize, step_idx: usize, question_idx: usize) {
-        if self.with_step_mut(phase_idx, step_idx, |step| {
-            if let Some(quiz_step) = step.quiz_mut_safe() {
-                if let Some(progress) = quiz_step.progress.get_mut(question_idx) {
-                    if !progress.answered {
-                        progress.explanation_viewed_before_answer = true;
+        if self
+            .with_step_mut(phase_idx, step_idx, |step| {
+                if let Some(quiz_step) = step.quiz_mut_safe() {
+                    if let Some(progress) = quiz_step.progress.get_mut(question_idx) {
+                        if !progress.answered {
+                            progress.explanation_viewed_before_answer = true;
+                        }
                     }
                 }
-            }
-        }).is_some() {
+            })
+            .is_some()
+        {
             self.dispatcher
                 .borrow()
                 .dispatch(&AppMessage::QuizExplanationViewed(

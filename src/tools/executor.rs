@@ -27,8 +27,6 @@
 use super::traits::*;
 use anyhow::Result;
 use std::io::Read;
-#[cfg(test)]
-use std::time::Duration;
 use std::time::Instant;
 
 /// Default executor implementation
@@ -77,7 +75,9 @@ impl ToolRunner for DefaultExecutor {
         }
 
         // Execute with timeout handling
-        let command = command.stdout(std::process::Stdio::piped()).stderr(std::process::Stdio::piped());
+        let command = command
+            .stdout(std::process::Stdio::piped())
+            .stderr(std::process::Stdio::piped());
         let mut child = command.spawn()?;
 
         let mut stdout_buf = Vec::new();

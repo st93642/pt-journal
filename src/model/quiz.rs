@@ -122,4 +122,3 @@ pub struct QuizStatistics {
     pub first_attempt_correct: usize, // Questions answered correctly on first try without viewing explanation
     pub score_percentage: f32,
 }
-

@@ -3,12 +3,15 @@
 //! These tests focus on the business logic of controllers without requiring GTK.
 //! They test helper functions and data transformations.
 
+use chrono;
 use pt_journal::chatbot::StepContext;
-use pt_journal::model::{AppModel, ChatMessage, ChatRole, Evidence, Phase, QuizAnswer, QuizQuestion, QuizStep, Step, StepStatus};
+use pt_journal::model::{
+    AppModel, ChatMessage, ChatRole, Evidence, Phase, QuizAnswer, QuizQuestion, QuizStep, Step,
+    StepStatus,
+};
 use std::cell::RefCell;
 use std::rc::Rc;
 use uuid::Uuid;
-use chrono;
 
 /// Test the build_step_context helper function
 #[test]
@@ -47,7 +50,10 @@ fn test_build_step_context() {
 
     // Add chat history
     step.add_chat_message(ChatMessage::new(ChatRole::User, "Hello".to_string()));
-    step.add_chat_message(ChatMessage::new(ChatRole::Assistant, "Hi there!".to_string()));
+    step.add_chat_message(ChatMessage::new(
+        ChatRole::Assistant,
+        "Hi there!".to_string(),
+    ));
 
     phase.steps.push(step);
     model.session_mut().phases.push(phase);
@@ -126,8 +132,14 @@ fn test_build_step_context_with_quiz() {
         id: Uuid::new_v4(),
         question_text: "What is 2+2?".to_string(),
         answers: vec![
-            QuizAnswer { text: "3".to_string(), is_correct: false },
-            QuizAnswer { text: "4".to_string(), is_correct: true },
+            QuizAnswer {
+                text: "3".to_string(),
+                is_correct: false,
+            },
+            QuizAnswer {
+                text: "4".to_string(),
+                is_correct: true,
+            },
         ],
         explanation: "Basic math".to_string(),
         domain: "Math".to_string(),
@@ -137,9 +149,18 @@ fn test_build_step_context_with_quiz() {
         id: Uuid::new_v4(),
         question_text: "What is the capital of France?".to_string(),
         answers: vec![
-            QuizAnswer { text: "London".to_string(), is_correct: false },
-            QuizAnswer { text: "Paris".to_string(), is_correct: true },
-            QuizAnswer { text: "Berlin".to_string(), is_correct: false },
+            QuizAnswer {
+                text: "London".to_string(),
+                is_correct: false,
+            },
+            QuizAnswer {
+                text: "Paris".to_string(),
+                is_correct: true,
+            },
+            QuizAnswer {
+                text: "Berlin".to_string(),
+                is_correct: false,
+            },
         ],
         explanation: "Geography".to_string(),
         domain: "Geography".to_string(),

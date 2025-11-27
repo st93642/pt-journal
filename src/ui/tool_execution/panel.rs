@@ -1,13 +1,12 @@
 use super::{
     controller::{DefaultInstructionProvider, ToolPanelController},
-    interfaces::{ToolPanelView},
+    interfaces::ToolPanelView,
     terminal::VteTerminal,
 };
 use gtk4::glib;
 use gtk4::prelude::*;
 use gtk4::{
-    Box as GtkBox, Button, Dialog, GestureClick, Label, Orientation,
-    PopoverMenu, ResponseType, ScrolledWindow, DropDown,
+    Box as GtkBox, Button, DropDown, GestureClick, Label, Orientation, PopoverMenu, ScrolledWindow,
 };
 use std::cell::RefCell;
 use std::process::Command;
@@ -22,7 +21,8 @@ pub struct ToolExecutionPanel {
     pub tool_selector: DropDown,
     pub info_button: Button,
     pub terminal: vte::Terminal,
-    controller: Rc<RefCell<ToolPanelController<DefaultInstructionProvider, VteTerminal, GtkToolPanelView>>>,
+    controller:
+        Rc<RefCell<ToolPanelController<DefaultInstructionProvider, VteTerminal, GtkToolPanelView>>>,
 }
 
 impl ToolExecutionPanel {
@@ -115,7 +115,11 @@ impl ToolExecutionPanel {
         // Create the controller
         let provider = DefaultInstructionProvider;
         let terminal_interface = VteTerminal::new(terminal.clone());
-        let controller = Rc::new(RefCell::new(ToolPanelController::new(provider, terminal_interface, view)));
+        let controller = Rc::new(RefCell::new(ToolPanelController::new(
+            provider,
+            terminal_interface,
+            view,
+        )));
 
         let panel = Self {
             container,
@@ -166,9 +170,7 @@ impl ToolExecutionPanel {
             menu.append(Some("Copy"), Some("terminal.copy"));
             menu.append(Some("Paste"), Some("terminal.paste"));
 
-            let popover = PopoverMenu::builder()
-                .menu_model(&menu)
-                .build();
+            let popover = PopoverMenu::builder().menu_model(&menu).build();
             popover.set_parent(&terminal_clone_inner);
 
             let action_group = gtk4::gio::SimpleActionGroup::new();
@@ -209,31 +211,46 @@ impl ToolExecutionPanel {
         let dialog_title = state.dialog_title();
         let instruction_box = state.inline_widget();
 
-        let dialog = Dialog::with_buttons(
-            Some(&dialog_title),
-            Some(window),
-            gtk4::DialogFlags::DESTROY_WITH_PARENT,
-            &[("Close", ResponseType::Close)],
-        );
-
+        // Create a new window instead of deprecated Dialog
+        let dialog = gtk4::Window::new();
+        dialog.set_title(Some(dialog_title.as_str()));
+        dialog.set_transient_for(Some(window));
+        dialog.set_modal(true);
         dialog.set_default_size(1000, 650);
-        dialog.connect_response(|dialog, response| {
-            if response == ResponseType::Close {
-                dialog.close();
-            }
+
+        // Create a box for the content with margins
+        let content_box = gtk4::Box::new(gtk4::Orientation::Vertical, 0);
+        content_box.set_margin_top(12);
+        content_box.set_margin_bottom(12);
+        content_box.set_margin_start(12);
+        content_box.set_margin_end(12);
+
+        // Create a header bar with close button
+        let header_bar = gtk4::HeaderBar::new();
+        let close_button = gtk4::Button::with_label("Close");
+        header_bar.pack_end(&close_button);
+        dialog.set_titlebar(Some(&header_bar));
+
+        // Connect close button
+        let dialog_clone = dialog.clone();
+        close_button.connect_clicked(move |_| {
+            dialog_clone.close();
         });
 
-        let content = dialog.content_area();
-        content.set_margin_top(12);
-        content.set_margin_bottom(12);
-        content.set_margin_start(12);
-        content.set_margin_end(12);
+        // Connect window close event
+        let dialog_clone = dialog.clone();
+        dialog.connect_close_request(move |_| {
+            dialog_clone.close();
+            glib::Propagation::Proceed
+        });
 
         let scroll = ScrolledWindow::new();
         scroll.set_vexpand(true);
         scroll.set_hexpand(true);
         scroll.set_child(Some(&instruction_box));
-        content.append(&scroll);
+        content_box.append(&scroll);
+
+        dialog.set_child(Some(&content_box));
 
         let window_title = dialog_title.clone();
         dialog.present();
@@ -278,7 +295,8 @@ struct GtkToolPanelView {
 
 impl ToolPanelView for GtkToolPanelView {
     fn set_categories(&self, categories: &[String], default_index: usize) {
-        let model = gtk4::StringList::new(&categories.iter().map(|s| s.as_str()).collect::<Vec<&str>>());
+        let model =
+            gtk4::StringList::new(&categories.iter().map(|s| s.as_str()).collect::<Vec<&str>>());
         self.category_selector.set_model(Some(&model));
 
         // Set default selection
@@ -288,12 +306,23 @@ impl ToolPanelView for GtkToolPanelView {
     }
 
     fn set_tools(&self, tools: &[(&str, &str)], default_tool_id: Option<&str>) {
-        let model = gtk4::StringList::new(&tools.iter().map(|(_, label)| *label).collect::<Vec<&str>>());
+        let model =
+            gtk4::StringList::new(&tools.iter().map(|(_, label)| *label).collect::<Vec<&str>>());
         self.tool_selector.set_model(Some(&model));
+
+        // Store the tool data for ID lookup
+        let tool_data: Vec<(String, String)> = tools
+            .iter()
+            .map(|(id, label)| (id.to_string(), label.to_string()))
+            .collect();
+        *self.tool_data.borrow_mut() = tool_data;
 
         // Find the index of the default tool
         let default_index = if let Some(default_id) = default_tool_id {
-            tools.iter().position(|(id, _)| *id == default_id).unwrap_or(0)
+            tools
+                .iter()
+                .position(|(id, _)| *id == default_id)
+                .unwrap_or(0)
         } else {
             0
         };
@@ -314,15 +343,15 @@ impl ToolPanelView for GtkToolPanelView {
     }
 
     fn selected_tool(&self) -> Option<String> {
-        self.tool_selector.selected_item()
-            .and_then(|item| item.downcast::<gtk4::StringObject>().ok())
-            .map(|string_obj| string_obj.string().to_string())
-            .and_then(|selected_label| {
-                // We need to map the selected label back to the tool ID
-                // This is a limitation of the current design - we should store the tool IDs separately
-                // For now, we'll return the label as the ID (which may not be correct)
-                Some(selected_label)
-            })
+        let selected_index = self.tool_selector.selected();
+        if selected_index == gtk4::INVALID_LIST_POSITION {
+            return None;
+        }
+        self.tool_id_at_index(selected_index as usize)
+    }
+
+    fn tool_id_at_index(&self, index: usize) -> Option<String> {
+        self.tool_data.borrow().get(index).map(|(id, _)| id.clone())
     }
 
     fn show_instructions_dialog(&self, _title: &str, _widget: GtkBox) {

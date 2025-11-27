@@ -287,4 +287,3 @@ pub struct Phase {
     pub steps: Vec<Step>,
     pub notes: String,
 }
-

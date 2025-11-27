@@ -49,7 +49,7 @@ Each `[[chatbot.models]]` entry supports these fields:
 | `display_name` | string | Yes | Human-readable name for UI |
 | `provider` | string | Yes | `"ollama"` |
 | `prompt_template` | string | Yes | Template for prompts (e.g., `"{{context}}"`) |
-| `resource_paths` | array | No | File paths for llama.cpp models |
+| `resource_paths` | array | No | Reserved for future use |
 | `parameters` | table | No | Model parameters (temperature, top_p, etc.) |
 
 ### Model Parameters
@@ -203,33 +203,6 @@ endpoint = "https://my-ollama-instance.com"
 timeout_seconds = 300
 ```
 
-### Mixed Backend Setup
-
-Configure both Ollama and llama.cpp models:
-
-```toml
-[chatbot]
-default_model_id = "local-phi3"
-
-[[chatbot.models]]
-id = "local-phi3"
-display_name = "Phi-3 Mini (Local)"
-provider = "llama-cpp"
-resource_paths = ["/models/phi3.gguf"]
-
-[[chatbot.models]]
-id = "mistral:7b"
-display_name = "Mistral 7B (Ollama)"
-provider = "ollama"
-
-[chatbot.llama_cpp]
-gguf_path = "/models/phi3.gguf"
-context_tokens = 8192
-
-[chatbot.ollama]
-endpoint = "http://localhost:11434"
-```
-
 ### Performance Tuning
 
 ```toml
@@ -244,9 +217,6 @@ parameters = {
 
 [chatbot.ollama]
 timeout_seconds = 60        # Faster timeout
-
-[chatbot.llama_cpp]
-context_tokens = 2048      # Smaller context for speed
 ```
 
 ---

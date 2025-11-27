@@ -166,7 +166,11 @@ impl DetailPanel {
     }
 
     /// Load a tutorial step into the panel
-    pub fn load_tutorial_step(&self, description: &str, chat_history: &[crate::model::ChatMessage]) {
+    pub fn load_tutorial_step(
+        &self,
+        description: &str,
+        chat_history: &[crate::model::ChatMessage],
+    ) {
         self.content_stack.set_visible_child_name("tutorial");
         self.desc_view.buffer().set_text(description);
         self.chat_panel.load_history(chat_history);

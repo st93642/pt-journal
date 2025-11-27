@@ -18,7 +18,10 @@ pub struct NotesController {
 impl NotesController {
     /// Create a new notes controller.
     pub fn new(detail_panel: Rc<DetailPanel>, state: Rc<StateManager>) -> Self {
-        Self { detail_panel, state }
+        Self {
+            detail_panel,
+            state,
+        }
     }
 
     /// Bind all notes-related event handlers.

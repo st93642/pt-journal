@@ -28,7 +28,7 @@ pub fn build_ui(app: &Application, model: AppModel) {
     // Position window at top-left corner (0,0)
     // Note: Due to GTK trait bounds conflicts with VTE, we use a workaround
     window.present();
-    
+
     // Attempt to position the window using available methods
     let window_clone = window.clone();
     glib::idle_add_local_once(move || {
@@ -146,7 +146,7 @@ pub fn build_ui(app: &Application, model: AppModel) {
                 let current_phase = state_update.current_phase();
                 let current_step = state_update.current_step().unwrap_or(0);
                 if *phase_idx == current_phase && *step_idx == current_step {
-                    detail_panel_update.chat_panel().add_message(&message);
+                    detail_panel_update.chat_panel().add_message(message);
                 }
             }
         }),

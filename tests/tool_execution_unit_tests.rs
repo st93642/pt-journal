@@ -1,13 +1,15 @@
 #[cfg(test)]
 mod renderer_tests {
-    use super::*;
     use pt_journal::ui::tool_execution::{resolve_instruction_state, InstructionState};
     use pt_journal::ui::tool_instructions;
 
     #[test]
     fn missing_tool_resolves_to_missing_state() {
         let state = resolve_instruction_state(Some("nonexistent_tool_12345"));
-        assert!(matches!(state, InstructionState::Missing { .. }), "missing tool should use fallback state");
+        assert!(
+            matches!(state, InstructionState::Missing { .. }),
+            "missing tool should use fallback state"
+        );
     }
 
     #[test]
@@ -40,7 +42,6 @@ mod renderer_tests {
 
 #[cfg(test)]
 mod picker_tests {
-    use super::*;
     use pt_journal::ui::tool_execution::ToolPickerModel;
     use pt_journal::ui::tool_instructions;
 
@@ -56,7 +57,8 @@ mod picker_tests {
             }
         }
 
-        let actual_categories: Vec<String> = model.groups().iter().map(|g| g.name.clone()).collect();
+        let actual_categories: Vec<String> =
+            model.groups().iter().map(|g| g.name.clone()).collect();
         assert_eq!(
             actual_categories, expected_categories,
             "Categories should preserve manifest ordering"
@@ -67,7 +69,10 @@ mod picker_tests {
     fn test_tools_for_category_handles_nonexistent_category() {
         let model = ToolPickerModel::from_manifest();
         let tools = model.tools_for_category("NonexistentCategory123");
-        assert!(tools.is_empty(), "Unknown categories should return no tools");
+        assert!(
+            tools.is_empty(),
+            "Unknown categories should return no tools"
+        );
     }
 
     #[test]
@@ -101,11 +106,8 @@ mod picker_tests {
 
 #[cfg(test)]
 mod controller_tests {
-    use super::*;
-    use pt_journal::ui::tool_instructions::{CategoryGroup, ToolManifestEntry, ToolInstructions};
-    use pt_journal::ui::tool_execution::ToolPanelController;
-    use gtk4::Box as GtkBox;
     use pt_journal::test_support::ui::{MockInstructionProvider, MockTerminal, MockView};
+    use pt_journal::ui::tool_execution::ToolPanelController;
 
     #[test]
     fn test_controller_initialization() {

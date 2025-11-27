@@ -345,19 +345,31 @@ mod tests {
 
         assert_eq!(step.get_chat_history().len(), 0);
 
-        let msg1 = pt_journal::model::chat::ChatMessage::new(pt_journal::model::chat::ChatRole::User, "First message".to_string());
+        let msg1 = pt_journal::model::chat::ChatMessage::new(
+            pt_journal::model::chat::ChatRole::User,
+            "First message".to_string(),
+        );
         step.add_chat_message(msg1);
         assert_eq!(step.get_chat_history().len(), 1);
 
-        let msg2 = pt_journal::model::chat::ChatMessage::new(pt_journal::model::chat::ChatRole::Assistant, "Response".to_string());
+        let msg2 = pt_journal::model::chat::ChatMessage::new(
+            pt_journal::model::chat::ChatRole::Assistant,
+            "Response".to_string(),
+        );
         step.add_chat_message(msg2);
         assert_eq!(step.get_chat_history().len(), 2);
 
         let history = step.get_chat_history();
         assert_eq!(history[0].content, "First message");
-        assert!(matches!(history[0].role, pt_journal::model::chat::ChatRole::User));
+        assert!(matches!(
+            history[0].role,
+            pt_journal::model::chat::ChatRole::User
+        ));
         assert_eq!(history[1].content, "Response");
-        assert!(matches!(history[1].role, pt_journal::model::chat::ChatRole::Assistant));
+        assert!(matches!(
+            history[1].role,
+            pt_journal::model::chat::ChatRole::Assistant
+        ));
     }
 
     #[test]
@@ -369,8 +381,14 @@ mod tests {
             vec![],
         );
 
-        step.add_chat_message(pt_journal::model::chat::ChatMessage::new(pt_journal::model::chat::ChatRole::User, "Message 1".to_string()));
-        step.add_chat_message(pt_journal::model::chat::ChatMessage::new(pt_journal::model::chat::ChatRole::User, "Message 2".to_string()));
+        step.add_chat_message(pt_journal::model::chat::ChatMessage::new(
+            pt_journal::model::chat::ChatRole::User,
+            "Message 1".to_string(),
+        ));
+        step.add_chat_message(pt_journal::model::chat::ChatMessage::new(
+            pt_journal::model::chat::ChatRole::User,
+            "Message 2".to_string(),
+        ));
         assert_eq!(step.get_chat_history().len(), 2);
 
         step.clear_chat_history();

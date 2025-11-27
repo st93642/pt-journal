@@ -19,7 +19,10 @@ pub struct QuizController {
 impl QuizController {
     /// Create a new quiz controller.
     pub fn new(detail_panel: Rc<DetailPanel>, state: Rc<StateManager>) -> Self {
-        Self { detail_panel, state }
+        Self {
+            detail_panel,
+            state,
+        }
     }
 
     /// Bind all quiz-related event handlers.
@@ -80,7 +83,9 @@ impl QuizController {
                     };
 
                     // Show explanation with result
-                    panel.quiz_widget().show_explanation(&explanation, Some(correct));
+                    panel
+                        .quiz_widget()
+                        .show_explanation(&explanation, Some(correct));
 
                     // Update statistics
                     if let Some(quiz_step) = quiz_step_opt {
@@ -93,7 +98,11 @@ impl QuizController {
 
     /// Bind the view explanation button handler.
     fn bind_view_explanation(&self) {
-        let view_explanation_button = self.detail_panel.quiz_widget().view_explanation_button.clone();
+        let view_explanation_button = self
+            .detail_panel
+            .quiz_widget()
+            .view_explanation_button
+            .clone();
         let state = self.state.clone();
         let panel = self.detail_panel.clone();
 
@@ -236,7 +245,7 @@ impl QuizController {
                             model_borrow
                                 .selected_step()
                                 .and_then(|sidx| phase.steps.get(sidx))
-                    })
+                        })
                         .and_then(|step| step.get_quiz_step().cloned())
                 };
 
@@ -301,7 +310,9 @@ impl QuizController {
                         stats.first_attempt_correct
                     );
 
-                    panel.quiz_widget().show_explanation(&completion_message, None);
+                    panel
+                        .quiz_widget()
+                        .show_explanation(&completion_message, None);
 
                     // Update statistics display
                     panel.quiz_widget().update_statistics(&quiz_step);

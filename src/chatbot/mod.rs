@@ -19,7 +19,9 @@ pub enum ChatError {
     Http(#[from] reqwest::Error),
     #[error("Ollama service is not running or unreachable. Please ensure Ollama is installed and running. Visit https://ollama.ai for setup instructions.")]
     ServiceUnavailable,
-    #[error("Model '{0}' is not available in Ollama. Please pull the model first: ollama pull {0}")]
+    #[error(
+        "Model '{0}' is not available in Ollama. Please pull the model first: ollama pull {0}"
+    )]
     ModelNotFound(String),
     #[error("Invalid response from Ollama: {0}")]
     InvalidResponse(String),

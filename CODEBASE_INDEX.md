@@ -744,7 +744,7 @@ pub enum NmapScanType {
 | model/ | 5 | 1,020 | Domain models (refactored) |
 | tools/ | 5 | 995 | Tool integrations |
 | lib.rs | 1 | 1,155 | Test suite |
-| chatbot/ | 5 | 1,200+ | Multi-model LLM integration (Ollama, llama.cpp) |
+| chatbot/ | 5 | 1,200+ | Multi-model LLM integration (Ollama) |
 | quiz/ | 1 | 335 | Quiz system |
 | dispatcher.rs | 1 | 247 | Event system |
 | config.rs | 1 | 200 | Configuration management |
@@ -760,7 +760,7 @@ pub enum NmapScanType {
 | Domain Model Tests | 23 | Session, Phase, Step, Evidence, Quiz (domain_model_tests.rs) |
 | Store Tests | 3 | Load, migration, Unicode (store_tests.rs) |
 | Session Content Tests | 21 | Phase loading, content validation, performance (session_content_tests.rs) |
-| Chatbot Tests | 25+ | Multi-provider integration, llama.cpp, Ollama, error handling |
+| Chatbot Tests | 25+ | Multi-provider integration, Ollama, error handling |
 | Tool Tests | 50+ | Nmap (8 types), Gobuster (3 modes) |
 | Quiz Tests | 10+ | Parsing, progress, scoring |
 | Dispatcher Tests | 8+ | Event routing, handlers |

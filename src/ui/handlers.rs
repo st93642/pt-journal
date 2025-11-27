@@ -26,8 +26,8 @@
 //! - **Files**: Save/load dialogs, evidence management
 
 use gtk4::glib;
-use gtk4::{ApplicationWindow, Button, ListBox};
 use gtk4::prelude::*;
+use gtk4::{ApplicationWindow, Button, ListBox};
 use std::rc::Rc;
 
 use crate::ui::controllers::{chat, navigation, notes, quiz, tool};
@@ -41,7 +41,6 @@ pub fn setup_quiz_handlers(detail_panel: Rc<DetailPanel>, state: Rc<StateManager
 }
 
 /// Wire up tool execution panel (info dialog only)
-#[allow(deprecated)]
 pub fn setup_tool_execution_handlers(
     detail_panel: Rc<DetailPanel>,
     state: Rc<StateManager>,
@@ -94,5 +93,5 @@ pub fn setup_chat_handlers(detail_panel: Rc<DetailPanel>, state: Rc<StateManager
 
 /// Re-export navigation helper functions for backward compatibility
 pub use crate::ui::controllers::navigation::{
-    rebuild_steps_list, load_step_into_panel, rebuild_phase_combo, clear_detail_panel,
+    clear_detail_panel, load_step_into_panel, rebuild_phase_combo, rebuild_steps_list,
 };

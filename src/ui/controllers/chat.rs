@@ -3,9 +3,9 @@
 //! This controller manages the chat panel, including model selection,
 //! sending messages, and handling responses from the chatbot service.
 
-use gtk4::{gdk, EventControllerKey};
 use gtk4::glib;
 use gtk4::prelude::*;
+use gtk4::{gdk, EventControllerKey};
 use std::rc::Rc;
 use std::sync::mpsc;
 
@@ -23,7 +23,10 @@ pub struct ChatController {
 impl ChatController {
     /// Create a new chat controller.
     pub fn new(detail_panel: Rc<DetailPanel>, state: Rc<StateManager>) -> Self {
-        Self { detail_panel, state }
+        Self {
+            detail_panel,
+            state,
+        }
     }
 
     /// Bind all chat-related event handlers.
@@ -68,7 +71,10 @@ impl ChatController {
                                 let display_name = {
                                     let model_rc = state.model();
                                     let model = model_rc.borrow();
-                                    model.config().chatbot.models
+                                    model
+                                        .config()
+                                        .chatbot
+                                        .models
                                         .iter()
                                         .find(|m| m.id == model_id)
                                         .map(|m| m.display_name.clone())
@@ -160,7 +166,11 @@ impl ChatController {
     }
 
     /// Handle sending a chat message.
-    fn handle_send_message(chat_panel: Rc<crate::ui::chat_panel::ChatPanel>, state: Rc<StateManager>, input_text: String) {
+    fn handle_send_message(
+        chat_panel: Rc<crate::ui::chat_panel::ChatPanel>,
+        state: Rc<StateManager>,
+        input_text: String,
+    ) {
         let (phase_idx, step_idx, config, step_ctx, history) = Self::build_step_context(&state);
 
         // Add user message immediately
@@ -188,7 +198,15 @@ impl ChatController {
     }
 
     /// Build the step context for the current step.
-    fn build_step_context(state: &Rc<StateManager>) -> (usize, usize, crate::config::ChatbotConfig, StepContext, Vec<ChatMessage>) {
+    fn build_step_context(
+        state: &Rc<StateManager>,
+    ) -> (
+        usize,
+        usize,
+        crate::config::ChatbotConfig,
+        StepContext,
+        Vec<ChatMessage>,
+    ) {
         let phase_idx = state.current_phase();
         let step_idx = state.current_step().unwrap_or(0);
         let config = state.model().borrow().config().chatbot.clone();
@@ -205,7 +223,12 @@ impl ChatController {
             });
 
             let step_ctx = StepContext {
-                phase_name: state.model().borrow().current_phase().map(|p| p.name.clone()).unwrap_or_default(),
+                phase_name: state
+                    .model()
+                    .borrow()
+                    .current_phase()
+                    .map(|p| p.name.clone())
+                    .unwrap_or_default(),
                 step_title: snapshot.title,
                 step_description: snapshot.description,
                 step_status: match snapshot.status {

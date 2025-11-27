@@ -19,7 +19,10 @@ pub trait InstructionProvider {
     fn default_tool_id(&self) -> &str;
 
     /// Returns tools available in the specified category.
-    fn tools_for_category(&self, category: &str) -> Vec<crate::ui::tool_instructions::ToolManifestEntry>;
+    fn tools_for_category(
+        &self,
+        category: &str,
+    ) -> Vec<crate::ui::tool_instructions::ToolManifestEntry>;
 
     /// Resolves instruction content for the given tool ID.
     /// Returns None if no instructions are available.
@@ -60,5 +63,5 @@ pub trait ToolPanelView {
     fn show_instructions_dialog(&self, title: &str, widget: GtkBox);
 
     /// Returns the tool ID at the given index.
-    fn tool_id_at_index(&self, index: usize) -> Option<&str>;
+    fn tool_id_at_index(&self, index: usize) -> Option<String>;
 }

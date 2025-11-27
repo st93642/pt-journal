@@ -3,11 +3,11 @@
 //! This controller manages navigation between phases and steps,
 //! including rebuilding lists and handling selection changes.
 
-use gtk4::{CheckButton, GestureClick, ListBox, ListBoxRow};
 use gtk4::prelude::*;
+use gtk4::{CheckButton, GestureClick, ListBox, ListBoxRow};
 use std::rc::Rc;
 
-use crate::model::{StepStatus};
+use crate::model::StepStatus;
 use crate::ui::detail_panel::DetailPanel;
 use crate::ui::state::StateManager;
 
@@ -140,7 +140,9 @@ pub fn load_step_into_panel(state: &Rc<StateManager>, detail_panel: &Rc<DetailPa
             detail_panel.desc_view().buffer().set_text(&desc_text);
 
             // Load chat history
-            detail_panel.chat_panel().load_history(&snapshot.chat_history);
+            detail_panel
+                .chat_panel()
+                .load_history(&snapshot.chat_history);
         }
     }
 }

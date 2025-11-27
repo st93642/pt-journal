@@ -7,11 +7,9 @@
 //! centralized for reuse by the panel and dialog views.
 
 use crate::ui::tool_instructions::{self, ToolInstructions};
-use gtk4::prelude::*;
-#[allow(deprecated)]
-use gtk4::{
-    Align, Box as GtkBox, Button, Frame, Grid, Label, LinkButton, Orientation,
-};
+use adw::prelude::*;
+use adw::{ExpanderRow, PreferencesGroup};
+use gtk4::{Align, Box as GtkBox, Button, Label, LinkButton, ListBoxRow, Orientation, gdk};
 
 /// Represents the resolved instruction content for the current selection.
 #[derive(Debug, Clone)]
@@ -37,7 +35,6 @@ impl<'a> InstructionState<'a> {
     }
 
     /// Builds the GTK widget for inline rendering.
-    #[allow(deprecated)]
     pub fn inline_widget(&self) -> GtkBox {
         match self {
             Self::Available(instructions) => build_instruction_sections(instructions),
@@ -63,13 +60,13 @@ pub fn resolve_instruction_state(tool_id: Option<&str>) -> InstructionState<'sta
     }
 
     // Fallback to the first manifest entry when no tool is selected.
-    let fallback_id = tool_instructions::manifest().first().map(|entry| entry.id.clone());
+    let fallback_id = tool_instructions::manifest()
+        .first()
+        .map(|entry| entry.id.clone());
     if let Some(id) = fallback_id {
         return tool_instructions::get_instructions(&id)
             .map(InstructionState::Available)
-            .unwrap_or_else(|| InstructionState::Missing {
-                tool_id: Some(id),
-            });
+            .unwrap_or_else(|| InstructionState::Missing { tool_id: Some(id) });
     }
 
     InstructionState::Missing { tool_id: None }
@@ -170,334 +167,265 @@ pub fn build_instruction_sections(instructions: &ToolInstructions) -> GtkBox {
     root
 }
 
-#[allow(deprecated)]
-fn build_installation_guides_section(guides: &[tool_instructions::InstallationGuide]) -> Frame {
-    let frame = Frame::new(Some("Installation Guides"));
-    let container = GtkBox::new(Orientation::Vertical, 12);
-    container.set_margin_top(8);
-    container.set_margin_bottom(8);
-    container.set_margin_start(8);
-    container.set_margin_end(8);
+fn build_installation_guides_section(
+    guides: &[tool_instructions::InstallationGuide],
+) -> PreferencesGroup {
+    let group = PreferencesGroup::new();
+    group.set_title("Installation Guides");
 
     for guide in guides {
-        let card = GtkBox::new(Orientation::Vertical, 4);
-        card.set_margin_bottom(8);
-
-        let heading = Label::new(Some(&guide.platform));
-        heading.add_css_class("heading");
-        heading.set_xalign(0.0);
-        card.append(&heading);
+        let expander = ExpanderRow::new();
+        expander.set_title(&guide.platform);
 
         if let Some(summary) = &guide.summary {
             let summary_label = create_instruction_label(summary);
-            summary_label.set_margin_start(12);
-            card.append(&summary_label);
+            expander.add_row(&summary_label);
         }
 
         for step in &guide.steps {
             if step.copyable {
                 let row = create_copyable_command_row(&step.detail);
-                row.set_margin_start(12);
-                card.append(&row);
+                expander.add_row(&row);
             } else {
                 let label = create_instruction_label(&step.detail);
-                label.set_margin_start(12);
-                card.append(&label);
+                expander.add_row(&label);
             }
         }
 
-        container.append(&card);
+        group.add(&expander);
     }
 
-    frame.set_child(Some(&container));
-    frame
+    group
 }
 
-#[allow(deprecated)]
-fn build_examples_section(examples: &[tool_instructions::CommandExample]) -> Frame {
-    let frame = Frame::new(Some("Common Examples"));
-    let container = GtkBox::new(Orientation::Vertical, 8);
-    container.set_margin_top(8);
-    container.set_margin_bottom(8);
-    container.set_margin_start(8);
-    container.set_margin_end(8);
+fn build_examples_section(examples: &[tool_instructions::CommandExample]) -> PreferencesGroup {
+    let group = PreferencesGroup::new();
+    group.set_title("Common Examples");
 
     for example in examples {
-        let description = Label::new(Some(&format!("• {}", example.description)));
-        description.set_xalign(0.0);
-        description.set_wrap(true);
-        description.add_css_class("heading");
-        container.append(&description);
+        let expander = ExpanderRow::new();
+        expander.set_title(&format!("• {}", example.description));
 
         let command_row = create_copyable_command_row(&example.command);
-        command_row.set_margin_start(20);
-        container.append(&command_row);
+        expander.add_row(&command_row);
 
         for note in &example.notes {
             let note_label = create_instruction_label(note);
-            note_label.set_margin_start(20);
-            container.append(&note_label);
+            expander.add_row(&note_label);
         }
+
+        group.add(&expander);
     }
 
-    frame.set_child(Some(&container));
-    frame
+    group
 }
 
-#[allow(deprecated)]
-fn build_flags_section(flags: &[tool_instructions::FlagEntry]) -> Frame {
-    let frame = Frame::new(Some("Helpful Flags"));
-    let container = GtkBox::new(Orientation::Vertical, 4);
-    container.set_margin_top(8);
-    container.set_margin_bottom(8);
-    container.set_margin_start(8);
-    container.set_margin_end(8);
+fn build_flags_section(flags: &[tool_instructions::FlagEntry]) -> PreferencesGroup {
+    let group = PreferencesGroup::new();
+    group.set_title("Helpful Flags");
 
     for flag in flags {
+        let row = ListBoxRow::new();
         let label = Label::new(Some(&format!("{} — {}", flag.flag, flag.description)));
         label.set_xalign(0.0);
         label.set_wrap(true);
-        container.append(&label);
+        row.set_child(Some(&label));
+        group.add(&row);
     }
 
-    frame.set_child(Some(&container));
-    frame
+    group
 }
 
-#[allow(deprecated)]
-fn build_tips_section(tips: &[String]) -> Frame {
-    let frame = Frame::new(Some("Tips & Best Practices"));
-    let container = GtkBox::new(Orientation::Vertical, 4);
-    container.set_margin_top(8);
-    container.set_margin_bottom(8);
-    container.set_margin_start(8);
-    container.set_margin_end(8);
+fn build_tips_section(tips: &[String]) -> PreferencesGroup {
+    let group = PreferencesGroup::new();
+    group.set_title("Tips & Best Practices");
 
     for tip in tips {
+        let row = ListBoxRow::new();
         let label = create_instruction_label(&format!("💡 {}", tip));
-        container.append(&label);
+        row.set_child(Some(&label));
+        group.add(&row);
     }
 
-    frame.set_child(Some(&container));
-    frame
+    group
 }
 
-#[allow(deprecated)]
-fn build_sequences_section(sequences: &[tool_instructions::InstructionSequence]) -> Frame {
-    let frame = Frame::new(Some("Guided Playbooks"));
-    let container = GtkBox::new(Orientation::Vertical, 12);
-    container.set_margin_top(8);
-    container.set_margin_bottom(8);
-    container.set_margin_start(8);
-    container.set_margin_end(8);
+fn build_sequences_section(
+    sequences: &[tool_instructions::InstructionSequence],
+) -> PreferencesGroup {
+    let group = PreferencesGroup::new();
+    group.set_title("Guided Playbooks");
 
     for sequence in sequences {
-        let sequence_box = GtkBox::new(Orientation::Vertical, 6);
-        let heading = Label::new(Some(&sequence.title));
-        heading.add_css_class("heading");
-        heading.set_xalign(0.0);
-        sequence_box.append(&heading);
+        let expander = ExpanderRow::new();
+        expander.set_title(&sequence.title);
 
         for (idx, step) in sequence.steps.iter().enumerate() {
+            let step_box = GtkBox::new(Orientation::Vertical, 4);
             let title = Label::new(Some(&format!("{}. {}", idx + 1, step.title)));
             title.set_xalign(0.0);
             title.add_css_class("heading");
-            sequence_box.append(&title);
+            step_box.append(&title);
 
             if let Some(details) = &step.details {
                 let detail_label = create_instruction_label(details);
-                detail_label.set_margin_start(16);
-                sequence_box.append(&detail_label);
+                step_box.append(&detail_label);
             }
 
             if let Some(command) = &step.command {
                 let row = create_copyable_command_row(command);
-                row.set_margin_start(16);
-                sequence_box.append(&row);
+                step_box.append(&row);
             }
+
+            let step_row = ListBoxRow::new();
+            step_row.set_child(Some(&step_box));
+            expander.add_row(&step_row);
         }
 
-        container.append(&sequence_box);
+        group.add(&expander);
     }
 
-    frame.set_child(Some(&container));
-    frame
+    group
 }
 
-#[allow(deprecated)]
-fn build_workflow_section(workflows: &[tool_instructions::WorkflowGuide]) -> Frame {
-    let frame = Frame::new(Some("Workflow Guides"));
-    let container = GtkBox::new(Orientation::Vertical, 12);
-    container.set_margin_top(8);
-    container.set_margin_bottom(8);
-    container.set_margin_start(8);
-    container.set_margin_end(8);
+fn build_workflow_section(workflows: &[tool_instructions::WorkflowGuide]) -> PreferencesGroup {
+    let group = PreferencesGroup::new();
+    group.set_title("Workflow Guides");
 
     for workflow in workflows {
-        let workflow_box = GtkBox::new(Orientation::Vertical, 6);
-        let heading = Label::new(Some(&workflow.name));
-        heading.add_css_class("heading");
-        heading.set_xalign(0.0);
-        workflow_box.append(&heading);
+        let expander = ExpanderRow::new();
+        expander.set_title(&workflow.name);
 
         for (idx, stage) in workflow.stages.iter().enumerate() {
+            let stage_box = GtkBox::new(Orientation::Vertical, 4);
             let stage_label = Label::new(Some(&format!("{}. {}", idx + 1, stage.label)));
             stage_label.set_xalign(0.0);
             stage_label.add_css_class("heading");
-            workflow_box.append(&stage_label);
+            stage_box.append(&stage_label);
 
             if let Some(description) = &stage.description {
                 let desc_label = create_instruction_label(description);
-                desc_label.set_margin_start(16);
-                workflow_box.append(&desc_label);
+                stage_box.append(&desc_label);
             }
 
             if let Some(command) = &stage.command {
                 let row = create_copyable_command_row(command);
-                row.set_margin_start(16);
-                workflow_box.append(&row);
+                stage_box.append(&row);
             }
+
+            let stage_row = ListBoxRow::new();
+            stage_row.set_child(Some(&stage_box));
+            expander.add_row(&stage_row);
         }
 
-        container.append(&workflow_box);
+        group.add(&expander);
     }
 
-    frame.set_child(Some(&container));
-    frame
+    group
 }
 
-#[allow(deprecated)]
-fn build_output_section(notes: &[tool_instructions::OutputNote]) -> Frame {
-    let frame = Frame::new(Some("Interpreting Output"));
-    let grid = Grid::new();
-    grid.set_column_spacing(12);
-    grid.set_row_spacing(4);
-    grid.set_margin_top(8);
-    grid.set_margin_bottom(8);
-    grid.set_margin_start(8);
-    grid.set_margin_end(8);
+fn build_output_section(notes: &[tool_instructions::OutputNote]) -> PreferencesGroup {
+    let group = PreferencesGroup::new();
+    group.set_title("Interpreting Output");
 
-    let headers = ["Indicator", "Meaning", "Severity"];
-    for (idx, header) in headers.iter().enumerate() {
-        let label = Label::new(Some(header));
-        label.add_css_class("heading");
-        label.set_xalign(0.0);
-        grid.attach(&label, idx as i32, 0, 1, 1);
-    }
+    for note in notes {
+        let row = ListBoxRow::new();
+        let box_container = GtkBox::new(Orientation::Horizontal, 12);
 
-    for (row_idx, note) in notes.iter().enumerate() {
         let indicator = create_instruction_label(&note.indicator);
-        grid.attach(&indicator, 0, (row_idx + 1) as i32, 1, 1);
+        box_container.append(&indicator);
 
         let meaning = create_instruction_label(&note.meaning);
-        grid.attach(&meaning, 1, (row_idx + 1) as i32, 1, 1);
+        box_container.append(&meaning);
 
         let severity_text = note.severity.as_deref().unwrap_or("-");
         let severity = create_instruction_label(severity_text);
-        grid.attach(&severity, 2, (row_idx + 1) as i32, 1, 1);
+        box_container.append(&severity);
+
+        row.set_child(Some(&box_container));
+        group.add(&row);
     }
 
-    frame.set_child(Some(&grid));
-    frame
+    group
 }
 
-#[allow(deprecated)]
-fn build_advanced_section(examples: &[tool_instructions::AdvancedExample]) -> Frame {
-    let frame = Frame::new(Some("Advanced Usage"));
-    let container = GtkBox::new(Orientation::Vertical, 8);
-    container.set_margin_top(8);
-    container.set_margin_bottom(8);
-    container.set_margin_start(8);
-    container.set_margin_end(8);
+fn build_advanced_section(examples: &[tool_instructions::AdvancedExample]) -> PreferencesGroup {
+    let group = PreferencesGroup::new();
+    group.set_title("Advanced Usage");
 
     for example in examples {
-        let title = Label::new(Some(&example.title));
-        title.add_css_class("heading");
-        title.set_xalign(0.0);
-        container.append(&title);
+        let expander = ExpanderRow::new();
+        expander.set_title(&example.title);
 
         if let Some(scenario) = &example.scenario {
             let scenario_label = create_instruction_label(scenario);
-            scenario_label.set_margin_start(16);
-            container.append(&scenario_label);
+            expander.add_row(&scenario_label);
         }
 
         let command_row = create_copyable_command_row(&example.command);
-        command_row.set_margin_start(16);
-        container.append(&command_row);
+        expander.add_row(&command_row);
 
         for note in &example.notes {
             let note_label = create_instruction_label(note);
-            note_label.set_margin_start(16);
-            container.append(&note_label);
+            expander.add_row(&note_label);
         }
+
+        group.add(&expander);
     }
 
-    frame.set_child(Some(&container));
-    frame
+    group
 }
 
-#[allow(deprecated)]
-fn build_comparison_section(table: &tool_instructions::ComparisonTable) -> Frame {
-    let frame = Frame::new(Some("Tool Comparison"));
-    let container = GtkBox::new(Orientation::Vertical, 8);
-    container.set_margin_top(8);
-    container.set_margin_bottom(8);
-    container.set_margin_start(8);
-    container.set_margin_end(8);
+fn build_comparison_section(table: &tool_instructions::ComparisonTable) -> PreferencesGroup {
+    let group = PreferencesGroup::new();
+    group.set_title("Tool Comparison");
 
     if let Some(caption) = &table.caption {
         let caption_label = create_instruction_label(caption);
-        container.append(&caption_label);
+        let caption_row = ListBoxRow::new();
+        caption_row.set_child(Some(&caption_label));
+        group.add(&caption_row);
     }
 
-    let grid = Grid::new();
-    grid.set_column_spacing(12);
-    grid.set_row_spacing(4);
+    for row in &table.rows {
+        let row_container = ListBoxRow::new();
+        let box_container = GtkBox::new(Orientation::Horizontal, 12);
 
-    for (idx, header) in table.columns.iter().enumerate() {
-        let label = Label::new(Some(header));
-        label.add_css_class("heading");
-        label.set_xalign(0.0);
-        grid.attach(&label, idx as i32, 0, 1, 1);
-    }
-
-    for (row_idx, row) in table.rows.iter().enumerate() {
         for col_idx in 0..table.columns.len() {
             let value = row.get(col_idx).cloned().unwrap_or_default();
             let label = create_instruction_label(&value);
-            grid.attach(&label, col_idx as i32, (row_idx + 1) as i32, 1, 1);
+            box_container.append(&label);
         }
+
+        row_container.set_child(Some(&box_container));
+        group.add(&row_container);
     }
 
-    container.append(&grid);
-    frame.set_child(Some(&container));
-    frame
+    group
 }
 
-#[allow(deprecated)]
-fn build_resources_section(resources: &[tool_instructions::ResourceLink]) -> Frame {
-    let frame = Frame::new(Some("Resources"));
-    let container = GtkBox::new(Orientation::Vertical, 8);
-    container.set_margin_top(8);
-    container.set_margin_bottom(8);
-    container.set_margin_start(8);
-    container.set_margin_end(8);
+fn build_resources_section(resources: &[tool_instructions::ResourceLink]) -> PreferencesGroup {
+    let group = PreferencesGroup::new();
+    group.set_title("Resources");
 
     for resource in resources {
+        let row = ListBoxRow::new();
+        let box_container = GtkBox::new(Orientation::Vertical, 4);
+
         let link = LinkButton::with_label(&resource.url, &resource.label);
         link.set_halign(Align::Start);
-        container.append(&link);
+        box_container.append(&link);
 
         if let Some(description) = &resource.description {
             let description_label = create_instruction_label(description);
-            description_label.set_margin_start(12);
-            container.append(&description_label);
+            box_container.append(&description_label);
         }
+
+        row.set_child(Some(&box_container));
+        group.add(&row);
     }
 
-    frame.set_child(Some(&container));
-    frame
+    group
 }
 
 fn create_instruction_label(text: &str) -> Label {
@@ -508,7 +436,6 @@ fn create_instruction_label(text: &str) -> Label {
     label
 }
 
-#[allow(deprecated)]
 fn create_copyable_command_row(command: &str) -> GtkBox {
     let row = GtkBox::new(Orientation::Horizontal, 8);
 
@@ -524,7 +451,7 @@ fn create_copyable_command_row(command: &str) -> GtkBox {
     copy_button.add_css_class("flat");
     copy_button.set_tooltip_text(Some("Copy full command to clipboard"));
     copy_button.connect_clicked(move |_| {
-        if let Some(display) = gtk4::gdk::Display::default() {
+        if let Some(display) = gdk::Display::default() {
             let clipboard = display.clipboard();
             clipboard.set_text(&command_text);
         }
@@ -542,7 +469,10 @@ mod tests {
     #[test]
     fn missing_tool_resolves_to_missing_state() {
         let state = resolve_instruction_state(Some("nonexistent_tool_12345"));
-        assert!(matches!(state, InstructionState::Missing { .. }), "missing tool should use fallback state");
+        assert!(
+            matches!(state, InstructionState::Missing { .. }),
+            "missing tool should use fallback state"
+        );
     }
 
     #[test]

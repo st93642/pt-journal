@@ -3,8 +3,8 @@
 //! This controller manages the tool execution panel, including
 //! showing instructions and handling tool-related UI events.
 
-use gtk4::{ApplicationWindow, Window};
 use gtk4::prelude::*;
+use gtk4::{ApplicationWindow, Window};
 use std::rc::Rc;
 
 use crate::ui::detail_panel::DetailPanel;
@@ -18,7 +18,11 @@ pub struct ToolController {
 
 impl ToolController {
     /// Create a new tool controller.
-    pub fn new(detail_panel: Rc<DetailPanel>, state: Rc<StateManager>, _window: &ApplicationWindow) -> Self {
+    pub fn new(
+        detail_panel: Rc<DetailPanel>,
+        state: Rc<StateManager>,
+        _window: &ApplicationWindow,
+    ) -> Self {
         Self {
             detail_panel,
             _state: state,
@@ -39,9 +43,8 @@ impl ToolController {
         let info_button = tool_panel.info_button.clone();
         let tool_panel_clone = tool_panel.clone();
 
-        info_button
-            .connect_clicked(move |_| {
-                tool_panel_clone.show_instructions_dialog(&window.clone().upcast::<Window>());
-            });
+        info_button.connect_clicked(move |_| {
+            tool_panel_clone.show_instructions_dialog(&window.clone().upcast::<Window>());
+        });
     }
 }

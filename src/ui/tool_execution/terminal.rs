@@ -14,7 +14,9 @@ pub struct VteTerminal {
 impl VteTerminal {
     /// Creates a new VTE terminal interface.
     pub fn new(terminal: vte::Terminal) -> Self {
-        Self { _terminal: terminal }
+        Self {
+            _terminal: terminal,
+        }
     }
 }
 

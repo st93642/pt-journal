@@ -106,7 +106,9 @@ impl From<&AppMessage> for AppMessageKind {
             AppMessage::StepCompleted(_, _) => AppMessageKind::StepCompleted,
             AppMessage::StepStatusChanged(_, _, _) => AppMessageKind::StepStatusChanged,
             AppMessage::StepNotesUpdated(_, _, _) => AppMessageKind::StepNotesUpdated,
-            AppMessage::StepDescriptionNotesUpdated(_, _, _) => AppMessageKind::StepDescriptionNotesUpdated,
+            AppMessage::StepDescriptionNotesUpdated(_, _, _) => {
+                AppMessageKind::StepDescriptionNotesUpdated
+            }
             AppMessage::PhaseNotesUpdated(_, _) => AppMessageKind::PhaseNotesUpdated,
             AppMessage::GlobalNotesUpdated(_) => AppMessageKind::GlobalNotesUpdated,
             AppMessage::ChatMessageAdded(_, _, _) => AppMessageKind::ChatMessageAdded,
@@ -132,23 +134,23 @@ impl From<&AppMessage> for AppMessageKind {
 pub type MessageHandler = Box<dyn Fn(&AppMessage)>;
 
 /// Central message dispatcher for event-driven communication
-/// 
+///
 /// The dispatcher supports targeted message routing where handlers can subscribe
 /// to specific message kinds or listen to all messages (wildcard).
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```rust
 /// use pt_journal::dispatcher::{Dispatcher, AppMessageKind};
-/// 
+///
 /// let mut dispatcher = Dispatcher::new();
 /// let handler = |msg: &pt_journal::dispatcher::AppMessage| {
 ///     println!("Received message: {:?}", msg);
 /// };
-/// 
+///
 /// // Register for specific message kinds
 /// dispatcher.register(Some(AppMessageKind::ChatMessageAdded), "my_chat_handler", Box::new(handler));
-/// 
+///
 /// // Register for all messages (wildcard)
 /// dispatcher.register(None, "my_wildcard_handler", Box::new(handler));
 /// ```
@@ -165,24 +167,24 @@ impl Dispatcher {
     }
 
     /// Register a handler for a specific message kind or all messages (wildcard)
-    /// 
+    ///
     /// # Arguments
     /// * `kind` - The message kind to listen for, or None to listen to all messages
     /// * `key` - A unique identifier for this handler (used for unregistering)
     /// * `handler` - The function to call when a matching message is dispatched
-    /// 
+    ///
     /// # Examples
     /// ```rust
     /// use pt_journal::dispatcher::{Dispatcher, AppMessageKind};
-    /// 
+    ///
     /// let mut dispatcher = Dispatcher::new();
     /// let handler = |msg: &pt_journal::dispatcher::AppMessage| {
     ///     println!("Received message: {:?}", msg);
     /// };
-    /// 
+    ///
     /// // Listen only to chat messages
     /// dispatcher.register(Some(AppMessageKind::ChatMessageAdded), "my_chat_handler", Box::new(handler));
-    /// 
+    ///
     /// // Listen to all messages (wildcard)
     /// dispatcher.register(None, "my_wildcard_handler", Box::new(handler));
     /// ```
@@ -199,7 +201,7 @@ impl Dispatcher {
     /// or are registered as wildcards (listening to all messages)
     pub fn dispatch(&self, message: &AppMessage) {
         let kind = AppMessageKind::from(message);
-        
+
         // Call handlers for the specific message kind
         if let Some(kind_handlers) = self.handlers.get(&Some(kind.clone())) {
             for handlers in kind_handlers.values() {
@@ -208,7 +210,7 @@ impl Dispatcher {
                 }
             }
         }
-        
+
         // Call wildcard handlers (registered with None)
         if let Some(wildcard_handlers) = self.handlers.get(&None) {
             for handlers in wildcard_handlers.values() {
@@ -366,7 +368,7 @@ mod tests {
         let mut dispatcher = Dispatcher::new();
         let chat_calls = Arc::new(Mutex::new(0));
         let info_calls = Arc::new(Mutex::new(0));
-        
+
         let chat_clone = chat_calls.clone();
         let info_clone = info_calls.clone();
 
@@ -389,7 +391,11 @@ mod tests {
         );
 
         // Dispatch ChatMessageAdded - should only call chat handler
-        dispatcher.dispatch(&AppMessage::ChatMessageAdded(0, 0, crate::model::ChatMessage::new(crate::model::ChatRole::User, "test".to_string())));
+        dispatcher.dispatch(&AppMessage::ChatMessageAdded(
+            0,
+            0,
+            crate::model::ChatMessage::new(crate::model::ChatRole::User, "test".to_string()),
+        ));
         assert_eq!(*chat_calls.lock().unwrap(), 1);
         assert_eq!(*info_calls.lock().unwrap(), 0);
 
@@ -420,7 +426,11 @@ mod tests {
         );
 
         // Dispatch different message types
-        dispatcher.dispatch(&AppMessage::ChatMessageAdded(0, 0, crate::model::ChatMessage::new(crate::model::ChatRole::User, "test".to_string())));
+        dispatcher.dispatch(&AppMessage::ChatMessageAdded(
+            0,
+            0,
+            crate::model::ChatMessage::new(crate::model::ChatRole::User, "test".to_string()),
+        ));
         dispatcher.dispatch(&AppMessage::Info("test info".to_string()));
         dispatcher.dispatch(&AppMessage::PhaseSelected(1));
         dispatcher.dispatch(&AppMessage::Error("test error".to_string()));
@@ -433,7 +443,7 @@ mod tests {
         let mut dispatcher = Dispatcher::new();
         let specific_calls = Arc::new(Mutex::new(0));
         let wildcard_calls = Arc::new(Mutex::new(0));
-        
+
         let specific_clone = specific_calls.clone();
         let wildcard_clone = wildcard_calls.clone();
 
@@ -461,7 +471,11 @@ mod tests {
         assert_eq!(*wildcard_calls.lock().unwrap(), 1);
 
         // Dispatch ChatMessageAdded - should only call wildcard
-        dispatcher.dispatch(&AppMessage::ChatMessageAdded(0, 0, crate::model::ChatMessage::new(crate::model::ChatRole::User, "test".to_string())));
+        dispatcher.dispatch(&AppMessage::ChatMessageAdded(
+            0,
+            0,
+            crate::model::ChatMessage::new(crate::model::ChatRole::User, "test".to_string()),
+        ));
         assert_eq!(*specific_calls.lock().unwrap(), 1);
         assert_eq!(*wildcard_calls.lock().unwrap(), 2);
     }
@@ -473,17 +487,29 @@ mod tests {
 
         // Register same key for different kinds
         let calls1 = calls.clone();
-        dispatcher.register(Some(AppMessageKind::Info), "test_key", Box::new(move |_| { *calls1.lock().unwrap() += 1; }));
-        
+        dispatcher.register(
+            Some(AppMessageKind::Info),
+            "test_key",
+            Box::new(move |_| {
+                *calls1.lock().unwrap() += 1;
+            }),
+        );
+
         let calls2 = calls.clone();
-        dispatcher.register(Some(AppMessageKind::Error), "test_key", Box::new(move |_| { *calls2.lock().unwrap() += 1; }));
+        dispatcher.register(
+            Some(AppMessageKind::Error),
+            "test_key",
+            Box::new(move |_| {
+                *calls2.lock().unwrap() += 1;
+            }),
+        );
 
         // Unregister by key should remove all
         dispatcher.unregister("test_key");
 
         dispatcher.dispatch(&AppMessage::Info("test".to_string()));
         dispatcher.dispatch(&AppMessage::Error("test".to_string()));
-        
+
         // Should not have been called
         assert_eq!(*calls.lock().unwrap(), 0);
     }

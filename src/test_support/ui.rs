@@ -15,6 +15,12 @@ impl MockTerminal {
     }
 }
 
+impl Default for MockTerminal {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl crate::ui::tool_execution::interfaces::TerminalInterface for MockTerminal {
     fn write(&mut self, text: &str) {
         self.written_text.push(text.to_string());
@@ -54,16 +60,22 @@ impl MockView {
     }
 }
 
+impl Default for MockView {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl crate::ui::tool_execution::interfaces::ToolPanelView for MockView {
-    fn set_categories(&self, categories: &[String], default_index: usize) {
+    fn set_categories(&self, _categories: &[String], _default_index: usize) {
         // In real implementation, this would update GTK widgets
     }
 
-    fn set_tools(&self, tools: &[(&str, &str)], default_tool_id: Option<&str>) {
+    fn set_tools(&self, _tools: &[(&str, &str)], _default_tool_id: Option<&str>) {
         // In real implementation, this would update GTK widgets
     }
 
-    fn render_instructions(&self, widget: gtk4::Box) {
+    fn render_instructions(&self, _widget: gtk4::Box) {
         // In real implementation, this would update the instructions area
     }
 
@@ -71,8 +83,13 @@ impl crate::ui::tool_execution::interfaces::ToolPanelView for MockView {
         self.selected_tool_id.clone()
     }
 
-    fn show_instructions_dialog(&self, title: &str, widget: gtk4::Box) {
+    fn show_instructions_dialog(&self, _title: &str, _widget: gtk4::Box) {
         // In real implementation, this would show a GTK dialog
+    }
+
+    fn tool_id_at_index(&self, _index: usize) -> Option<String> {
+        // Mock implementation - just return a dummy ID
+        Some("mock-tool-id".to_string())
     }
 }
 
@@ -85,13 +102,13 @@ pub struct MockInstructionProvider {
 
 impl MockInstructionProvider {
     pub fn new() -> Self {
-        let mut entry = crate::ui::tool_instructions::ToolManifestEntry {
+        let entry = crate::ui::tool_instructions::ToolManifestEntry {
             id: "test-tool".to_string(),
             label: "Test Tool".to_string(),
             category: "Test Category".to_string(),
         };
 
-        let instructions = crate::ui::tool_instructions::ToolInstructions {
+        let _instructions = crate::ui::tool_instructions::ToolInstructions {
             id: "test-tool".to_string(),
             name: "Test Tool".to_string(),
             summary: "A test tool".to_string(),
@@ -121,6 +138,12 @@ impl MockInstructionProvider {
     }
 }
 
+impl Default for MockInstructionProvider {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl crate::ui::tool_execution::interfaces::InstructionProvider for MockInstructionProvider {
     fn category_groups(&self) -> &[crate::ui::tool_instructions::CategoryGroup] {
         &self.categories
@@ -134,14 +157,21 @@ impl crate::ui::tool_execution::interfaces::InstructionProvider for MockInstruct
         &self.default_tool_id
     }
 
-    fn tools_for_category(&self, category: &str) -> Vec<crate::ui::tool_instructions::ToolManifestEntry> {
-        self.categories.iter()
+    fn tools_for_category(
+        &self,
+        category: &str,
+    ) -> Vec<crate::ui::tool_instructions::ToolManifestEntry> {
+        self.categories
+            .iter()
             .find(|g| g.name == category)
             .map(|g| g.tools.clone())
             .unwrap_or_default()
     }
 
-    fn get_instructions(&self, tool_id: Option<&str>) -> Option<&crate::ui::tool_instructions::ToolInstructions> {
+    fn get_instructions(
+        &self,
+        tool_id: Option<&str>,
+    ) -> Option<&crate::ui::tool_instructions::ToolInstructions> {
         if tool_id == Some("test-tool") {
             // In a real implementation, this would return the actual instructions
             None // For simplicity in this test

@@ -1,10 +1,9 @@
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use pt_journal::chatbot::{StepContext, ChatRequest, OllamaProvider, ChatError, ChatProvider};
+    use httpmock::prelude::*;
+    use pt_journal::chatbot::{ChatError, ChatProvider, ChatRequest, OllamaProvider, StepContext};
     use pt_journal::config::{ModelProfile, OllamaProviderConfig};
     use pt_journal::model::ChatRole;
-    use httpmock::prelude::*;
 
     fn create_test_request(model_id: &str, endpoint: &str) -> (ChatRequest, OllamaProviderConfig) {
         let mut config = OllamaProviderConfig::default();
@@ -156,10 +155,9 @@ mod tests {
 
 #[cfg(test)]
 mod service_tests {
-    use super::*;
-    use pt_journal::config::ChatbotConfig;
-    use pt_journal::chatbot::{ChatService, StepContext};
     use httpmock::prelude::*;
+    use pt_journal::chatbot::{ChatService, StepContext};
+    use pt_journal::config::ChatbotConfig;
 
     #[test]
     fn test_service_send_message_success() {
@@ -230,9 +228,8 @@ mod service_tests {
 
 #[cfg(test)]
 mod context_tests {
-    use super::*;
-    use pt_journal::model::Session;
     use pt_journal::chatbot::ContextBuilder;
+    use pt_journal::model::Session;
 
     #[test]
     fn test_context_builder() {

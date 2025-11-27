@@ -53,6 +53,26 @@ sudo dnf install gtk4-devel libadwaita-devel vte291-gtk4-devel
 sudo pacman -S gtk4 libadwaita vte4
 ```
 
+### Ollama Backend Setup
+
+PT Journal uses Ollama for AI-assisted learning. To enable the chatbot feature:
+
+1. **Install Ollama** from [ollama.ai](https://ollama.ai/)
+
+2. **Pull a model** (recommended: llama3.2):
+
+   ```bash
+   ollama pull llama3.2
+   ```
+
+3. **Verify installation**:
+
+   ```bash
+   ollama list
+   ```
+
+The application will connect to Ollama at `http://localhost:11434` by default. You can customize the endpoint in the configuration file or via environment variables.
+
 ### Build from Source
 
 ```bash
@@ -93,19 +113,6 @@ Quiz steps present multiple-choice questions with:
 ### AI Assistant
 
 The integrated chatbot provides contextual help based on your current learning step. Configure your Ollama endpoint in the settings.
-
-## Configuration
-
-Configuration is stored at `~/.config/pt-journal/config.toml`:
-
-```toml
-[chatbot]
-default_model_id = "llama3.2:latest"
-
-[chatbot.ollama]
-endpoint = "http://localhost:11434"
-timeout_secs = 180
-```
 
 ### Environment Variables
 
@@ -249,10 +256,6 @@ Contributions are welcome! Please ensure:
 3. All tests pass (`./test-all.sh`)
 4. New features include appropriate tests
 
-## License
-
-This project is developed as part of coursework at the Transport and Telecommunication Institute, Riga, Latvia.
-
 ## Acknowledgments
 
 - [GTK4-rs](https://gtk-rs.org/) - Rust bindings for GTK4
@@ -260,4 +263,3 @@ This project is developed as part of coursework at the Transport and Telecommuni
 - [Ollama](https://ollama.ai/) - Local LLM inference
 - [OWASP](https://owasp.org/) - Security testing guidelines
 - [CompTIA](https://www.comptia.org/) - Certification frameworks
-

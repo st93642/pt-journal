@@ -5,17 +5,17 @@ pub mod cloud_identity;
 pub mod cloud_native;
 pub mod comptia_secplus;
 pub mod container_security;
-pub mod exploitation;
+// pub mod exploitation; // Now loaded from JSON
 pub mod modern_web;
 pub mod pentest_exam;
-pub mod post_exploitation;
+// pub mod post_exploitation; // Now loaded from JSON
 pub mod purple_team_threat_hunting;
 // pub mod reconnaissance; // Now loaded from JSON
 pub mod red_team_tradecraft;
 pub mod reporting;
 pub mod serverless_security;
 pub mod supply_chain;
-pub mod vulnerability_analysis;
+// pub mod vulnerability_analysis; // Now loaded from JSON
 
 use crate::model::{Phase, Step};
 use uuid::Uuid;
@@ -44,9 +44,9 @@ pub struct TutorialStep {
 pub fn load_tutorial_phases() -> Vec<Phase> {
     vec![
         load_tutorial_phase("reconnaissance"),
-        create_vulnerability_analysis_phase(),
-        create_exploitation_phase(),
-        create_post_exploitation_phase(),
+        load_tutorial_phase("vulnerability_analysis"),
+        load_tutorial_phase("exploitation"),
+        load_tutorial_phase("post_exploitation"),
         create_cloud_iam_phase(),
         create_practical_oauth_phase(),
         create_sso_federation_phase(),
@@ -113,39 +113,6 @@ fn load_tutorial_phase(phase_name: &str) -> Phase {
                 notes: format!("File not found: {}", e),
             }
         }
-    }
-}
-
-fn create_vulnerability_analysis_phase() -> Phase {
-    let steps = vulnerability_analysis::create_vulnerability_analysis_steps();
-
-    Phase {
-        id: Uuid::new_v4(),
-        name: "Vulnerability Analysis".to_string(),
-        steps,
-        notes: String::new(),
-    }
-}
-
-fn create_exploitation_phase() -> Phase {
-    let steps = exploitation::create_exploitation_steps();
-
-    Phase {
-        id: Uuid::new_v4(),
-        name: "Exploitation".to_string(),
-        steps,
-        notes: String::new(),
-    }
-}
-
-fn create_post_exploitation_phase() -> Phase {
-    let steps = post_exploitation::create_post_exploitation_steps();
-
-    Phase {
-        id: Uuid::new_v4(),
-        name: "Post-Exploitation".to_string(),
-        steps,
-        notes: String::new(),
     }
 }
 
@@ -426,17 +393,17 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     let recon_phase = load_tutorial_phase("reconnaissance");
     validate_step_structure(&recon_phase.steps, "reconnaissance")?;
 
-    // Validate vulnerability analysis module
-    let vuln_steps = vulnerability_analysis::create_vulnerability_analysis_steps();
-    validate_step_structure(&vuln_steps, "vulnerability_analysis")?;
+    // Validate vulnerability analysis module (loaded from JSON)
+    let vuln_phase = load_tutorial_phase("vulnerability_analysis");
+    validate_step_structure(&vuln_phase.steps, "vulnerability_analysis")?;
 
-    // Validate exploitation module
-    let exploit_steps = exploitation::create_exploitation_steps();
-    validate_step_structure(&exploit_steps, "exploitation")?;
+    // Validate exploitation module (loaded from JSON)
+    let exploit_phase = load_tutorial_phase("exploitation");
+    validate_step_structure(&exploit_phase.steps, "exploitation")?;
 
-    // Validate post-exploitation module
-    let post_steps = post_exploitation::create_post_exploitation_steps();
-    validate_step_structure(&post_steps, "post_exploitation")?;
+    // Validate post-exploitation module (loaded from JSON)
+    let post_phase = load_tutorial_phase("post_exploitation");
+    validate_step_structure(&post_phase.steps, "post_exploitation")?;
 
     // Validate reporting module
     let report_steps = reporting::create_reporting_steps();
@@ -446,13 +413,13 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     if recon_phase.steps.is_empty() {
         return Err("Reconnaissance module has no steps".to_string());
     }
-    if vuln_steps.is_empty() {
+    if vuln_phase.steps.is_empty() {
         return Err("Vulnerability analysis module has no steps".to_string());
     }
-    if exploit_steps.is_empty() {
+    if exploit_phase.steps.is_empty() {
         return Err("Exploitation module has no steps".to_string());
     }
-    if post_steps.is_empty() {
+    if post_phase.steps.is_empty() {
         return Err("Post-exploitation module has no steps".to_string());
     }
     if report_steps.is_empty() {

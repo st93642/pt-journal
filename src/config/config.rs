@@ -11,6 +11,20 @@
 /*                       https://tsi.lv                                      */
 /*****************************************************************************/
 
+//! Configuration management for PT Journal.
+//!
+//! This module provides a simplified configuration system with:
+//! - Clean, structured config types (ChatbotConfig, ModelProfile, etc.)
+//! - Default trait implementations for sensible defaults
+//! - Environment variable overrides
+//! - TOML file support
+//! - Minimal validation via ensure_valid()
+//!
+//! Configuration loading order (highest to lowest priority):
+//! 1. Environment variables (PT_JOURNAL_*)
+//! 2. TOML config file (~/.config/pt-journal/config.toml)
+//! 3. Default values (defined in this module)
+
 use serde::{Deserialize, Serialize};
 use std::env;
 use std::fs;
@@ -23,6 +37,10 @@ const DEFAULT_MODEL_ID: &str = "llama3.2:latest";
 const DEFAULT_OLLAMA_ENDPOINT: &str = "http://localhost:11434";
 const DEFAULT_OLLAMA_TIMEOUT: u64 = 180;
 
+/// Main chatbot configuration structure.
+///
+/// This struct holds all chatbot-related configuration including model profiles,
+/// provider settings, and the active model selection.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChatbotConfig {
     #[serde(default = "default_chatbot_model_id")]
@@ -33,15 +51,6 @@ pub struct ChatbotConfig {
 
     #[serde(default)]
     pub ollama: OllamaProviderConfig,
-
-    #[serde(skip_serializing, default, alias = "endpoint")]
-    legacy_endpoint: Option<String>,
-
-    #[serde(skip_serializing, default, alias = "model")]
-    legacy_model: Option<String>,
-
-    #[serde(skip_serializing, default, alias = "timeout_seconds")]
-    legacy_timeout_seconds: Option<u64>,
 }
 
 impl Default for ChatbotConfig {
@@ -50,53 +59,20 @@ impl Default for ChatbotConfig {
             default_model_id: default_chatbot_model_id(),
             models: default_model_profiles(),
             ollama: OllamaProviderConfig::default(),
-            legacy_endpoint: None,
-            legacy_model: None,
-            legacy_timeout_seconds: None,
         }
     }
 }
 
 impl ChatbotConfig {
+    /// Ensures the configuration is valid by applying basic sanity checks.
+    /// This method ensures that required fields are populated with defaults if empty.
     pub fn ensure_valid(&mut self) {
-        self.normalize();
-    }
-
-    pub fn active_model(&self) -> &ModelProfile {
-        self.models
-            .iter()
-            .find(|profile| profile.id == self.default_model_id)
-            .or_else(|| self.models.first())
-            .expect("Chatbot configuration must include at least one model")
-    }
-
-    fn normalize(&mut self) {
-        if let Some(endpoint) = self.legacy_endpoint.take() {
-            self.ollama.endpoint = endpoint;
-        }
-        if let Some(timeout) = self.legacy_timeout_seconds.take() {
-            self.ollama.timeout_seconds = timeout;
-        }
-
-        let mut migrated_model_id = None;
-        if let Some(model) = self.legacy_model.take() {
-            if !model.trim().is_empty() {
-                self.default_model_id = model.clone();
-                migrated_model_id = Some(model);
-            }
-        }
-
+        // Ensure we have at least one model
         if self.models.is_empty() {
             self.models = default_model_profiles();
         }
 
-        if let Some(legacy_id) = migrated_model_id {
-            self.ensure_model_present(&legacy_id);
-        }
-
-        let default_id = self.default_model_id.clone();
-        self.ensure_model_present(default_id.as_str());
-
+        // Ensure default_model_id is valid
         if self.default_model_id.trim().is_empty()
             || !self
                 .models
@@ -111,16 +87,13 @@ impl ChatbotConfig {
         }
     }
 
-    fn ensure_model_present(&mut self, model_id: &str) {
-        if model_id.trim().is_empty() {
-            return;
-        }
-
-        let exists = self.models.iter().any(|profile| profile.id == model_id);
-        if !exists {
-            self.models
-                .push(ModelProfile::for_ollama(model_id, model_id));
-        }
+    /// Returns the currently active model profile.
+    pub fn active_model(&self) -> &ModelProfile {
+        self.models
+            .iter()
+            .find(|profile| profile.id == self.default_model_id)
+            .or_else(|| self.models.first())
+            .expect("Chatbot configuration must include at least one model")
     }
 }
 
@@ -434,26 +407,23 @@ mod tests {
     // }
 
     #[test]
-    fn test_legacy_config_migration() {
+    fn test_custom_config_loading() {
         let temp_dir = TempDir::new().unwrap();
-        let config_path = temp_dir.path().join("legacy.toml");
-        let legacy = r#"
+        let config_path = temp_dir.path().join("custom.toml");
+        let custom = r#"
 [chatbot]
-endpoint = "http://legacy:11434"
-model = "neural-chat:latest"
+default_model_id = "neural-chat:latest"
+
+[chatbot.ollama]
+endpoint = "http://custom:11434"
 timeout_seconds = 42
 "#;
-        fs::write(&config_path, legacy).unwrap();
+        fs::write(&config_path, custom).unwrap();
 
         let config = AppConfig::load_from_path(&config_path).unwrap();
-        assert_eq!(config.chatbot.ollama.endpoint, "http://legacy:11434");
+        assert_eq!(config.chatbot.ollama.endpoint, "http://custom:11434");
         assert_eq!(config.chatbot.default_model_id, "neural-chat:latest");
         assert_eq!(config.chatbot.ollama.timeout_seconds, 42);
-        assert!(config
-            .chatbot
-            .models
-            .iter()
-            .any(|profile| profile.id == "neural-chat:latest"));
     }
 
     #[test]
@@ -462,9 +432,6 @@ timeout_seconds = 42
             default_model_id: String::new(),
             models: Vec::new(),
             ollama: OllamaProviderConfig::default(),
-            legacy_endpoint: None,
-            legacy_model: None,
-            legacy_timeout_seconds: None,
         };
         chatbot.ensure_valid();
         assert!(!chatbot.models.is_empty());

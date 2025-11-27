@@ -85,9 +85,11 @@ PT Journal supports configuration via:
 
    ```toml
    [chatbot]
-   default_model_id = "llama3.2"
-   ollama.endpoint = "http://localhost:11434"
-   ollama.timeout_seconds = 30
+   default_model_id = "llama3.2:latest"
+
+   [chatbot.ollama]
+   endpoint = "http://localhost:11434"
+   timeout_seconds = 180
    ```
 
 3. **Default Values** (fallback)

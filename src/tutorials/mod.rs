@@ -1,11 +1,11 @@
-pub mod ai_security;
+// pub mod ai_security; // Now loaded from JSON
 // pub mod bug_bounty_hunting; // Now loaded from JSON
-pub mod ceh;
+// pub mod ceh; // Now loaded from JSON
 // pub mod cloud_identity; // Now loaded from JSON
-pub mod cloud_native;
+// pub mod cloud_native; // Now loaded from JSON
 // pub mod comptia_secplus; // Now loaded from JSON
 // pub mod container_security; // Now loaded from JSON
-pub mod modern_web;
+// pub mod modern_web; // Now loaded from JSON
 // pub mod pentest_exam; // Now loaded from JSON
 // pub mod post_exploitation; // Now loaded from JSON
 pub mod purple_team_threat_hunting;
@@ -55,14 +55,16 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         load_tutorial_phase("bug_bounty_hunting"),
         load_tutorial_phase("comptia_secplus"),
         load_tutorial_phase("pentest_exam"),
-        create_ceh_phase(),
-        create_cicd_pipeline_attacks_phase(),
+        load_tutorial_phase("ceh"),
+        load_tutorial_phase("cloud_native"),
+        load_tutorial_phase("ai_security"),
+        // create_cicd_pipeline_attacks_phase(), // Now part of cloud_native JSON
         create_sbom_analysis_phase(),
         create_dependency_confusion_phase(),
         create_artifact_integrity_phase(),
         create_red_team_tradecraft_phase(),
         create_purple_team_threat_hunting_phase(),
-        create_ai_security_phase(),
+        // create_ai_security_phase(), // Now loaded from JSON
     ]
 }
 
@@ -177,16 +179,16 @@ fn load_tutorial_phase(phase_name: &str) -> Phase {
     }
 }
 
-fn create_cicd_pipeline_attacks_phase() -> Phase {
-    let steps = vec![cloud_native::cicd_pipeline_attacks_phase()];
+// fn create_cicd_pipeline_attacks_phase() -> Phase {
+//     let steps = vec![cloud_native::cicd_pipeline_attacks_phase()];
 
-    Phase {
-        id: Uuid::new_v4(),
-        name: "CI-CD Pipeline Attacks".to_string(),
-        steps,
-        notes: String::new(),
-    }
-}
+//     Phase {
+//         id: Uuid::new_v4(),
+//         name: "CI-CD Pipeline Attacks".to_string(),
+//         steps,
+//         notes: String::new(),
+//     }
+// }
 
 fn create_sbom_analysis_phase() -> Phase {
     let steps = vec![supply_chain::sbom_analysis_phase()];
@@ -243,16 +245,16 @@ fn create_artifact_integrity_phase() -> Phase {
 //     }
 // }
 
-fn create_ceh_phase() -> Phase {
-    let steps = ceh::get_all_ceh_steps();
+// fn create_ceh_phase() -> Phase {
+//     let steps = ceh::get_all_ceh_steps();
 
-    Phase {
-        id: Uuid::new_v4(),
-        name: "Certified Ethical Hacker (CEH)".to_string(),
-        steps,
-        notes: String::new(),
-    }
-}
+//     Phase {
+//         id: Uuid::new_v4(),
+//         name: "Certified Ethical Hacker (CEH)".to_string(),
+//         steps,
+//         notes: String::new(),
+//     }
+// }
 
 fn create_red_team_tradecraft_phase() -> Phase {
     let steps = red_team_tradecraft::create_red_team_steps();
@@ -276,96 +278,96 @@ fn create_purple_team_threat_hunting_phase() -> Phase {
     }
 }
 
-fn create_ai_security_phase() -> Phase {
-    let mut steps = Vec::new();
+// fn create_ai_security_phase() -> Phase {
+//     let mut steps = Vec::new();
 
-    // Add Model Threat Modeling steps
-    for (title, description) in ai_security::MODEL_THREAT_MODELING_STEPS.iter() {
-        steps.push(Step::new_tutorial(
-            Uuid::new_v4(),
-            title.to_string(),
-            description.to_string(),
-            vec![
-                "ai".to_string(),
-                "threat-modeling".to_string(),
-                "security".to_string(),
-            ],
-        ));
-    }
+//     // Add Model Threat Modeling steps
+//     for (title, description) in ai_security::MODEL_THREAT_MODELING_STEPS.iter() {
+//         steps.push(Step::new_tutorial(
+//             Uuid::new_v4(),
+//             title.to_string(),
+//             description.to_string(),
+//             vec![
+//                 "ai".to_string(),
+//                 "threat-modeling".to_string(),
+//                 "security".to_string(),
+//             ],
+//         ));
+//     }
 
-    // Add Prompt Injection & Jailbreaks steps
-    for (title, description) in ai_security::PROMPT_INJECTION_STEPS.iter() {
-        steps.push(Step::new_tutorial(
-            Uuid::new_v4(),
-            title.to_string(),
-            description.to_string(),
-            vec![
-                "ai".to_string(),
-                "llm".to_string(),
-                "prompt-injection".to_string(),
-            ],
-        ));
-    }
+//     // Add Prompt Injection & Jailbreaks steps
+//     for (title, description) in ai_security::PROMPT_INJECTION_STEPS.iter() {
+//         steps.push(Step::new_tutorial(
+//             Uuid::new_v4(),
+//             title.to_string(),
+//             description.to_string(),
+//             vec![
+//                 "ai".to_string(),
+//                 "llm".to_string(),
+//                 "prompt-injection".to_string(),
+//             ],
+//         ));
+//     }
 
-    // Add Model Poisoning & Dataset Attacks steps
-    for (title, description) in ai_security::MODEL_POISONING_STEPS.iter() {
-        steps.push(Step::new_tutorial(
-            Uuid::new_v4(),
-            title.to_string(),
-            description.to_string(),
-            vec!["ai".to_string(), "ml".to_string(), "poisoning".to_string()],
-        ));
-    }
+//     // Add Model Poisoning & Dataset Attacks steps
+//     for (title, description) in ai_security::MODEL_POISONING_STEPS.iter() {
+//         steps.push(Step::new_tutorial(
+//             Uuid::new_v4(),
+//             title.to_string(),
+//             description.to_string(),
+//             vec!["ai".to_string(), "ml".to_string(), "poisoning".to_string()],
+//         ));
+//     }
 
-    // Add Data Exfiltration & Model Inversion steps
-    for (title, description) in ai_security::DATA_EXFILTRATION_STEPS.iter() {
-        steps.push(Step::new_tutorial(
-            Uuid::new_v4(),
-            title.to_string(),
-            description.to_string(),
-            vec![
-                "ai".to_string(),
-                "llm".to_string(),
-                "data-exfiltration".to_string(),
-            ],
-        ));
-    }
+//     // Add Data Exfiltration & Model Inversion steps
+//     for (title, description) in ai_security::DATA_EXFILTRATION_STEPS.iter() {
+//         steps.push(Step::new_tutorial(
+//             Uuid::new_v4(),
+//             title.to_string(),
+//             description.to_string(),
+//             vec![
+//                 "ai".to_string(),
+//                 "llm".to_string(),
+//                 "data-exfiltration".to_string(),
+//             ],
+//         ));
+//     }
 
-    // Add Adversarial Example Crafting steps
-    for (title, description) in ai_security::ADVERSARIAL_EXAMPLES_STEPS.iter() {
-        steps.push(Step::new_tutorial(
-            Uuid::new_v4(),
-            title.to_string(),
-            description.to_string(),
-            vec![
-                "ai".to_string(),
-                "ml".to_string(),
-                "adversarial".to_string(),
-            ],
-        ));
-    }
+//     // Add Adversarial Example Crafting steps
+//     for (title, description) in ai_security::ADVERSARIAL_EXAMPLES_STEPS.iter() {
+//         steps.push(Step::new_tutorial(
+//             Uuid::new_v4(),
+//             title.to_string(),
+//             description.to_string(),
+//             vec![
+//                 "ai".to_string(),
+//                 "ml".to_string(),
+//                 "adversarial".to_string(),
+//             ],
+//         ));
+//     }
 
-    // Add Guardrail Validation steps
-    for (title, description) in ai_security::GUARDRAIL_VALIDATION_STEPS.iter() {
-        steps.push(Step::new_tutorial(
-            Uuid::new_v4(),
-            title.to_string(),
-            description.to_string(),
-            vec![
-                "ai".to_string(),
-                "safety".to_string(),
-                "guardrails".to_string(),
-            ],
-        ));
-    }
+//     // Add Guardrail Validation steps
+//     for (title, description) in ai_security::GUARDRAIL_VALIDATION_STEPS.iter() {
+//         steps.push(Step::new_tutorial(
+//             Uuid::new_v4(),
+//             title.to_string(),
+//             description.to_string(),
+//             vec![
+//                 "ai".to_string(),
+//                 "safety".to_string(),
+//                 "guardrails".to_string(),
+//             ],
+//         ));
+//     }
 
-    Phase {
-        id: Uuid::new_v4(),
-        name: "AI/ML Security Integrations".to_string(),
-        steps,
-        notes: String::new(),
-    }
-}
+//     Phase {
+//         id: Uuid::new_v4(),
+//         name: "AI/ML Security Integrations".to_string(),
+//         steps,
+//         notes: String::new(),
+//     }
+// }
 
 /// Validate tutorial structure consistency across all modules
 pub fn validate_tutorial_structure() -> Result<(), String> {
@@ -425,6 +427,18 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     let pentest_exam_phase = load_tutorial_phase("pentest_exam");
     validate_step_structure(&pentest_exam_phase.steps, "pentest_exam")?;
 
+    // Validate CEH module (loaded from JSON)
+    let ceh_phase = load_tutorial_phase("ceh");
+    validate_step_structure(&ceh_phase.steps, "ceh")?;
+
+    // Validate Cloud Native module (loaded from JSON)
+    let cloud_native_phase = load_tutorial_phase("cloud_native");
+    validate_step_structure(&cloud_native_phase.steps, "cloud_native")?;
+
+    // Validate AI Security module (loaded from JSON)
+    let ai_security_phase = load_tutorial_phase("ai_security");
+    validate_step_structure(&ai_security_phase.steps, "ai_security")?;
+
     // Validate that all modules have at least one step
     if recon_phase.steps.is_empty() {
         return Err("Reconnaissance module has no steps".to_string());
@@ -467,6 +481,15 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     }
     if pentest_exam_phase.steps.is_empty() {
         return Err("PenTest+ module has no steps".to_string());
+    }
+    if ceh_phase.steps.is_empty() {
+        return Err("CEH module has no steps".to_string());
+    }
+    if cloud_native_phase.steps.is_empty() {
+        return Err("Cloud Native module has no steps".to_string());
+    }
+    if ai_security_phase.steps.is_empty() {
+        return Err("AI Security module has no steps".to_string());
     }
 
     Ok(())

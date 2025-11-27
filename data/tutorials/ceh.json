@@ -1,0 +1,152 @@
+{
+  "id": "ceh-tutorial",
+  "title": "Certified Ethical Hacker (CEH)",
+  "description": "Comprehensive CEH v12 certification preparation covering 24 modules of ethical hacking curriculum including footprinting, scanning, enumeration, system hacking, malware, sniffing, social engineering, DoS, session hijacking, IDS evasion, web server hacking, web applications, SQL injection, wireless networks, mobile platforms, IoT/OT, cloud computing, cryptography, AI/ML security, Kubernetes/container security, DevSecOps/CI-CD security, and blockchain/Web3 security.",
+  "type": "tutorial",
+  "steps": [
+    {
+      "id": "module-01-ethical-hacking",
+      "title": "Module 01: Introduction to Ethical Hacking",
+      "content": "Quiz content loaded from ceh/01-ethical-hacking/1.1-fundamentals.txt",
+      "tags": ["quiz", "ceh", "ethical-hacker", "introduction", "fundamentals"]
+    },
+    {
+      "id": "module-02-footprinting-reconnaissance",
+      "title": "Module 02: Footprinting and Reconnaissance",
+      "content": "Quiz content loaded from ceh/02-footprinting-reconnaissance/2.1-footprinting.txt",
+      "tags": ["quiz", "ceh", "ethical-hacker", "footprinting", "reconnaissance"]
+    },
+    {
+      "id": "module-03-scanning-networks",
+      "title": "Module 03: Scanning Networks",
+      "content": "Quiz content loaded from ceh/03-scanning-networks/3.1-scanning.txt",
+      "tags": ["quiz", "ceh", "ethical-hacker", "scanning", "networks"]
+    },
+    {
+      "id": "module-04-enumeration",
+      "title": "Module 04: Enumeration",
+      "content": "Quiz content loaded from ceh/04-enumeration/4.1-enumeration.txt",
+      "tags": ["quiz", "ceh", "ethical-hacker", "enumeration"]
+    },
+    {
+      "id": "module-05-vulnerability-analysis",
+      "title": "Module 05: Vulnerability Analysis",
+      "content": "Quiz content loaded from ceh/05-vulnerability-analysis/5.1-vulnerability.txt",
+      "tags": ["quiz", "ceh", "ethical-hacker", "vulnerability-analysis"]
+    },
+    {
+      "id": "module-06-system-hacking",
+      "title": "Module 06: System Hacking",
+      "content": "Quiz content loaded from ceh/06-system-hacking/6.1-system-hacking.txt",
+      "tags": ["quiz", "ceh", "ethical-hacker", "system-hacking"]
+    },
+    {
+      "id": "module-07-malware-threats",
+      "title": "Module 07: Malware Threats",
+      "content": "Quiz content loaded from ceh/07-malware-threats/7.1-malware.txt",
+      "tags": ["quiz", "ceh", "ethical-hacker", "malware", "threats"]
+    },
+    {
+      "id": "module-08-sniffing",
+      "title": "Module 08: Sniffing",
+      "content": "Quiz content loaded from ceh/08-sniffing/8.1-sniffing.txt",
+      "tags": ["quiz", "ceh", "ethical-hacker", "sniffing"]
+    },
+    {
+      "id": "module-09-social-engineering",
+      "title": "Module 09: Social Engineering",
+      "content": "Quiz content loaded from ceh/09-social-engineering/9.1-social-engineering.txt",
+      "tags": ["quiz", "ceh", "ethical-hacker", "social-engineering"]
+    },
+    {
+      "id": "module-10-denial-of-service",
+      "title": "Module 10: Denial of Service",
+      "content": "Quiz content loaded from ceh/10-denial-of-service/10.1-dos-ddos.txt",
+      "tags": ["quiz", "ceh", "ethical-hacker", "denial-of-service", "dos", "ddos"]
+    },
+    {
+      "id": "module-11-session-hijacking",
+      "title": "Module 11: Session Hijacking",
+      "content": "Quiz content loaded from ceh/11-session-hijacking/11.1-session-hijacking.txt",
+      "tags": ["quiz", "ceh", "ethical-hacker", "session-hijacking"]
+    },
+    {
+      "id": "module-12-evading-ids-firewalls-honeypots",
+      "title": "Module 12: Evading IDSs, Firewalls, and Honeypots",
+      "content": "Quiz content loaded from ceh/12-evading-ids-firewalls-honeypots/12.1-evasion.txt",
+      "tags": ["quiz", "ceh", "ethical-hacker", "evasion", "ids", "firewalls", "honeypots"]
+    },
+    {
+      "id": "module-13-hacking-web-servers",
+      "title": "Module 13: Hacking Web Servers",
+      "content": "Quiz content loaded from ceh/13-hacking-web-servers/13.1-web-servers.txt",
+      "tags": ["quiz", "ceh", "ethical-hacker", "web-servers"]
+    },
+    {
+      "id": "module-14-web-applications",
+      "title": "Module 14: Hacking Web Applications",
+      "content": "Quiz content loaded from ceh/14-web-applications/14.1-web-apps.txt",
+      "tags": ["quiz", "ceh", "ethical-hacker", "web-applications"]
+    },
+    {
+      "id": "module-15-sql-injection",
+      "title": "Module 15: SQL Injection",
+      "content": "Quiz content loaded from ceh/15-sql-injection/15.1-sql-injection.txt",
+      "tags": ["quiz", "ceh", "ethical-hacker", "sql-injection"]
+    },
+    {
+      "id": "module-16-wireless-networks",
+      "title": "Module 16: Hacking Wireless Networks",
+      "content": "Quiz content loaded from ceh/16-wireless-networks/16.1-wireless.txt",
+      "tags": ["quiz", "ceh", "ethical-hacker", "wireless-networks"]
+    },
+    {
+      "id": "module-17-mobile-platforms",
+      "title": "Module 17: Hacking Mobile Platforms",
+      "content": "Quiz content loaded from ceh/17-mobile-platforms/17.1-mobile.txt",
+      "tags": ["quiz", "ceh", "ethical-hacker", "mobile-platforms"]
+    },
+    {
+      "id": "module-18-iot-ot-hacking",
+      "title": "Module 18: IoT and OT Hacking",
+      "content": "Quiz content loaded from ceh/18-iot-ot-hacking/18.1-iot-ot.txt",
+      "tags": ["quiz", "ceh", "ethical-hacker", "iot", "ot", "industrial"]
+    },
+    {
+      "id": "module-19-cloud-computing",
+      "title": "Module 19: Cloud Computing",
+      "content": "Quiz content loaded from ceh/19-cloud-computing/19.1-cloud.txt",
+      "tags": ["quiz", "ceh", "ethical-hacker", "cloud-computing"]
+    },
+    {
+      "id": "module-20-cryptography",
+      "title": "Module 20: Cryptography",
+      "content": "Quiz content loaded from ceh/20-cryptography/20.1-cryptography.txt",
+      "tags": ["quiz", "ceh", "ethical-hacker", "cryptography"]
+    },
+    {
+      "id": "module-21-ai-ml-security",
+      "title": "Module 21: AI and Machine Learning Security",
+      "content": "Quiz content loaded from ceh/21-ai-ml-security/21.1-ai-ml-security.txt",
+      "tags": ["quiz", "ceh", "ethical-hacker", "ai", "ml", "machine-learning"]
+    },
+    {
+      "id": "module-22-kubernetes-container-security",
+      "title": "Module 22: Kubernetes and Container Security",
+      "content": "Quiz content loaded from ceh/22-kubernetes-container-security/22.1-kubernetes-containers.txt",
+      "tags": ["quiz", "ceh", "ethical-hacker", "kubernetes", "containers"]
+    },
+    {
+      "id": "module-23-devsecops-cicd-security",
+      "title": "Module 23: DevSecOps and CI/CD Pipeline Security",
+      "content": "Quiz content loaded from ceh/23-devsecops-cicd-security/23.1-devsecops-cicd.txt",
+      "tags": ["quiz", "ceh", "ethical-hacker", "devsecops", "cicd", "pipeline"]
+    },
+    {
+      "id": "module-24-blockchain-web3-security",
+      "title": "Module 24: Blockchain and Web3 Security",
+      "content": "Quiz content loaded from ceh/24-blockchain-web3-security/24.1-blockchain-web3.txt",
+      "tags": ["quiz", "ceh", "ethical-hacker", "blockchain", "web3"]
+    }
+  ]
+}

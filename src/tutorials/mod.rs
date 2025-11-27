@@ -39,29 +39,41 @@ pub struct TutorialStep {
 }
 
 /// Load all tutorial phases with their default content
+/// Phases are ordered to reflect real-world penetration testing workflow:
+/// 1. Initial reconnaissance and intelligence gathering
+/// 2. Core penetration testing methodology
+/// 3. Modern security topics (cloud, web, containers, etc.)
+/// 4. Advanced techniques (red team, bug bounty, supply chain)
+/// 5. Quiz-based certification preparation (at the end)
 pub fn load_tutorial_phases() -> Vec<Phase> {
     vec![
+        // Phase 1: Initial reconnaissance (intelligence gathering)
         load_tutorial_phase("reconnaissance"),
+        // Phase 2-4: Core penetration testing methodology
         load_tutorial_phase("vulnerability_analysis"),
         load_tutorial_phase("exploitation"),
         load_tutorial_phase("post_exploitation"),
+        // Phase 5-12: Modern security topics (cloud, identity, web, containers)
         load_tutorial_phase("cloud_iam"),
         load_tutorial_phase("practical_oauth"),
         load_tutorial_phase("sso_federation"),
         load_tutorial_phase("api_security"),
-        load_tutorial_phase("reporting"),
+        load_tutorial_phase("modern_web"),
         load_tutorial_phase("container_security"),
         load_tutorial_phase("serverless_security"),
+        load_tutorial_phase("cloud_native"),
+        // Phase 13-17: Advanced topics (supply chain, AI, red/purple team)
+        load_tutorial_phase("supply_chain"),
+        load_tutorial_phase("ai_security"),
+        load_tutorial_phase("red_team_tradecraft"),
+        load_tutorial_phase("purple_team_threat_hunting"),
         load_tutorial_phase("bug_bounty_hunting"),
+        // Phase 18: Reporting (final documentation phase)
+        load_tutorial_phase("reporting"),
+        // Phase 19-21: Quiz-based certification preparation (post-testing validation)
         load_tutorial_phase("comptia_secplus"),
         load_tutorial_phase("pentest_exam"),
         load_tutorial_phase("ceh"),
-        load_tutorial_phase("cloud_native"),
-        load_tutorial_phase("ai_security"),
-        load_tutorial_phase("supply_chain"),
-        load_tutorial_phase("purple_team_threat_hunting"),
-        load_tutorial_phase("red_team_tradecraft"),
-        load_tutorial_phase("modern_web"),
         // create_cicd_pipeline_attacks_phase(), // Now part of cloud_native JSON
         // create_sbom_analysis_phase(), // Now part of supply_chain JSON
         // create_dependency_confusion_phase(), // Now part of supply_chain JSON

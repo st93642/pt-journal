@@ -17,7 +17,6 @@ pub mod dispatcher;
 pub mod error;
 pub mod model;
 pub mod quiz;
-pub mod state;
 pub mod store;
 pub mod support;
 pub mod test_support;

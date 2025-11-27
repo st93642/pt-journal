@@ -182,7 +182,7 @@ pub fn build_ui(app: &Application, model: AppModel) {
     crate::ui::handlers::setup_chat_handlers(detail_panel_ref.clone(), state.clone());
 
     // Sidebar toggle handler
-    crate::ui::handlers::setup_sidebar_handler(&btn_sidebar, &left_box);
+    let _sidebar_handlers = crate::ui::handlers::setup_sidebar_handler(&btn_sidebar, &left_box);
 
     // === LAYOUT ===
     // Three-column layout: Sidebar (left) | Content (center) | Tools (right)

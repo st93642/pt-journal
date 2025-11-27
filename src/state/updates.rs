@@ -30,7 +30,7 @@ impl StateUpdater for SelectPhase {
 
         // Dispatch events
         context.dispatcher.dispatch_phase_selected(self.phase_idx);
-        context.dispatcher.borrow().dispatch(&crate::dispatcher::AppMessage::RefreshStepList(self.phase_idx));
+        context.dispatcher.borrow().emit(crate::dispatcher::AppEvent::RefreshStepList(self.phase_idx));
 
         Ok(())
     }
@@ -61,7 +61,7 @@ impl StateUpdater for SelectStep {
 
         // Dispatch events
         context.dispatcher.dispatch_step_selected(self.step_idx);
-        context.dispatcher.borrow().dispatch(&crate::dispatcher::AppMessage::RefreshDetailView(phase_idx, self.step_idx));
+        context.dispatcher.borrow().emit(crate::dispatcher::AppEvent::RefreshDetailView(phase_idx, self.step_idx));
 
         Ok(())
     }
@@ -129,7 +129,7 @@ impl StateUpdater for UpdateStepDescriptionNotes {
             step.set_description_notes(self.notes.clone());
         })?;
 
-        context.dispatcher.borrow().dispatch(&crate::dispatcher::AppMessage::StepDescriptionNotesUpdated(
+        context.dispatcher.borrow().emit(crate::dispatcher::AppEvent::StepDescriptionNotesUpdated(
             self.phase_idx, self.step_idx, self.notes.clone(),
         ));
 
@@ -151,7 +151,7 @@ impl StateUpdater for UpdatePhaseNotes {
             phase.notes = self.notes.clone();
         })?;
 
-        context.dispatcher.borrow().dispatch(&crate::dispatcher::AppMessage::PhaseNotesUpdated(self.phase_idx, self.notes.clone()));
+        context.dispatcher.borrow().emit(crate::dispatcher::AppEvent::PhaseNotesUpdated(self.phase_idx, self.notes.clone()));
 
         Ok(())
     }
@@ -171,7 +171,7 @@ impl StateUpdater for UpdateGlobalNotes {
             model.session_mut().notes_global = self.notes.clone();
         }
 
-        context.dispatcher.borrow().dispatch(&crate::dispatcher::AppMessage::GlobalNotesUpdated(self.notes.clone()));
+        context.dispatcher.borrow().emit(crate::dispatcher::AppEvent::GlobalNotesUpdated(self.notes.clone()));
 
         Ok(())
     }
@@ -192,7 +192,7 @@ impl StateUpdater for AddChatMessage {
             step.add_chat_message(self.message.clone());
         })?;
 
-        context.dispatcher.borrow().dispatch(&crate::dispatcher::AppMessage::ChatMessageAdded(
+        context.dispatcher.borrow().emit(crate::dispatcher::AppEvent::ChatMessageAdded(
             self.phase_idx, self.step_idx, self.message.clone(),
         ));
 
@@ -215,7 +215,7 @@ impl StateUpdater for AddEvidence {
             step.add_evidence(self.evidence.clone());
         })?;
 
-        context.dispatcher.borrow().dispatch(&crate::dispatcher::AppMessage::EvidenceAdded(
+        context.dispatcher.borrow().emit(crate::dispatcher::AppEvent::EvidenceAdded(
             self.phase_idx, self.step_idx, self.evidence.clone(),
         ));
 
@@ -238,7 +238,7 @@ impl StateUpdater for RemoveEvidence {
             step.remove_evidence(self.evidence_id);
         })?;
 
-        context.dispatcher.borrow().dispatch(&crate::dispatcher::AppMessage::EvidenceRemoved(
+        context.dispatcher.borrow().emit(crate::dispatcher::AppEvent::EvidenceRemoved(
             self.phase_idx, self.step_idx, self.evidence_id,
         ));
 
@@ -261,7 +261,7 @@ impl StateUpdater for SetChatModel {
             model.config_mut().chatbot.default_model_id = self.model_id.clone();
         }
 
-        context.dispatcher.borrow().dispatch(&crate::dispatcher::AppMessage::ChatModelChanged(self.model_id.clone()));
+        context.dispatcher.borrow().emit(crate::dispatcher::AppEvent::ChatModelChanged(self.model_id.clone()));
 
         Ok(())
     }
@@ -270,14 +270,13 @@ impl StateUpdater for SetChatModel {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::dispatcher::create_dispatcher;
     use crate::model::{AppModel, ChatRole};
     use std::rc::Rc;
     use std::cell::RefCell;
 
     fn create_test_context() -> UpdateContext {
         let model = Rc::new(RefCell::new(AppModel::default()));
-        let dispatcher = create_dispatcher();
+        let dispatcher = crate::dispatcher::create_event_bus();
         UpdateContext::new(model, dispatcher)
     }
 

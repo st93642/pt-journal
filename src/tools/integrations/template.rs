@@ -145,7 +145,6 @@ impl SecurityTool for TemplateTool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tools::traits::*;
 
     #[test]
     fn test_template_tool_creation() {

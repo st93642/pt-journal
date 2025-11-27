@@ -1,6 +1,4 @@
-/// Core traits for security tool integration
-use anyhow::Result;
-use std::process::Command;
+/// Core types for security tool instructions
 use std::time::Duration;
 
 /// Version information for a security tool
@@ -21,7 +19,7 @@ impl ToolVersion {
     }
 }
 
-/// Configuration for tool execution
+/// Configuration for tool execution (kept for compatibility)
 #[derive(Debug, Clone)]
 pub struct ToolConfig {
     pub target: Option<String>,
@@ -37,7 +35,7 @@ impl ToolConfig {
     }
 }
 
-/// Builder for ToolConfig
+/// Builder for ToolConfig (kept for compatibility)
 #[derive(Debug, Default)]
 pub struct ToolConfigBuilder {
     target: Option<String>,
@@ -77,7 +75,7 @@ impl ToolConfigBuilder {
         self
     }
 
-    pub fn build(self) -> Result<ToolConfig> {
+    pub fn build(self) -> Result<ToolConfig, anyhow::Error> {
         Ok(ToolConfig {
             target: self.target,
             arguments: self.arguments,
@@ -88,43 +86,9 @@ impl ToolConfigBuilder {
     }
 }
 
-/// Result from tool execution
+/// Result from tool execution (kept for compatibility)
 #[derive(Debug, Clone)]
 pub enum ToolResult {
     Raw { stdout: String, stderr: String },
     Parsed { data: serde_json::Value },
-}
-
-/// Core trait that all security tools must implement
-pub trait SecurityTool: Send + Sync {
-    /// Unique identifier for the tool
-    fn name(&self) -> &str;
-
-    /// Tool version check
-    fn check_availability(&self) -> Result<ToolVersion>;
-
-    /// Build command with arguments
-    fn build_command(&self, config: &ToolConfig) -> Result<Command>;
-
-    /// Parse tool output into structured format
-    fn parse_output(&self, output: &str) -> Result<ToolResult>;
-
-    /// Validate prerequisites (target, permissions, etc.)
-    fn validate_prerequisites(&self, config: &ToolConfig) -> Result<()>;
-}
-
-/// Result from tool execution with metadata
-#[derive(Debug)]
-pub struct ExecutionResult {
-    pub exit_code: i32,
-    pub stdout: String,
-    pub stderr: String,
-    pub parsed_result: Option<ToolResult>,
-    pub duration: Duration,
-}
-
-/// Execution strategy trait
-pub trait ToolRunner {
-    /// Execute tool synchronously
-    fn execute(&self, tool: &dyn SecurityTool, config: &ToolConfig) -> Result<ExecutionResult>;
 }

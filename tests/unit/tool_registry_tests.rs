@@ -1,7 +1,6 @@
 #[cfg(test)]
 mod registry_tests {
     use pt_journal::tools::registry::ToolRegistry;
-    use pt_journal::tools::integrations::TemplateTool;
 
     #[test]
     fn test_registry_creation() {
@@ -11,86 +10,36 @@ mod registry_tests {
     }
 
     #[test]
-    fn test_register_template_tool() {
+    fn test_register_instructions() {
         let mut registry = ToolRegistry::new();
-        let tool = Box::new(TemplateTool::new());
+        registry.register_instructions("nmap");
 
-        // Template tool should register successfully
-        assert!(registry.register(tool).is_ok());
         assert_eq!(registry.count(), 1);
-        assert!(registry.has_tool("template"));
-        assert_eq!(registry.list_tools(), vec!["template"]);
+        assert!(registry.has_instructions("nmap"));
+        assert_eq!(registry.list_tools(), vec!["nmap"]);
     }
 
     #[test]
-    fn test_register_duplicate_tool() {
+    fn test_register_duplicate_instructions() {
         let mut registry = ToolRegistry::new();
-        let tool1 = Box::new(TemplateTool::new());
-        let tool2 = Box::new(TemplateTool::new());
+        registry.register_instructions("nmap");
+        registry.register_instructions("nmap"); // Should be idempotent
 
-        assert!(registry.register(tool1).is_ok());
-        assert!(registry.register(tool2).is_err()); // Should fail for duplicate
+        assert_eq!(registry.count(), 1);
+        assert!(registry.has_instructions("nmap"));
     }
 
     #[test]
-    fn test_get_missing_tool() {
+    fn test_has_instructions_missing_tool() {
         let registry = ToolRegistry::new();
-
-        // Should return error for missing tool
-        match registry.get_tool("nonexistent") {
-            Ok(_) => panic!("Expected error for missing tool"),
-            Err(e) => {
-                let err_msg = format!("{}", e);
-                assert!(err_msg.contains("not found in registry"));
-            }
-        }
-    }
-
-    #[test]
-    fn test_get_registered_tool() {
-        let mut registry = ToolRegistry::new();
-        let tool = Box::new(TemplateTool::new());
-        registry.register(tool).unwrap();
-
-        // Should return error because retrieval is not implemented yet
-        match registry.get_tool("template") {
-            Ok(_) => panic!("Expected error for stub implementation"),
-            Err(e) => {
-                let err_msg = format!("{}", e);
-                assert!(err_msg.contains("retrieval not implemented yet"));
-            }
-        }
-    }
-
-    #[test]
-    fn test_unregister_tool() {
-        let mut registry = ToolRegistry::new();
-        let tool = Box::new(TemplateTool::new());
-        registry.register(tool).unwrap();
-
-        assert!(registry.unregister("template").is_ok());
-        assert_eq!(registry.count(), 0);
-        assert!(!registry.has_tool("template"));
-    }
-
-    #[test]
-    fn test_unregister_missing_tool() {
-        let mut registry = ToolRegistry::new();
-
-        match registry.unregister("nonexistent") {
-            Ok(_) => panic!("Expected error for unregistering missing tool"),
-            Err(e) => {
-                let err_msg = format!("{}", e);
-                assert!(err_msg.contains("not found in registry"));
-            }
-        }
+        assert!(!registry.has_instructions("nonexistent"));
     }
 
     #[test]
     fn test_clear_registry() {
         let mut registry = ToolRegistry::new();
-        let tool = Box::new(TemplateTool::new());
-        registry.register(tool).unwrap();
+        registry.register_instructions("nmap");
+        registry.register_instructions("gobuster");
 
         registry.clear();
         assert_eq!(registry.count(), 0);
@@ -98,16 +47,21 @@ mod registry_tests {
     }
 
     #[test]
-    fn test_discover_tools() {
+    fn test_multiple_tools() {
         let mut registry = ToolRegistry::new();
+        registry.register_instructions("nmap");
+        registry.register_instructions("gobuster");
+        registry.register_instructions("nikto");
 
-        // This will discover tools available in PATH
-        let result = registry.discover_tools();
-        assert!(result.is_ok());
+        assert_eq!(registry.count(), 3);
+        assert!(registry.has_instructions("nmap"));
+        assert!(registry.has_instructions("gobuster"));
+        assert!(registry.has_instructions("nikto"));
 
-        let discovered = result.unwrap();
-        // Should find some common tools if they're installed
-        // We don't assert specific tools since they may not be installed
-        assert!(discovered.iter().all(|tool| !tool.is_empty()));
+        let tools = registry.list_tools();
+        assert_eq!(tools.len(), 3);
+        assert!(tools.contains(&"nmap".to_string()));
+        assert!(tools.contains(&"gobuster".to_string()));
+        assert!(tools.contains(&"nikto".to_string()));
     }
 }

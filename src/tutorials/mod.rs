@@ -10,7 +10,7 @@ pub mod modern_web;
 pub mod pentest_exam;
 pub mod post_exploitation;
 pub mod purple_team_threat_hunting;
-pub mod reconnaissance;
+// pub mod reconnaissance; // Now loaded from JSON
 pub mod red_team_tradecraft;
 pub mod reporting;
 pub mod serverless_security;
@@ -19,11 +19,31 @@ pub mod vulnerability_analysis;
 
 use crate::model::{Phase, Step};
 use uuid::Uuid;
+use serde::{Deserialize, Serialize};
+use std::fs;
+
+/// JSON structure for tutorial data loaded from files
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TutorialData {
+    pub id: String,
+    pub title: String,
+    pub description: String,
+    pub r#type: String,
+    pub steps: Vec<TutorialStep>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TutorialStep {
+    pub id: String,
+    pub title: String,
+    pub content: String,
+    pub tags: Vec<String>,
+}
 
 /// Load all tutorial phases with their default content
 pub fn load_tutorial_phases() -> Vec<Phase> {
     vec![
-        create_reconnaissance_phase(),
+        load_tutorial_phase("reconnaissance"),
         create_vulnerability_analysis_phase(),
         create_exploitation_phase(),
         create_post_exploitation_phase(),
@@ -48,14 +68,51 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
     ]
 }
 
-fn create_reconnaissance_phase() -> Phase {
-    let steps = reconnaissance::create_reconnaissance_steps();
+/// Load a tutorial phase from JSON file
+fn load_tutorial_phase(phase_name: &str) -> Phase {
+    let json_path = format!("data/tutorials/{}.json", phase_name);
+    match fs::read_to_string(&json_path) {
+        Ok(content) => {
+            match serde_json::from_str::<TutorialData>(&content) {
+                Ok(tutorial_data) => {
+                    let steps = tutorial_data.steps.into_iter().map(|step_data| {
+                        Step::new_tutorial(
+                            Uuid::new_v4(),
+                            step_data.title,
+                            step_data.content,
+                            step_data.tags,
+                        )
+                    }).collect();
 
-    Phase {
-        id: Uuid::new_v4(),
-        name: "Reconnaissance".to_string(),
-        steps,
-        notes: String::new(),
+                    Phase {
+                        id: Uuid::new_v4(),
+                        name: tutorial_data.title,
+                        steps,
+                        notes: String::new(),
+                    }
+                }
+                Err(e) => {
+                    eprintln!("Failed to parse {}: {}", json_path, e);
+                    // Fallback to empty phase
+                    Phase {
+                        id: Uuid::new_v4(),
+                        name: phase_name.to_string(),
+                        steps: Vec::new(),
+                        notes: format!("Error loading tutorial: {}", e),
+                    }
+                }
+            }
+        }
+        Err(e) => {
+            eprintln!("Failed to read {}: {}", json_path, e);
+            // Fallback to empty phase
+            Phase {
+                id: Uuid::new_v4(),
+                name: phase_name.to_string(),
+                steps: Vec::new(),
+                notes: format!("File not found: {}", e),
+            }
+        }
     }
 }
 
@@ -365,9 +422,9 @@ fn create_ai_security_phase() -> Phase {
 
 /// Validate tutorial structure consistency across all modules
 pub fn validate_tutorial_structure() -> Result<(), String> {
-    // Validate reconnaissance module
-    let recon_steps = reconnaissance::create_reconnaissance_steps();
-    validate_step_structure(&recon_steps, "reconnaissance")?;
+    // Validate reconnaissance module (loaded from JSON)
+    let recon_phase = load_tutorial_phase("reconnaissance");
+    validate_step_structure(&recon_phase.steps, "reconnaissance")?;
 
     // Validate vulnerability analysis module
     let vuln_steps = vulnerability_analysis::create_vulnerability_analysis_steps();
@@ -386,7 +443,7 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     validate_step_structure(&report_steps, "reporting")?;
 
     // Validate that all modules have at least one step
-    if recon_steps.is_empty() {
+    if recon_phase.steps.is_empty() {
         return Err("Reconnaissance module has no steps".to_string());
     }
     if vuln_steps.is_empty() {

@@ -36,7 +36,7 @@ mod tests {
         let temp_dir = TempDir::new().unwrap();
         let session_file = temp_dir.path().join("legacy_session.json");
 
-        // Create a JSON string without chat_history field
+        // Create a JSON string without chat_history field (using current Step structure)
         let legacy_json = r#"{
             "id": "550e8400-e29b-41d4-a716-446655440000",
             "name": "Legacy Session",
@@ -51,14 +51,11 @@ mod tests {
                             "title": "Test Step",
                             "tags": ["test"],
                             "status": "Todo",
-                            "content": {
-                                "Tutorial": {
-                                    "description": "Test description",
-                                    "description_notes": "",
-                                    "notes": "",
-                                    "evidence": []
-                                }
-                            }
+                            "completed_at": null,
+                            "description": "Test description",
+                            "description_notes": "",
+                            "notes": "",
+                            "evidence": []
                         }
                     ],
                     "notes": ""

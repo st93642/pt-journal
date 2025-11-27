@@ -34,7 +34,17 @@ assert_matches = "1.5"
 httpmock = "0.6"
 test-log = { version = "0.2", features = ["log"] }
 
+[profile.test]
+opt-level = 1
+debug = true
+overflow-checks = true
+
+[[test]]
+name = "unit_tests"
+path = "tests/unit/mod.rs"
+harness = true
+
 [[test]]
 name = "integration_tests"
-path = "tests/integration_tests.rs"
+path = "tests/integration/integration_tests.rs"
 harness = false

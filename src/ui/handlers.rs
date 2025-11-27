@@ -31,6 +31,8 @@ use gtk4::{ApplicationWindow, Button, ListBox};
 use std::rc::Rc;
 
 use crate::ui::controllers::{chat, navigation, notes, quiz, tool};
+use crate::ui::example_handlers::SidebarToggleHandler;
+use crate::ui::handler_base::{create_context, execute_handler};
 use crate::ui::detail_panel::DetailPanel;
 use crate::ui::state::StateManager;
 
@@ -79,9 +81,17 @@ pub fn setup_notes_handlers(detail_panel: Rc<DetailPanel>, state: Rc<StateManage
 
 /// Wire up sidebar toggle button
 pub fn setup_sidebar_handler(btn_sidebar: &Button, left_box: &gtk4::Box) {
-    let left_box_clone = left_box.clone();
+    let handler = SidebarToggleHandler::new(left_box.clone());
+
     btn_sidebar.connect_clicked(move |_| {
-        left_box_clone.set_visible(!left_box_clone.is_visible());
+        let context = create_context(
+            None, // Sidebar toggle doesn't need state access
+            crate::ui::handler_base::EventData::None,
+        );
+
+        if let Err(e) = execute_handler(&handler, context) {
+            eprintln!("Sidebar toggle handler error: {}", e);
+        }
     });
 }
 

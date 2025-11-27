@@ -9,7 +9,7 @@
 use crate::ui::tool_instructions::{self, ToolInstructions};
 use adw::prelude::*;
 use adw::{ExpanderRow, PreferencesGroup};
-use gtk4::{Align, Box as GtkBox, Button, Label, LinkButton, ListBoxRow, Orientation, gdk};
+use gtk4::{gdk, Align, Box as GtkBox, Button, Label, LinkButton, ListBoxRow, Orientation};
 
 /// Represents the resolved instruction content for the current selection.
 #[derive(Debug, Clone)]

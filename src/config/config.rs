@@ -5,7 +5,7 @@
 /*  By: st93642@students.tsi.lv                             TT    SSSSSSS II */
 /*                                                          TT         SS II */
 /*  Created: Nov 25 2025 14:30 st93642                      TT    SSSSSSS II */
-/*  Updated: Nov 27 2025 02:27 st93642                                       */
+/*  Updated: Nov 27 2025 03:18 st93642                                       */
 /*                                                                           */
 /*   Transport and Telecommunication Institute - Riga, Latvia                */
 /*                       https://tsi.lv                                      */
@@ -15,6 +15,8 @@ use serde::{Deserialize, Serialize};
 use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
+
+use toml;
 
 const DEFAULT_PROMPT_TEMPLATE: &str = "{{context}}";
 const DEFAULT_MODEL_ID: &str = "llama3.2:latest";
@@ -210,6 +212,9 @@ impl AppConfig {
         config.apply_env_overrides();
         config.chatbot.ensure_valid();
 
+        // Validate the loaded configuration
+        super::validation::validate_app_config_instance(&config)?;
+
         Ok(config)
     }
 
@@ -261,7 +266,7 @@ impl AppConfig {
         }
     }
 
-    fn config_file_path() -> PathBuf {
+    pub fn config_file_path() -> PathBuf {
         let config_dir = env::var("XDG_CONFIG_HOME")
             .map(PathBuf::from)
             .unwrap_or_else(|_| {

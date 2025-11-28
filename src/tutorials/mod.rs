@@ -53,7 +53,9 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         load_tutorial_phase("vulnerability_analysis"),
         load_tutorial_phase("exploitation"),
         load_tutorial_phase("post_exploitation"),
-        // Phase 5-12: Modern security topics (cloud, identity, web, containers)
+        // Phase 5: Linux CTF (practical application of methodology)
+        load_tutorial_phase("linux_ctf"),
+        // Phase 6-13: Modern security topics (cloud, identity, web, containers)
         load_tutorial_phase("cloud_iam"),
         load_tutorial_phase("practical_oauth"),
         load_tutorial_phase("sso_federation"),
@@ -62,15 +64,15 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         load_tutorial_phase("container_security"),
         load_tutorial_phase("serverless_security"),
         load_tutorial_phase("cloud_native"),
-        // Phase 13-17: Advanced topics (supply chain, AI, red/purple team)
+        // Phase 14-18: Advanced topics (supply chain, AI, red/purple team)
         load_tutorial_phase("supply_chain"),
         load_tutorial_phase("ai_security"),
         load_tutorial_phase("red_team_tradecraft"),
         load_tutorial_phase("purple_team_threat_hunting"),
         load_tutorial_phase("bug_bounty_hunting"),
-        // Phase 18: Reporting (final documentation phase)
+        // Phase 19: Reporting (final documentation phase)
         load_tutorial_phase("reporting"),
-        // Phase 19-21: Quiz-based certification preparation (post-testing validation)
+        // Phase 20-22: Quiz-based certification preparation (post-testing validation)
         load_tutorial_phase("comptia_secplus"),
         load_tutorial_phase("pentest_exam"),
         load_tutorial_phase("ceh"),
@@ -210,6 +212,10 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     let post_phase = load_tutorial_phase("post_exploitation");
     validate_step_structure(&post_phase.steps, "post_exploitation")?;
 
+    // Validate Linux CTF module (loaded from JSON)
+    let linux_ctf_phase = load_tutorial_phase("linux_ctf");
+    validate_step_structure(&linux_ctf_phase.steps, "linux_ctf")?;
+
     // Validate cloud IAM module (loaded from JSON)
     let cloud_iam_phase = load_tutorial_phase("cloud_iam");
     validate_step_structure(&cloud_iam_phase.steps, "cloud_iam")?;
@@ -290,6 +296,9 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     }
     if post_phase.steps.is_empty() {
         return Err("Post-exploitation module has no steps".to_string());
+    }
+    if linux_ctf_phase.steps.is_empty() {
+        return Err("Linux CTF module has no steps".to_string());
     }
     if cloud_iam_phase.steps.is_empty() {
         return Err("Cloud IAM module has no steps".to_string());

@@ -217,7 +217,6 @@ impl ToolExecutionPanel {
         let dialog = gtk4::Window::new();
         dialog.set_title(Some(dialog_title.as_str()));
         dialog.set_transient_for(Some(window));
-        dialog.set_modal(true);
         dialog.set_default_size(1000, 650);
 
         // Create a box for the content with margins

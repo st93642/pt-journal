@@ -289,7 +289,7 @@ mod tests {
 
             // Verify step counts are reasonable for all phases
             let expected_step_counts = [
-                16, 5, 4, 4, 15, 3, 2, 1, 1, 7, 7, 6, 7, 15, 15, 13, 10, 10, 8, 4, 23, 32, 24,
+                16, 5, 4, 4, 15, 9, 2, 1, 1, 7, 7, 6, 7, 15, 15, 13, 10, 10, 8, 4, 23, 32, 24,
             ]; // 23 phases loaded from JSON
             for (idx, &expected_count) in expected_step_counts.iter().enumerate() {
                 assert_eq!(session.phases[idx].steps.len(), expected_count);

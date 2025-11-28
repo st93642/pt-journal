@@ -195,6 +195,91 @@ mod text_input_tests {
 }
 
 #[cfg(test)]
+mod syntax_highlighting_tests {
+    use pt_journal::ui::detail_panel::{highlight_code, style_to_pango};
+    use syntect::highlighting::Style;
+
+    #[test]
+    fn test_style_to_pango_conversion() {
+        // Test that Style is converted to Pango markup correctly
+        let style = Style {
+            foreground: syntect::highlighting::Color {
+                r: 255,
+                g: 0,
+                b: 0,
+                a: 255,
+            },
+            background: syntect::highlighting::Color {
+                r: 0,
+                g: 0,
+                b: 0,
+                a: 255,
+            },
+            font_style: syntect::highlighting::FontStyle::empty(),
+        };
+
+        let pango = style_to_pango(&style);
+        assert!(pango.contains("font_family=\"monospace\""));
+        assert!(pango.contains("foreground=\"#ff0000\""));
+        // Black background (0,0,0) is not included
+        assert!(pango.starts_with("<span"));
+        assert!(pango.ends_with(">"));
+    }
+
+    #[test]
+    fn test_highlight_code_rust() {
+        // Test that Rust code gets highlighted
+        let code = "fn main() {\n    println!(\"Hello!\");\n}";
+        let highlighted = highlight_code(code, "rust");
+
+        // Should contain Pango markup
+        assert!(highlighted.contains("<span"));
+        assert!(highlighted.contains("</span>"));
+        assert!(highlighted.contains("font_family=\"monospace\""));
+
+        // Should contain some color information (syntax highlighting)
+        assert!(highlighted.contains("foreground="));
+    }
+
+    #[test]
+    fn test_highlight_code_bash() {
+        // Test that Bash code gets highlighted
+        let code = "#!/bin/bash\necho \"Hello\"";
+        let highlighted = highlight_code(code, "bash");
+
+        // Should contain Pango markup
+        assert!(highlighted.contains("<span"));
+        assert!(highlighted.contains("</span>"));
+        assert!(highlighted.contains("font_family=\"monospace\""));
+
+        // Should contain some color information (syntax highlighting)
+        assert!(highlighted.contains("foreground="));
+    }
+
+    #[test]
+    fn test_highlight_code_unknown_language() {
+        // Test that unknown languages fall back to plain text
+        let code = "some code here";
+        let highlighted = highlight_code(code, "unknownlang");
+
+        // Should still contain Pango markup
+        assert!(highlighted.contains("<span"));
+        assert!(highlighted.contains("</span>"));
+        assert!(highlighted.contains("font_family=\"monospace\""));
+    }
+
+    #[test]
+    fn test_highlight_code_empty() {
+        // Test that empty code works
+        let code = "";
+        let highlighted = highlight_code(code, "rust");
+
+        // Should be empty or just contain basic markup
+        assert!(highlighted.is_empty() || highlighted.contains("<span"));
+    }
+}
+
+#[cfg(test)]
 mod chat_tests {
     use super::*;
     use httpmock::prelude::*;

@@ -27,6 +27,8 @@ regex = "1"
 async-channel = "2"
 reqwest = { version = "0.11", features = ["json", "blocking"] }
 log = "0.4"
+sourceview5 = "0.9"
+syntect = { version = "5.0", features = ["default-syntaxes", "default-themes"] }
 
 [dev-dependencies]
 tempfile = "3.8"

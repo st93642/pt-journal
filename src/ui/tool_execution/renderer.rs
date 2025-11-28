@@ -6,6 +6,7 @@
 //! selection logic without initializing GTK, while keeping widget construction
 //! centralized for reuse by the panel and dialog views.
 
+use crate::ui::detail_panel::highlight_code;
 use crate::ui::tool_instructions::{self, ToolInstructions};
 use adw::prelude::*;
 use adw::{ExpanderRow, PreferencesGroup};
@@ -476,7 +477,10 @@ fn create_instruction_label(text: &str) -> Label {
 fn create_copyable_command_row(command: &str) -> GtkBox {
     let row = GtkBox::new(Orientation::Horizontal, 8);
 
-    let cmd_label = Label::new(Some(command));
+    // Apply syntax highlighting to the command
+    let highlighted_command = highlight_code(command, "bash");
+    let cmd_label = Label::new(None);
+    cmd_label.set_markup(&highlighted_command);
     cmd_label.set_selectable(true);
     cmd_label.set_xalign(0.0);
     cmd_label.set_hexpand(true);

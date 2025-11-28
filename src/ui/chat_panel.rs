@@ -1,4 +1,6 @@
 use crate::model::{ChatMessage, ChatRole};
+use crate::ui::detail_panel::markdown_to_pango;
+use gtk4::glib;
 use gtk4::prelude::*;
 use gtk4::{
     Box as GtkBox, Button, DropDown, Label, ListBox, Orientation, ScrolledWindow, Spinner,
@@ -141,7 +143,16 @@ impl ChatPanel {
         time_label.add_css_class("timestamp");
 
         // Message content
-        let content_label = Label::new(Some(&message.content));
+        let content_text = if matches!(message.role, ChatRole::Assistant) {
+            // Apply markdown rendering with syntax highlighting for assistant messages
+            markdown_to_pango(&message.content)
+        } else {
+            // For user messages, just escape markup
+            glib::markup_escape_text(&message.content).to_string()
+        };
+
+        let content_label = Label::new(None);
+        content_label.set_markup(&content_text);
         content_label.set_xalign(0.0);
         content_label.set_wrap(true);
         content_label.set_wrap_mode(gtk4::pango::WrapMode::Word);

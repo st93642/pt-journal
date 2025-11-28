@@ -7,7 +7,182 @@ use gtk4::prelude::*;
 use gtk4::{
     Box as GtkBox, CheckButton, Frame, Label, Orientation, Paned, ScrolledWindow, Stack, TextView,
 };
+use pulldown_cmark::{CodeBlockKind, Event, HeadingLevel, Options, Parser, Tag, TagEnd};
 use std::rc::Rc;
+use syntect::easy::HighlightLines;
+use syntect::highlighting::{Style, ThemeSet};
+use syntect::parsing::SyntaxSet;
+use syntect::util::LinesWithEndings;
+
+/// Convert syntax highlighting style to Pango markup
+pub fn style_to_pango(style: &Style) -> String {
+    let mut pango = String::from("<span");
+
+    // Add font family for code
+    pango.push_str(" font_family=\"monospace\"");
+
+    // Convert foreground color
+    let fg = style.foreground;
+    pango.push_str(&format!(
+        " foreground=\"#{:02x}{:02x}{:02x}\"",
+        fg.r, fg.g, fg.b
+    ));
+
+    // Convert background color if different from default (not black)
+    let bg = style.background;
+    if bg.r != 0 || bg.g != 0 || bg.b != 0 {
+        pango.push_str(&format!(
+            " background=\"#{:02x}{:02x}{:02x}\"",
+            bg.r, bg.g, bg.b
+        ));
+    }
+
+    pango.push('>');
+    pango
+}
+
+/// Highlight code using syntect and return Pango markup
+pub fn highlight_code(code: &str, language: &str) -> String {
+    // Initialize syntax set and theme set
+    let ps = SyntaxSet::load_defaults_newlines();
+    let ts = ThemeSet::load_defaults();
+
+    // Get syntax definition for the language
+    let syntax = ps
+        .find_syntax_by_token(language)
+        .unwrap_or_else(|| ps.find_syntax_plain_text());
+
+    // Use a dark theme for better contrast (you can change this)
+    let theme = &ts.themes["base16-ocean.dark"];
+
+    let mut highlighter = HighlightLines::new(syntax, theme);
+    let mut highlighted = String::new();
+
+    // Process each line
+    for line in LinesWithEndings::from(code) {
+        let ranges = highlighter.highlight_line(line, &ps).unwrap_or_default();
+
+        for (style, text) in ranges {
+            highlighted.push_str(&style_to_pango(&style));
+            // Escape Pango markup characters
+            let escaped = text
+                .replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;");
+            highlighted.push_str(&escaped);
+            highlighted.push_str("</span>");
+        }
+    }
+
+    highlighted
+}
+
+/// Convert markdown to Pango markup for GTK TextView
+pub fn markdown_to_pango(markdown: &str) -> String {
+    let mut options = Options::empty();
+    options.insert(Options::ENABLE_STRIKETHROUGH);
+    let parser = Parser::new_ext(markdown, options);
+
+    let mut pango = String::new();
+    let mut in_code_block = false;
+    let mut code_block_content = String::new();
+    let mut code_language = String::new();
+
+    for event in parser {
+        match event {
+            Event::Start(Tag::Paragraph) => {
+                // Paragraph start
+            }
+            Event::End(TagEnd::Paragraph) => {
+                pango.push_str("\n\n");
+            }
+            Event::Start(Tag::Heading { level, .. }) => match level {
+                HeadingLevel::H1 => pango.push_str("<span font_weight=\"bold\" size=\"larger\">"),
+                HeadingLevel::H2 => pango.push_str("<span font_weight=\"bold\" size=\"large\">"),
+                _ => pango.push_str("<span font_weight=\"bold\">"),
+            },
+            Event::End(TagEnd::Heading(..)) => {
+                pango.push_str("</span>\n\n");
+            }
+            Event::Start(Tag::CodeBlock(kind)) => {
+                in_code_block = true;
+                code_language = match kind {
+                    CodeBlockKind::Fenced(lang) => lang.to_string(),
+                    _ => String::new(),
+                };
+                code_block_content.clear();
+            }
+            Event::End(TagEnd::CodeBlock) => {
+                // Apply syntax highlighting to the collected code block content
+                let highlighted = highlight_code(&code_block_content, &code_language);
+                pango.push_str(&highlighted);
+                pango.push('\n');
+                in_code_block = false;
+                code_block_content.clear();
+            }
+            Event::Start(Tag::Item) => {
+                pango.push_str("• ");
+            }
+            Event::End(TagEnd::Item) => {
+                pango.push('\n');
+            }
+            Event::Start(Tag::Emphasis) => {
+                pango.push_str("<i>");
+            }
+            Event::End(TagEnd::Emphasis) => {
+                pango.push_str("</i>");
+            }
+            Event::Start(Tag::Strong) => {
+                pango.push_str("<b>");
+            }
+            Event::End(TagEnd::Strong) => {
+                pango.push_str("</b>");
+            }
+            Event::Start(Tag::Link { .. }) => {
+                // For simplicity, just make links blue
+                pango.push_str("<span foreground=\"#0000ff\">");
+            }
+            Event::End(TagEnd::Link) => {
+                pango.push_str("</span>");
+            }
+            Event::Text(text) => {
+                if in_code_block {
+                    // Collect code block content for syntax highlighting
+                    code_block_content.push_str(&text);
+                } else {
+                    // Regular text - escape for Pango
+                    let escaped = text
+                        .replace("&", "&amp;")
+                        .replace("<", "&lt;")
+                        .replace(">", "&gt;");
+                    pango.push_str(&escaped);
+                }
+            }
+            Event::Code(code) => {
+                // Inline code - use basic highlighting
+                pango.push_str("<span font_family=\"monospace\" background=\"#f0f0f0\">");
+                let escaped = code
+                    .replace("&", "&amp;")
+                    .replace("<", "&lt;")
+                    .replace(">", "&gt;");
+                pango.push_str(&escaped);
+                pango.push_str("</span>");
+            }
+            Event::SoftBreak => {
+                pango.push(' ');
+            }
+            Event::HardBreak => {
+                pango.push('\n');
+            }
+            _ => {
+                // Other events - ignore for now
+            }
+        }
+    }
+
+    pango
+}
 
 /// Struct holding all detail panel widgets (supports both tutorial and quiz views)
 pub struct DetailPanel {
@@ -139,7 +314,14 @@ pub fn load_step_into_panel(panel: &DetailPanel, step: &Step) {
         let description = &step.description;
         let chat_history = &step.chat_history;
 
-        panel.desc_view.buffer().set_text(description);
+        // Convert markdown to Pango markup
+        let pango_markup = markdown_to_pango(description);
+
+        // Clear the buffer and insert markup
+        let buffer = panel.desc_view.buffer();
+        buffer.set_text("");
+        buffer.insert_markup(&mut buffer.start_iter(), &pango_markup);
+
         panel.chat_panel.load_history(chat_history);
     }
 }
@@ -172,7 +354,15 @@ impl DetailPanel {
         chat_history: &[crate::model::ChatMessage],
     ) {
         self.content_stack.set_visible_child_name("tutorial");
-        self.desc_view.buffer().set_text(description);
+
+        // Convert markdown to Pango markup
+        let pango_markup = markdown_to_pango(description);
+
+        // Clear the buffer and insert markup
+        let buffer = self.desc_view.buffer();
+        buffer.set_text("");
+        buffer.insert_markup(&mut buffer.start_iter(), &pango_markup);
+
         self.chat_panel.load_history(chat_history);
     }
 

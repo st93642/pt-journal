@@ -13,6 +13,7 @@ A **GTK4/Libadwaita desktop application** for penetration testing education, bui
   - CompTIA Security+ (SY0-701)
   - CompTIA PenTest+ (PT0-003)
   - Reconnaissance, exploitation, post-exploitation techniques
+  - Linux and Windows CTF step-by-step guides
   - Cloud security (AWS, Azure, GCP, IAM, containers)
   - Modern web application security
   

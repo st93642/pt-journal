@@ -22,7 +22,7 @@ mod tests {
             assert_eq!(model.selected_phase(), 0);
             assert_eq!(model.selected_step(), Some(0));
             assert!(model.current_path().is_none());
-            assert_eq!(model.session().phases.len(), 21); // 21 phases loaded from JSON
+            assert_eq!(model.session().phases.len(), 23); // 23 phases loaded from JSON
                                                           // Config should be loaded (or default)
             assert_eq!(
                 model.config().chatbot.ollama.endpoint,
@@ -35,7 +35,7 @@ mod tests {
         fn test_session_creation() {
             let session = Session::default();
             assert!(!session.name.is_empty());
-            assert_eq!(session.phases.len(), 21); // 21 phases loaded from JSON
+            assert_eq!(session.phases.len(), 23); // 23 phases loaded from JSON
         }
 
         #[test]
@@ -62,13 +62,23 @@ mod tests {
             assert_eq!(post_phase.name, "Post-Exploitation");
             assert_eq!(post_phase.steps.len(), 4); // 4 post-exploitation steps
 
+            // Test Linux CTF phase
+            let linux_ctf_phase = &session.phases[4];
+            assert_eq!(linux_ctf_phase.name, "Linux CTF");
+            assert!(!linux_ctf_phase.steps.is_empty()); // Has tutorial steps
+
+            // Test Windows CTF phase
+            let windows_ctf_phase = &session.phases[5];
+            assert_eq!(windows_ctf_phase.name, "Windows CTF");
+            assert!(!windows_ctf_phase.steps.is_empty()); // Has tutorial steps
+
             // Test Cloud IAM Abuse 101 phase
-            let cloud_iam_phase = &session.phases[4];
+            let cloud_iam_phase = &session.phases[6];
             assert_eq!(cloud_iam_phase.name, "Cloud IAM Abuse 101");
             assert!(!cloud_iam_phase.steps.is_empty()); // Has tutorial and quiz steps
 
             // Test Container & Kubernetes Security phase
-            let container_security_phase = &session.phases[9];
+            let container_security_phase = &session.phases[11];
             assert_eq!(
                 container_security_phase.name,
                 "Container & Kubernetes Security"
@@ -76,17 +86,17 @@ mod tests {
             assert!(!container_security_phase.steps.is_empty()); // Has tutorial and quiz steps
 
             // Test Bug Bounty Hunting phase
-            let bug_bounty_phase = &session.phases[16];
+            let bug_bounty_phase = &session.phases[18];
             assert_eq!(bug_bounty_phase.name, "Bug Bounty Hunting");
             assert!(!bug_bounty_phase.steps.is_empty()); // Has steps
 
-            // Test Reporting phase (moved to position 17)
-            let report_phase = &session.phases[17];
+            // Test Reporting phase (moved to position 19)
+            let report_phase = &session.phases[19];
             assert_eq!(report_phase.name, "Reporting");
             assert_eq!(report_phase.steps.len(), 4); // 4 reporting steps
 
-            // Test CompTIA Security+ phase (moved to position 18)
-            let comptia_phase = &session.phases[18];
+            // Test CompTIA Security+ phase (moved to position 20)
+            let comptia_phase = &session.phases[20];
             assert_eq!(comptia_phase.name, "CompTIA Security+");
             assert_eq!(comptia_phase.steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
         }
@@ -253,6 +263,8 @@ mod tests {
                 "Vulnerability Analysis",
                 "Exploitation",
                 "Post-Exploitation",
+                "Linux CTF",
+                "Windows CTF",
                 "Cloud IAM Abuse 101",
                 "Practical OAuth/OIDC Abuse",
                 "SSO & Federation Misconfigurations",
@@ -277,23 +289,23 @@ mod tests {
 
             // Verify step counts are reasonable for all phases
             let expected_step_counts = [
-                16, 5, 4, 4, 2, 1, 1, 7, 7, 6, 7, 15, 15, 13, 10, 10, 8, 4, 23, 32, 24,
-            ]; // 21 phases loaded from JSON
+                16, 5, 4, 4, 15, 2, 2, 1, 1, 7, 7, 6, 7, 15, 15, 13, 10, 10, 8, 4, 23, 32, 24,
+            ]; // 23 phases loaded from JSON
             for (idx, &expected_count) in expected_step_counts.iter().enumerate() {
                 assert_eq!(session.phases[idx].steps.len(), expected_count);
             }
 
             // Cloud IAM Abuse 101 phase should include tutorial + quiz steps
-            assert!(session.phases[4].steps.len() >= 2);
+            assert!(session.phases[6].steps.len() >= 2);
 
             // Container & Kubernetes Security phase should have steps
-            assert!(!session.phases[9].steps.is_empty());
+            assert!(!session.phases[11].steps.is_empty());
 
             // Bug Bounty Hunting phase should have steps
-            assert!(!session.phases[16].steps.is_empty());
+            assert!(!session.phases[18].steps.is_empty());
 
-            // CompTIA Security+ phase should have quiz steps (now at position 18)
-            assert_eq!(session.phases[18].steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
+            // CompTIA Security+ phase should have quiz steps (now at position 20)
+            assert_eq!(session.phases[20].steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
         }
 
         #[test]

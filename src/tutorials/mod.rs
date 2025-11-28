@@ -55,7 +55,9 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         load_tutorial_phase("post_exploitation"),
         // Phase 5: Linux CTF (practical application of methodology)
         load_tutorial_phase("linux_ctf"),
-        // Phase 6-13: Modern security topics (cloud, identity, web, containers)
+        // Phase 6: Windows CTF (Windows/AD practical application)
+        load_tutorial_phase("windows_ctf"),
+        // Phase 7-14: Modern security topics (cloud, identity, web, containers)
         load_tutorial_phase("cloud_iam"),
         load_tutorial_phase("practical_oauth"),
         load_tutorial_phase("sso_federation"),
@@ -64,15 +66,15 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         load_tutorial_phase("container_security"),
         load_tutorial_phase("serverless_security"),
         load_tutorial_phase("cloud_native"),
-        // Phase 14-18: Advanced topics (supply chain, AI, red/purple team)
+        // Phase 15-19: Advanced topics (supply chain, AI, red/purple team)
         load_tutorial_phase("supply_chain"),
         load_tutorial_phase("ai_security"),
         load_tutorial_phase("red_team_tradecraft"),
         load_tutorial_phase("purple_team_threat_hunting"),
         load_tutorial_phase("bug_bounty_hunting"),
-        // Phase 19: Reporting (final documentation phase)
+        // Phase 20: Reporting (final documentation phase)
         load_tutorial_phase("reporting"),
-        // Phase 20-22: Quiz-based certification preparation (post-testing validation)
+        // Phase 21-23: Quiz-based certification preparation (post-testing validation)
         load_tutorial_phase("comptia_secplus"),
         load_tutorial_phase("pentest_exam"),
         load_tutorial_phase("ceh"),
@@ -216,6 +218,10 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     let linux_ctf_phase = load_tutorial_phase("linux_ctf");
     validate_step_structure(&linux_ctf_phase.steps, "linux_ctf")?;
 
+    // Validate Windows CTF module (loaded from JSON)
+    let windows_ctf_phase = load_tutorial_phase("windows_ctf");
+    validate_step_structure(&windows_ctf_phase.steps, "windows_ctf")?;
+
     // Validate cloud IAM module (loaded from JSON)
     let cloud_iam_phase = load_tutorial_phase("cloud_iam");
     validate_step_structure(&cloud_iam_phase.steps, "cloud_iam")?;
@@ -299,6 +305,9 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     }
     if linux_ctf_phase.steps.is_empty() {
         return Err("Linux CTF module has no steps".to_string());
+    }
+    if windows_ctf_phase.steps.is_empty() {
+        return Err("Windows CTF module has no steps".to_string());
     }
     if cloud_iam_phase.steps.is_empty() {
         return Err("Cloud IAM module has no steps".to_string());

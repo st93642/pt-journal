@@ -22,4 +22,7 @@ cargo fmt
 echo "📝 Checking formatting..."
 cargo fmt --check
 
+echo "🔍 Validating JSON files..."
+find . -name "*.json" -not -path "./target/*" -exec jq empty {} \; && echo "✅ All JSON files are valid"
+
 echo "✅ All checks passed!"

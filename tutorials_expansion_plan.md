@@ -180,6 +180,7 @@ This plan outlines the process to expand PT Journal's tutorial library by integr
 ### 🔄 In Progress
 
 **Domain 4: Communication and Network Security**
+Error loading quiz: Failed to read quiz file data/cissp/cissp-domain-7-quiz.txt: No such file or directory (os error 2)
 
 - ✅ Tutorial JSON created (`cissp-domain-4.json`)
 - ✅ ACADEMIC BACKGROUND sections expanded to full tutorials

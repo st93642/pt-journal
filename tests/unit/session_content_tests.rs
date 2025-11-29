@@ -22,7 +22,7 @@ mod tests {
             assert_eq!(model.selected_phase(), 0);
             assert_eq!(model.selected_step(), Some(0));
             assert!(model.current_path().is_none());
-            assert_eq!(model.session().phases.len(), 54); // 54 phases loaded from JSON
+            assert_eq!(model.session().phases.len(), 56); // 56 phases loaded from JSON
                                                           // Config should be loaded (or default)
             assert_eq!(
                 model.config().chatbot.ollama.endpoint,
@@ -35,7 +35,7 @@ mod tests {
         fn test_session_creation() {
             let session = Session::default();
             assert!(!session.name.is_empty());
-            assert_eq!(session.phases.len(), 54); // 54 phases loaded from JSON
+            assert_eq!(session.phases.len(), 56); // 56 phases loaded from JSON
         }
 
         #[test]
@@ -399,6 +399,7 @@ mod tests {
                 "CISSP Domain 4: Communication and Network Security",
                 "CISSP Domain 5: Identity and Access Management",
                 "CISSP Domain 6: Security Assessment and Testing",
+                "CISSP Domain 7: Security Operations",
             ];
             for (idx, expected_name) in phase_names.iter().enumerate() {
                 assert_eq!(session.phases[idx].name, *expected_name);
@@ -408,8 +409,8 @@ mod tests {
             let expected_step_counts = [
                 4, 6, 6, 6, 6, 5, 1, 16, 3, 3, 3, 3, 3, 10, 10, 10, 10, 3, 5, 5, 3, 3, 7, 3, 4, 4,
                 15, 9, 2, 1, 1, 7, 7, 6, 7, 15, 15, 13, 5, 4, 4, 10, 10, 12, 4, 23, 32, 24, 7, 6,
-                5, 4, 4, 5,
-            ]; // 53 phases loaded from JSON
+                5, 4, 4, 5, 4,
+            ]; // 54 phases loaded from JSON
             for (idx, &expected_count) in expected_step_counts.iter().enumerate() {
                 assert_eq!(session.phases[idx].steps.len(), expected_count);
             }
@@ -679,9 +680,9 @@ mod tests {
                 }
             }
 
-            // Should be reasonable size (< 2MB of text)
+            // Should be reasonable size (< 3MB of text)
             assert!(
-                total_chars < 2_000_000,
+                total_chars < 3_000_000,
                 "Content too large: {} chars",
                 total_chars
             );

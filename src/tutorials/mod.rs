@@ -50,7 +50,9 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
     vec![
         // Phase 1: Initial reconnaissance (intelligence gathering)
         load_tutorial_phase("reconnaissance"),
-        // Phase 2-7: Core penetration testing methodology
+        // Phase 2: Advanced reconnaissance techniques (AI-powered OSINT, certificates, metadata)
+        load_tutorial_phase("advanced_reconnaissance_techniques"),
+        // Phase 3-8: Core penetration testing methodology
         load_tutorial_phase("vulnerability_analysis"),
         load_tutorial_phase("advanced-web-app-security-fundamentals"),
         load_tutorial_phase("cross-site-scripting-xss-exploitation-prevention"),
@@ -72,9 +74,12 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         load_tutorial_phase("container_security"),
         load_tutorial_phase("serverless_security"),
         load_tutorial_phase("cloud_native"),
-        // Phase 18-22: Advanced topics (supply chain, AI, red/purple team)
+        // Phase 18-23: Advanced topics (supply chain, AI, RAG, red/purple team)
         load_tutorial_phase("supply_chain"),
         load_tutorial_phase("ai_security"),
+        load_tutorial_phase("ai_powered_offensive_security"),
+        load_tutorial_phase("retrieval_augmented_generation_red_teaming"),
+        load_tutorial_phase("bug_bounty_automation_ai"),
         load_tutorial_phase("red_team_tradecraft"),
         load_tutorial_phase("purple_team_threat_hunting"),
         load_tutorial_phase("bug_bounty_hunting"),
@@ -208,6 +213,13 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     let recon_phase = load_tutorial_phase("reconnaissance");
     validate_step_structure(&recon_phase.steps, "reconnaissance")?;
 
+    // Validate advanced reconnaissance techniques module (loaded from JSON)
+    let advanced_recon_phase = load_tutorial_phase("advanced_reconnaissance_techniques");
+    validate_step_structure(
+        &advanced_recon_phase.steps,
+        "advanced_reconnaissance_techniques",
+    )?;
+
     // Validate vulnerability analysis module (loaded from JSON)
     let vuln_phase = load_tutorial_phase("vulnerability_analysis");
     validate_step_structure(&vuln_phase.steps, "vulnerability_analysis")?;
@@ -316,6 +328,27 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     let ai_security_phase = load_tutorial_phase("ai_security");
     validate_step_structure(&ai_security_phase.steps, "ai_security")?;
 
+    // Validate AI-Powered Offensive Security module (loaded from JSON)
+    let ai_powered_offensive_security_phase = load_tutorial_phase("ai_powered_offensive_security");
+    validate_step_structure(
+        &ai_powered_offensive_security_phase.steps,
+        "ai_powered_offensive_security",
+    )?;
+
+    // Validate Retrieval-Augmented Generation Red Teaming module (loaded from JSON)
+    let rag_red_teaming_phase = load_tutorial_phase("retrieval_augmented_generation_red_teaming");
+    validate_step_structure(
+        &rag_red_teaming_phase.steps,
+        "retrieval_augmented_generation_red_teaming",
+    )?;
+
+    // Validate Bug Bounty Automation with AI module (loaded from JSON)
+    let bug_bounty_automation_ai_phase = load_tutorial_phase("bug_bounty_automation_ai");
+    validate_step_structure(
+        &bug_bounty_automation_ai_phase.steps,
+        "bug_bounty_automation_ai",
+    )?;
+
     // Validate Supply Chain module (loaded from JSON)
     let supply_chain_phase = load_tutorial_phase("supply_chain");
     validate_step_structure(&supply_chain_phase.steps, "supply_chain")?;
@@ -335,6 +368,9 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     // Validate that all modules have at least one step
     if recon_phase.steps.is_empty() {
         return Err("Reconnaissance module has no steps".to_string());
+    }
+    if advanced_recon_phase.steps.is_empty() {
+        return Err("Advanced reconnaissance techniques module has no steps".to_string());
     }
     if vuln_phase.steps.is_empty() {
         return Err("Vulnerability analysis module has no steps".to_string());
@@ -406,6 +442,15 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     }
     if ai_security_phase.steps.is_empty() {
         return Err("AI Security module has no steps".to_string());
+    }
+    if ai_powered_offensive_security_phase.steps.is_empty() {
+        return Err("AI-Powered Offensive Security module has no steps".to_string());
+    }
+    if rag_red_teaming_phase.steps.is_empty() {
+        return Err("Retrieval-Augmented Generation Red Teaming module has no steps".to_string());
+    }
+    if bug_bounty_automation_ai_phase.steps.is_empty() {
+        return Err("Bug Bounty Automation with AI module has no steps".to_string());
     }
     if supply_chain_phase.steps.is_empty() {
         return Err("Supply Chain module has no steps".to_string());

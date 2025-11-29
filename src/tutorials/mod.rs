@@ -50,7 +50,25 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
     vec![
         // Phase 1: Initial reconnaissance (intelligence gathering)
         load_tutorial_phase("reconnaissance"),
-        // Phase 2: Advanced reconnaissance techniques (AI-powered OSINT, certificates, metadata)
+        // Phase 2: Foundations of pentesting with AI integration
+        load_tutorial_phase("traditional-vs-ai-pentesting-foundations"),
+        // Phase 3: Building a modern PT lab with GenAI
+        load_tutorial_phase("building-modern-pt-lab-genai"),
+        // Phase 4: GenAI-driven reconnaissance techniques
+        load_tutorial_phase("genai-driven-reconnaissance"),
+        // Phase 5: AI-enhanced scanning and sniffing
+        load_tutorial_phase("ai-enhanced-scanning-sniffing"),
+        // Phase 6: Vulnerability assessment with AI tools
+        load_tutorial_phase("vulnerability-assessment-ai"),
+        // Phase 7: AI-driven social engineering attacks
+        load_tutorial_phase("ai-driven-social-engineering"),
+        // Phase 8: GenAI-driven exploitation techniques
+        load_tutorial_phase("genai-driven-exploitation"),
+        // Phase 9: Post-exploitation and privilege escalation with AI
+        load_tutorial_phase("post-exploitation-privilege-escalation-ai"),
+        // Phase 10: Automating penetration testing reports with GenAI
+        load_tutorial_phase("automating-pt-reports-genai"),
+        // Phase 7: Advanced reconnaissance techniques (AI-powered OSINT, certificates, metadata)
         load_tutorial_phase("advanced_reconnaissance_techniques"),
         // Phase 3-8: Core penetration testing methodology
         load_tutorial_phase("vulnerability_analysis"),
@@ -213,6 +231,51 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     let recon_phase = load_tutorial_phase("reconnaissance");
     validate_step_structure(&recon_phase.steps, "reconnaissance")?;
 
+    // Validate traditional vs AI pentesting foundations module (loaded from JSON)
+    let foundations_phase = load_tutorial_phase("traditional-vs-ai-pentesting-foundations");
+    validate_step_structure(
+        &foundations_phase.steps,
+        "traditional-vs-ai-pentesting-foundations",
+    )?;
+
+    // Validate building modern PT lab with GenAI module (loaded from JSON)
+    let lab_phase = load_tutorial_phase("building-modern-pt-lab-genai");
+    validate_step_structure(&lab_phase.steps, "building-modern-pt-lab-genai")?;
+
+    // Validate GenAI-driven reconnaissance module (loaded from JSON)
+    let genai_recon_phase = load_tutorial_phase("genai-driven-reconnaissance");
+    validate_step_structure(&genai_recon_phase.steps, "genai-driven-reconnaissance")?;
+
+    // Validate AI-enhanced scanning and sniffing module (loaded from JSON)
+    let scanning_phase = load_tutorial_phase("ai-enhanced-scanning-sniffing");
+    validate_step_structure(&scanning_phase.steps, "ai-enhanced-scanning-sniffing")?;
+
+    // Validate vulnerability assessment with AI module (loaded from JSON)
+    let vuln_ai_phase = load_tutorial_phase("vulnerability-assessment-ai");
+    validate_step_structure(&vuln_ai_phase.steps, "vulnerability-assessment-ai")?;
+
+    // Validate AI-driven social engineering module (loaded from JSON)
+    let social_engineering_phase = load_tutorial_phase("ai-driven-social-engineering");
+    validate_step_structure(
+        &social_engineering_phase.steps,
+        "ai-driven-social-engineering",
+    )?;
+
+    // Validate GenAI-driven exploitation module (loaded from JSON)
+    let exploitation_phase = load_tutorial_phase("genai-driven-exploitation");
+    validate_step_structure(&exploitation_phase.steps, "genai-driven-exploitation")?;
+
+    // Validate post-exploitation and privilege escalation with AI module (loaded from JSON)
+    let post_exploitation_phase = load_tutorial_phase("post-exploitation-privilege-escalation-ai");
+    validate_step_structure(
+        &post_exploitation_phase.steps,
+        "post-exploitation-privilege-escalation-ai",
+    )?;
+
+    // Validate automating PT reports with GenAI module (loaded from JSON)
+    let reports_phase = load_tutorial_phase("automating-pt-reports-genai");
+    validate_step_structure(&reports_phase.steps, "automating-pt-reports-genai")?;
+
     // Validate advanced reconnaissance techniques module (loaded from JSON)
     let advanced_recon_phase = load_tutorial_phase("advanced_reconnaissance_techniques");
     validate_step_structure(
@@ -221,8 +284,8 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     )?;
 
     // Validate vulnerability analysis module (loaded from JSON)
-    let vuln_phase = load_tutorial_phase("vulnerability_analysis");
-    validate_step_structure(&vuln_phase.steps, "vulnerability_analysis")?;
+    let vuln_analysis_phase = load_tutorial_phase("vulnerability_analysis");
+    validate_step_structure(&vuln_analysis_phase.steps, "vulnerability_analysis")?;
 
     // Validate advanced web app security fundamentals module (loaded from JSON)
     let advanced_web_phase = load_tutorial_phase("advanced-web-app-security-fundamentals");
@@ -369,10 +432,39 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     if recon_phase.steps.is_empty() {
         return Err("Reconnaissance module has no steps".to_string());
     }
+    if foundations_phase.steps.is_empty() {
+        return Err("Traditional vs AI pentesting foundations module has no steps".to_string());
+    }
+    if lab_phase.steps.is_empty() {
+        return Err("Building modern PT lab with GenAI module has no steps".to_string());
+    }
+    if genai_recon_phase.steps.is_empty() {
+        return Err("GenAI-driven reconnaissance module has no steps".to_string());
+    }
+    if scanning_phase.steps.is_empty() {
+        return Err("AI-enhanced scanning and sniffing module has no steps".to_string());
+    }
+    if vuln_ai_phase.steps.is_empty() {
+        return Err("Vulnerability assessment with AI module has no steps".to_string());
+    }
+    if social_engineering_phase.steps.is_empty() {
+        return Err("AI-driven social engineering module has no steps".to_string());
+    }
+    if exploitation_phase.steps.is_empty() {
+        return Err("GenAI-driven exploitation module has no steps".to_string());
+    }
+    if post_exploitation_phase.steps.is_empty() {
+        return Err(
+            "Post-exploitation and privilege escalation with AI module has no steps".to_string(),
+        );
+    }
+    if reports_phase.steps.is_empty() {
+        return Err("Automating PT reports with GenAI module has no steps".to_string());
+    }
     if advanced_recon_phase.steps.is_empty() {
         return Err("Advanced reconnaissance techniques module has no steps".to_string());
     }
-    if vuln_phase.steps.is_empty() {
+    if vuln_analysis_phase.steps.is_empty() {
         return Err("Vulnerability analysis module has no steps".to_string());
     }
     if advanced_web_phase.steps.is_empty() {

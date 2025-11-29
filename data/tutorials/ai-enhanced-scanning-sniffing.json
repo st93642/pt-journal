@@ -1,0 +1,25 @@
+{
+  "id": "ai-enhanced-scanning-sniffing",
+  "title": "AI-Enhanced Scanning and Sniffing",
+  "type": "tutorial",
+  "steps": [
+    {
+      "id": "step-1",
+      "title": "Network Scanning with AI",
+      "content": "OBJECTIVE: Use Nmap for scanning and Shell GPT to generate custom scan scripts and interpret vulnerabilities.\n\nWHAT TO LOOK FOR:\n- Open ports and services\n- Service versions and potential vulnerabilities\n- Unusual network responses\n- Firewall configurations\n- Service banners and fingerprints\n\nSTEP-BY-STEP PROCESS:\n1. Plan scanning approach based on target scope\n2. Use Shell GPT to generate optimized Nmap commands\n3. Execute scans and capture results\n4. Analyze output with AI assistance\n5. Document findings and vulnerabilities\n\nSCANNING TECHNIQUES:\n- TCP SYN scans\n- UDP scanning\n- Service version detection\n\nAI ENHANCEMENT:\nShell GPT generates optimized Nmap commands and analyzes results for actionable insights.",
+      "tags": ["network-scanning", "nmap", "vulnerabilities"]
+    },
+    {
+      "id": "step-2",
+      "title": "Packet Sniffing Techniques",
+      "content": "OBJECTIVE: Capture traffic with Wireshark. Use AI to analyze packets for sensitive data and suggest mitigations.\n\nWHAT TO LOOK FOR:\n- Clear text credentials and sensitive data\n- Unusual traffic patterns\n- Protocol vulnerabilities\n- Encrypted vs unencrypted communications\n- Network anomalies and threats\n\nSTEP-BY-STEP PROCESS:\n1. Set up packet capture environment\n2. Configure Wireshark filters and capture\n3. Analyze captured traffic manually\n4. Use AI to identify anomalies and threats\n5. Document findings and recommend mitigations\n\nSNIFFING METHODS:\n- Passive packet capture\n- Protocol analysis\n- Traffic decryption\n\nAI ANALYSIS:\nAI identifies anomalies, extracts credentials, and recommends security improvements.",
+      "tags": ["packet-sniffing", "wireshark", "analysis"]
+    },
+    {
+      "id": "step-3",
+      "title": "Optimizing Scans with GenAI",
+      "content": "OBJECTIVE: Automate scan scheduling and result prioritization using AI prompts for efficiency in large networks.\n\nWHAT TO LOOK FOR:\n- Scan efficiency improvements\n- High-risk vulnerability prioritization\n- Automated scheduling benefits\n- False positive reduction\n- Resource optimization opportunities\n\nSTEP-BY-STEP PROCESS:\n1. Assess network size and complexity\n2. Use AI to design scanning strategy\n3. Implement automated scheduling\n4. Analyze and prioritize results\n5. Generate automated reports\n\nOPTIMIZATION STRATEGIES:\n- Adaptive scanning\n- Result prioritization\n- Automated reporting\n\nAI AUTOMATION:\nGenAI optimizes scan parameters and prioritizes findings based on risk assessment.",
+      "tags": ["optimization", "automation", "efficiency"]
+    }
+  ]
+}

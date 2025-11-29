@@ -1,0 +1,25 @@
+{
+  "id": "genai-driven-reconnaissance",
+  "title": "GenAI-Driven Reconnaissance Techniques",
+  "type": "tutorial",
+  "steps": [
+    {
+      "id": "step-1",
+      "title": "Passive Reconnaissance with AI",
+      "content": "OBJECTIVE: Use DNSdumpster and Google Dorking for passive info gathering. Leverage ChatGPT to generate Dork queries and analyze results.\n\nWHAT TO LOOK FOR:\n- Domain registration information\n- Subdomain discovery opportunities\n- Technology stack indicators\n- Social engineering vectors\n- Historical data and patterns\n\nSTEP-BY-STEP PROCESS:\n1. Use DNSdumpster for passive DNS enumeration\n2. Generate Google Dorks with ChatGPT assistance\n3. Analyze search results for sensitive information\n4. Document findings and potential attack vectors\n\nPASSIVE TECHNIQUES:\n- DNS enumeration without direct queries\n- Certificate transparency logs\n- Search engine queries\n- Social media analysis\n\nAI ENHANCEMENT:\nUse ChatGPT to generate sophisticated Google Dorks and analyze findings for potential vulnerabilities.",
+      "tags": ["passive-recon", "dns", "google-dorking"]
+    },
+    {
+      "id": "step-2",
+      "title": "Active Reconnaissance Automation",
+      "content": "OBJECTIVE: Perform port scanning with Nmap and use Shell GPT to interpret outputs and suggest next steps.\n\nWHAT TO LOOK FOR:\n- Open ports and services\n- Service versions and vulnerabilities\n- OS fingerprinting results\n- Unusual or unexpected services\n- Potential attack vectors\n\nSTEP-BY-STEP PROCESS:\n1. Run Nmap scans with appropriate flags\n2. Use Shell GPT to analyze scan results\n3. Identify interesting services and ports\n4. Research identified services for vulnerabilities\n5. Document findings for exploitation phase\n\nACTIVE TECHNIQUES:\n- Port scanning\n- Service enumeration\n- OS fingerprinting\n\nAI AUTOMATION:\nShell GPT can generate Nmap commands and analyze scan results to identify interesting services and potential attack vectors.",
+      "tags": ["active-recon", "nmap", "automation"]
+    },
+    {
+      "id": "step-3",
+      "title": "AI-Enhanced Enumeration",
+      "content": "OBJECTIVE: Enumerate subdomains and services using AI-generated scripts. Compare traditional vs. AI-driven efficiency.\n\nWHAT TO LOOK FOR:\n- Additional subdomains and endpoints\n- Technology stack components\n- Service relationships and dependencies\n- Configuration files and sensitive data\n- Attack surface expansion\n\nSTEP-BY-STEP PROCESS:\n1. Use AI tools to generate enumeration scripts\n2. Execute subdomain discovery techniques\n3. Analyze discovered assets\n4. Compare AI vs traditional method efficiency\n5. Document comprehensive asset inventory\n\nENUMERATION METHODS:\n- Subdomain discovery\n- Service fingerprinting\n- Technology stack identification\n\nAI EFFICIENCY:\nAI tools can automate complex enumeration tasks and provide intelligent analysis of results.",
+      "tags": ["enumeration", "subdomains", "efficiency"]
+    }
+  ]
+}

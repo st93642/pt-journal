@@ -1,0 +1,32 @@
+# CISSP Domain 4: Communication and Network Security Quiz
+# Questions covering secure network architecture, protocols, and communication security
+
+What is the primary purpose of network segmentation?|To increase network speed|To isolate network traffic and contain breaches|To reduce hardware costs|To simplify network management|1|Network segmentation divides a network into smaller segments to limit the impact of security breaches and improve overall security.|CISSP|Communication and Network Security
+
+Which protocol provides secure remote access to network devices?|Telnet|SSH|FTP|HTTP|1|SSH (Secure Shell) provides encrypted remote access and is the secure replacement for Telnet.|CISSP|Communication and Network Security
+
+What does IPsec primarily provide?|Network addressing|Secure communication at the network layer|Web application security|Database encryption|1|IPsec provides confidentiality, integrity, and authentication for IP communications.|CISSP|Communication and Network Security
+
+Which firewall type makes decisions based on connection state?|Packet filtering firewall|Stateful inspection firewall|Application layer firewall|Circuit-level firewall|1|Stateful inspection firewalls track connection states and make decisions based on the context of network connections.|CISSP|Communication and Network Security
+
+What is a man-in-the-middle attack?|An attack that intercepts communications between two parties|An attack that floods a network with traffic|An attack that exploits software vulnerabilities|An attack that steals passwords|0|MitM attacks involve intercepting and potentially modifying communications between legitimate parties.|CISSP|Communication and Network Security
+
+Which TLS version should be used for maximum security?|TLS 1.0|TLS 1.1|TLS 1.2|TLS 1.3|3|TLS 1.3 is the most recent and secure version of the Transport Layer Security protocol.|CISSP|Communication and Network Security
+
+What does DNSSEC provide?|Domain name registration|Secure DNS resolution|Web hosting services|Email encryption|1|DNSSEC provides authentication and integrity for DNS lookups, preventing DNS spoofing attacks.|CISSP|Communication and Network Security
+
+Which VPN protocol is known for its speed and modern cryptography?|PPTP|L2TP/IPsec|OpenVPN|WireGuard|3|WireGuard is a modern VPN protocol known for its speed, simplicity, and strong cryptography.|CISSP|Communication and Network Security
+
+What is the purpose of a DMZ?|To host public web servers|To provide secure remote access|To store sensitive data|To run administrative tasks|0|A DMZ (Demilitarized Zone) is a network segment that contains public-facing services isolated from the internal network.|CISSP|Communication and Network Security
+
+Which attack involves sending unsolicited ARP replies?|ARP poisoning|DNS spoofing|IP spoofing|MAC flooding|0|ARP poisoning involves sending fake ARP replies to associate attacker's MAC address with legitimate IP addresses.|CISSP|Communication and Network Security
+
+What does a next-generation firewall (NGFW) provide?|Basic packet filtering|Advanced threat protection and application awareness|Simple port blocking|Basic routing|1|NGFWs provide deep packet inspection, application awareness, and advanced threat protection beyond traditional firewalls.|CISSP|Communication and Network Security
+
+Which protocol is used for secure web communications?|HTTP|FTP|SMTP|HTTPS|3|HTTPS uses TLS/SSL to provide secure web communications over HTTP.|CISSP|Communication and Network Security
+
+What is network address translation (NAT) primarily used for?|Network security|IP address conservation|Data encryption|Traffic monitoring|1|NAT allows multiple devices to share a single public IP address, conserving IPv4 addresses.|CISSP|Communication and Network Security
+
+Which IDS type uses known attack signatures?|Signature-based IDS|Anomaly-based IDS|Heuristic-based IDS|Behavior-based IDS|0|Signature-based IDS compares network traffic against databases of known attack signatures.|CISSP|Communication and Network Security
+
+What does a VPN concentrator do?|Manages VPN connections|Encrypts individual files|Monitors network traffic|Provides DNS services|0|A VPN concentrator is a network device that manages and terminates multiple VPN connections.|CISSP|Communication and Network Security

@@ -1,0 +1,69 @@
+# CEH Networking Basics Quiz
+# Questions covering IP addressing, subnetting, MAC addresses, DNS, ports, and network scanning
+
+What is the primary function of an IP address?|Identify network devices|Control network traffic|Encrypt data transmissions|Route packets|0|IP addresses uniquely identify devices on a network and enable routing of packets.|CEH|Networking Basics
+
+Which IP address class uses the range 192.168.0.0 to 192.168.255.255?|Class C|Class A|Class B|Class D|0|192.168.x.x is a Class C private IP range with subnet mask 255.255.255.0.|CEH|Networking Basics
+
+What does DNS stand for?|Domain Name System|Dynamic Network Service|Data Network Server|Domain Network Service|0|DNS translates human-readable domain names to IP addresses.|CEH|Networking Basics
+
+Which port is typically used for HTTP traffic?|80|443|22|25|0|Port 80 is the standard port for HTTP web traffic.|CEH|Networking Basics
+
+What is a MAC address?|Media Access Control address|Main Access Control address|Media Access Computer address|Main Access Computer address|0|MAC addresses are hardware addresses used for local network communication.|CEH|Networking Basics
+
+Which command is used to test network connectivity?|ping|ls|cd|mkdir|0|The ping command tests connectivity to a network host.|CEH|Networking Basics
+
+What does ARP stand for?|Address Resolution Protocol|Advanced Routing Protocol|Address Routing Protocol|Advanced Resolution Protocol|0|ARP resolves IP addresses to MAC addresses on local networks.|CEH|Networking Basics
+
+Which tool is commonly used for port scanning?|nmap|ping|traceroute|arp|0|Nmap is a powerful network scanning tool for discovering hosts and services.|CEH|Networking Basics
+
+What is the purpose of subnetting?|Divide networks into smaller segments|Encrypt network traffic|Route packets faster|Monitor network activity|0|Subnetting allows network administrators to divide large networks into smaller, manageable segments.|CEH|Networking Basics
+
+Which protocol operates at the Data Link layer?|Ethernet|IP|TCP|HTTP|0|Ethernet operates at the Data Link layer, handling MAC addresses and local network communication.|CEH|Networking Basics
+
+What is the default subnet mask for a Class C network?|255.255.255.0|255.0.0.0|255.255.0.0|255.255.255.255|0|Class C networks use 255.255.255.0 as the default subnet mask.|CEH|Networking Basics
+
+Which DNS record type contains an IP address?|A record|MX record|CNAME record|TXT record|0|A records map domain names to IPv4 addresses.|CEH|Networking Basics
+
+What is the range of well-known TCP ports?|0-1023|1024-49151|49152-65535|All ports|0|Ports 0-1023 are well-known ports reserved for common services.|CEH|Networking Basics
+
+Which command shows network interfaces on Linux?|ifconfig|ls|cd|ps|0|ifconfig displays network interface configuration and status.|CEH|Networking Basics
+
+What does ICMP stand for?|Internet Control Message Protocol|Internet Connection Management Protocol|Internal Communication Message Protocol|Internet Control Management Protocol|0|ICMP is used for network diagnostics and error reporting.|CEH|Networking Basics
+
+Which port is used for HTTPS?|443|80|22|21|0|Port 443 is the standard port for HTTPS secure web traffic.|CEH|Networking Basics
+
+What is the broadcast MAC address?|FF:FF:FF:FF:FF:FF|00:00:00:00:00:00|11:22:33:44:55:66|AA:BB:CC:DD:EE:FF|0|FF:FF:FF:FF:FF:FF is the broadcast address that reaches all devices on a local network.|CEH|Networking Basics
+
+Which command traces the path to a network host?|traceroute|ping|ifconfig|netstat|0|traceroute shows the network path and routers between source and destination.|CEH|Networking Basics
+
+What is the purpose of NAT?|Network Address Translation|Network Access Translation|Network Address Transport|Network Access Transport|0|NAT translates private IP addresses to public addresses for internet access.|CEH|Networking Basics
+
+Which protocol is used for secure remote access?|SSH|Telnet|FTP|RDP|0|SSH provides encrypted remote shell access, unlike Telnet which is unencrypted.|CEH|Networking Basics
+
+What does TTL stand for in networking?|Time To Live|Time To Link|Transfer To Local|Transport To Link|0|TTL limits packet lifetime to prevent infinite routing loops.|CEH|Networking Basics
+
+Which IP address range is reserved for private networks?|192.168.0.0/16|8.8.8.0/24|1.1.1.0/24|208.67.222.0/24|0|192.168.0.0/16 is a private IP range not routable on the internet.|CEH|Networking Basics
+
+What is the maximum value for an IPv4 address octet?|255|256|999|1000|0|IPv4 octets range from 0 to 255 (2^8 - 1).|CEH|Networking Basics
+
+Which DNS server is considered the root of the DNS hierarchy?|Root name servers|Top-level domain servers|Authoritative name servers|Recursive resolvers|0|Root name servers are the top level of the DNS hierarchy.|CEH|Networking Basics
+
+What does TCP stand for?|Transmission Control Protocol|Transport Control Protocol|Transmission Carrier Protocol|Transport Carrier Protocol|0|TCP provides reliable, ordered delivery of data packets.|CEH|Networking Basics
+
+Which command shows active network connections?|netstat|ping|traceroute|ifconfig|0|netstat displays network connections, routing tables, and interface statistics.|CEH|Networking Basics
+
+What is the purpose of DHCP?|Dynamic Host Configuration Protocol|Dynamic Hardware Configuration Protocol|Domain Host Configuration Protocol|Domain Hardware Configuration Protocol|0|DHCP automatically assigns IP addresses and network configuration to devices.|CEH|Networking Basics
+
+Which port is used for DNS queries?|53|80|443|22|0|Port 53 is used for DNS name resolution queries.|CEH|Networking Basics
+
+What is a subnet mask used for?|Identify network and host portions|Encrypt IP addresses|Route packets|Monitor traffic|0|Subnet masks determine which part of an IP address is the network and which is the host.|CEH|Networking Basics
+
+Which tool captures network packets?|Wireshark|tshark|tcpdump|All of the above|3|Wireshark, tshark, and tcpdump are all packet capture tools.|CEH|Networking Basics
+
+What does UDP stand for?|User Datagram Protocol|Universal Data Protocol|User Data Protocol|Universal Datagram Protocol|0|UDP provides connectionless, unreliable data transmission.|CEH|Networking Basics
+
+Which IP protocol version is currently most widely used?|IPv4|IPv6|IPv3|IPv5|0|IPv4 remains the most widely deployed internet protocol version.|CEH|Networking Basics
+
+What is the loopback IP address?|127.0.0.1|192.168.1.1|10.0.0.1|172.16.0.1|0|127.0.0.1 is the loopback address that refers to the local machine.|CEH|Networking Basics</content>
+<parameter name="filePath">/home/altin/pt-journal/data/ceh/networking-basics-quiz.txt

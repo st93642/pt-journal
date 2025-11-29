@@ -1,0 +1,32 @@
+What command is used to change directories in Linux?|cd|ls|cp|mv|0|The cd command changes the current working directory.|ceh|linux-basics
+Which command lists the contents of a directory?|ls|cd|cp|rm|0|The ls command lists directory contents.|ceh|linux-basics
+What does the -l flag do with the ls command?|Shows long listing format|Shows hidden files|Sorts by size|Shows recursive listing|0|The -l flag provides detailed information including permissions, size, and modification date.|ceh|linux-basics
+Which command is used to copy files in Linux?|cp|mv|rm|mkdir|0|The cp command copies files and directories.|ceh|linux-basics
+What does the -r flag do with the cp command?|Copies directories recursively|Copies only files|Creates backup copies|Preserves permissions|0|The -r flag enables recursive copying for directories.|ceh|linux-basics
+Which command moves or renames files?|mv|cp|rm|touch|0|The mv command moves files and can also rename them.|ceh|linux-basics
+What command deletes files in Linux?|rm|del|erase|remove|0|The rm command removes files and directories.|ceh|linux-basics
+What does the -rf flag combination do with rm?|Force deletes recursively without prompts|Deletes only files|Creates backups|Shows verbose output|0|The -rf flags force delete entire directory trees without confirmation prompts.|ceh|linux-basics
+Which command creates an empty file?|touch|mkdir|echo|cat|0|The touch command creates empty files or updates timestamps.|ceh|linux-basics
+What command creates directories?|mkdir|touch|echo|cat|0|The mkdir command creates new directories.|ceh|linux-basics
+Which command displays the entire contents of a file?|cat|head|tail|less|0|The cat command concatenates and displays file contents.|ceh|linux-basics
+What does the head command do?|Shows the first 10 lines of a file|Shows the last 10 lines|Counts lines|Searches for text|0|The head command displays the beginning of a file.|ceh|linux-basics
+Which command shows the last lines of a file?|tail|head|cat|grep|0|The tail command displays the end of a file.|ceh|linux-basics
+What command searches for text patterns in files?|grep|find|locate|which|0|The grep command searches for patterns in text.|ceh|linux-basics
+Which command changes file permissions?|chmod|chown|ls|pwd|0|The chmod command modifies file permissions.|ceh|linux-basics
+What does chmod +x do to a file?|Adds execute permission|Removes execute permission|Adds read permission|Changes ownership|0|chmod +x adds execute permission to the file.|ceh|linux-basics
+Which command changes file ownership?|chown|chmod|ls|pwd|0|The chown command changes file owner and group.|ceh|linux-basics
+What does the * wildcard match?|All characters|Single character|Character ranges|Nothing|0|The * wildcard matches zero or more characters.|ceh|linux-basics
+Which symbol is used for piping commands?|>|>>|<|||0|The pipe symbol | sends output from one command to another.|ceh|linux-basics
+What does ls > file.txt do?|Redirects output to file|Appends to file|Reads from file|Pipes to another command|0|The > operator redirects command output to a file.|ceh|linux-basics
+Which command shows network interfaces?|ip addr show|ls|cd|pwd|0|ip addr show displays network interface information.|ceh|linux-basics
+What does ifconfig do?|Shows network interface configuration|Lists files|Changes directory|Shows processes|0|ifconfig displays and configures network interfaces.|ceh|linux-basics
+Which command tests network connectivity?|ping|ls|cd|cat|0|The ping command tests network connectivity to a host.|ceh|linux-basics
+What does iwconfig show?|Wireless interface information|Wired interfaces|File permissions|Process list|0|iwconfig displays wireless network interface information.|ceh|linux-basics
+Which command shows running processes?|ps|ls|cd|cat|0|The ps command shows information about running processes.|ceh|linux-basics
+What does ps aux show?|All processes with detailed info|Only current user processes|Process tree|System uptime|0|ps aux displays all processes with full details.|ceh|linux-basics
+Which command shows system resource usage?|top|ls|cd|cat|0|The top command shows real-time system resource usage.|ceh|linux-basics
+What does df -h show?|Disk usage in human readable format|File permissions|Network interfaces|Process list|0|df -h displays disk space usage in human-readable format.|ceh|linux-basics
+Which command shows memory usage?|free|df|du|ls|0|The free command displays memory usage information.|ceh|linux-basics
+What does uname -a show?|System information|File list|Directory contents|Network config|0|uname -a displays all system information.|ceh|linux-basics
+Which command shows listening network ports?|netstat -tlnp|ls|ps|df|0|netstat -tlnp shows listening TCP ports with process information.|ceh|linux-basics</content>
+<parameter name="filePath">/home/altin/pt-journal/data/ceh/linux-basics-quiz.txt

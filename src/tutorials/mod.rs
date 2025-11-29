@@ -48,7 +48,15 @@ pub struct TutorialStep {
 /// 5. Quiz-based certification preparation (at the end)
 pub fn load_tutorial_phases() -> Vec<Phase> {
     vec![
-        // Phase 1: Initial reconnaissance (intelligence gathering)
+        // Phase 1: Linux basics and foundational skills
+        load_tutorial_phase("linux_basics_for_hackers"),
+        load_tutorial_phase("networking_fundamentals"),
+        load_tutorial_phase("wifi_security_attacks"),
+        load_tutorial_phase("password_cracking_techniques"),
+        load_tutorial_phase("python_penetration_testing"),
+        load_tutorial_phase("reverse_shells_guide"),
+        load_tutorial_phase("file_security_practices"),
+        // Phase 2: Initial reconnaissance (intelligence gathering)
         load_tutorial_phase("reconnaissance"),
         // Phase 2: Foundations of pentesting with AI integration
         load_tutorial_phase("traditional-vs-ai-pentesting-foundations"),
@@ -227,6 +235,43 @@ fn load_tutorial_phase(phase_name: &str) -> Phase {
 
 /// Validate tutorial structure consistency across all modules
 pub fn validate_tutorial_structure() -> Result<(), String> {
+    // Validate Linux basics for hackers module (loaded from JSON)
+    let linux_basics_phase = load_tutorial_phase("linux_basics_for_hackers");
+    validate_step_structure(&linux_basics_phase.steps, "linux_basics_for_hackers")?;
+
+    // Validate networking fundamentals module (loaded from JSON)
+    let networking_fundamentals_phase = load_tutorial_phase("networking_fundamentals");
+    validate_step_structure(
+        &networking_fundamentals_phase.steps,
+        "networking_fundamentals",
+    )?;
+
+    // Validate Wi-Fi security attacks module (loaded from JSON)
+    let wifi_security_phase = load_tutorial_phase("wifi_security_attacks");
+    validate_step_structure(&wifi_security_phase.steps, "wifi_security_attacks")?;
+
+    // Validate password cracking techniques module (loaded from JSON)
+    let password_cracking_phase = load_tutorial_phase("password_cracking_techniques");
+    validate_step_structure(
+        &password_cracking_phase.steps,
+        "password_cracking_techniques",
+    )?;
+
+    // Validate Python penetration testing module (loaded from JSON)
+    let python_penetration_phase = load_tutorial_phase("python_penetration_testing");
+    validate_step_structure(
+        &python_penetration_phase.steps,
+        "python_penetration_testing",
+    )?;
+
+    // Validate reverse shells guide module (loaded from JSON)
+    let reverse_shells_phase = load_tutorial_phase("reverse_shells_guide");
+    validate_step_structure(&reverse_shells_phase.steps, "reverse_shells_guide")?;
+
+    // Validate file security practices module (loaded from JSON)
+    let file_security_phase = load_tutorial_phase("file_security_practices");
+    validate_step_structure(&file_security_phase.steps, "file_security_practices")?;
+
     // Validate reconnaissance module (loaded from JSON)
     let recon_phase = load_tutorial_phase("reconnaissance");
     validate_step_structure(&recon_phase.steps, "reconnaissance")?;
@@ -429,6 +474,27 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     validate_step_structure(&modern_web_phase.steps, "modern_web")?;
 
     // Validate that all modules have at least one step
+    if linux_basics_phase.steps.is_empty() {
+        return Err("Linux basics for hackers module has no steps".to_string());
+    }
+    if networking_fundamentals_phase.steps.is_empty() {
+        return Err("Networking fundamentals module has no steps".to_string());
+    }
+    if wifi_security_phase.steps.is_empty() {
+        return Err("Wi-Fi security attacks module has no steps".to_string());
+    }
+    if password_cracking_phase.steps.is_empty() {
+        return Err("Password cracking techniques module has no steps".to_string());
+    }
+    if python_penetration_phase.steps.is_empty() {
+        return Err("Python penetration testing module has no steps".to_string());
+    }
+    if reverse_shells_phase.steps.is_empty() {
+        return Err("Reverse shells guide module has no steps".to_string());
+    }
+    if file_security_phase.steps.is_empty() {
+        return Err("File security practices module has no steps".to_string());
+    }
     if recon_phase.steps.is_empty() {
         return Err("Reconnaissance module has no steps".to_string());
     }

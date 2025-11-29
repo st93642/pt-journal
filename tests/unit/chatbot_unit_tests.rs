@@ -257,6 +257,6 @@ mod context_tests {
         let session = Session::default();
         let context = ContextBuilder::build_session_context(&session, 0, 0);
         assert!(context.contains("Current Session Summary"));
-        assert!(context.contains("Phase 1: Reconnaissance"));
+        assert!(context.contains("Phase 1: Linux Basics for Hackers"));
     }
 }

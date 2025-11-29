@@ -20,21 +20,21 @@ fn test_default_app_model() {
     assert_eq!(model.selected_phase(), 0);
     assert_eq!(model.selected_step(), Some(0));
     assert_eq!(model.current_path(), None);
-    assert_eq!(model.session().phases.len(), 41); // Updated: added 9 Yassine Maleh tutorials
+    assert_eq!(model.session().phases.len(), 48); // Updated: added 7 new Linux For Hackers tutorials
 }
 
 fn test_session_creation() {
     let session = Session::default();
     assert!(!session.name.is_empty());
-    assert_eq!(session.phases.len(), 41); // Updated: added 9 Yassine Maleh tutorials
+    assert_eq!(session.phases.len(), 48); // Updated: added 7 new Linux For Hackers tutorials
 }
 
 fn test_phase_structure() {
     let session = Session::default();
 
-    // Test first phase (Reconnaissance)
+    // Test first phase (Linux Basics for Hackers)
     let phase = &session.phases[0];
-    assert_eq!(phase.name, "Reconnaissance");
+    assert_eq!(phase.name, "Linux Basics for Hackers");
     assert!(!phase.steps.is_empty());
 }
 

@@ -22,7 +22,7 @@ mod tests {
             assert_eq!(model.selected_phase(), 0);
             assert_eq!(model.selected_step(), Some(0));
             assert!(model.current_path().is_none());
-            assert_eq!(model.session().phases.len(), 52); // 52 phases loaded from JSON
+            assert_eq!(model.session().phases.len(), 53); // 53 phases loaded from JSON
                                                           // Config should be loaded (or default)
             assert_eq!(
                 model.config().chatbot.ollama.endpoint,
@@ -35,7 +35,7 @@ mod tests {
         fn test_session_creation() {
             let session = Session::default();
             assert!(!session.name.is_empty());
-            assert_eq!(session.phases.len(), 52); // 52 phases loaded from JSON
+            assert_eq!(session.phases.len(), 53); // 53 phases loaded from JSON
         }
 
         #[test]

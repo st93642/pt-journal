@@ -70,7 +70,7 @@ This plan outlines the process to expand PT Journal's tutorial library by integr
 
 2. Extract key concepts, explanations, and examples from each chapter
 3. Structure content into tutorial steps with clear learning objectives
-4. Ensure content is educationally full and serves as standalone tutorials assuming students have no prior knowledge
+4. Ensure content is educationally full and serves as standalone tutorials assuming students have no prior knowledge, fetch online resources as needed
 
 ### Phase 2: Tutorial Creation
 
@@ -97,8 +97,8 @@ This plan outlines the process to expand PT Journal's tutorial library by integr
    }
    ```
 
-3. Include practical examples and scenarios relevant to penetration testing
-4. Add cross-references to existing PT Journal tools and concepts where applicable
+3. Include practical examples and scenarios relevant to each domain
+4. Add cross-references to existing PT Journal tools and features
 
 ### Phase 3: Quiz Development
 

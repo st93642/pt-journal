@@ -119,6 +119,7 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         load_tutorial_phase("cissp-domain-2"),
         load_tutorial_phase("cissp-domain-3"),
         load_tutorial_phase("cissp-domain-4"),
+        load_tutorial_phase("cissp-domain-5"),
         // create_cicd_pipeline_attacks_phase(), // Now part of cloud_native JSON
         // create_sbom_analysis_phase(), // Now part of supply_chain JSON
         // create_dependency_confusion_phase(), // Now part of supply_chain JSON
@@ -448,6 +449,10 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     let cissp_domain_4_phase = load_tutorial_phase("cissp-domain-4");
     validate_step_structure(&cissp_domain_4_phase.steps, "cissp-domain-4")?;
 
+    // Validate CISSP Domain 5 module (loaded from JSON)
+    let cissp_domain_5_phase = load_tutorial_phase("cissp-domain-5");
+    validate_step_structure(&cissp_domain_5_phase.steps, "cissp-domain-5")?;
+
     // Validate Cloud Native module (loaded from JSON)
     let cloud_native_phase = load_tutorial_phase("cloud_native");
     validate_step_structure(&cloud_native_phase.steps, "cloud_native")?;
@@ -626,6 +631,9 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     }
     if cissp_domain_4_phase.steps.is_empty() {
         return Err("CISSP Domain 4 module has no steps".to_string());
+    }
+    if cissp_domain_5_phase.steps.is_empty() {
+        return Err("CISSP Domain 5 module has no steps".to_string());
     }
     if cloud_native_phase.steps.is_empty() {
         return Err("Cloud Native module has no steps".to_string());

@@ -25,6 +25,7 @@ use uuid::Uuid;
 pub struct TutorialData {
     pub id: String,
     pub title: String,
+    #[serde(default)]
     pub description: String,
     pub r#type: String,
     pub steps: Vec<TutorialStep>,
@@ -49,15 +50,20 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
     vec![
         // Phase 1: Initial reconnaissance (intelligence gathering)
         load_tutorial_phase("reconnaissance"),
-        // Phase 2-4: Core penetration testing methodology
+        // Phase 2-7: Core penetration testing methodology
         load_tutorial_phase("vulnerability_analysis"),
+        load_tutorial_phase("advanced-web-app-security-fundamentals"),
+        load_tutorial_phase("cross-site-scripting-xss-exploitation-prevention"),
+        load_tutorial_phase("authentication-authorization-vulnerabilities"),
+        load_tutorial_phase("injection-vulnerabilities-deep-dive"),
+        load_tutorial_phase("server-side-attacks-csrf-ssrf-file-inclusion"),
         load_tutorial_phase("exploitation"),
         load_tutorial_phase("post_exploitation"),
-        // Phase 5: Linux CTF (practical application of methodology)
+        // Phase 8: Linux CTF (practical application of methodology)
         load_tutorial_phase("linux_ctf"),
-        // Phase 6: Windows CTF (Windows/AD practical application)
+        // Phase 9: Windows CTF (Windows/AD practical application)
         load_tutorial_phase("windows_ctf"),
-        // Phase 7-14: Modern security topics (cloud, identity, web, containers)
+        // Phase 10-17: Modern security topics (cloud, identity, web, containers)
         load_tutorial_phase("cloud_iam"),
         load_tutorial_phase("practical_oauth"),
         load_tutorial_phase("sso_federation"),
@@ -66,15 +72,15 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         load_tutorial_phase("container_security"),
         load_tutorial_phase("serverless_security"),
         load_tutorial_phase("cloud_native"),
-        // Phase 15-19: Advanced topics (supply chain, AI, red/purple team)
+        // Phase 18-22: Advanced topics (supply chain, AI, red/purple team)
         load_tutorial_phase("supply_chain"),
         load_tutorial_phase("ai_security"),
         load_tutorial_phase("red_team_tradecraft"),
         load_tutorial_phase("purple_team_threat_hunting"),
         load_tutorial_phase("bug_bounty_hunting"),
-        // Phase 20: Reporting (final documentation phase)
+        // Phase 23: Reporting (final documentation phase)
         load_tutorial_phase("reporting"),
-        // Phase 21-23: Quiz-based certification preparation (post-testing validation)
+        // Phase 24-26: Quiz-based certification preparation (post-testing validation)
         load_tutorial_phase("comptia_secplus"),
         load_tutorial_phase("pentest_exam"),
         load_tutorial_phase("ceh"),
@@ -206,6 +212,42 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     let vuln_phase = load_tutorial_phase("vulnerability_analysis");
     validate_step_structure(&vuln_phase.steps, "vulnerability_analysis")?;
 
+    // Validate advanced web app security fundamentals module (loaded from JSON)
+    let advanced_web_phase = load_tutorial_phase("advanced-web-app-security-fundamentals");
+    validate_step_structure(
+        &advanced_web_phase.steps,
+        "advanced-web-app-security-fundamentals",
+    )?;
+
+    // Validate cross-site scripting module (loaded from JSON)
+    let xss_phase = load_tutorial_phase("cross-site-scripting-xss-exploitation-prevention");
+    validate_step_structure(
+        &xss_phase.steps,
+        "cross-site-scripting-xss-exploitation-prevention",
+    )?;
+
+    // Validate authentication and authorization vulnerabilities module (loaded from JSON)
+    let auth_phase = load_tutorial_phase("authentication-authorization-vulnerabilities");
+    validate_step_structure(
+        &auth_phase.steps,
+        "authentication-authorization-vulnerabilities",
+    )?;
+
+    // Validate injection vulnerabilities deep dive module (loaded from JSON)
+    let injection_phase = load_tutorial_phase("injection-vulnerabilities-deep-dive");
+    validate_step_structure(
+        &injection_phase.steps,
+        "injection-vulnerabilities-deep-dive",
+    )?;
+
+    // Validate server-side attacks module (loaded from JSON)
+    let server_side_attacks_phase =
+        load_tutorial_phase("server-side-attacks-csrf-ssrf-file-inclusion");
+    validate_step_structure(
+        &server_side_attacks_phase.steps,
+        "server-side-attacks-csrf-ssrf-file-inclusion",
+    )?;
+
     // Validate exploitation module (loaded from JSON)
     let exploit_phase = load_tutorial_phase("exploitation");
     validate_step_structure(&exploit_phase.steps, "exploitation")?;
@@ -296,6 +338,23 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     }
     if vuln_phase.steps.is_empty() {
         return Err("Vulnerability analysis module has no steps".to_string());
+    }
+    if advanced_web_phase.steps.is_empty() {
+        return Err("Advanced web app security fundamentals module has no steps".to_string());
+    }
+    if xss_phase.steps.is_empty() {
+        return Err("Cross-site scripting module has no steps".to_string());
+    }
+    if auth_phase.steps.is_empty() {
+        return Err(
+            "Authentication and authorization vulnerabilities module has no steps".to_string(),
+        );
+    }
+    if injection_phase.steps.is_empty() {
+        return Err("Injection vulnerabilities deep dive module has no steps".to_string());
+    }
+    if server_side_attacks_phase.steps.is_empty() {
+        return Err("Server-side attacks module has no steps".to_string());
     }
     if exploit_phase.steps.is_empty() {
         return Err("Exploitation module has no steps".to_string());

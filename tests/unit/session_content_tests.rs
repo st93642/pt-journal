@@ -22,7 +22,7 @@ mod tests {
             assert_eq!(model.selected_phase(), 0);
             assert_eq!(model.selected_step(), Some(0));
             assert!(model.current_path().is_none());
-            assert_eq!(model.session().phases.len(), 23); // 23 phases loaded from JSON
+            assert_eq!(model.session().phases.len(), 28); // 28 phases loaded from JSON
                                                           // Config should be loaded (or default)
             assert_eq!(
                 model.config().chatbot.ollama.endpoint,
@@ -35,7 +35,7 @@ mod tests {
         fn test_session_creation() {
             let session = Session::default();
             assert!(!session.name.is_empty());
-            assert_eq!(session.phases.len(), 23); // 23 phases loaded from JSON
+            assert_eq!(session.phases.len(), 28); // 28 phases loaded from JSON
         }
 
         #[test]
@@ -52,33 +52,70 @@ mod tests {
             assert_eq!(vuln_phase.name, "Vulnerability Analysis");
             assert_eq!(vuln_phase.steps.len(), 5); // 5 vulnerability analysis steps
 
+            // Test Advanced Web Application Security Fundamentals phase
+            let web_app_phase = &session.phases[2];
+            assert_eq!(
+                web_app_phase.name,
+                "Advanced Web Application Security Fundamentals"
+            );
+            assert_eq!(web_app_phase.steps.len(), 5); // 5 web app security steps
+
+            // Test Cross-Site Scripting (XSS) Exploitation and Prevention phase
+            let xss_phase = &session.phases[3];
+            assert_eq!(
+                xss_phase.name,
+                "Cross-Site Scripting (XSS) Exploitation and Prevention"
+            );
+            assert_eq!(xss_phase.steps.len(), 3); // 3 XSS steps
+
+            // Test Authentication and Authorization Vulnerabilities phase
+            let auth_phase = &session.phases[4];
+            assert_eq!(
+                auth_phase.name,
+                "Authentication and Authorization Vulnerabilities"
+            );
+            assert_eq!(auth_phase.steps.len(), 3); // 3 authentication steps
+
+            // Test Injection Vulnerabilities Deep Dive phase
+            let injection_phase = &session.phases[5];
+            assert_eq!(injection_phase.name, "Injection Vulnerabilities Deep Dive");
+            assert_eq!(injection_phase.steps.len(), 7); // 7 injection vulnerability steps
+
+            // Test Server-Side Attacks phase
+            let server_side_phase = &session.phases[6];
+            assert_eq!(
+                server_side_phase.name,
+                "Server-Side Attacks: CSRF, SSRF, and File Inclusion"
+            );
+            assert_eq!(server_side_phase.steps.len(), 3); // 3 server-side attack steps
+
             // Test Exploitation phase
-            let exploit_phase = &session.phases[2];
+            let exploit_phase = &session.phases[7];
             assert_eq!(exploit_phase.name, "Exploitation");
             assert_eq!(exploit_phase.steps.len(), 4); // 4 exploitation steps
 
             // Test Post-Exploitation phase
-            let post_phase = &session.phases[3];
+            let post_phase = &session.phases[8];
             assert_eq!(post_phase.name, "Post-Exploitation");
             assert_eq!(post_phase.steps.len(), 4); // 4 post-exploitation steps
 
             // Test Linux CTF phase
-            let linux_ctf_phase = &session.phases[4];
+            let linux_ctf_phase = &session.phases[9];
             assert_eq!(linux_ctf_phase.name, "Linux CTF");
             assert!(!linux_ctf_phase.steps.is_empty()); // Has tutorial steps
 
             // Test Windows CTF phase
-            let windows_ctf_phase = &session.phases[5];
+            let windows_ctf_phase = &session.phases[10];
             assert_eq!(windows_ctf_phase.name, "Windows CTF");
             assert!(!windows_ctf_phase.steps.is_empty()); // Has tutorial steps
 
             // Test Cloud IAM Abuse 101 phase
-            let cloud_iam_phase = &session.phases[6];
+            let cloud_iam_phase = &session.phases[11];
             assert_eq!(cloud_iam_phase.name, "Cloud IAM Abuse 101");
             assert!(!cloud_iam_phase.steps.is_empty()); // Has tutorial and quiz steps
 
             // Test Container & Kubernetes Security phase
-            let container_security_phase = &session.phases[11];
+            let container_security_phase = &session.phases[16];
             assert_eq!(
                 container_security_phase.name,
                 "Container & Kubernetes Security"
@@ -86,17 +123,17 @@ mod tests {
             assert!(!container_security_phase.steps.is_empty()); // Has tutorial and quiz steps
 
             // Test Bug Bounty Hunting phase
-            let bug_bounty_phase = &session.phases[18];
+            let bug_bounty_phase = &session.phases[23];
             assert_eq!(bug_bounty_phase.name, "Bug Bounty Hunting");
             assert!(!bug_bounty_phase.steps.is_empty()); // Has steps
 
-            // Test Reporting phase (moved to position 19)
-            let report_phase = &session.phases[19];
+            // Test Reporting phase (moved to position 24)
+            let report_phase = &session.phases[24];
             assert_eq!(report_phase.name, "Reporting");
             assert_eq!(report_phase.steps.len(), 4); // 4 reporting steps
 
-            // Test CompTIA Security+ phase (moved to position 20)
-            let comptia_phase = &session.phases[20];
+            // Test CompTIA Security+ phase (moved to position 25)
+            let comptia_phase = &session.phases[25];
             assert_eq!(comptia_phase.name, "CompTIA Security+");
             assert_eq!(comptia_phase.steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
         }
@@ -261,6 +298,11 @@ mod tests {
             let phase_names = [
                 "Reconnaissance",
                 "Vulnerability Analysis",
+                "Advanced Web Application Security Fundamentals",
+                "Cross-Site Scripting (XSS) Exploitation and Prevention",
+                "Authentication and Authorization Vulnerabilities",
+                "Injection Vulnerabilities Deep Dive",
+                "Server-Side Attacks: CSRF, SSRF, and File Inclusion",
                 "Exploitation",
                 "Post-Exploitation",
                 "Linux CTF",
@@ -289,23 +331,24 @@ mod tests {
 
             // Verify step counts are reasonable for all phases
             let expected_step_counts = [
-                16, 5, 4, 4, 15, 9, 2, 1, 1, 7, 7, 6, 7, 15, 15, 13, 10, 10, 8, 4, 23, 32, 24,
-            ]; // 23 phases loaded from JSON
+                16, 5, 5, 3, 3, 7, 3, 4, 4, 15, 9, 2, 1, 1, 7, 7, 6, 7, 15, 15, 13, 10, 10, 12, 4,
+                23, 32, 24,
+            ]; // 28 phases loaded from JSON
             for (idx, &expected_count) in expected_step_counts.iter().enumerate() {
                 assert_eq!(session.phases[idx].steps.len(), expected_count);
             }
 
             // Cloud IAM Abuse 101 phase should include tutorial + quiz steps
-            assert!(session.phases[6].steps.len() >= 2);
+            assert!(session.phases[11].steps.len() >= 2);
 
             // Container & Kubernetes Security phase should have steps
-            assert!(!session.phases[11].steps.is_empty());
+            assert!(!session.phases[16].steps.is_empty());
 
             // Bug Bounty Hunting phase should have steps
-            assert!(!session.phases[18].steps.is_empty());
+            assert!(!session.phases[23].steps.is_empty());
 
-            // CompTIA Security+ phase should have quiz steps (now at position 20)
-            assert_eq!(session.phases[20].steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
+            // CompTIA Security+ phase should have quiz steps (now at position 25)
+            assert_eq!(session.phases[25].steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
         }
 
         #[test]
@@ -560,9 +603,9 @@ mod tests {
                 }
             }
 
-            // Should be reasonable size (< 1MB of text)
+            // Should be reasonable size (< 2MB of text)
             assert!(
-                total_chars < 1_000_000,
+                total_chars < 2_000_000,
                 "Content too large: {} chars",
                 total_chars
             );

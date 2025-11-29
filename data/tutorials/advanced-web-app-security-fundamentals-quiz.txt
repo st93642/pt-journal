@@ -1,0 +1,46 @@
+# Advanced Web Application Security Fundamentals Quiz
+# Questions covering OWASP Top 10, injection attacks, access control, XSS, and cryptographic failures
+
+Which OWASP Top 10 category moved from #5 to #1 in 2021?|Broken Access Control|Injection|Cryptographic Failures|Identification and Authentication Failures|0|Broken Access Control became the #1 risk in OWASP Top 10 2021 due to its prevalence and impact on data breaches.|Web Application Security|OWASP Top 10
+
+What is the most common type of injection attack?|SQL Injection|Cross-Site Scripting|Command Injection|Template Injection|0|SQL injection remains the most prevalent injection attack, affecting millions of applications worldwide.|Web Application Security|Injection Attacks
+
+Which of the following is NOT a type of Cross-Site Scripting?|Reflected XSS|Stored XSS|DOM-based XSS|Server-Side XSS|3|Server-Side XSS is not a standard XSS category. XSS occurs in the browser, not on the server.|Web Application Security|XSS
+
+What does IDOR stand for?|Insecure Direct Object References|Internal Data Object Retrieval|Identity Document Object Reference|Input Data Object Reference|0|IDOR occurs when an application exposes direct object references without proper authorization checks.|Web Application Security|Access Control
+
+Which cryptographic failure allows identical plaintext blocks to encrypt to identical ciphertext?|ECB mode|CBC mode|GCM mode|CTR mode|0|Electronic Codebook (ECB) mode encrypts identical blocks identically, revealing patterns in the plaintext.|Web Application Security|Cryptographic Failures
+
+What is the primary defense against SQL injection?|Input validation|Prepared statements|Output encoding|Content Security Policy|1|Prepared statements with parameterized queries prevent SQL injection by separating SQL code from data.|Web Application Security|Injection Prevention
+
+Which HTTP header helps prevent XSS attacks?|X-Frame-Options|Content-Security-Policy|X-Content-Type-Options|Strict-Transport-Security|1|Content Security Policy (CSP) mitigates XSS by restricting script sources and execution.|Web Application Security|XSS Prevention
+
+What is mass assignment vulnerability?|Accepting all user parameters in object creation|Assigning multiple roles to users|Bulk data processing|Memory allocation issues|0|Mass assignment occurs when frameworks automatically bind all request parameters to model objects without validation.|Web Application Security|Access Control
+
+Which TLS version should be disabled?|TLS 1.0|TLS 1.2|TLS 1.3|All TLS versions|0|TLS 1.0 and 1.1 are deprecated and vulnerable to attacks like POODLE and BEAST.|Web Application Security|Cryptographic Failures
+
+What is the safest way to output user data in HTML?|innerHTML assignment|textContent assignment|document.write()|eval() execution|1|textContent safely outputs text without interpreting HTML tags or executing scripts.|Web Application Security|XSS Prevention
+
+Which JWT algorithm is vulnerable to confusion attacks?|HS256|RS256|ES256|PS256|0|HS256 with RSA public keys can lead to algorithm confusion where attackers use the public key as an HMAC secret.|Web Application Security|Access Control
+
+What does CSP stand for?|Content Security Policy|Cross-Site Protection|Client-Side Prevention|Cryptographic Security Protocol|0|CSP is an HTTP header that helps prevent XSS and other code injection attacks.|Web Application Security|XSS Prevention
+
+Which password hashing algorithm is recommended?|MD5|SHA-256|bcrypt|Plain text|2|bcrypt provides adaptive hashing with salt, making it resistant to brute force and rainbow table attacks.|Web Application Security|Cryptographic Failures
+
+What is a padding oracle attack?|Decrypting data by observing error messages|Guessing encryption keys|Breaking hash functions|Stealing session cookies|0|Padding oracle attacks exploit error messages that reveal whether padding is correct or incorrect during decryption.|Web Application Security|Cryptographic Failures
+
+Which of these is NOT a secure password storage practice?|Using salt|Key stretching|Storing in plain text|Using strong algorithms|2|Plain text storage provides no security against database breaches or unauthorized access.|Web Application Security|Cryptographic Failures
+
+What is the main risk of storing JWT tokens in localStorage?|XSS attacks can steal tokens|Tokens expire too quickly|Storage quota limitations|Browser compatibility issues|0|localStorage is vulnerable to XSS attacks, allowing malicious scripts to steal authentication tokens.|Web Application Security|Access Control
+
+Which HTTP method should be disabled if not needed?|GET|POST|PUT|DELETE|3|DELETE should be restricted or disabled if the application doesn't need resource deletion functionality.|Web Application Security|Access Control
+
+What is the purpose of HSTS header?|Prevent clickjacking|Enforce HTTPS connections|Block XSS attacks|Prevent CSRF attacks|1|HTTP Strict Transport Security (HSTS) forces browsers to use HTTPS connections only.|Web Application Security|Cryptographic Failures
+
+Which XSS payload would work in an HTML attribute context?|&lt;script&gt;alert(1)&lt;/script&gt;|" onmouseover=alert(1)|javascript:alert(1)|<img src=x onerror=alert(1)>|1|In attribute context, breaking out with quotes and adding event handlers is effective.|Web Application Security|XSS
+
+What is the OWASP recommendation for password minimum length?|6 characters|8 characters|12 characters|16 characters|1|OWASP recommends minimum 8 characters for passwords, with longer being better.|Web Application Security|Identification and Authentication
+
+Which of these is a secure session management practice?|Session IDs in URLs|Long session timeouts|Secure HttpOnly cookies|Sequential session IDs|2|HttpOnly cookies prevent JavaScript access, and Secure flag ensures HTTPS transmission.|Web Application Security|Access Control
+
+What does CORS stand for?|Cross-Origin Resource Sharing|Cross-Origin Request Security|Client-Origin Resource Sharing|Cross-Site Request Origin|0|CORS controls how web pages can make requests to different origins.|Web Application Security|Access Control

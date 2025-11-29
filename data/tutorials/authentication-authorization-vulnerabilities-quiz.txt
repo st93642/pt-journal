@@ -1,0 +1,42 @@
+# Authentication and Authorization Vulnerabilities Quiz
+# Format: question|answer_a|answer_b|answer_c|answer_d|correct_index|explanation|domain|subdomain
+
+What is the most common type of authentication mechanism vulnerable to credential stuffing attacks?|Username/password combinations|Biometric authentication|Hardware tokens|Certificate-based auth|0|Credential stuffing attacks target username/password combinations reused across multiple sites, making them the most vulnerable to this attack vector.|authentication|credential-attacks
+
+Which attack technique involves using breached credentials from one site to attempt login on another site?|Brute force attack|Dictionary attack|Credential stuffing|Rainbow table attack|2|Credential stuffing uses lists of breached username/password pairs from data breaches to attempt automated login on target sites.|authentication|credential-attacks
+
+What is session fixation?|A technique to fix session IDs permanently|A vulnerability where an attacker sets a victim's session ID|An attack that breaks session encryption|A method to extend session timeouts|1|Session fixation occurs when an attacker can force a victim to use a session ID chosen by the attacker, allowing session hijacking after authentication.|authentication|session-management
+
+Which of the following is NOT a recommended practice for secure session management?|Regenerate session IDs after login|Use HttpOnly and Secure cookie flags|Store session tokens in localStorage|Implement reasonable session timeouts|2|Storing session tokens in localStorage exposes them to XSS attacks and is not recommended; HttpOnly cookies or secure server-side storage should be used instead.|authentication|session-management
+
+What does IDOR stand for in web application security?|Insecure Direct Object Reference|Internal Data Object Retrieval|Insecure Database Object Reference|Indirect Object Reference|0|IDOR (Insecure Direct Object Reference) occurs when an application exposes internal object references without proper authorization checks.|authorization|idor
+
+Which attack involves escalating privileges from a regular user account to an administrator account?|Horizontal privilege escalation|Vertical privilege escalation|Diagonal privilege escalation|Lateral privilege escalation|1|Vertical privilege escalation involves gaining higher privilege levels, such as from user to admin, while horizontal escalation involves accessing resources at the same privilege level.|authorization|privilege-escalation
+
+What is mass assignment vulnerability?|Assigning too many tasks to a user|Automatically binding all request parameters to object properties without validation|Mass email sending capability|Bulk user creation without limits|1|Mass assignment occurs when frameworks automatically bind all request parameters to object properties, allowing attackers to set unauthorized attributes.|authorization|mass-assignment
+
+Which HTTP parameter pollution technique can bypass web application firewalls?|Using multiple parameters with the same name|URL encoding all parameters|Converting parameters to uppercase|Removing parameter values|0|HTTP parameter pollution involves sending multiple parameters with the same name, which different backends handle differently, potentially bypassing WAF rules.|authorization|parameter-pollution
+
+What is the primary defense against brute force attacks?|Strong password requirements|Account lockout mechanisms|Multi-factor authentication|All of the above|3|Multiple layers of defense are needed: strong passwords, account lockout, and MFA all help prevent successful brute force attacks.|authentication|brute-force-defense
+
+Which JWT attack involves changing the algorithm from RS256 to HS256?|Algorithm confusion attack|Key injection attack|Signature bypass|None algorithm attack|0|Algorithm confusion attacks exploit the fact that some JWT libraries accept different algorithms, allowing attackers to use the public key as an HMAC secret.|authentication|jwt-attacks
+
+What is password spraying?|Trying many passwords against one account|Trying one password against many accounts|Using rainbow tables for cracking|Social engineering for passwords|1|Password spraying involves trying common passwords against many different accounts to avoid detection and account lockouts.|authentication|password-attacks
+
+Which OAuth vulnerability involves improper validation of redirect URIs?|Authorization code injection|Implicit flow abuse|Open redirect|Token replay|2|Open redirect vulnerabilities in OAuth occur when redirect URIs are not properly validated, allowing attackers to redirect users to malicious sites.|authentication|oauth-attacks
+
+What is the main risk of storing JWT tokens in localStorage?|Exposure to CSRF attacks|Exposure to XSS attacks|Automatic token expiration|Server-side storage requirements|1|localStorage is vulnerable to XSS attacks, which can steal JWT tokens, while HttpOnly cookies provide better protection.|authentication|token-storage
+
+Which attack technique attempts to enumerate valid usernames by observing different response times?|User enumeration via error messages|Timing-based username enumeration|Response code analysis|Cookie-based enumeration|1|Timing attacks can reveal valid usernames by measuring response time differences between valid and invalid username attempts.|authentication|enumeration-attacks
+
+What is horizontal privilege escalation?|Gaining access to higher privilege levels|Accessing resources belonging to other users at the same privilege level|Escalating from user to root|Bypassing all authorization checks|1|Horizontal privilege escalation involves accessing resources of other users who have the same privilege level as the attacker.|authorization|privilege-escalation
+
+Which MFA method is most vulnerable to SIM swapping attacks?|SMS-based authentication|TOTP (time-based one-time passwords)|Hardware security keys|Biometric authentication|0|SMS-based MFA can be compromised through SIM swapping, where attackers convince mobile providers to transfer the victim's phone number to a SIM card they control.|authentication|mfa-vulnerabilities
+
+What is the primary purpose of CSRF tokens?|To encrypt session data|To prevent cross-site request forgery attacks|To validate JWT signatures|To implement rate limiting|1|CSRF tokens are random values included in forms and validated server-side to prevent cross-site request forgery attacks.|authentication|csrf-protection
+
+Which attack involves modifying SAML assertions to change user roles?|XML injection|SAML assertion tampering|XPath injection|LDAP injection|1|SAML assertion tampering involves modifying the SAML response to change user attributes, roles, or other claims.|authentication|saml-attacks
+
+What is the recommended approach for handling authentication errors?|Provide detailed error messages indicating what was wrong|Use generic error messages for all failures|Log detailed errors only server-side|Disable error messages entirely|1|Generic error messages prevent username enumeration attacks while still providing feedback that authentication failed.|authentication|error-handling
+
+What is the main difference between authentication and authorization?|Authentication verifies identity, authorization grants permissions|Authentication grants permissions, authorization verifies identity|Both are the same concept|Neither involves user verification|0|Authentication answers "who are you?" while authorization answers "what are you allowed to do?"|authorization|fundamentals

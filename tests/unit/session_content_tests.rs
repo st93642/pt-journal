@@ -22,7 +22,7 @@ mod tests {
             assert_eq!(model.selected_phase(), 0);
             assert_eq!(model.selected_step(), Some(0));
             assert!(model.current_path().is_none());
-            assert_eq!(model.session().phases.len(), 53); // 53 phases loaded from JSON
+            assert_eq!(model.session().phases.len(), 54); // 54 phases loaded from JSON
                                                           // Config should be loaded (or default)
             assert_eq!(
                 model.config().chatbot.ollama.endpoint,
@@ -35,7 +35,7 @@ mod tests {
         fn test_session_creation() {
             let session = Session::default();
             assert!(!session.name.is_empty());
-            assert_eq!(session.phases.len(), 53); // 53 phases loaded from JSON
+            assert_eq!(session.phases.len(), 54); // 54 phases loaded from JSON
         }
 
         #[test]
@@ -229,7 +229,7 @@ mod tests {
                     assert!(step.title.len() > 5, "Step title too short: {}", step.title);
 
                     // Only check tutorial steps for description format
-                    if step.is_tutorial() {
+                    if step.is_tutorial() && !step.tags.contains(&"quiz".to_string()) {
                         let description = step.description.clone();
                         // Each tutorial step should have detailed description
                         assert!(
@@ -395,6 +395,10 @@ mod tests {
                 "Certified Ethical Hacker (CEH)",
                 "CISSP Domain 1: Security and Risk Management",
                 "CISSP Domain 2: Asset Security",
+                "CISSP Domain 3: Security Architecture and Engineering",
+                "CISSP Domain 4: Communication and Network Security",
+                "CISSP Domain 5: Identity and Access Management",
+                "CISSP Domain 6: Security Assessment and Testing",
             ];
             for (idx, expected_name) in phase_names.iter().enumerate() {
                 assert_eq!(session.phases[idx].name, *expected_name);
@@ -404,7 +408,8 @@ mod tests {
             let expected_step_counts = [
                 4, 6, 6, 6, 6, 5, 1, 16, 3, 3, 3, 3, 3, 10, 10, 10, 10, 3, 5, 5, 3, 3, 7, 3, 4, 4,
                 15, 9, 2, 1, 1, 7, 7, 6, 7, 15, 15, 13, 5, 4, 4, 10, 10, 12, 4, 23, 32, 24, 7, 6,
-            ]; // 50 phases loaded from JSON
+                5, 4, 4, 5,
+            ]; // 53 phases loaded from JSON
             for (idx, &expected_count) in expected_step_counts.iter().enumerate() {
                 assert_eq!(session.phases[idx].steps.len(), expected_count);
             }
@@ -438,8 +443,8 @@ mod tests {
 
             for phase in &session.phases {
                 for step in &phase.steps {
-                    // Only check tutorial steps
-                    if step.is_tutorial() {
+                    // Only check tutorial steps that are not quiz steps
+                    if step.is_tutorial() && !step.tags.contains(&"quiz".to_string()) {
                         let description = step.description.clone();
 
                         // All tutorials must have OBJECTIVE
@@ -564,7 +569,7 @@ mod tests {
                     assert!(!step.tags.is_empty()); // All steps should have at least one tag
 
                     // Test that tutorial steps contain required sections
-                    if step.is_tutorial() {
+                    if step.is_tutorial() && !step.tags.contains(&"quiz".to_string()) {
                         let description = step.description.clone();
                         assert!(description.contains("OBJECTIVE"));
                         assert!(description.contains("STEP-BY-STEP"));

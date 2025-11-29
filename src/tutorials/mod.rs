@@ -120,6 +120,7 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         load_tutorial_phase("cissp-domain-3"),
         load_tutorial_phase("cissp-domain-4"),
         load_tutorial_phase("cissp-domain-5"),
+        load_tutorial_phase("cissp-domain-6"),
         // create_cicd_pipeline_attacks_phase(), // Now part of cloud_native JSON
         // create_sbom_analysis_phase(), // Now part of supply_chain JSON
         // create_dependency_confusion_phase(), // Now part of supply_chain JSON
@@ -452,6 +453,10 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     // Validate CISSP Domain 5 module (loaded from JSON)
     let cissp_domain_5_phase = load_tutorial_phase("cissp-domain-5");
     validate_step_structure(&cissp_domain_5_phase.steps, "cissp-domain-5")?;
+
+    // Validate CISSP Domain 6 module (loaded from JSON)
+    let cissp_domain_6_phase = load_tutorial_phase("cissp-domain-6");
+    validate_step_structure(&cissp_domain_6_phase.steps, "cissp-domain-6")?;
 
     // Validate Cloud Native module (loaded from JSON)
     let cloud_native_phase = load_tutorial_phase("cloud_native");

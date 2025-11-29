@@ -1,0 +1,15 @@
+{
+  "id": "cissp-domain-3",
+  "title": "CISSP Domain 3: Security Architecture and Engineering",
+  "type": "tutorial",
+  "steps": [
+    {
+      "id": "test-step",
+      "title": "Test Step",
+      "content": "Test content",
+      "tags": [
+        "test"
+      ]
+    }
+  ]
+}

@@ -22,7 +22,7 @@ mod tests {
             assert_eq!(model.selected_phase(), 0);
             assert_eq!(model.selected_step(), Some(0));
             assert!(model.current_path().is_none());
-            assert_eq!(model.session().phases.len(), 48); // 48 phases loaded from JSON
+            assert_eq!(model.session().phases.len(), 51); // 51 phases loaded from JSON
                                                           // Config should be loaded (or default)
             assert_eq!(
                 model.config().chatbot.ollama.endpoint,
@@ -35,7 +35,7 @@ mod tests {
         fn test_session_creation() {
             let session = Session::default();
             assert!(!session.name.is_empty());
-            assert_eq!(session.phases.len(), 48); // 48 phases loaded from JSON
+            assert_eq!(session.phases.len(), 51); // 51 phases loaded from JSON
         }
 
         #[test]
@@ -393,6 +393,8 @@ mod tests {
                 "CompTIA Security+",
                 "CompTIA PenTest+",
                 "Certified Ethical Hacker (CEH)",
+                "CISSP Domain 1: Security and Risk Management",
+                "CISSP Domain 2: Asset Security",
             ];
             for (idx, expected_name) in phase_names.iter().enumerate() {
                 assert_eq!(session.phases[idx].name, *expected_name);
@@ -401,8 +403,8 @@ mod tests {
             // Verify step counts are reasonable for all phases
             let expected_step_counts = [
                 4, 6, 6, 6, 6, 5, 1, 16, 3, 3, 3, 3, 3, 10, 10, 10, 10, 3, 5, 5, 3, 3, 7, 3, 4, 4,
-                15, 9, 2, 1, 1, 7, 7, 6, 7, 15, 15, 13, 5, 4, 4, 10, 10, 12, 4, 23, 32, 24,
-            ]; // 48 phases loaded from JSON
+                15, 9, 2, 1, 1, 7, 7, 6, 7, 15, 15, 13, 5, 4, 4, 10, 10, 12, 4, 23, 32, 24, 7, 6,
+            ]; // 50 phases loaded from JSON
             for (idx, &expected_count) in expected_step_counts.iter().enumerate() {
                 assert_eq!(session.phases[idx].steps.len(), expected_count);
             }

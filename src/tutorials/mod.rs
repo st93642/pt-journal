@@ -115,6 +115,9 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         load_tutorial_phase("comptia_secplus"),
         load_tutorial_phase("pentest_exam"),
         load_tutorial_phase("ceh"),
+        load_tutorial_phase("cissp-domain-1"),
+        load_tutorial_phase("cissp-domain-2"),
+        load_tutorial_phase("cissp-domain-3"),
         // create_cicd_pipeline_attacks_phase(), // Now part of cloud_native JSON
         // create_sbom_analysis_phase(), // Now part of supply_chain JSON
         // create_dependency_confusion_phase(), // Now part of supply_chain JSON
@@ -428,6 +431,18 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     let ceh_phase = load_tutorial_phase("ceh");
     validate_step_structure(&ceh_phase.steps, "ceh")?;
 
+    // Validate CISSP Domain 1 module (loaded from JSON)
+    let cissp_domain_1_phase = load_tutorial_phase("cissp-domain-1");
+    validate_step_structure(&cissp_domain_1_phase.steps, "cissp-domain-1")?;
+
+    // Validate CISSP Domain 2 module (loaded from JSON)
+    let cissp_domain_2_phase = load_tutorial_phase("cissp-domain-2");
+    validate_step_structure(&cissp_domain_2_phase.steps, "cissp-domain-2")?;
+
+    // Validate CISSP Domain 3 module (loaded from JSON)
+    let cissp_domain_3_phase = load_tutorial_phase("cissp-domain-3");
+    validate_step_structure(&cissp_domain_3_phase.steps, "cissp-domain-3")?;
+
     // Validate Cloud Native module (loaded from JSON)
     let cloud_native_phase = load_tutorial_phase("cloud_native");
     validate_step_structure(&cloud_native_phase.steps, "cloud_native")?;
@@ -594,6 +609,15 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     }
     if ceh_phase.steps.is_empty() {
         return Err("CEH module has no steps".to_string());
+    }
+    if cissp_domain_1_phase.steps.is_empty() {
+        return Err("CISSP Domain 1 module has no steps".to_string());
+    }
+    if cissp_domain_2_phase.steps.is_empty() {
+        return Err("CISSP Domain 2 module has no steps".to_string());
+    }
+    if cissp_domain_3_phase.steps.is_empty() {
+        return Err("CISSP Domain 3 module has no steps".to_string());
     }
     if cloud_native_phase.steps.is_empty() {
         return Err("Cloud Native module has no steps".to_string());

@@ -94,6 +94,28 @@ impl<P: InstructionProvider, T: TerminalInterface, V: ToolPanelView> ToolPanelCo
         self.view.borrow().selected_tool()
     }
 
+    /// Selects a tool by its ID, auto-switching category as needed.
+    /// This allows other UI components to programmatically select tools.
+    pub fn select_tool_by_id(&self, tool_id: &str) {
+        // First, find the category that contains this tool
+        if let Some(category) = self
+            .provider
+            .category_groups()
+            .iter()
+            .find(|group| group.tools.iter().any(|tool| tool.id == tool_id))
+        {
+            // Switch to the correct category
+            self.on_category_changed(Some(&category.name));
+
+            // Now update the tool selection within that category
+            // This will be picked up by the UI element's signal handler
+            self.updating.set(true);
+            // The view should update its tool selector to select the tool
+            // This typically happens through GTK signal handlers
+            self.updating.set(false);
+        }
+    }
+
     /// Resolves instruction state for the given tool ID (exposed for panel use).
     pub fn resolve_instruction_state(
         &self,

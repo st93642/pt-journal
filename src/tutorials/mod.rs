@@ -37,6 +37,8 @@ pub struct TutorialStep {
     pub title: String,
     pub content: String,
     pub tags: Vec<String>,
+    #[serde(default)]
+    pub related_tools: Vec<String>,
 }
 
 /// Load all tutorial phases with their default content
@@ -189,32 +191,35 @@ fn load_tutorial_phase(phase_name: &str) -> Phase {
                                         }
                                         Err(_e) => {
                                             // Fallback to tutorial step
-                                            Step::new_tutorial(
+                                            Step::new_tutorial_with_tools(
                                                 Uuid::new_v4(),
                                                 step_data.title,
                                                 format!("Error loading quiz: {}", _e),
                                                 step_data.tags,
+                                                step_data.related_tools,
                                             )
                                         }
                                     }
-                                } else {
+                                    } else {
                                     // Fallback to tutorial step if content doesn't reference a file
-                                    Step::new_tutorial(
+                                    Step::new_tutorial_with_tools(
                                         Uuid::new_v4(),
                                         step_data.title,
                                         step_data.content,
                                         step_data.tags,
+                                        step_data.related_tools,
                                     )
-                                }
-                            } else {
-                                // Regular tutorial step
-                                Step::new_tutorial(
+                                    }
+                                    } else {
+                                    // Regular tutorial step
+                                    Step::new_tutorial_with_tools(
                                     Uuid::new_v4(),
                                     step_data.title,
                                     step_data.content,
                                     step_data.tags,
-                                )
-                            }
+                                    step_data.related_tools,
+                                    )
+                                    }
                         })
                         .collect();
 
@@ -754,6 +759,16 @@ fn validate_step_structure(steps: &[Step], module_name: &str) -> Result<(), Stri
                 "{}: Step '{}' has invalid UUID",
                 module_name, step.title
             ));
+        }
+
+        // Validate related_tools - check if all referenced tool IDs exist
+        for tool_id in &step.related_tools {
+            if !crate::ui::tool_instructions::has_tool(tool_id) {
+                return Err(format!(
+                    "{}: Step '{}' references non-existent tool ID: '{}'",
+                    module_name, step.title, tool_id
+                ));
+            }
         }
     }
 

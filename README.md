@@ -42,10 +42,12 @@ A **GTK4/Libadwaita desktop application** for penetration testing education, bui
 
 ### Content Coverage
 
-- **23 Interactive Tutorials** across penetration testing domains
-- **1000+ Quiz Questions** covering CEH, Security+, PenTest+ certifications
-- **80+ Security Tools** with detailed documentation and terminal integration
+- **56 Tutorial Phases** spanning 406 learning steps across penetration testing domains
+- **20 AI-Focused Phases** covering GenAI-driven reconnaissance, exploitation, and automated reporting
+- **1000+ Quiz Questions** covering CEH, Security+, PenTest+, CISSP certifications
+- **226 Security Tools** with detailed documentation and terminal integration
 - **Multi-Platform Support** - Linux, macOS, Windows compatibility
+- 📄 **AI Content Audit** - Baseline of tutorial phases and tool instructions for upcoming GenAI enhancements (see [docs/roadmap/ai_content_audit.md](docs/roadmap/ai_content_audit.md))
 
 ## Screenshots
 

@@ -198,6 +198,9 @@ pub struct DetailPanel {
     // Tool panel (will be placed in right column)
     tool_panel: Rc<ToolExecutionPanel>,
 
+    // Related tools display area
+    related_tools_box: GtkBox,
+
     // Quiz view widget
     quiz_widget: QuizWidget,
 }
@@ -242,10 +245,26 @@ pub fn create_detail_panel() -> DetailPanel {
         .build();
     desc_frame.set_size_request(-1, 80);
 
+    // Related Tools section
+    let related_tools_box = GtkBox::new(Orientation::Horizontal, 8);
+    related_tools_box.set_margin_top(4);
+    related_tools_box.set_margin_bottom(4);
+    related_tools_box.set_margin_start(4);
+    related_tools_box.set_margin_end(4);
+    
+    let related_tools_label = Label::new(Some("Related Tools:"));
+    related_tools_label.set_xalign(0.0);
+    related_tools_label.add_css_class("heading");
+    
+    let related_tools_frame = Frame::builder()
+        .label_widget(&related_tools_label)
+        .child(&related_tools_box)
+        .build();
+
     // Chat panel
     let chat_panel = ChatPanel::new();
 
-    // Create resizable panes for tutorial view: desc -> chat
+    // Create resizable panes for tutorial view: desc -> related_tools -> chat
     let tutorial_paned = Paned::new(Orientation::Vertical);
     tutorial_paned.set_vexpand(true);
     tutorial_paned.set_resize_start_child(true);
@@ -253,8 +272,13 @@ pub fn create_detail_panel() -> DetailPanel {
     tutorial_paned.set_shrink_start_child(false);
     tutorial_paned.set_shrink_end_child(false);
 
-    // Set up the pane: desc -> chat
-    tutorial_paned.set_start_child(Some(&desc_frame));
+    // Create container for desc + tools
+    let desc_tools_box = GtkBox::new(Orientation::Vertical, 4);
+    desc_tools_box.append(&desc_frame);
+    desc_tools_box.append(&related_tools_frame);
+
+    // Set up the pane: (desc + tools) -> chat
+    tutorial_paned.set_start_child(Some(&desc_tools_box));
     tutorial_paned.set_end_child(Some(&chat_panel.container));
     tutorial_paned.set_position(200);
 
@@ -283,6 +307,7 @@ pub fn create_detail_panel() -> DetailPanel {
         desc_view,
         chat_panel,
         tool_panel,
+        related_tools_box,
         quiz_widget,
     }
 }
@@ -294,6 +319,20 @@ pub fn load_step_into_panel(panel: &DetailPanel, step: &Step) {
     panel
         .checkbox
         .set_active(step.status == crate::model::StepStatus::Done);
+
+    // Clear and populate related tools box
+    // Remove all children from related_tools_box
+    while let Some(child) = panel.related_tools_box.first_child() {
+        panel.related_tools_box.remove(&child);
+    }
+
+    // Add tool buttons for each related tool
+    for tool_id in &step.related_tools {
+        let button = gtk4::Button::with_label(tool_id);
+        button.set_css_classes(&["suggested-action", "pill"]);
+        button.set_size_request(120, -1);
+        panel.related_tools_box.append(&button);
+    }
 
     // Switch view based on step type
     if step.is_quiz() {

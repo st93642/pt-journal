@@ -27,6 +27,8 @@ pub struct Step {
     pub description: String,
     #[serde(default)]
     pub chat_history: Vec<ChatMessage>,
+    #[serde(default)]
+    pub related_tools: Vec<String>,
 
     // Quiz field (optional, present only for quiz steps)
     pub quiz_data: Option<QuizStep>,
@@ -43,6 +45,28 @@ impl Step {
             completed_at: None,
             description,
             chat_history: Vec::new(),
+            related_tools: Vec::new(),
+            quiz_data: None,
+        }
+    }
+
+    /// Create a new tutorial-based step with related tools
+    pub fn new_tutorial_with_tools(
+        id: Uuid,
+        title: String,
+        description: String,
+        tags: Vec<String>,
+        related_tools: Vec<String>,
+    ) -> Self {
+        Self {
+            id,
+            title,
+            tags,
+            status: StepStatus::Todo,
+            completed_at: None,
+            description,
+            chat_history: Vec::new(),
+            related_tools,
             quiz_data: None,
         }
     }
@@ -57,6 +81,7 @@ impl Step {
             completed_at: None,
             description: String::new(),
             chat_history: Vec::new(),
+            related_tools: Vec::new(),
             quiz_data: Some(quiz_data),
         }
     }

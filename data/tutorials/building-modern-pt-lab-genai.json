@@ -7,19 +7,22 @@
       "id": "step-1",
       "title": "Setting Up Virtual Environments",
       "content": "OBJECTIVE: Install Kali Linux in a VM, configure networking, and set up target machines like Metasploitable. Use GenAI to generate setup scripts.\n\nWHAT TO LOOK FOR:\n- Proper resource allocation for VMs\n- Secure network isolation between lab segments\n- Successful Kali Linux installation and updates\n- Target machine vulnerabilities and services\n- AI tool integration capabilities\n\nSTEP-BY-STEP PROCESS:\n1. Install virtualization software (VirtualBox, VMware, KVM)\n2. Download Kali Linux ISO\n3. Create VM with appropriate resources (4GB RAM, 50GB disk)\n4. Install Kali Linux with default settings\n5. Configure networking (NAT for internet, Host-only for lab isolation)\n\nTARGET MACHINES:\n- Metasploitable 2/3 for vulnerable targets\n- Windows Server for AD testing\n- Ubuntu/Debian for web app testing\n- Configure isolated network segment\n\nAI-ASSISTED SETUP:\nUse Shell GPT to generate VM configuration scripts and network setup commands.",
-      "tags": ["lab-setup", "virtualization", "kali-linux"]
+      "tags": ["lab-setup", "virtualization", "kali-linux"],
+      "related_tools": ["nmap", "metasploit"]
     },
     {
       "id": "step-2",
       "title": "Integrating GenAI Tools",
       "content": "OBJECTIVE: Install and configure Shell GPT and Ollama for AI-assisted command generation. Test basic prompts for lab automation.\n\nWHAT TO LOOK FOR:\n- Successful installation of AI tools\n- Proper API key configuration\n- Model availability and performance\n- Command generation accuracy\n- Integration with existing tools\n\nSTEP-BY-STEP PROCESS:\n1. Install Shell GPT using pip\n2. Install Ollama and download models\n3. Configure API keys and test connections\n4. Generate basic pentesting commands\n5. Test integration with lab environment\n\nINSTALLING SHELL GPT:\n```bash\npip install shell-gpt\nsgpt --help\n```\n\nINSTALLING OLLAMA:\n```bash\ncurl -fsSL https://ollama.ai/install.sh | sh\nollama pull llama2\nollama serve\n```\n\nCONFIGURATION:\n- Set up API keys for OpenAI (if using ChatGPT)\n- Configure local Ollama models\n- Test basic prompts for pentesting commands\n\nINTEGRATION TESTING:\nGenerate commands for Nmap scanning and analyze outputs.",
-      "tags": ["genai-tools", "ollama", "shell-gpt"]
+      "tags": ["genai-tools", "ollama", "shell-gpt"],
+      "related_tools": ["nmap", "gobuster"]
     },
     {
       "id": "step-3",
       "title": "AI-Driven Lab Exercises",
       "content": "OBJECTIVE: Perform reconnaissance on lab targets using AI-generated scripts. Analyze outputs and iterate with GenAI for optimization.\n\nWHAT TO LOOK FOR:\n- Accuracy of AI-generated commands\n- Effectiveness of AI-assisted analysis\n- Learning opportunities from AI suggestions\n- Integration between AI tools and manual techniques\n- Iterative improvement through AI feedback\n\nSTEP-BY-STEP PROCESS:\n1. Use AI to generate reconnaissance commands\n2. Execute on target VMs\n3. Analyze results with AI assistance\n4. Iterate and refine approach\n\nPRACTICAL SCENARIOS:\n- Port scanning with Nmap\n- Service enumeration\n- Vulnerability identification\n- Basic exploitation attempts\n\nAI OPTIMIZATION:\nAsk GenAI to suggest improvements to scanning techniques and interpret results.",
-      "tags": ["automation", "exercises", "reconnaissance"]
+      "tags": ["automation", "exercises", "reconnaissance"],
+      "related_tools": ["nmap", "nikto", "metasploit"]
     }
   ]
 }

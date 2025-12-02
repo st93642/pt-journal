@@ -21,7 +21,7 @@ A **GTK4/Libadwaita desktop application** for penetration testing education, bui
 
 - ❓ **Quiz System** - Test your knowledge with categorized questions organized by certification domains (1000+ questions across CEH, Security+, PenTest+)
 
-- 🤖 **AI Chat Assistant** - Integrated LLM chatbot (Ollama backend) for contextual learning assistance with configurable models and parameters
+- 🤖 **AI Chat Assistant** - Integrated LLM chatbot with support for OpenAI, Azure OpenAI, and local Ollama backends for contextual learning assistance with configurable models and parameters
 
 - 🛠️ **Tool Instructions & Terminal** - Comprehensive security tool documentation with embedded terminal for hands-on practice:
   - 229+ security tools with detailed usage guides
@@ -106,6 +106,83 @@ PT Journal uses Ollama for AI-assisted learning. To enable the chatbot feature:
 
 The application will connect to Ollama at `http://localhost:11434` by default. You can customize the endpoint in the configuration file or via environment variables.
 
+### AI Provider Configuration
+
+PT Journal supports multiple AI providers for the chatbot feature:
+
+#### OpenAI
+
+1. **Get an API key** from [platform.openai.com](https://platform.openai.com/)
+2. **Configure via environment variables**:
+
+   ```bash
+   export PT_JOURNAL_OPENAI_API_KEY="your-openai-api-key"
+   export PT_JOURNAL_OPENAI_ENDPOINT="https://api.openai.com/v1"  # Optional, uses default
+   export PT_JOURNAL_OPENAI_TIMEOUT_SECONDS="120"  # Optional, timeout in seconds
+   ```
+
+3. **Or configure in config file** (`~/.config/pt-journal/config.toml`):
+
+   ```toml
+   [chatbot.openai]
+   api_key = "your-openai-api-key"
+   endpoint = "https://api.openai.com/v1"
+   timeout_seconds = 120
+   ```
+
+#### Azure OpenAI
+
+1. **Create an Azure OpenAI resource** in the Azure portal
+2. **Get your endpoint and API key** from the Azure portal
+3. **Configure via environment variables**:
+
+   ```bash
+   export PT_JOURNAL_AZURE_OPENAI_API_KEY="your-azure-api-key"
+   export PT_JOURNAL_AZURE_OPENAI_ENDPOINT="https://your-resource.openai.azure.com"
+   export PT_JOURNAL_AZURE_OPENAI_DEPLOYMENT="your-deployment-name"  # Optional per-model
+   export PT_JOURNAL_AZURE_OPENAI_API_VERSION="2024-02-15-preview"  # Optional
+   export PT_JOURNAL_AZURE_OPENAI_TIMEOUT_SECONDS="120"  # Optional, timeout in seconds
+   ```
+
+4. **Or configure in config file**:
+
+   ```toml
+   [chatbot.azure_openai]
+   api_key = "your-azure-api-key"
+   endpoint = "https://your-resource.openai.azure.com"
+   deployment_name = "your-deployment-name"  # Optional global deployment
+   api_version = "2024-02-15-preview"
+   timeout_seconds = 120
+   ```
+
+#### Ollama (Local)
+
+1. **Install Ollama** from [ollama.ai](https://ollama.ai/)
+2. **Configure via environment variables**:
+
+   ```bash
+   export PT_JOURNAL_OLLAMA_ENDPOINT="http://localhost:11434"  # Optional, uses default
+   export PT_JOURNAL_OLLAMA_TIMEOUT_SECONDS="180"  # Optional, timeout in seconds
+   ```
+
+3. **Or configure in config file**:
+
+   ```toml
+   [chatbot.ollama]
+   endpoint = "http://localhost:11434"
+   timeout_seconds = 180
+   ```
+
+#### Model Selection
+
+Available models are automatically populated based on your configured providers:
+
+- **OpenAI**: GPT-4o, GPT-4o Mini, GPT-4 Turbo, GPT-3.5 Turbo
+- **Azure OpenAI**: Same models as OpenAI (use your deployment names)
+- **Ollama**: Any models you've pulled locally (`ollama list`)
+
+You can select the active model in the chat panel dropdown. The application will automatically use the appropriate provider based on the selected model.
+
 ### Build from Source
 
 ```bash
@@ -147,7 +224,7 @@ Quiz steps present multiple-choice questions with:
 
 ### AI Assistant
 
-The integrated chatbot provides contextual help based on your current learning step. Configure your Ollama endpoint in the settings with support for multiple models and parameters.
+The integrated chatbot provides contextual help based on your current learning step. Configure your preferred AI provider (OpenAI, Azure OpenAI, or local Ollama) with support for multiple models and parameters.
 
 ### Tool Instructions & Terminal
 
@@ -192,7 +269,12 @@ src/
 │   └── detail_panel.rs# Content display and syntax highlighting
 ├── chatbot/          # LLM provider abstraction
 │   ├── provider.rs   # ChatProvider trait
-│   └── ollama.rs     # Ollama API implementation
+│   ├── ollama.rs     # Ollama API implementation
+│   ├── openai.rs     # OpenAI API implementation
+│   ├── azure_openai.rs # Azure OpenAI API implementation
+│   ├── registry.rs   # Provider registry for dynamic registration
+│   ├── service.rs    # Chat service with provider routing
+│   └── request.rs    # Chat request/response types
 ├── config/           # Configuration management
 ├── quiz/             # Quiz parsing and logic
 ├── tutorials/        # JSON tutorial loading

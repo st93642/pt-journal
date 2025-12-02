@@ -303,6 +303,78 @@ fn validate_chatbot_config(chatbot: &ChatbotConfig) -> ValidationResult<()> {
         ));
     }
 
+    // Validate OpenAI configuration
+    if let Some(api_key) = &chatbot.openai.api_key {
+        if api_key.trim().is_empty() {
+            return Err(ValidationError::InvalidFieldValue(
+                "OpenAI API key cannot be empty if provided".to_string(),
+            ));
+        }
+    }
+
+    // Validate OpenAI endpoint URL format
+    if !chatbot.openai.endpoint.starts_with("http://")
+        && !chatbot.openai.endpoint.starts_with("https://")
+    {
+        return Err(ValidationError::InvalidFieldValue(format!(
+            "OpenAI endpoint must be a valid HTTP/HTTPS URL, got: {}",
+            chatbot.openai.endpoint
+        )));
+    }
+
+    if chatbot.openai.timeout_seconds == 0 {
+        return Err(ValidationError::InvalidFieldValue(
+            "OpenAI timeout_seconds must be greater than 0".to_string(),
+        ));
+    }
+
+    // Validate Azure OpenAI configuration
+    if let Some(api_key) = &chatbot.azure_openai.api_key {
+        if api_key.trim().is_empty() {
+            return Err(ValidationError::InvalidFieldValue(
+                "Azure OpenAI API key cannot be empty if provided".to_string(),
+            ));
+        }
+    }
+
+    if let Some(endpoint) = &chatbot.azure_openai.endpoint {
+        if endpoint.trim().is_empty() {
+            return Err(ValidationError::InvalidFieldValue(
+                "Azure OpenAI endpoint cannot be empty if provided".to_string(),
+            ));
+        }
+
+        // Validate Azure OpenAI endpoint URL format
+        if !endpoint.starts_with("http://") && !endpoint.starts_with("https://") {
+            return Err(ValidationError::InvalidFieldValue(format!(
+                "Azure OpenAI endpoint must be a valid HTTP/HTTPS URL, got: {}",
+                endpoint
+            )));
+        }
+    }
+
+    if let Some(deployment) = &chatbot.azure_openai.deployment_name {
+        if deployment.trim().is_empty() {
+            return Err(ValidationError::InvalidFieldValue(
+                "Azure OpenAI deployment name cannot be empty if provided".to_string(),
+            ));
+        }
+    }
+
+    if let Some(api_version) = &chatbot.azure_openai.api_version {
+        if api_version.trim().is_empty() {
+            return Err(ValidationError::InvalidFieldValue(
+                "Azure OpenAI API version cannot be empty if provided".to_string(),
+            ));
+        }
+    }
+
+    if chatbot.azure_openai.timeout_seconds == 0 {
+        return Err(ValidationError::InvalidFieldValue(
+            "Azure OpenAI timeout_seconds must be greater than 0".to_string(),
+        ));
+    }
+
     Ok(())
 }
 

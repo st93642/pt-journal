@@ -94,6 +94,12 @@ pub enum PtError {
     #[error("Chat service unavailable: {message}")]
     ChatServiceUnavailable { message: String },
 
+    #[error("Network error: {message}")]
+    Network { message: String },
+
+    #[error("Provider error: {provider} - {message}")]
+    Provider { provider: String, message: String },
+
     // I/O errors
     #[error("I/O error: {message}")]
     Io {
@@ -187,6 +193,21 @@ impl PtError {
     /// Create a new internal error
     pub fn internal<S: Into<String>>(message: S) -> Self {
         PtError::Internal {
+            message: message.into(),
+        }
+    }
+
+    /// Create a new network error
+    pub fn network<S: Into<String>>(message: S) -> Self {
+        PtError::Network {
+            message: message.into(),
+        }
+    }
+
+    /// Create a new provider error
+    pub fn provider<S: Into<String>>(provider: S, message: S) -> Self {
+        PtError::Provider {
+            provider: provider.into(),
             message: message.into(),
         }
     }

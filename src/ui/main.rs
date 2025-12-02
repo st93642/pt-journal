@@ -51,6 +51,7 @@ pub fn build_ui(app: &Application, model: AppModel) {
         
         .chat-history {
             background-color: rgba(0, 10, 0, 0.8);
+            padding: 12px;
         }
         
         .chat-input {
@@ -58,11 +59,13 @@ pub fn build_ui(app: &Application, model: AppModel) {
             background-color: rgba(0, 20, 0, 0.9);
             font-family: monospace;
             font-size: 12px;
+            padding: 8px;
         }
         
         .chat-input text {
             color: #00ff00;
             background-color: rgba(0, 20, 0, 0.9);
+            padding: 8px;
         }
         
         .chat-message-content {

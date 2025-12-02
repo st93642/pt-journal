@@ -109,7 +109,11 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         load_tutorial_phase("red_team_tradecraft"),
         load_tutorial_phase("purple_team_threat_hunting"),
         load_tutorial_phase("bug_bounty_hunting"),
-        // Phase 23: Reporting (final documentation phase)
+        // Phase 24-26: AI Agent Operations (orchestration and automation)
+        load_tutorial_phase("ai_agentic_operations"),
+        load_tutorial_phase("ai_secops_copilots"),
+        load_tutorial_phase("ai_playbook_automation"),
+        // Phase 27: Reporting (final documentation phase)
         load_tutorial_phase("reporting"),
         // Phase 24-26: Quiz-based certification preparation (post-testing validation)
         load_tutorial_phase("comptia_secplus"),
@@ -509,6 +513,21 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     let modern_web_phase = load_tutorial_phase("modern_web");
     validate_step_structure(&modern_web_phase.steps, "modern_web")?;
 
+    // Validate AI Agentic Operations module (loaded from JSON)
+    let ai_agentic_operations_phase = load_tutorial_phase("ai_agentic_operations");
+    validate_step_structure(&ai_agentic_operations_phase.steps, "ai_agentic_operations")?;
+
+    // Validate AI SecOps Copilots module (loaded from JSON)
+    let ai_secops_copilots_phase = load_tutorial_phase("ai_secops_copilots");
+    validate_step_structure(&ai_secops_copilots_phase.steps, "ai_secops_copilots")?;
+
+    // Validate AI Playbook Automation module (loaded from JSON)
+    let ai_playbook_automation_phase = load_tutorial_phase("ai_playbook_automation");
+    validate_step_structure(
+        &ai_playbook_automation_phase.steps,
+        "ai_playbook_automation",
+    )?;
+
     // Validate that all modules have at least one step
     if linux_basics_phase.steps.is_empty() {
         return Err("Linux basics for hackers module has no steps".to_string());
@@ -675,6 +694,15 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     }
     if modern_web_phase.steps.is_empty() {
         return Err("Modern Web module has no steps".to_string());
+    }
+    if ai_agentic_operations_phase.steps.is_empty() {
+        return Err("AI Agentic Operations module has no steps".to_string());
+    }
+    if ai_secops_copilots_phase.steps.is_empty() {
+        return Err("AI SecOps Copilots module has no steps".to_string());
+    }
+    if ai_playbook_automation_phase.steps.is_empty() {
+        return Err("AI Playbook Automation module has no steps".to_string());
     }
 
     Ok(())

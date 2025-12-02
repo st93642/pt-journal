@@ -1,0 +1,52 @@
+# AI SecOps Copilots Assessment
+# Questions covering copilot architecture, incident triage, threat analysis, and automated guidance
+
+What is an AI copilot in security operations?|An AI system that augments analyst decision-making without replacing human judgment|A fully autonomous security system|A firewall configuration tool|A network monitoring dashboard|0|Copilots enhance human decision-making through AI-augmented analysis and recommendations.|AI SecOps Copilots|Copilot Architecture
+
+Which component of a security copilot maintains contextual operational information?|Context Window Manager|Log aggregator|Network analyzer|Alert deduplicator|0|The context window manager maintains relevant operational context for informed recommendations.|AI SecOps Copilots|Copilot Components
+
+What does MTTD stand for in incident response metrics?|Mean Time To Detect|Maximum Throughput Transfer Data|Model Training Time Duration|Monitored Threat Detection|0|MTTD measures the average time required to identify security threats in the environment.|AI SecOps Copilots|Response Metrics
+
+How does a copilot provide explainability to analysts?|Shows evidence chains, confidence scores, and reasoning paths|Provides only final recommendations|Hides decision-making details|Uses only machine learning predictions|0|Explainability helps analysts understand why recommendations are made and build trust.|AI SecOps Copilots|Explainability
+
+Which scoring factor should be weighted highest in incident prioritization?|Urgency and business impact|Alert volume|False positive rate|Analyst preference|0|Urgency and business impact determine which incidents require immediate attention.|AI SecOps Copilots|Incident Prioritization
+
+What is the main advantage of LLM-powered threat analysis?|Synthesizes diverse intelligence sources and identifies patterns automatically|Replaces threat intelligence feeds|Eliminates need for human analysis|Predicts future attacks with certainty|0|LLMs synthesize information from multiple sources to identify patterns and provide context.|AI SecOps Copilots|Threat Analysis
+
+Which data source should be prioritized for incident classification?|Alert characteristics and event metadata|Social media mentions|Public announcements only|Random data samples|0|Alert characteristics and metadata provide the most reliable incident classification data.|AI SecOps Copilots|Incident Classification
+
+What does indicator correlation in threat analysis involve?|Linking IOCs to threat actors and known campaigns|Removing suspicious indicators|Increasing indicator thresholds|Ignoring indicator context|0|Correlation connects indicators to known threat actors and attack campaigns for context.|AI SecOps Copilots|Threat Intelligence
+
+How should a copilot handle uncertain recommendations?|Escalate to analysts with confidence scores and reasoning|Execute recommendations anyway|Hide uncertainty from analysts|Recommend highest-risk actions|1|Escalation with transparency allows analysts to make informed decisions about uncertain cases.|AI SecOps Copilots|Recommendation Handling
+
+Which phase of incident response benefits most from automation?|Initial triage and evidence collection|Executive reporting only|Post-incident cleanup|Stakeholder meetings|0|Triage and evidence collection are repetitive and benefit greatly from automation.|AI SecOps Copilots|Incident Response Phases
+
+What is the purpose of baseline establishment in anomaly detection?|Defining normal behavior to identify deviations|Creating maximum alert volumes|Reducing monitoring accuracy|Eliminating false alerts completely|0|Baselines establish what normal behavior looks like to identify suspicious deviations.|AI SecOps Copilots|Anomaly Detection
+
+Which framework helps organize threat intelligence systematically?|MITRE ATT&CK|TCP/IP Model|OSI Model|Data structures only|0|MITRE ATT&CK provides systematic organization of known threat actor tactics and techniques.|AI SecOps Copilots|Threat Frameworks
+
+How do copilots improve analyst efficiency?|Automating routine analysis and suggesting investigation paths|Replacing all analyst tasks|Reducing security monitoring scope|Eliminating false positive reviews|0|Automation of routine tasks and intelligent suggestions allow analysts to focus on complex decisions.|AI SecOps Copilots|Analyst Efficiency
+
+What is Mean Time To Respond (MTTR)?|Average time from incident detection to resolution|Time to first analyst alert|Duration of incident discovery phase|Alert generation time|0|MTTR measures how quickly organizations address identified security incidents.|AI SecOps Copilots|Response Metrics
+
+Which technique does a copilot use to assess incident severity?|Combining technical factors with business context|CVSS score alone|Alert count only|Random scoring|0|Effective severity assessment combines technical metrics with business impact assessment.|AI SecOps Copilots|Severity Assessment
+
+What is the main challenge in LLM-powered threat analysis?|Ensuring accuracy without analyst review|Speed of analysis|Data storage|User interface design|0|AI-generated analysis must be validated by threat experts to ensure accuracy.|AI SecOps Copilots|LLM Challenges
+
+How should a copilot handle incomplete incident information?|Request additional data and adjust confidence scores|Proceed with incomplete analysis|Abandon the investigation|Wait indefinitely for perfect information|0|Copilots should adjust recommendations based on available information completeness.|AI SecOps Copilots|Information Handling
+
+Which is an appropriate automated response to a critical vulnerability?|Create urgent remediation ticket with guidance|Immediately patch all systems|Ignore the vulnerability|Wait for analyst review only|0|Automation can create tickets and escalate, but critical patching usually requires approval.|AI SecOps Copilots|Automated Response
+
+What role does analyst feedback play in copilot improvement?|Trains models to better identify true positives and improve recommendations|Has no impact on system performance|Slows down incident response|Biases the AI system|0|Feedback loops enable copilots to learn from analyst corrections and improve recommendations.|AI SecOps Copilots|Learning and Improvement
+
+How should copilots display confidence in recommendations?|Percentage score with evidence summary|Binary confident/not confident|No confidence indication|Highest possible confidence always|0|Explicit confidence scores with supporting evidence help analysts evaluate recommendation reliability.|AI SecOps Copilots|Confidence Display
+
+Which incident type requires highest caution with automated response?|Sophisticated APT indicators requiring careful verification|Web application attack|Port scan activity|Failed login attempts|0|APTs require careful analysis to avoid false positives and operational security risks.|AI SecOps Copilots|Incident Types
+
+What is the advantage of threat actor profiling?|Predicts future attack vectors and defensive priorities|Eliminates need for detection systems|Predicts exact attack timing|Guarantees attack prevention|0|Profiling helps predict likely future targets and techniques for better preparation.|AI SecOps Copilots|Threat Actor Analysis
+
+How do copilots handle alert storm situations?|Intelligently aggregate related alerts and prioritize critical ones|Process each alert individually|Ignore alerts during storms|Disable alerting temporarily|0|Smart aggregation prevents alert fatigue while ensuring critical threats are flagged.|AI SecOps Copilots|Alert Management
+
+What is cross-source correlation in threat analysis?|Linking related events across multiple data sources and systems|Analyzing single system logs only|Removing redundant data|Increasing data volume|0|Cross-source correlation provides comprehensive threat context by linking evidence from multiple sources.|AI SecOps Copilots|Correlation Techniques
+
+Which recommendation should a copilot prioritize when multiple threats are detected?|Highest business impact and urgency combination|Oldest alert first|Randomly selected threat|Most recent alert only|0|Prioritization should consider both technical severity and business impact on critical assets.|AI SecOps Copilots|Prioritization Strategies

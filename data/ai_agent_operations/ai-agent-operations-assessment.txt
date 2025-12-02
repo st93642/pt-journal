@@ -1,0 +1,52 @@
+# AI Agent Operations Assessment
+# Questions covering agentic frameworks, agent orchestration, autonomy levels, and pentesting automation
+
+What is an AI agent?|A system that perceives its environment and takes actions to achieve goals|A malicious software program|A type of network protocol|A data storage system|0|AI agents combine perception, planning, and action to achieve specified objectives autonomously.|AI Agent Operations|Agent Fundamentals
+
+Which framework is developed by Microsoft for multi-agent collaboration?|AutoGen|CrewAI|LangChain Agents|Rasa|0|Microsoft's AutoGen enables multi-agent conversations with code execution capabilities.|AI Agent Operations|Agent Frameworks
+
+What does autonomy level 3 in agent systems mean?|Agent operates independently within defined boundaries and constraints|Agent requires human approval for all actions|Agent only suggests actions|Agent has unlimited access|2|Autonomy level 3 allows independent operation with guardrails and monitoring capabilities.|AI Agent Operations|Autonomy Levels
+
+Which component is responsible for converting perception into action plans in agents?|Planning module|Sensor network|Output layer|Cache system|0|The planning module uses perception data to reason about and sequence actions.|AI Agent Operations|Agent Architecture
+
+What is the main benefit of multi-agent systems for penetration testing?|Parallel processing and role specialization for complex tasks|Reduced system resource usage|Faster network connectivity|Lower licensing costs|0|Multi-agent systems enable parallel exploitation and specialized roles for different attack phases.|AI Agent Operations|Multi-Agent Systems
+
+Which autonomy level is most appropriate for critical infrastructure security testing?|Supervised execution with monitoring and human validation|Full autonomy without oversight|Suggestion-only mode|Random action selection|0|Supervised execution balances efficiency with safety for security-critical environments.|AI Agent Operations|Autonomy Levels
+
+What does PentestGPT specialize in?|Autonomous penetration testing workflows and domain-specific reasoning|General-purpose language processing|Network packet analysis|Database query optimization|0|PentestGPT is specifically designed for autonomous penetration testing with specialized reasoning patterns.|AI Agent Operations|Agent Frameworks
+
+Which of the following is a tool registration pattern in AutoGen?|function_map parameter with callable functions|Static configuration files only|Hardcoded tool lists|External API keys only|0|AutoGen uses function_map to register custom tools with agent systems.|AI Agent Operations|Tool Integration
+
+What is reconnaissance agent orchestration?|Coordinating multiple reconnaissance tools autonomously while synthesizing information|Manual running of individual tools|Database query execution|Network packet capture setup|0|Reconnaissance agent orchestration combines multiple tools and data sources automatically.|AI Agent Operations|Reconnaissance Agents
+
+Which defense mechanism prevents agents from exceeding authorized scope?|Scope enforcement with hard boundaries and validation|Unlimited agent access|Firewall rules only|Manual approval processes|0|Scope enforcement uses hard boundaries to prevent agents from operating outside authorized targets.|AI Agent Operations|Safety Guardrails
+
+What does MTTD stand for in security operations?|Mean Time To Detect|Maximum Transfer Time Delay|Model Training Throughput Data|Malware Threat Type Database|0|MTTD measures how quickly security systems identify threats in the environment.|AI Agent Operations|Security Metrics
+
+Which framework is developed by OpenAI for task-oriented agent workflows?|LangChain Agents|TensorFlow Agents|PyTorch Lightning|Hugging Face Spaces|0|LangChain provides agents for task-oriented workflows with ReAct reasoning patterns.|AI Agent Operations|Agent Frameworks
+
+What is the primary purpose of audit logging in autonomous agents?|Complete record of agent decisions and actions for accountability|Improving execution speed|Reducing storage requirements|Simplifying user interfaces|0|Audit logging maintains transparency and accountability for all autonomous agent actions.|AI Agent Operations|Safety Guardrails
+
+In multi-agent exploitation, what does result coordination involve?|Synthesizing findings from multiple parallel exploitation attempts|Running exploits sequentially|Storing results in databases|Generating HTML reports|0|Result coordination combines successful exploits from multiple agents for comprehensive attack assessment.|AI Agent Operations|Multi-Agent Systems
+
+Which technique helps agents adapt when initial exploitation attempts fail?|Dynamic strategy adjustment based on failure analysis|Repeated identical attempts|Increasing packet size|Changing network protocols|0|Agents can analyze failures and adapt exploitation strategies for improved success rates.|AI Agent Operations|Agent Adaptation
+
+What is the main advantage of using agents for vulnerability assessment?|Faster discovery and correlation of vulnerabilities across systems|Manual verification of each finding|Reduced tool availability|Slower but more accurate results|0|Agents rapidly discover and correlate vulnerabilities across many systems automatically.|AI Agent Operations|Vulnerability Assessment
+
+Which ML model type is commonly used for agent decision-making?|Supervised learning classifiers|Random forests only|Linear regression exclusively|Unsupervised clustering only|0|Supervised learning models help agents make informed decisions based on labeled training data.|AI Agent Operations|Machine Learning in Agents
+
+What does evidence preservation in automated incident response require?|Forensic-sound collection and immutable storage of data|Quick deletion of logs|Sharing raw data with external parties|Storing only summary information|0|Evidence preservation ensures forensic integrity and admissibility in security investigations.|AI Agent Operations|Incident Response
+
+How do agents handle idempotency in remediation?|Ensuring actions are safe to re-execute without unintended side effects|Running actions multiple times intentionally|Skipping verification steps|Accepting any outcome|0|Idempotent actions in agent systems ensure safe re-execution without duplicating effects.|AI Agent Operations|Remediation Automation
+
+What is anomaly detection in continuous threat hunting?|Identifying system behavior deviations from established baselines|Manual log review only|Signature-based detection exclusively|Static rule application|0|Anomaly detection uses behavioral analysis to find deviations indicating potential threats.|AI Agent Operations|Threat Hunting
+
+Which of the following is a characteristic of effective autonomous agent governance?|Multi-layer controls with escalation paths and audit trails|Single approval mechanism|Unlimited agent authority|No monitoring overhead|1|Effective governance combines multiple control layers with clear escalation procedures.|AI Agent Operations|Agent Governance
+
+What is the relationship between agent autonomy and organizational risk?|Higher autonomy increases risk and requires stronger safeguards|Risk is unaffected by autonomy level|Lower autonomy increases risk|Autonomy and risk are unrelated|0|Higher autonomy requires proportionally stronger safety mechanisms and oversight.|AI Agent Operations|Risk Management
+
+How do agents optimize reconnaissance coverage?|Intelligently prioritizing high-value targets within time constraints|Random target selection|Sequential scanning of all targets|Equal distribution regardless of value|0|Agents use intelligent prioritization to maximize reconnaissance coverage efficiently.|AI Agent Operations|Reconnaissance Optimization
+
+What is continuous compliance automation?|Automatic monitoring and remediation of compliance gaps|Manual annual reviews only|Ignoring regulatory requirements|Static configuration management|0|Continuous automation monitors for compliance gaps and suggests or executes remediation automatically.|AI Agent Operations|Compliance Automation
+
+Which challenge is most critical when deploying autonomous agents?|Ensuring sufficient oversight while maintaining operational efficiency|Maximizing execution speed regardless of consequences|Minimizing human involvement entirely|Reducing computational requirements|0|Balancing autonomy with appropriate human oversight is the critical deployment challenge.|AI Agent Operations|Agent Deployment

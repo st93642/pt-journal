@@ -1,0 +1,52 @@
+# AI Playbook Automation Assessment
+# Questions covering playbook automation, workflow orchestration, decision logic, and continuous improvement
+
+What is a security playbook?|A documented set of procedures and decision logic for handling specific security scenarios|A guide for network optimization|A tool for data analysis|A programming language|0|Playbooks document structured procedures and decision processes for security incident handling.|AI Playbook Automation|Playbook Fundamentals
+
+Which component evaluates system state against playbook conditions?|Condition evaluation engine|Action executor|Report generator|Storage system|0|The condition evaluation engine assesses whether playbook conditions are met to trigger actions.|AI Playbook Automation|Playbook Architecture
+
+What does idempotency mean in automation context?|Actions can be safely re-executed multiple times without unintended side effects|Performing actions once only|Preventing action execution|Executing actions in parallel only|0|Idempotent actions produce the same result regardless of how many times they're executed.|AI Playbook Automation|Automation Principles
+
+How do AI agents enhance traditional static playbooks?|Dynamic decision-making based on context and real-time data|Removing human oversight entirely|Making playbooks execute slower|Eliminating the need for documentation|0|AI enhancement enables playbooks to adapt decisions based on specific incident context.|AI Playbook Automation|AI Enhancement
+
+Which decision-making approach is appropriate for uncertain conditions?|Escalate to analyst with confidence scoring|Execute highest-risk action automatically|Retry identical decision logic|Skip the uncertain step|0|Uncertain decisions should be escalated with reasoning to allow informed human judgment.|AI Playbook Automation|Decision Logic
+
+What is the purpose of context gathering in automated playbooks?|Collect relevant information to make informed decisions|Reduce decision-making quality|Slow down playbook execution|Eliminate analyst involvement|0|Context gathering provides the information needed for sound automated decision-making.|AI Playbook Automation|Context Management
+
+Which type of playbook is most critical for rapid incident response?|Automated triage and evidence collection playbooks|Manual reporting playbooks|Periodic audit playbooks|Routine maintenance playbooks|0|Automated triage playbooks accelerate response during the critical initial incident phase.|AI Playbook Automation|Playbook Prioritization
+
+What is anomaly detection in continuous monitoring playbooks?|Identifying deviations from established behavioral baselines|Processing all events identically|Removing outliers from data|Increasing alert thresholds continuously|0|Anomaly detection identifies suspicious deviations from normal operational patterns.|AI Playbook Automation|Monitoring Strategies
+
+How should playbooks handle partial failures in multi-step processes?|Continue with degraded functionality and track what succeeded|Rollback all changes immediately|Ignore the failure|Repeat the failed step indefinitely|0|Graceful degradation allows playbooks to continue with what succeeded while logging failures.|AI Playbook Automation|Error Handling
+
+What is the main benefit of versioning playbooks?|Allows rollback, comparison, and improvement tracking over time|Reduces storage space|Eliminates the need for testing|Speeds up decision-making|0|Versioning enables comparison of improvements and safe rollback if changes are unsuccessful.|AI Playbook Automation|Playbook Management
+
+Which vulnerability remediation sequence should be prioritized?|Critical vulnerabilities on high-value assets first|Low-severity vulnerabilities first|Random order|Alphabetical order by CVE|0|Prioritization should consider severity combined with asset criticality and business impact.|AI Playbook Automation|Vulnerability Remediation
+
+What is patch dependency analysis in remediation playbooks?|Identifying system relationships that might break if patches are applied incorrectly|Counting total patches available|Selecting patches randomly|Applying all patches simultaneously|0|Dependency analysis prevents breaking changes when patches are applied in wrong order.|AI Playbook Automation|Patch Management
+
+How do compliance automation playbooks improve efficiency?|Continuously scan and auto-remediate known issues|Manual annual compliance reviews only|Eliminate compliance requirements|Ignore regulatory standards|0|Continuous automation catches compliance gaps quickly and can remediate known issues automatically.|AI Playbook Automation|Compliance Automation
+
+What metric should be tracked to measure playbook effectiveness?|Success rates, time reduction, and cost savings|Total number of playbooks created|Amount of documentation written|Playbook execution frequency|0|Effectiveness metrics show whether playbooks are achieving their intended goals.|AI Playbook Automation|Performance Metrics
+
+Which factor most impacts playbook execution time?|Degree of automation and parallel processing capability|Number of documentation pages|Color scheme of dashboards|Total team size|0|Greater automation and parallel execution significantly reduce playbook execution time.|AI Playbook Automation|Execution Optimization
+
+What is scope enforcement in automated playbooks?|Hard boundaries preventing operations outside authorized targets|Unlimited operational scope|Removing all restrictions|Increasing action parameters|1|Scope enforcement prevents automated systems from unintentionally operating outside authorized boundaries.|AI Playbook Automation|Safety Controls
+
+How should playbooks handle conflicting instructions?|Escalate to analyst with full context and options|Execute highest-risk instruction|Ignore the conflict|Repeat both instructions|0|Conflicts should be escalated to analysts who can make informed decisions about the best course.|AI Playbook Automation|Conflict Resolution
+
+What is the advantage of rule-based versus ML-based decisions in playbooks?|Rule-based for simple conditions, ML for complex patterns|ML is always superior|Rules are always preferred|Both are equivalent|0|Rule-based logic is transparent and fast for simple conditions, ML handles complex patterns better.|AI Playbook Automation|Decision Approaches
+
+Which playbook type most benefits from continuous learning?|Incident classification and prioritization playbooks|Static maintenance scripts|Read-only monitoring playbooks|Documentation generation only|0|Classification and prioritization improve significantly as systems learn from outcomes.|AI Playbook Automation|Learning Playbooks
+
+What is the role of audit logging in automated playbooks?|Complete record of all decisions and actions for accountability|Increasing system performance|Reducing storage requirements|Hiding automated actions|0|Audit logs provide transparency and accountability for every automated decision and action.|AI Playbook Automation|Audit Trails
+
+How should hypothesis-based threat hunting playbooks generate hunting hypotheses?|Using AI to analyze threat intelligence and internal indicators|Generating hypotheses randomly|Manual analyst generation only|Using outdated threat information|0|AI analysis of current threats and internal data generates timely, relevant hypotheses.|AI Playbook Automation|Threat Hunting
+
+What is the challenge of completely autonomous playbook execution?|Over-aggressive actions and difficulty maintaining oversight|Lack of speed in execution|Insufficient documentation|Limited tool availability|0|Completely autonomous execution risks uncontrolled damage without proper oversight mechanisms.|AI Playbook Automation|Autonomy Challenges
+
+Which verification step is critical after automated remediation?|Confirming the system functions correctly post-remediation|Skipping verification to save time|Assuming remediation always succeeds|Deleting logs immediately|0|Verification ensures remediation actually resolved the issue without breaking functionality.|AI Playbook Automation|Remediation Verification
+
+How do playbooks adapt when detection rules change?|Automatically update decision logic based on new threat indicators|Ignore changes to detection rules|Manually update once yearly|Continue using obsolete rules|0|Playbooks should dynamically adapt to changes in threat landscape and detection capabilities.|AI Playbook Automation|Adaptation
+
+What is A/B testing in playbook optimization?|Testing different decision approaches to determine which performs better|Running playbooks simultaneously only|Choosing random options|Testing in production only|0|A/B testing compares approaches empirically to identify the most effective strategy.|AI Playbook Automation|Testing Methods

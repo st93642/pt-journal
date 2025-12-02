@@ -136,3 +136,69 @@ mod controller_tests {
         // a mock that allows inspection.
     }
 }
+
+#[cfg(test)]
+mod new_ai_tools_tests {
+    use pt_journal::ui::tool_instructions;
+
+    #[test]
+    fn test_new_ai_tools_available() {
+        // Test that our new AI tools are available in the manifest
+        let manifest = tool_instructions::manifest();
+        
+        // Check PyRIT
+        assert!(manifest.iter().any(|entry| entry.id == "pyrit"), "PyRIT should be available");
+        let pyrit_entry = manifest.iter().find(|entry| entry.id == "pyrit").unwrap();
+        assert_eq!(pyrit_entry.category, "AI & LLM Security");
+        assert!(pyrit_entry.label.contains("PyRIT"));
+        
+        // Check PentestGPT
+        assert!(manifest.iter().any(|entry| entry.id == "pentestgpt"), "PentestGPT should be available");
+        let pentestgpt_entry = manifest.iter().find(|entry| entry.id == "pentestgpt").unwrap();
+        assert_eq!(pentestgpt_entry.category, "AI & LLM Security");
+        assert!(pentestgpt_entry.label.contains("PentestGPT"));
+        
+        // Check NeMo Guardrails
+        assert!(manifest.iter().any(|entry| entry.id == "nemo_guardrails"), "NeMo Guardrails should be available");
+        let nemo_entry = manifest.iter().find(|entry| entry.id == "nemo_guardrails").unwrap();
+        assert_eq!(nemo_entry.category, "AI & LLM Security");
+        assert!(nemo_entry.label.contains("NeMo Guardrails"));
+    }
+
+    #[test]
+    fn test_new_ai_tools_have_instructions() {
+        // Test that our new AI tools have detailed instructions loaded
+        assert!(tool_instructions::has_tool("pyrit"), "PyRIT should have instructions");
+        assert!(tool_instructions::has_tool("pentestgpt"), "PentestGPT should have instructions");
+        assert!(tool_instructions::has_tool("nemo_guardrails"), "NeMo Guardrails should have instructions");
+        
+        // Try to get the actual instruction documents
+        let pyrit_doc = tool_instructions::get_instructions("pyrit");
+        assert!(pyrit_doc.is_some(), "PyRIT instructions should be loadable");
+        
+        let pentestgpt_doc = tool_instructions::get_instructions("pentestgpt");
+        assert!(pentestgpt_doc.is_some(), "PentestGPT instructions should be loadable");
+        
+        let nemo_doc = tool_instructions::get_instructions("nemo_guardrails");
+        assert!(nemo_doc.is_some(), "NeMo Guardrails instructions should be loadable");
+    }
+
+    #[test]
+    fn test_ai_tools_category_count() {
+        // Verify we have the expected number of AI & LLM Security tools
+        let manifest = tool_instructions::manifest();
+        let ai_tools_count = manifest.iter()
+            .filter(|entry| entry.category == "AI & LLM Security")
+            .count();
+        
+        // We should have exactly 9 AI tools now (6 existing + 3 new)
+        assert_eq!(ai_tools_count, 9, "Should have exactly 9 AI & LLM Security tools, found {}", ai_tools_count);
+    }
+
+    #[test]
+    fn test_total_tool_count_increased() {
+        // Verify total tool count increased from 226 to 229
+        let manifest = tool_instructions::manifest();
+        assert_eq!(manifest.len(), 229, "Should have exactly 229 tools after adding 3 new AI tools");
+    }
+}

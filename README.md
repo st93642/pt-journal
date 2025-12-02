@@ -24,7 +24,8 @@ A **GTK4/Libadwaita desktop application** for penetration testing education, bui
 - 🤖 **AI Chat Assistant** - Integrated LLM chatbot (Ollama backend) for contextual learning assistance with configurable models and parameters
 
 - 🛠️ **Tool Instructions & Terminal** - Comprehensive security tool documentation with embedded terminal for hands-on practice:
-  - 80+ security tools with detailed usage guides
+  - 229+ security tools with detailed usage guides
+  - Expanded AI security coverage including PyRIT (Microsoft AI red teaming), PentestGPT (LLM-driven pentest automation), and NeMo Guardrails (NVIDIA AI safety controls)
   - Installation instructions for multiple platforms
   - Interactive terminal with copy/paste functionality
   - Non-modal tool instruction dialogs (can interact with terminal simultaneously)
@@ -50,7 +51,7 @@ A **GTK4/Libadwaita desktop application** for penetration testing education, bui
   - **AI SecOps Copilots** - Intelligent incident triage, threat analysis, and security operations augmentation
   - **AI Playbook Automation** - Adaptive playbook execution, threat hunting, and compliance automation
 - **1000+ Quiz Questions** covering CEH, Security+, PenTest+, CISSP, and AI agent operations certifications
-- **226 Security Tools** with detailed documentation and terminal integration
+- **229 Security Tools** with detailed documentation and terminal integration, including comprehensive AI security coverage with PyRIT, PentestGPT, and NeMo Guardrails
 - **Multi-Platform Support** - Linux, macOS, Windows compatibility
 - 📄 **AI Content Audit** - Baseline of tutorial phases and tool instructions for upcoming GenAI enhancements (see [docs/roadmap/ai_content_audit.md](docs/roadmap/ai_content_audit.md))
 

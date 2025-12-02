@@ -1128,5 +1128,20 @@
     "id": "promptfoo",
     "label": "Promptfoo - LLM Testing & Validation",
     "category": "AI & LLM Security"
+  },
+  {
+    "id": "pyrit",
+    "label": "PyRIT - Microsoft AI Red Team Testing",
+    "category": "AI & LLM Security"
+  },
+  {
+    "id": "pentestgpt",
+    "label": "PentestGPT - LLM-Driven Pentest Automation",
+    "category": "AI & LLM Security"
+  },
+  {
+    "id": "nemo_guardrails",
+    "label": "NeMo Guardrails - NVIDIA AI Safety Controls",
+    "category": "AI & LLM Security"
   }
 ]

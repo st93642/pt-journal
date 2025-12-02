@@ -36,6 +36,9 @@ const DEFAULT_PROMPT_TEMPLATE: &str = "{{context}}";
 const DEFAULT_MODEL_ID: &str = "llama3.2:latest";
 const DEFAULT_OLLAMA_ENDPOINT: &str = "http://localhost:11434";
 const DEFAULT_OLLAMA_TIMEOUT: u64 = 180;
+const DEFAULT_OPENAI_ENDPOINT: &str = "https://api.openai.com/v1";
+const DEFAULT_OPENAI_TIMEOUT: u64 = 120;
+const DEFAULT_AZURE_OPENAI_TIMEOUT: u64 = 120;
 
 /// Main chatbot configuration structure.
 ///
@@ -51,6 +54,12 @@ pub struct ChatbotConfig {
 
     #[serde(default)]
     pub ollama: OllamaProviderConfig,
+
+    #[serde(default)]
+    pub openai: OpenAIProviderConfig,
+
+    #[serde(default)]
+    pub azure_openai: AzureOpenAIProviderConfig,
 }
 
 impl Default for ChatbotConfig {
@@ -59,6 +68,8 @@ impl Default for ChatbotConfig {
             default_model_id: default_chatbot_model_id(),
             models: default_model_profiles(),
             ollama: OllamaProviderConfig::default(),
+            openai: OpenAIProviderConfig::default(),
+            azure_openai: AzureOpenAIProviderConfig::default(),
         }
     }
 }
@@ -133,18 +144,44 @@ impl ModelProfile {
             parameters: ModelParameters::default(),
         }
     }
+
+    pub fn for_openai(id: impl Into<String>, display_name: impl Into<String>) -> Self {
+        Self {
+            id: id.into(),
+            display_name: display_name.into(),
+            provider: ModelProviderKind::OpenAI,
+            prompt_template: default_prompt_template(),
+            resource_paths: Vec::new(),
+            parameters: ModelParameters::default(),
+        }
+    }
+
+    pub fn for_azure_openai(id: impl Into<String>, display_name: impl Into<String>) -> Self {
+        Self {
+            id: id.into(),
+            display_name: display_name.into(),
+            provider: ModelProviderKind::AzureOpenAI,
+            prompt_template: default_prompt_template(),
+            resource_paths: Vec::new(),
+            parameters: ModelParameters::default(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 #[serde(rename_all = "kebab-case")]
 pub enum ModelProviderKind {
     Ollama,
+    OpenAI,
+    AzureOpenAI,
 }
 
 impl std::fmt::Display for ModelProviderKind {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             ModelProviderKind::Ollama => write!(f, "ollama"),
+            ModelProviderKind::OpenAI => write!(f, "openai"),
+            ModelProviderKind::AzureOpenAI => write!(f, "azure-openai"),
         }
     }
 }
@@ -162,6 +199,52 @@ impl Default for OllamaProviderConfig {
         Self {
             endpoint: default_ollama_endpoint(),
             timeout_seconds: default_ollama_timeout(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct OpenAIProviderConfig {
+    #[serde(default)]
+    pub api_key: Option<String>,
+    #[serde(default = "default_openai_endpoint")]
+    pub endpoint: String,
+    #[serde(default = "default_openai_timeout")]
+    pub timeout_seconds: u64,
+}
+
+impl Default for OpenAIProviderConfig {
+    fn default() -> Self {
+        Self {
+            api_key: None,
+            endpoint: default_openai_endpoint(),
+            timeout_seconds: default_openai_timeout(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AzureOpenAIProviderConfig {
+    #[serde(default)]
+    pub api_key: Option<String>,
+    #[serde(default)]
+    pub endpoint: Option<String>,
+    #[serde(default)]
+    pub deployment_name: Option<String>,
+    #[serde(default)]
+    pub api_version: Option<String>,
+    #[serde(default = "default_azure_openai_timeout")]
+    pub timeout_seconds: u64,
+}
+
+impl Default for AzureOpenAIProviderConfig {
+    fn default() -> Self {
+        Self {
+            api_key: None,
+            endpoint: None,
+            deployment_name: None,
+            api_version: Some("2024-02-15-preview".to_string()),
+            timeout_seconds: default_azure_openai_timeout(),
         }
     }
 }
@@ -237,6 +320,44 @@ impl AppConfig {
                 self.chatbot.ollama.timeout_seconds = timeout;
             }
         }
+
+        // OpenAI environment overrides
+        if let Ok(api_key) = env::var("PT_JOURNAL_OPENAI_API_KEY") {
+            self.chatbot.openai.api_key = Some(api_key);
+        }
+
+        if let Ok(endpoint) = env::var("PT_JOURNAL_OPENAI_ENDPOINT") {
+            self.chatbot.openai.endpoint = endpoint;
+        }
+
+        if let Ok(timeout_str) = env::var("PT_JOURNAL_OPENAI_TIMEOUT_SECONDS") {
+            if let Ok(timeout) = timeout_str.parse::<u64>() {
+                self.chatbot.openai.timeout_seconds = timeout;
+            }
+        }
+
+        // Azure OpenAI environment overrides
+        if let Ok(api_key) = env::var("PT_JOURNAL_AZURE_OPENAI_API_KEY") {
+            self.chatbot.azure_openai.api_key = Some(api_key);
+        }
+
+        if let Ok(endpoint) = env::var("PT_JOURNAL_AZURE_OPENAI_ENDPOINT") {
+            self.chatbot.azure_openai.endpoint = Some(endpoint);
+        }
+
+        if let Ok(deployment) = env::var("PT_JOURNAL_AZURE_OPENAI_DEPLOYMENT") {
+            self.chatbot.azure_openai.deployment_name = Some(deployment);
+        }
+
+        if let Ok(api_version) = env::var("PT_JOURNAL_AZURE_OPENAI_API_VERSION") {
+            self.chatbot.azure_openai.api_version = Some(api_version);
+        }
+
+        if let Ok(timeout_str) = env::var("PT_JOURNAL_AZURE_OPENAI_TIMEOUT_SECONDS") {
+            if let Ok(timeout) = timeout_str.parse::<u64>() {
+                self.chatbot.azure_openai.timeout_seconds = timeout;
+            }
+        }
     }
 
     pub fn config_file_path() -> PathBuf {
@@ -261,6 +382,18 @@ fn default_chatbot_model_id() -> String {
 
 fn default_model_profiles() -> Vec<ModelProfile> {
     vec![
+        // OpenAI models
+        ModelProfile::for_openai("gpt-4o", "GPT-4o (OpenAI)"),
+        ModelProfile::for_openai("gpt-4o-mini", "GPT-4o Mini (OpenAI)"),
+        ModelProfile::for_openai("gpt-4-turbo", "GPT-4 Turbo (OpenAI)"),
+        ModelProfile::for_openai("gpt-3.5-turbo", "GPT-3.5 Turbo (OpenAI)"),
+        
+        // Azure OpenAI models (examples - users need to configure deployment names)
+        ModelProfile::for_azure_openai("gpt-4o", "GPT-4o (Azure OpenAI)"),
+        ModelProfile::for_azure_openai("gpt-4o-mini", "GPT-4o Mini (Azure OpenAI)"),
+        ModelProfile::for_azure_openai("gpt-4-turbo", "GPT-4 Turbo (Azure OpenAI)"),
+        ModelProfile::for_azure_openai("gpt-3.5-turbo", "GPT-3.5 Turbo (Azure OpenAI)"),
+        
         // Ollama models (primary - requires Ollama server)
         ModelProfile::for_ollama("llama3.2:latest", "Meta Llama 3.2 (Ollama)"),
         ModelProfile::for_ollama("mistral:7b", "Mistral 7B Instruct (Ollama)"),
@@ -283,6 +416,18 @@ fn default_ollama_timeout() -> u64 {
     DEFAULT_OLLAMA_TIMEOUT
 }
 
+fn default_openai_endpoint() -> String {
+    DEFAULT_OPENAI_ENDPOINT.to_string()
+}
+
+fn default_openai_timeout() -> u64 {
+    DEFAULT_OPENAI_TIMEOUT
+}
+
+fn default_azure_openai_timeout() -> u64 {
+    DEFAULT_AZURE_OPENAI_TIMEOUT
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -294,6 +439,14 @@ mod tests {
         env::remove_var("PT_JOURNAL_OLLAMA_MODEL");
         env::remove_var("PT_JOURNAL_OLLAMA_ENDPOINT");
         env::remove_var("PT_JOURNAL_OLLAMA_TIMEOUT_SECONDS");
+        env::remove_var("PT_JOURNAL_OPENAI_API_KEY");
+        env::remove_var("PT_JOURNAL_OPENAI_ENDPOINT");
+        env::remove_var("PT_JOURNAL_OPENAI_TIMEOUT_SECONDS");
+        env::remove_var("PT_JOURNAL_AZURE_OPENAI_API_KEY");
+        env::remove_var("PT_JOURNAL_AZURE_OPENAI_ENDPOINT");
+        env::remove_var("PT_JOURNAL_AZURE_OPENAI_DEPLOYMENT");
+        env::remove_var("PT_JOURNAL_AZURE_OPENAI_API_VERSION");
+        env::remove_var("PT_JOURNAL_AZURE_OPENAI_TIMEOUT_SECONDS");
     }
 
     #[test]

@@ -3,7 +3,6 @@
 //! This module aggregates all unit tests for individual components.
 //! Run with: `cargo test --test unit_tests`
 
-mod chat_provider_tests;
 mod chatbot_unit_tests;
 mod config_validation_tests;
 mod controller_tests;

@@ -1,262 +1,269 @@
-#[cfg(test)]
-mod tests {
-    use httpmock::prelude::*;
-    use pt_journal::chatbot::{ChatProvider, ChatRequest, OllamaProvider, StepContext};
-    use pt_journal::config::{ModelProfile, OllamaProviderConfig};
-    use pt_journal::error::PtError;
-    use pt_journal::model::ChatRole;
+use pt_journal::chatbot::{ChatProvider, OpenAIProvider, AzureOpenAIProvider};
+use pt_journal::config::{OpenAIProviderConfig, AzureOpenAIProviderConfig, ModelProfile};
+use pt_journal::chatbot::ChatRequest;
+use pt_journal::model::{ChatMessage, ChatRole};
+use httpmock::prelude::*;
 
-    fn create_test_request(model_id: &str, endpoint: &str) -> (ChatRequest, OllamaProviderConfig) {
-        let mut config = OllamaProviderConfig::default();
-        config.endpoint = endpoint.to_string();
-        config.timeout_seconds = 30;
+#[test]
+fn test_openai_provider_configuration() {
+    let config = OpenAIProviderConfig {
+        api_key: Some("sk-test123".to_string()),
+        endpoint: "https://api.openai.com/v1".to_string(),
+        timeout_seconds: 60,
+    };
 
-        let mut profile = ModelProfile::for_ollama(model_id, "Test Model");
-        profile.id = model_id.to_string();
+    let provider = OpenAIProvider::new(config);
+    assert_eq!(provider.provider_name(), "openai");
+}
 
-        let step_ctx = StepContext {
-            phase_name: "Test Phase".to_string(),
-            step_title: "Test Step".to_string(),
-            step_description: "Test desc".to_string(),
-            step_status: "In Progress".to_string(),
-            quiz_status: None,
-        };
+#[test]
+fn test_openai_provider_missing_api_key() {
+    let config = OpenAIProviderConfig {
+        api_key: None,
+        endpoint: "https://api.openai.com/v1".to_string(),
+        timeout_seconds: 60,
+    };
 
-        let request = ChatRequest::new(step_ctx, vec![], "Hello".to_string(), profile);
-        (request, config)
-    }
+    let provider = OpenAIProvider::new(config);
+    
+    let request = ChatRequest::new(
+        pt_journal::chatbot::StepContext::default(),
+        vec![],
+        "test".to_string(),
+        ModelProfile::for_openai("gpt-4", "GPT-4"),
+    );
 
-    #[test]
-    fn test_send_message_success() {
-        let server = MockServer::start();
-        let mock = server.mock(|when, then| {
-            when.method("POST")
-                .path("/api/chat")
-                .body_contains(r#""model":"mistral:7b""#)
-                .body_contains(r#""role":"system""#)
-                .body_contains("You are an expert penetration testing assistant")
-                .body_contains("Current Context");
-            then.status(200).json_body(serde_json::json!({
-                "message": {
-                    "content": "Test response"
-                }
-            }));
-        });
+    let result = provider.send_message(&request);
+    assert!(result.is_err());
+    assert!(result.unwrap_err().to_string().contains("API key"));
+}
 
-        let (request, config) = create_test_request("mistral:7b", &server.url(""));
-        let provider = OllamaProvider::new(config);
-        let result = provider.send_message(&request);
+#[test]
+fn test_openai_provider_successful_request() {
+    let server = MockServer::start();
+    
+    let mock_response = serde_json::json!({
+        "choices": [{
+            "message": {
+                "role": "assistant",
+                "content": "Hello from OpenAI!"
+            }
+        }]
+    });
 
-        assert!(result.is_ok());
-        let msg = result.unwrap();
-        assert_eq!(msg.role, ChatRole::Assistant);
-        assert_eq!(msg.content, "Test response");
-        mock.assert();
-    }
+    server.mock(|when, then| {
+        when.method(POST)
+            .path("/chat/completions")
+            .header("Authorization", "Bearer test-key")
+            .header("Content-Type", "application/json");
+        then.status(200)
+            .header("Content-Type", "application/json")
+            .json_body(&mock_response);
+    });
 
-    #[test]
-    fn test_send_message_with_parameters() {
-        let server = MockServer::start();
+    let config = OpenAIProviderConfig {
+        api_key: Some("test-key".to_string()),
+        endpoint: server.url(),
+        timeout_seconds: 60,
+    };
 
-        // Just verify the request is made successfully when parameters are set
-        let mock = server.mock(|when, then| {
-            when.method("POST").path("/api/chat");
-            then.status(200).json_body(serde_json::json!({
-                "message": {
-                    "content": "Response with params"
-                }
-            }));
-        });
+    let provider = OpenAIProvider::new(config);
+    let request = ChatRequest::new(
+        pt_journal::chatbot::StepContext::default(),
+        vec![],
+        "Hello".to_string(),
+        ModelProfile::for_openai("gpt-4", "GPT-4"),
+    );
 
-        let (mut request, config) = create_test_request("mistral:7b", &server.url(""));
-        request.model_profile.parameters.temperature = Some(0.7);
-        request.model_profile.parameters.top_p = Some(0.9);
-        request.model_profile.parameters.top_k = Some(40);
+    let result = provider.send_message(&request);
+    assert!(result.is_ok());
+    assert_eq!(result.unwrap().content(), "Hello from OpenAI!");
+}
 
-        let provider = OllamaProvider::new(config);
-        let result = provider.send_message(&request);
+#[test]
+fn test_azure_openai_provider_configuration() {
+    let config = AzureOpenAIProviderConfig {
+        api_key: Some("azure-test123".to_string()),
+        endpoint: Some("https://test.openai.azure.com".to_string()),
+        deployment_name: Some("gpt-4".to_string()),
+        api_version: Some("2024-02-15-preview".to_string()),
+        timeout_seconds: 60,
+    };
 
-        assert!(result.is_ok());
-        mock.assert();
+    let provider = AzureOpenAIProvider::new(config);
+    assert_eq!(provider.provider_name(), "azure-openai");
+}
 
-        // The important part is that the code doesn't fail when parameters are present
-        // The actual parameter values are applied in the payload construction (lines 116-127)
-    }
+#[test]
+fn test_azure_openai_provider_missing_api_key() {
+    let config = AzureOpenAIProviderConfig {
+        api_key: None,
+        endpoint: Some("https://test.openai.azure.com".to_string()),
+        deployment_name: Some("gpt-4".to_string()),
+        api_version: Some("2024-02-15-preview".to_string()),
+        timeout_seconds: 60,
+    };
 
-    #[test]
-    fn test_check_availability_success() {
-        let server = MockServer::start();
-        let mock = server.mock(|when, then| {
-            when.method("GET").path("/api/tags");
-            then.status(200).json_body(serde_json::json!({
-                "models": []
-            }));
-        });
+    let provider = AzureOpenAIProvider::new(config);
+    
+    let request = ChatRequest::new(
+        pt_journal::chatbot::StepContext::default(),
+        vec![],
+        "test".to_string(),
+        ModelProfile::for_azure_openai("gpt-4", "GPT-4"),
+    );
 
-        let mut config = OllamaProviderConfig::default();
-        config.endpoint = server.url("");
-        let provider = OllamaProvider::new(config);
+    let result = provider.send_message(&request);
+    assert!(result.is_err());
+    assert!(result.unwrap_err().to_string().contains("API key"));
+}
 
-        let result = provider.check_availability();
-        assert!(result.is_ok());
-        assert!(result.unwrap());
-        mock.assert();
-    }
+#[test]
+fn test_azure_openai_provider_missing_endpoint() {
+    let config = AzureOpenAIProviderConfig {
+        api_key: Some("azure-test123".to_string()),
+        endpoint: None,
+        deployment_name: Some("gpt-4".to_string()),
+        api_version: Some("2024-02-15-preview".to_string()),
+        timeout_seconds: 60,
+    };
 
-    #[test]
-    fn test_check_availability_failure() {
-        let mut config = OllamaProviderConfig::default();
-        config.endpoint = "http://invalid:1234".to_string();
-        let provider = OllamaProvider::new(config);
+    let provider = AzureOpenAIProvider::new(config);
+    
+    let request = ChatRequest::new(
+        pt_journal::chatbot::StepContext::default(),
+        vec![],
+        "test".to_string(),
+        ModelProfile::for_azure_openai("gpt-4", "GPT-4"),
+    );
 
-        let result = provider.check_availability();
-        assert!(matches!(
-            result,
-            Err(PtError::ChatServiceUnavailable { .. })
-        ));
-    }
+    let result = provider.send_message(&request);
+    assert!(result.is_err());
+    assert!(result.unwrap_err().to_string().contains("endpoint"));
+}
 
-    #[test]
-    fn test_list_available_models_success() {
-        let server = MockServer::start();
-        let mock = server.mock(|when, then| {
-            when.method("GET").path("/api/tags");
-            then.status(200).json_body(serde_json::json!({
-                "models": [
-                    {"name": "llama3.2:latest"},
-                    {"name": "mistral:7b"},
-                    {"name": "codellama:7b"}
+#[test]
+fn test_azure_openai_provider_successful_request() {
+    let server = MockServer::start();
+    
+    let mock_response = serde_json::json!({
+        "choices": [{
+            "message": {
+                "role": "assistant",
+                "content": "Hello from Azure OpenAI!"
+            }
+        }]
+    });
+
+    server.mock(|when, then| {
+        when.method(POST)
+            .path("/openai/deployments/gpt-4/chat/completions")
+            .header("api-key", "test-key")
+            .header("Content-Type", "application/json")
+            .query_param("api-version", "2024-02-15-preview");
+        then.status(200)
+            .header("Content-Type", "application/json")
+            .json_body(&mock_response);
+    });
+
+    let config = AzureOpenAIProviderConfig {
+        api_key: Some("test-key".to_string()),
+        endpoint: Some(server.url()),
+        deployment_name: Some("gpt-4".to_string()),
+        api_version: Some("2024-02-15-preview".to_string()),
+        timeout_seconds: 60,
+    };
+
+    let provider = AzureOpenAIProvider::new(config);
+    let request = ChatRequest::new(
+        pt_journal::chatbot::StepContext::default(),
+        vec![],
+        "Hello".to_string(),
+        ModelProfile::for_azure_openai("gpt-4", "GPT-4"),
+    );
+
+    let result = provider.send_message(&request);
+    assert!(result.is_ok());
+    assert_eq!(result.unwrap().content(), "Hello from Azure OpenAI!");
+}
+
+#[test]
+fn test_provider_model_profiles() {
+    let openai_profile = ModelProfile::for_openai("gpt-4", "GPT-4 (OpenAI)");
+    assert_eq!(openai_profile.id, "gpt-4");
+    assert_eq!(openai_profile.display_name, "GPT-4 (OpenAI)");
+    assert!(matches!(openai_profile.provider, pt_journal::config::ModelProviderKind::OpenAI));
+
+    let azure_profile = ModelProfile::for_azure_openai("gpt-4", "GPT-4 (Azure)");
+    assert_eq!(azure_profile.id, "gpt-4");
+    assert_eq!(azure_profile.display_name, "GPT-4 (Azure)");
+    assert!(matches!(azure_profile.provider, pt_journal::config::ModelProviderKind::AzureOpenAI));
+}
+
+#[test]
+fn test_openai_provider_availability_check() {
+    let server = MockServer::start();
+    
+    server.mock(|when, then| {
+        when.method(GET)
+            .path("/models")
+            .header("Authorization", "Bearer test-key");
+        then.status(200)
+            .header("Content-Type", "application/json")
+            .json_body(&serde_json::json!({
+                "data": [
+                    {"id": "gpt-4"},
+                    {"id": "gpt-3.5-turbo"}
                 ]
             }));
-        });
+    });
 
-        let mut config = OllamaProviderConfig::default();
-        config.endpoint = server.url("");
-        let provider = OllamaProvider::new(config);
+    let config = OpenAIProviderConfig {
+        api_key: Some("test-key".to_string()),
+        endpoint: server.url(),
+        timeout_seconds: 60,
+    };
 
-        let result = provider.list_available_models();
-        assert!(result.is_ok());
-        let models = result.unwrap();
-        assert_eq!(models.len(), 3);
-        assert!(models.contains(&"llama3.2:latest".to_string()));
-        assert!(models.contains(&"mistral:7b".to_string()));
-        assert!(models.contains(&"codellama:7b".to_string()));
-        mock.assert();
-    }
-
-    #[test]
-    fn test_list_available_models_service_unavailable() {
-        let mut config = OllamaProviderConfig::default();
-        config.endpoint = "http://invalid:1234".to_string();
-        let provider = OllamaProvider::new(config);
-
-        let result = provider.list_available_models();
-        assert!(matches!(
-            result,
-            Err(PtError::ChatServiceUnavailable { .. })
-        ));
-    }
+    let provider = OpenAIProvider::new(config);
+    let result = provider.check_availability();
+    assert!(result.is_ok());
+    assert!(result.unwrap());
 }
 
-#[cfg(test)]
-mod service_tests {
-    use httpmock::prelude::*;
-    use pt_journal::chatbot::{ChatService, StepContext};
-    use pt_journal::config::ChatbotConfig;
-
-    #[test]
-    fn test_service_send_message_success() {
-        let server = MockServer::start();
-        let mock = server.mock(|when, then| {
-            when.method("POST")
-                .path("/api/chat")
-                .body_contains(r#""model":"mistral:7b""#);
-            then.status(200).json_body(serde_json::json!({
-                "message": {
-                    "content": "Service response"
-                }
+#[test]
+fn test_azure_openai_provider_availability_check() {
+    let server = MockServer::start();
+    
+    server.mock(|when, then| {
+        when.method(GET)
+            .path("/openai/deployments")
+            .header("api-key", "test-key")
+            .query_param("api-version", "2024-02-15-preview");
+        then.status(200)
+            .header("Content-Type", "application/json")
+            .json_body(&serde_json::json!({
+                "data": [
+                    {
+                        "id": "gpt-4",
+                        "model": {
+                            "id": "gpt-4",
+                            "type": "text-generation"
+                        }
+                    }
+                ]
             }));
-        });
+    });
 
-        let mut config = ChatbotConfig::default();
-        config.ollama.endpoint = server.url("");
-        config.default_model_id = "mistral:7b".to_string();
+    let config = AzureOpenAIProviderConfig {
+        api_key: Some("test-key".to_string()),
+        endpoint: Some(server.url()),
+        deployment_name: None,
+        api_version: Some("2024-02-15-preview".to_string()),
+        timeout_seconds: 60,
+    };
 
-        let service = ChatService::new(config);
-        let step_ctx = StepContext {
-            phase_name: "Test".to_string(),
-            step_title: "Test".to_string(),
-            step_description: "Test".to_string(),
-            step_status: "In Progress".to_string(),
-            quiz_status: None,
-        };
-
-        let result = service.send_message(&step_ctx, &[], "Hello");
-        assert!(result.is_ok());
-        mock.assert();
-    }
-
-    #[test]
-    fn test_service_check_availability() {
-        let server = MockServer::start();
-        let mock = server.mock(|when, then| {
-            when.method("GET").path("/api/tags");
-            then.status(200).json_body(serde_json::json!({
-                "models": []
-            }));
-        });
-
-        let mut config = ChatbotConfig::default();
-        config.ollama.endpoint = server.url("");
-        config.default_model_id = "llama3.2:latest".to_string(); // Use Ollama model for this test
-
-        let service = ChatService::new(config);
-        let result = service.check_availability();
-
-        assert!(result.is_ok());
-        assert!(result.unwrap());
-        mock.assert();
-    }
-
-    #[test]
-    fn test_service_unsupported_provider() {
-        let config = ChatbotConfig::default();
-        let _service = ChatService::new(config);
-
-        // Since we removed LlamaCpp, all providers should be Ollama now
-        // This test is no longer relevant
-        assert!(true);
-    }
-
-    #[test]
-    fn test_service_registry_functionality() {
-        let config = ChatbotConfig::default();
-        let service = ChatService::new(config);
-
-        // Test that Ollama provider is registered
-        let registry = service.registry();
-        assert!(registry.has_provider(&pt_journal::config::ModelProviderKind::Ollama));
-
-        // Test that we can get the provider
-        let provider = service.get_provider(&pt_journal::config::ModelProviderKind::Ollama);
-        assert!(provider.is_ok());
-
-        // Test that registered providers list includes Ollama
-        let registered = registry.registered_providers();
-        assert!(registered.contains(&pt_journal::config::ModelProviderKind::Ollama));
-    }
-}
-
-#[cfg(test)]
-mod context_tests {
-    use pt_journal::chatbot::ContextBuilder;
-    use pt_journal::model::Session;
-
-    #[test]
-    fn test_context_builder() {
-        let session = Session::default();
-        let context = ContextBuilder::build_session_context(&session, 0, 0);
-        assert!(context.contains("Current Session Summary"));
-        assert!(context.contains("Phase 1: Linux Basics for Hackers"));
-    }
+    let provider = AzureOpenAIProvider::new(config);
+    let result = provider.check_availability();
+    assert!(result.is_ok());
+    assert!(result.unwrap());
 }

@@ -1,10 +1,14 @@
+mod azure_openai;
 mod ollama;
+mod openai;
 mod provider;
 mod registry;
 mod request;
 mod service;
 
+pub use azure_openai::AzureOpenAIProvider;
 pub use ollama::OllamaProvider;
+pub use openai::OpenAIProvider;
 pub use provider::ChatProvider;
 pub use registry::ProviderRegistry;
 pub use request::{ChatRequest, StepContext};

@@ -62,28 +62,35 @@ impl ChatController {
             let service = ChatService::new(config);
             match service.list_available_models() {
                 Ok(available_models) => {
-                    if !available_models.is_empty() {
-                        // Create display names for available models
-                        let models: Vec<(String, String)> = available_models
-                            .into_iter()
-                            .map(|model_id| {
-                                // Try to find display name from config, otherwise use model_id
-                                let display_name = {
-                                    let model_rc = state.model();
-                                    let model = model_rc.borrow();
-                                    model
-                                        .config()
-                                        .chatbot
-                                        .models
-                                        .iter()
-                                        .find(|m| m.id == model_id)
-                                        .map(|m| m.display_name.clone())
-                                        .unwrap_or_else(|| model_id.clone())
-                                };
-                                (model_id, display_name)
-                            })
-                            .collect();
+                    // Get all configured models from config as fallback
+                    let configured_models = {
+                        let model_rc = state.model();
+                        let model = model_rc.borrow();
+                        model.config().chatbot.models.clone()
+                    };
 
+                    // Create display names for models
+                    let mut models: Vec<(String, String)> = Vec::new();
+                    
+                    // First, add models that are available from providers
+                    for model_id in available_models {
+                        let display_name = configured_models
+                            .iter()
+                            .find(|m| m.id == model_id)
+                            .map(|m| m.display_name.clone())
+                            .unwrap_or_else(|| model_id.clone());
+                        models.push((model_id, display_name));
+                    }
+
+                    // Then, add configured models that weren't found in available models
+                    // (useful for remote providers that can't enumerate models)
+                    for configured_model in configured_models {
+                        if !models.iter().any(|(id, _)| id == &configured_model.id) {
+                            models.push((configured_model.id.clone(), configured_model.display_name.clone()));
+                        }
+                    }
+
+                    if !models.is_empty() {
                         // Update UI with available models
                         chat_panel.populate_models(&models);
 
@@ -103,12 +110,18 @@ impl ChatController {
                         }
                     } else {
                         // No models available - show error
-                        chat_panel.show_error("No models available in Ollama. Please pull a model first: ollama pull llama3.2:latest");
+                        chat_panel.show_error("No models available. Please configure at least one model provider.");
                     }
                 }
                 Err(e) => {
-                    // Failed to get available models - show error
-                    let error_msg = format!("Failed to connect to Ollama: {}", e);
+                    // Failed to get available models - show error with provider-specific message
+                    let error_msg = if e.to_string().contains("OpenAI") {
+                        format!("OpenAI provider error: {}. Please check your API key configuration.", e)
+                    } else if e.to_string().contains("Azure OpenAI") {
+                        format!("Azure OpenAI provider error: {}. Please check your API key, endpoint, and deployment configuration.", e)
+                    } else {
+                        format!("Failed to connect to model providers: {}", e)
+                    };
                     chat_panel.show_error(&error_msg);
                 }
             }

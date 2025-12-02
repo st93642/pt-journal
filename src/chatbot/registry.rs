@@ -157,9 +157,11 @@ impl ProviderRegistry {
     fn provider_name_to_kind(name: &str) -> PtResult<ModelProviderKind> {
         match name.to_lowercase().as_str() {
             "ollama" => Ok(ModelProviderKind::Ollama),
+            "openai" => Ok(ModelProviderKind::OpenAI),
+            "azure-openai" => Ok(ModelProviderKind::AzureOpenAI),
             _ => Err(PtError::NotSupported {
                 operation: format!(
-                    "Unknown provider name: '{}'. Supported providers: ollama",
+                    "Unknown provider name: '{}'. Supported providers: ollama, openai, azure-openai",
                     name
                 ),
             }),
@@ -285,6 +287,22 @@ mod tests {
         assert_eq!(
             ProviderRegistry::provider_name_to_kind("OLLAMA").unwrap(),
             ModelProviderKind::Ollama
+        );
+        assert_eq!(
+            ProviderRegistry::provider_name_to_kind("openai").unwrap(),
+            ModelProviderKind::OpenAI
+        );
+        assert_eq!(
+            ProviderRegistry::provider_name_to_kind("OPENAI").unwrap(),
+            ModelProviderKind::OpenAI
+        );
+        assert_eq!(
+            ProviderRegistry::provider_name_to_kind("azure-openai").unwrap(),
+            ModelProviderKind::AzureOpenAI
+        );
+        assert_eq!(
+            ProviderRegistry::provider_name_to_kind("AZURE-OPENAI").unwrap(),
+            ModelProviderKind::AzureOpenAI
         );
         assert!(ProviderRegistry::provider_name_to_kind("unknown").is_err());
     }

@@ -1095,5 +1095,722 @@
         "description": "Prompt engineering best practices and examples"
       }
     ]
+  },
+  {
+    "id": "pyrit",
+    "name": "PyRIT",
+    "summary": "PyRIT (Python Risk Identification Toolkit) is Microsoft's open-source framework for AI red teaming, designed to automate the testing of AI systems for security vulnerabilities, bias, and other risks.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via pip with Python 3.9+",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y python3-pip python3-venv",
+            "copyable": true
+          },
+          {
+            "detail": "python3 -m pip install --user pyrit-ai",
+            "copyable": true
+          },
+          {
+            "detail": "pyrit --help",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install via pip with virtual environment",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y python3-pip python3-venv",
+            "copyable": true
+          },
+          {
+            "detail": "python3 -m venv pyrit-env",
+            "copyable": true
+          },
+          {
+            "detail": "source pyrit-env/bin/activate",
+            "copyable": true
+          },
+          {
+            "detail": "pip install pyrit-ai",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Official containerized deployment",
+        "steps": [
+          {
+            "detail": "docker pull mcr.microsoft.com/pyrit:latest",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -it mcr.microsoft.com/pyrit:latest",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic prompt injection test",
+        "command": "pyrit --target-endpoint https://api.example.com/v1/chat/completions --attack-type prompt_injection",
+        "notes": []
+      },
+      {
+        "description": "Red team AI system with multiple attack vectors",
+        "command": "pyrit --config config.yaml --attack-types prompt_injection,uid_hallucination,bias_testing",
+        "notes": []
+      },
+      {
+        "description": "Generate comprehensive red team report",
+        "command": "pyrit --target-endpoint https://api.example.com/v1 --output-format json --output-file results.json",
+        "notes": []
+      },
+      {
+        "description": "Run predefined red team scenario",
+        "command": "pyrit --scenario financial_ai_redteam --iterations 100",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--target-endpoint",
+        "description": "Target AI API endpoint to test"
+      },
+      {
+        "flag": "--attack-types",
+        "description": "Types of attacks to run (prompt_injection, uid_hallucination, bias_testing, etc.)"
+      },
+      {
+        "flag": "--config",
+        "description": "Configuration file with test parameters"
+      },
+      {
+        "flag": "--scenario",
+        "description": "Predefined red team scenario"
+      },
+      {
+        "flag": "--iterations",
+        "description": "Number of test iterations per attack type"
+      },
+      {
+        "flag": "--output-format",
+        "description": "Output format (json, html, csv)"
+      }
+    ],
+    "operational_tips": [
+      "Configure API keys and authentication for target AI systems",
+      "Use configuration files for complex red team scenarios",
+      "Start with small iteration counts to validate setup",
+      "Review generated reports for detailed vulnerability analysis",
+      "Combine multiple attack types for comprehensive assessment"
+    ],
+    "step_sequences": [
+      {
+        "title": "AI System Red Team Assessment",
+        "steps": [
+          {
+            "title": "Configure target access",
+            "details": "Set up API access to target AI system",
+            "command": "export TARGET_API_KEY=your_key_here"
+          },
+          {
+            "title": "Create configuration file",
+            "details": "Set up PyRIT configuration with attack parameters",
+            "command": "cat > config.yaml << EOF\ntarget_endpoint: https://api.example.com/v1\nattack_types:\n  - prompt_injection\n  - uid_hallucination\n  - bias_testing\niterations: 50\nEOF"
+          },
+          {
+            "title": "Execute red team attacks",
+            "details": "Run comprehensive AI security testing",
+            "command": "pyrit --config config.yaml"
+          },
+          {
+            "title": "Generate assessment report",
+            "details": "Create detailed red team findings report",
+            "command": "pyrit --config config.yaml --output-format html --output-file redteam_report.html"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "AI Red Team Operations Pipeline",
+        "stages": [
+          {
+            "label": "Target reconnaissance",
+            "description": "Identify AI endpoints and capabilities",
+            "command": "# Manual API discovery and documentation review"
+          },
+          {
+            "label": "Attack scenario planning",
+            "description": "Design red team scenarios based on target",
+            "command": "pyrit --list-scenarios"
+          },
+          {
+            "label": "Automated testing execution",
+            "description": "Run PyRIT attack scenarios",
+            "command": "pyrit --config redteam_config.yaml --iterations 100"
+          },
+          {
+            "label": "Manual validation",
+            "description": "Validate automated findings with manual testing",
+            "command": "# Manual prompt crafting and testing"
+          },
+          {
+            "label": "Report generation",
+            "description": "Compile comprehensive red team report",
+            "command": "pyrit --config redteam_config.yaml --output-format json --output-file final_report.json"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "VULNERABILITY: Prompt Injection",
+        "meaning": "AI system susceptible to prompt injection attacks",
+        "severity": "critical"
+      },
+      {
+        "indicator": "BIAS DETECTED: Gender/ Race/ Age",
+        "meaning": "Model shows bias in outputs",
+        "severity": "high"
+      },
+      {
+        "indicator": "UID HALLUCINATION: Success rate 85%",
+        "meaning": "AI fabricates user identities or information",
+        "severity": "high"
+      },
+      {
+        "indicator": "SECURITY SCORE: 6.5/10",
+        "meaning": "Overall security assessment score",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom attack scenario development",
+        "command": "pyrit --custom-scenario custom_attacks.yaml --iterations 200",
+        "scenario": "Create and execute organization-specific attack scenarios",
+        "notes": [
+          "Develop custom attack prompts",
+          "Test domain-specific vulnerabilities"
+        ]
+      },
+      {
+        "title": "Comparative AI security analysis",
+        "command": "pyrit --multi-target config.yaml --compare-models",
+        "scenario": "Compare security across multiple AI models",
+        "notes": [
+          "Identify relative vulnerabilities",
+          "Benchmark security improvements"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "PyRIT Documentation",
+        "url": "https://github.com/Azure/PyRIT",
+        "description": "Official PyRIT documentation and examples"
+      },
+      {
+        "label": "Microsoft AI Red Team",
+        "url": "https://www.microsoft.com/en-us/security/engineering/ai-red-team",
+        "description": "Microsoft's AI red teaming methodology"
+      },
+      {
+        "label": "AI Security Testing Guide",
+        "url": "https://owasp.org/www-project-ai-security-and-privacy-guide/",
+        "description": "OWASP AI security testing framework"
+      }
+    ]
+  },
+  {
+    "id": "pentestgpt",
+    "name": "PentestGPT",
+    "summary": "PentestGPT is an LLM-driven penetration testing automation tool that leverages large language models to generate and execute penetration testing workflows, adapt to target environments, and produce detailed security reports.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via pip with Python 3.8+",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y python3-pip python3-venv git",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/GreyDGL/PentestGPT.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd PentestGPT && python3 -m pip install -e .",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install with pentesting dependencies",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y python3-pip python3-venv git nmap",
+            "copyable": true
+          },
+          {
+            "detail": "git clone https://github.com/GreyDGL/PentestGPT.git",
+            "copyable": true
+          },
+          {
+            "detail": "cd PentestGPT && pip install -e .",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Containerized deployment with security tools",
+        "steps": [
+          {
+            "detail": "docker pull greydgl/pentestgpt:latest",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -it greydgl/pentestgpt:latest",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Interactive penetration testing session",
+        "command": "pentestgpt --target 192.168.1.100 --model gpt-4 --interactive",
+        "notes": []
+      },
+      {
+        "description": "Automated web application testing",
+        "command": "pentestgpt --target https://example.com --type web_app --auto",
+        "notes": []
+      },
+      {
+        "description": "Network penetration testing with custom scope",
+        "command": "pentestgpt --target 192.168.1.0/24 --type network --scope internal",
+        "notes": []
+      },
+      {
+        "description": "Generate pentest report from logs",
+        "command": "pentestgpt --report --input-file pentest.log --output-format pdf",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--target",
+        "description": "Target IP address, domain, or network range"
+      },
+      {
+        "flag": "--model",
+        "description": "LLM model to use (gpt-4, gpt-3.5-turbo, claude-3, etc.)"
+      },
+      {
+        "flag": "--type",
+        "description": "Pentest type (web_app, network, api, mobile)"
+      },
+      {
+        "flag": "--interactive",
+        "description": "Run in interactive mode with human oversight"
+      },
+      {
+        "flag": "--auto",
+        "description": "Run fully automated pentest workflow"
+      },
+      {
+        "flag": "--scope",
+        "description": "Testing scope (internal, external, limited)"
+      }
+    ],
+    "operational_tips": [
+      "Configure API keys for your preferred LLM provider",
+      "Start with interactive mode to understand the workflow",
+      "Review generated commands before execution in production",
+      "Use scope limitations to prevent unauthorized testing",
+      "Combine with traditional tools for comprehensive coverage"
+    ],
+    "step_sequences": [
+      {
+        "title": "AI-Driven Web Application Penetration Test",
+        "steps": [
+          {
+            "title": "Configure LLM access",
+            "details": "Set up API key for LLM provider",
+            "command": "export OPENAI_API_KEY=your_key_here"
+          },
+          {
+            "title": "Initialize pentest session",
+            "details": "Start PentestGPT with target specification",
+            "command": "pentestgpt --target https://example.com --type web_app --interactive"
+          },
+          {
+            "title": "AI-guided reconnaissance",
+            "details": "Let AI perform automated reconnaissance",
+            "command": "# AI executes: nmap, dirb, whatweb, etc."
+          },
+          {
+            "title": "Vulnerability analysis",
+            "details": "AI analyzes findings and suggests exploits",
+            "command": "# AI suggests and prepares exploit attempts"
+          },
+          {
+            "title": "Report generation",
+            "details": "Generate comprehensive pentest report",
+            "command": "pentestgpt --report --input-file session.log --output-format html"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "AI-Augmented Penetration Testing Pipeline",
+        "stages": [
+          {
+            "label": "Target definition",
+            "description": "Define scope and objectives",
+            "command": "pentestgpt --setup --target 192.168.1.100 --scope authorized"
+          },
+          {
+            "label": "Intelligence gathering",
+            "description": "AI-driven reconnaissance and enumeration",
+            "command": "pentestgpt --target 192.168.1.100 --phase recon --auto"
+          },
+          {
+            "label": "Vulnerability identification",
+            "description": "AI analysis of discovered services and applications",
+            "command": "pentestgpt --target 192.168.1.100 --phase vuln_analysis --interactive"
+          },
+          {
+            "label": "Exploitation planning",
+            "description": "AI suggests exploit strategies and prepares payloads",
+            "command": "pentestgpt --target 192.168.1.100 --phase exploit_plan --interactive"
+          },
+          {
+            "label": "Post-exploitation",
+            "description": "AI-guided privilege escalation and persistence",
+            "command": "pentestgpt --target 192.168.1.100 --phase post_exploit --interactive"
+          },
+          {
+            "label": "Reporting",
+            "description": "AI-generated comprehensive security report",
+            "command": "pentestgpt --report --session-id session_123 --output-format pdf"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "FINDING: SQL Injection (Critical)",
+        "meaning": "AI discovered critical SQL injection vulnerability",
+        "severity": "critical"
+      },
+      {
+        "indicator": "EXPLOIT: Successful privilege escalation",
+        "meaning": "AI successfully escalated privileges on target",
+        "severity": "high"
+      },
+      {
+        "indicator": "RECOMMENDATION: Patch CVE-2023-1234",
+        "meaning": "AI recommends specific security patches",
+        "severity": "medium"
+      },
+      {
+        "indicator": "RISK SCORE: 8.2/10",
+        "meaning": "Overall risk assessment of target",
+        "severity": "info"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom pentest playbook development",
+        "command": "pentestgpt --create-playbook --industry finance --compliance pci_dss",
+        "scenario": "Create industry-specific pentest playbooks",
+        "notes": [
+          "Tailor testing to compliance requirements",
+          "Include industry-specific vulnerability checks"
+        ]
+      },
+      {
+        "title": "Multi-target coordinated testing",
+        "command": "pentestgpt --multi-target targets.yaml --coordinated --max-concurrent 5",
+        "scenario": "Simultaneous testing of multiple targets",
+        "notes": [
+          "Coordinate testing across network segments",
+          "Aggregate findings across targets"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "PentestGPT Repository",
+        "url": "https://github.com/GreyDGL/PentestGPT",
+        "description": "Official PentestGPT documentation and examples"
+      },
+      {
+        "label": "AI in Penetration Testing",
+        "url": "https://arxiv.org/abs/2308.06772",
+        "description": "Research paper on AI-augmented penetration testing"
+      },
+      {
+        "label": "LLM Security Applications",
+        "url": "https://owasp.org/www-project-llm-top-ten/",
+        "description": "OWASP LLM security guidelines"
+      }
+    ]
+  },
+  {
+    "id": "nemo_guardrails",
+    "name": "NeMo Guardrails",
+    "summary": "NVIDIA NeMo Guardrails is an open-source toolkit for adding programmable guardrails to LLM-based applications, providing safety, security, and context-aware controls for AI conversations and outputs.",
+    "installation_guides": [
+      {
+        "platform": "Debian/Ubuntu",
+        "summary": "Install via pip with Python 3.9+",
+        "steps": [
+          {
+            "detail": "sudo apt update",
+            "copyable": true
+          },
+          {
+            "detail": "sudo apt install -y python3-pip python3-venv",
+            "copyable": true
+          },
+          {
+            "detail": "python3 -m pip install nemoguardrails",
+            "copyable": true
+          },
+          {
+            "detail": "nemoguardrails --help",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Kali Linux",
+        "summary": "Install with development dependencies",
+        "steps": [
+          {
+            "detail": "sudo apt update && sudo apt install -y python3-pip python3-dev",
+            "copyable": true
+          },
+          {
+            "detail": "pip3 install nemoguardrails[dev]",
+            "copyable": true
+          }
+        ]
+      },
+      {
+        "platform": "Docker / Alternative",
+        "summary": "Official containerized deployment",
+        "steps": [
+          {
+            "detail": "docker pull nvcr.io/nvidia/nemo:guardrails",
+            "copyable": true
+          },
+          {
+            "detail": "docker run --rm -it nvcr.io/nvidia/nemo:guardrails",
+            "copyable": true
+          }
+        ]
+      }
+    ],
+    "quick_examples": [
+      {
+        "description": "Basic safety guardrail configuration",
+        "command": "nemoguardrails --config config.yaml --test-input \"How to hack into a system?\"",
+        "notes": []
+      },
+      {
+        "description": "Initialize new guardrails project",
+        "command": "nemoguardrails init --project-name my_bot_guardrails",
+        "notes": []
+      },
+      {
+        "description": "Test custom guardrails configuration",
+        "command": "nemoguardrails test --config ./config --test-file test_inputs.txt",
+        "notes": []
+      },
+      {
+        "description": "Run guardrails with specific LLM",
+        "command": "nemoguardrails --model openai:gpt-4 --config ./config --interactive",
+        "notes": []
+      }
+    ],
+    "common_flags": [
+      {
+        "flag": "--config",
+        "description": "Path to guardrails configuration directory"
+      },
+      {
+        "flag": "--model",
+        "description": "LLM model to use with guardrails"
+      },
+      {
+        "flag": "--test-input",
+        "description": "Single input to test against guardrails"
+      },
+      {
+        "flag": "--test-file",
+        "description": "File containing multiple test inputs"
+      },
+      {
+        "flag": "--interactive",
+        "description": "Run in interactive mode"
+      },
+      {
+        "flag": "--verbose",
+        "description": "Verbose output showing guardrail decisions"
+      }
+    ],
+    "operational_tips": [
+      "Start with predefined guardrail configurations before customizing",
+      "Test guardrails with diverse input scenarios",
+      "Use verbose mode to understand guardrail decision logic",
+      "Combine multiple guardrail types for comprehensive protection",
+      "Regularly update guardrails based on new threat patterns"
+    ],
+    "step_sequences": [
+      {
+        "title": "Implement LLM Safety Guardrails",
+        "steps": [
+          {
+            "title": "Initialize guardrails project",
+            "details": "Create new guardrails configuration",
+            "command": "nemoguardrails init --project-name security_bot"
+          },
+          {
+            "title": "Configure safety policies",
+            "details": "Set up safety and security rules",
+            "command": "cat > config/config.yml << EOF\nmodels:\n  - type: main\n    model: openai:gpt-4\n    parameters:\n      temperature: 0.0\n\nrails:\n  input:\n    flows:\n      - self check input\n  output:\n    flows:\n      - self check output\nEOF"
+          },
+          {
+            "title": "Test guardrails configuration",
+            "details": "Validate guardrails with test inputs",
+            "command": "nemoguardrails test --config ./config --test-file security_tests.txt"
+          },
+          {
+            "title": "Deploy with LLM integration",
+            "details": "Deploy guardrails with your LLM application",
+            "command": "nemoguardrails --config ./config --model openai:gpt-4 --interactive"
+          }
+        ]
+      }
+    ],
+    "workflow_guides": [
+      {
+        "name": "AI Application Security Implementation",
+        "stages": [
+          {
+            "label": "Threat modeling",
+            "description": "Identify potential AI security risks",
+            "command": "# Analyze AI application use cases and risks"
+          },
+          {
+            "label": "Guardrail design",
+            "description": "Design appropriate guardrail configurations",
+            "command": "nemoguardrails init --template security --project-name app_security"
+          },
+          {
+            "label": "Configuration development",
+            "description": "Implement custom guardrails and policies",
+            "command": "# Develop custom .colang files for guardrails"
+          },
+          {
+            "label": "Testing and validation",
+            "description": "Test guardrails against adversarial inputs",
+            "command": "nemoguardrails test --config ./config --adversarial"
+          },
+          {
+            "label": "Integration deployment",
+            "description": "Integrate guardrails into production AI system",
+            "command": "nemoguardrails serve --config ./config --port 8080"
+          },
+          {
+            "label": "Monitoring and updates",
+            "description": "Monitor guardrail effectiveness and update",
+            "command": "# Review logs and update guardrail policies"
+          }
+        ]
+      }
+    ],
+    "output_notes": [
+      {
+        "indicator": "BLOCKED: Input violates safety policy",
+        "meaning": "Guardrail successfully blocked harmful input",
+        "severity": "info"
+      },
+      {
+        "indicator": "ALLOWED: Input passes all checks",
+        "meaning": "Input cleared all guardrail validations",
+        "severity": "info"
+      },
+      {
+        "indicator": "MODIFIED: Output sanitized",
+        "meaning": "Guardrail modified output for safety",
+        "severity": "warning"
+      },
+      {
+        "indicator": "VIOLATION: Prompt injection detected",
+        "meaning": "Input identified as prompt injection attempt",
+        "severity": "high"
+      }
+    ],
+    "advanced_usage": [
+      {
+        "title": "Custom guardrail development",
+        "command": "nemoguardrails add-rail --type custom --name security_policy --file custom_security.colang",
+        "scenario": "Develop domain-specific guardrails",
+        "notes": [
+          "Write custom .colang guardrail logic",
+          "Implement business-specific security policies"
+        ]
+      },
+      {
+        "title": "Multi-model guardrail orchestration",
+        "command": "nemoguardrails --multi-model config.yaml --models openai:gpt-4,anthropic:claude-3",
+        "scenario": "Apply consistent guardrails across multiple LLMs",
+        "notes": [
+          "Ensure consistent security across models",
+          "Compare model responses under same guardrails"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "label": "NeMo Guardrails Documentation",
+        "url": "https://github.com/NVIDIA/NeMo-Guardrails",
+        "description": "Official NeMo Guardrails documentation and guides"
+      },
+      {
+        "label": "Colang Language Reference",
+        "url": "https://github.com/NVIDIA/NeMo-Guardrails/blob/main/docs/colang.md",
+        "description": "Programming language for guardrails logic"
+      },
+      {
+        "label": "AI Safety and Security",
+        "url": "https://www.nvidia.com/en-us/ai-data-science/ai-safety/",
+        "description": "NVIDIA AI safety research and guidelines"
+      }
+    ]
   }
 ]

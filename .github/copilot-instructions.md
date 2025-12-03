@@ -2,93 +2,74 @@
 
 ## Project Overview
 
-PT Journal is a **GTK4/Libadwaita desktop application** for penetration testing education. Built in Rust with the Relm4 framework, it provides:
-- Interactive tutorials covering security domains (CEH, CompTIA Security+, PenTest+)
-- Quiz system with pipe-delimited question files
-- Integrated chatbot for AI-assisted learning (Ollama/LLM backends)
-- Tool instruction registry for security tools
+GTK4/Libadwaita desktop app for penetration testing education, built with **Rust + Relm4**. Features interactive tutorials (CEH, Security+, PenTest+), pipe-delimited quiz system, multi-provider LLM chatbot, and 229+ security tool references.
 
 ## Architecture
 
-### Core Layers
+**State Flow:** UI → `StateManager` → `AppModel` (via `Rc<RefCell<>>`) → `EventBus` → UI updates
+
 ```
-main.rs → GTK Application Entry
-├── ui/ → GTK4 widgets (Relm4 components)
-│   ├── state.rs → StateManager coordinates model + events
-│   ├── chat_panel.rs → LLM chat interface
-│   └── quiz_widget.rs → Interactive quizzes
-├── model/ → Domain types (Session, Phase, Step, Quiz)
-├── dispatcher.rs → Event bus (AppEvent enum + EventBus)
-├── chatbot/ → LLM provider abstraction
-│   ├── provider.rs → ChatProvider trait
-│   └── ollama.rs → Ollama API implementation
-└── tutorials/mod.rs → JSON tutorial loading
+src/
+├── main.rs              # GTK Application entry
+├── dispatcher.rs        # EventBus with AppEvent enum (PhaseSelected, ChatMessageAdded, etc.)
+├── error.rs             # PtError enum (use thiserror), Result<T> alias
+├── ui/state.rs          # StateManager: mutates model, emits events
+├── model/app_model.rs   # AppModel: Session, Phase, Step, Quiz state
+├── chatbot/             # LLM providers: ollama.rs, openai.rs, azure_openai.rs
+│   └── provider.rs      # ChatProvider trait (implement for new backends)
+├── quiz/mod.rs          # parse_question_line() for pipe-delimited quizzes
+└── tutorials/mod.rs     # load_tutorial_phases() loads JSON from data/tutorials/
 ```
 
-### Data Flow Pattern
-1. **UI Actions** → `StateManager` methods
-2. **StateManager** mutates `AppModel` (via `Rc<RefCell<AppModel>>`)
-3. **StateManager** emits `AppEvent` through `SharedEventBus`
-4. **Event handlers** update UI widgets
+**Why Rc<RefCell<>>?** GTK is single-threaded; this pattern provides safe interior mutability.
 
-### Key Design Decisions
-- **Rc<RefCell<>>** for shared mutable state (GTK single-threaded)
-- **Event-driven** architecture via `dispatcher.rs` EventBus
-- **Lazy loading** for quiz questions (large datasets)
-- **JSON tutorials** in `data/tutorials/*.json` loaded at runtime
+## Development Commands
 
-## Development Workflow
-
-### Build & Test
 ```bash
-# Full test suite (unit + integration + linting)
-./test-all.sh
-
-# Individual test targets
-cargo test --test unit_tests      # Unit tests
-cargo test --test integration_tests  # Integration tests
-cargo clippy && cargo fmt         # Lint + format
+./test-all.sh                      # Full suite: unit + integration + clippy + fmt + JSON validation
+cargo test --test unit_tests       # Unit tests only (tests/unit/)
+cargo test --test integration_tests # Integration tests (tests/integration/)
+cargo run                          # Launch app (requires GTK4 + libadwaita system libs)
 ```
 
-### Test Organization
-- `tests/unit/` - Module-level tests (chat, config, controllers, UI)
-- `tests/integration/` - Cross-module integration tests
-- Tests use `tempfile` crate for isolation
+**System deps:** `libgtk-4-dev libadwaita-1-dev libvte-2.91-gtk4-dev` (Ubuntu/Debian)
 
-## Conventions
+## Data Formats
 
-### Error Handling
-- Use `src/error.rs` → `PtError` enum with `thiserror`
-- Return `Result<T>` type alias from `error.rs`
-- Structured error variants: `PtError::InvalidPhaseIndex`, `PtError::Chat`, etc.
-
-### Adding Quiz Questions
-Quiz files use pipe-delimited format (9 fields):
+### Quiz Questions (`data/{domain}/{subdomain}.txt`)
+9 pipe-delimited fields per line:
 ```
 question|answer_a|answer_b|answer_c|answer_d|correct_index|explanation|domain|subdomain
 ```
-- Location: `data/{domain}/{subdomain}.txt`
-- Parse with `quiz::parse_question_line()`
+Example: `What is CIA triad?|Confidentiality...|...|...|...|0|The CIA triad...|ceh|linux-basics`
 
-### Adding Tutorials
-1. Create JSON in `data/tutorials/{name}.json`:
+### Tutorials (`data/tutorials/{name}.json`)
 ```json
 {
-  "id": "name",
-  "title": "Display Title",
+  "id": "linux_basics_for_hackers",
+  "title": "Linux Basics for Hackers",
   "type": "tutorial",
-  "steps": [{ "id": "step_id", "title": "Step", "content": "...", "tags": [] }]
+  "steps": [{ "id": "step_id", "title": "Step", "content": "...", "tags": [], "related_tools": [] }]
 }
 ```
-2. Add to `tutorials/mod.rs` → `load_tutorial_phases()` vec
+**Register new tutorials** in `src/tutorials/mod.rs` → `load_tutorial_phases()` vec.
 
-### Configuration
-- Config file: `~/.config/pt-journal/config.toml`
-- Config types: `src/config/config.rs` → `AppConfig`, `ChatbotConfig`
-- Environment overrides: `PT_JOURNAL_*` prefix
+## Key Patterns
 
-### Chat Provider Interface
-Implement `ChatProvider` trait for new LLM backends:
+### Adding UI Components
+1. Create in `src/ui/`, use `StateManager` for mutations
+2. Emit `AppEvent` variants for cross-component updates
+3. Handle events via `EventBus` callbacks in `dispatcher.rs`
+
+### Error Handling
+Always use `PtError` variants from `src/error.rs`:
+```rust
+use crate::error::{PtError, Result as PtResult};
+// Return PtError::InvalidPhaseIndex, PtError::Chat, PtError::Config, etc.
+```
+
+### New Chat Provider
+Implement `ChatProvider` trait in `src/chatbot/`:
 ```rust
 pub trait ChatProvider: Send + Sync {
     fn send_message(&self, request: &ChatRequest) -> PtResult<ChatMessage>;
@@ -96,37 +77,20 @@ pub trait ChatProvider: Send + Sync {
     fn provider_name(&self) -> &str;
 }
 ```
+Register in `src/chatbot/registry.rs`.
 
-## Key Files Reference
+## Configuration
 
-| Purpose | File |
-|---------|------|
-| Application entry | `src/main.rs` |
-| State management | `src/ui/state.rs`, `src/model/app_model.rs` |
-| Event system | `src/dispatcher.rs` |
-| Error types | `src/error.rs` |
-| Quiz parsing | `src/quiz/mod.rs` |
-| LLM integration | `src/chatbot/` |
-| Tutorial loading | `src/tutorials/mod.rs` |
-| Config schema | `src/config/config.rs` |
+- **File:** `~/.config/pt-journal/config.toml`
+- **Types:** `src/config/config.rs` → `AppConfig`, `ChatbotConfig`
+- **Env overrides:** `PT_JOURNAL_*` prefix (e.g., `PT_JOURNAL_OPENAI_API_KEY`)
+- **Defaults:** Ollama at `http://localhost:11434`, model `llama3.2:latest`
 
-## Common Tasks
+## Test Organization
 
-### Adding a UI Component
-1. Create component in `src/ui/`
-2. Use `StateManager` for state mutations
-3. Emit `AppEvent` variants for cross-component updates
-4. Add handler in `dispatcher.rs` EventBus
+| Location | Purpose |
+|----------|---------|
+| `tests/unit/` | Module tests (chatbot, config, controllers, UI, tools) |
+| `tests/integration/` | Cross-module integration scenarios |
 
-### Modifying the Data Model
-1. Update types in `src/model/`
-2. Add validation in `AppModel` methods
-3. Return `PtError` for invalid operations
-4. Update serialization if persisted
-
-## External Dependencies
-
-- **GTK4 + Libadwaita**: Native Linux UI (requires system libs)
-- **VTE4**: Terminal emulation widget
-- **Ollama**: Local LLM inference (configurable endpoint)
-- **Serde**: JSON/YAML/TOML serialization
+Tests use `tempfile` crate for isolation. Mock HTTP with `httpmock`.

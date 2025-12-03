@@ -8,61 +8,182 @@
       "id": "objective",
       "title": "Mastering AI-Driven Report Generation",
       "content": "OBJECTIVE: Learn how generative AI transforms penetration testing report creation from manual documentation to intelligent automation.\n\nWHAT TO LOOK FOR:\n- AI content generation quality and accuracy\n- Intelligent analysis and risk prioritization\n- Visual representation effectiveness\n- Stakeholder communication improvements\n- Automation efficiency gains\n\nSTEP-BY-STEP PROCESS:\n1. Understand traditional reporting challenges\n2. Explore AI enhancements for report creation\n3. Learn automated content generation techniques\n4. Practice AI-driven risk analysis\n5. Create stakeholder-customized reports\n\nThis tutorial explores how generative AI transforms penetration testing report creation from manual documentation to intelligent automation. You'll learn to leverage AI for comprehensive report generation, risk analysis, visualization, and stakeholder communication. By the end, you'll understand how to create professional, accurate, and actionable penetration testing reports using AI assistance.",
-      "tags": ["reporting", "ai", "automation", "documentation", "risk-analysis"]
+      "tags": [
+        "reporting",
+        "ai",
+        "automation",
+        "documentation",
+        "risk-analysis"
+      ],
+      "related_tools": [
+        "bugbounty_reporting_cvss",
+        "dradis",
+        "faraday",
+        "impacket-scripts",
+        "bloodhound-python"
+      ]
     },
     {
       "id": "traditional-vs-ai-reporting",
       "title": "Traditional vs AI-Enhanced Reporting",
       "content": "OBJECTIVE: Compare traditional reporting methods with AI-enhanced approaches to understand the benefits and capabilities.\n\nWHAT TO LOOK FOR:\n- Time savings from automation\n- Analysis quality improvements\n- Visualization enhancements\n- Stakeholder communication effectiveness\n- Report maintenance and updates\n\nSTEP-BY-STEP PROCESS:\n1. Review traditional reporting processes\n2. Explore AI-driven reporting capabilities\n3. Compare efficiency and quality metrics\n4. Analyze stakeholder benefits\n5. Document automation advantages\n\nTraditional reporting is time-consuming and manual, while AI-driven approaches offer:\n\n- **Automated Content Generation**: AI creates comprehensive report sections from scan data\n- **Intelligent Analysis**: Machine learning provides risk prioritization and recommendations\n- **Visual Intelligence**: AI generates charts, graphs, and visual representations\n- **Stakeholder Customization**: Tailored reports for different audience types\n- **Continuous Updates**: AI maintains and updates reports as testing progresses",
-      "tags": ["comparison", "automation", "analysis", "visualization"]
+      "tags": [
+        "comparison",
+        "automation",
+        "analysis",
+        "visualization"
+      ],
+      "related_tools": [
+        "bugbounty_reporting_cvss",
+        "dradis",
+        "faraday",
+        "nuclei",
+        "impacket-scripts"
+      ]
     },
     {
       "id": "ai-report-structure",
       "title": "AI-Generated Report Structure",
       "content": "OBJECTIVE: Understand how AI creates comprehensive and standardized report frameworks that meet industry standards.\n\nWHAT TO LOOK FOR:\n- Comprehensive report sections coverage\n- Standards compliance (NIST, OWASP)\n- Automated content organization\n- Technical and executive summary balance\n- Remediation plan effectiveness\n\nSTEP-BY-STEP PROCESS:\n1. Review standard report structure requirements\n2. Explore AI report generation capabilities\n3. Analyze automated content organization\n4. Verify standards compliance features\n5. Practice report structure customization\n\nAI creates comprehensive report frameworks:\n\n1. **Executive Summary**: AI synthesizes key findings for management\n2. **Technical Details**: Automated documentation of vulnerabilities and exploits\n3. **Risk Assessment**: ML-driven risk scoring using CVSS and custom metrics\n4. **Remediation Plans**: AI-generated actionable remediation recommendations\n5. **Appendices**: Comprehensive technical data and raw scan results\n\n**Standards Compliance**: AI ensures reports meet industry standards (NIST, OWASP, etc.).",
-      "tags": ["structure", "executive-summary", "risk-assessment", "remediation"]
+      "tags": [
+        "structure",
+        "executive-summary",
+        "risk-assessment",
+        "remediation"
+      ],
+      "related_tools": [
+        "workflow_hipaa_compliance",
+        "workflow_pci_dss_assessment",
+        "ml-pipeline-audit",
+        "linux-exploit-suggester",
+        "bugbounty_reporting_cvss"
+      ]
     },
     {
       "id": "automated-finding-documentation",
       "title": "Automated Finding Documentation",
       "content": "OBJECTIVE: Learn how AI transforms raw vulnerability data into coherent, professional finding documentation.\n\nWHAT TO LOOK FOR:\n- Vulnerability synthesis accuracy\n- Impact analysis comprehensiveness\n- Evidence integration completeness\n- Consistency in formatting\n- Quality assurance effectiveness\n\nSTEP-BY-STEP PROCESS:\n1. Review raw vulnerability scan data\n2. Explore AI synthesis capabilities\n3. Analyze impact assessment features\n4. Practice evidence integration\n5. Verify consistency checking\n\nAI transforms finding documentation:\n\n- **Vulnerability Synthesis**: AI combines scan data into coherent vulnerability descriptions\n- **Impact Analysis**: Machine learning assesses business and technical impact\n- **Exploitability Assessment**: AI evaluates ease of exploitation and prerequisites\n- **Evidence Integration**: Automatic inclusion of screenshots, logs, and proof-of-concept\n- **Consistency Checking**: AI ensures all findings follow consistent formatting\n\n**Quality Assurance**: AI cross-references findings against known vulnerability databases.",
-      "tags": ["documentation", "vulnerabilities", "impact-analysis", "evidence"]
+      "tags": [
+        "documentation",
+        "vulnerabilities",
+        "impact-analysis",
+        "evidence"
+      ],
+      "related_tools": [
+        "linux-exploit-suggester",
+        "windows-exploit-suggester",
+        "dradis",
+        "trivy",
+        "faraday"
+      ]
     },
     {
       "id": "ai-risk-prioritization",
       "title": "AI-Driven Risk Prioritization",
       "content": "OBJECTIVE: Master AI-enhanced risk assessment methodologies that combine technical and business factors.\n\nWHAT TO LOOK FOR:\n- CVSS score refinement accuracy\n- Business impact analysis depth\n- Threat modeling comprehensiveness\n- Resource optimization effectiveness\n- Predictive scoring reliability\n\nSTEP-BY-STEP PROCESS:\n1. Review traditional risk assessment methods\n2. Explore AI enhancement capabilities\n3. Analyze business context integration\n4. Practice threat modeling with AI\n5. Evaluate predictive risk scoring\n\nAI enhances risk assessment methodologies:\n\n1. **CVSS Enhancement**: AI refines CVSS scores with contextual factors\n2. **Business Impact Analysis**: Machine learning considers business context\n3. **Threat Modeling**: AI maps attack vectors and potential consequences\n4. **Resource Optimization**: Prioritizing remediation based on impact vs. effort\n5. **Predictive Risk Scoring**: ML predicts future exploitation likelihood\n\n**Scoring Models**: Custom risk scoring that combines technical and business factors.",
-      "tags": ["risk-prioritization", "cvss", "business-impact", "threat-modeling"]
+      "tags": [
+        "risk-prioritization",
+        "cvss",
+        "business-impact",
+        "threat-modeling"
+      ],
+      "related_tools": [
+        "bugbounty_reporting_cvss",
+        "ml-pipeline-audit",
+        "windows-exploit-suggester",
+        "linux-exploit-suggester",
+        "impacket-scripts"
+      ]
     },
     {
       "id": "intelligent-visualizations",
       "title": "Intelligent Report Visualizations",
       "content": "OBJECTIVE: Learn how AI creates compelling visual representations that enhance report comprehension and impact.\n\nWHAT TO LOOK FOR:\n- Heat map accuracy and usefulness\n- Trend analysis clarity\n- Attack path diagram effectiveness\n- Impact chart comprehensiveness\n- Dashboard functionality\n\nSTEP-BY-STEP PROCESS:\n1. Review visualization requirements for reports\n2. Explore AI visualization capabilities\n3. Create heat maps and trend charts\n4. Design attack path diagrams\n5. Build compliance dashboards\n\nAI creates compelling visual representations:\n\n- **Vulnerability Heat Maps**: Geographic and network-based vulnerability visualization\n- **Risk Trend Analysis**: Charts showing vulnerability changes over time\n- **Attack Path Diagrams**: Visual representation of exploitation chains\n- **Impact Assessment Charts**: Business impact visualizations\n- **Compliance Dashboards**: Automated compliance status reporting\n\n**Tools Integration**: AI generates visualizations compatible with reporting tools and formats.",
-      "tags": ["visualizations", "heat-maps", "diagrams", "dashboards"]
+      "tags": [
+        "visualizations",
+        "heat-maps",
+        "diagrams",
+        "dashboards"
+      ],
+      "related_tools": [
+        "workflow_hipaa_compliance",
+        "bugbounty_reporting_cvss",
+        "workflow_pci_dss_assessment",
+        "windows-exploit-suggester",
+        "linux-exploit-suggester"
+      ]
     },
     {
       "id": "stakeholder-communication",
       "title": "AI-Optimized Stakeholder Communication",
       "content": "OBJECTIVE: Understand how AI tailors communication for different audiences to maximize report effectiveness.\n\nWHAT TO LOOK FOR:\n- Audience-appropriate content adaptation\n- Language complexity adjustment\n- Technical depth customization\n- Communication effectiveness\n- Stakeholder engagement improvement\n\nSTEP-BY-STEP PROCESS:\n1. Identify different stakeholder types\n2. Analyze communication requirements\n3. Explore AI adaptation capabilities\n4. Create audience-specific content\n5. Test communication effectiveness\n\nAI tailors communication for different audiences:\n\n1. **Executive Summaries**: High-level overviews for management\n2. **Technical Reports**: Detailed documentation for IT teams\n3. **Developer Guides**: Actionable remediation instructions for developers\n4. **Compliance Reports**: Regulatory and standards-focused documentation\n5. **Presentation Materials**: AI-generated slides and briefing materials\n\n**Language Adaptation**: AI adjusts technical complexity and terminology per audience.",
-      "tags": ["communication", "stakeholders", "executives", "developers"]
+      "tags": [
+        "communication",
+        "stakeholders",
+        "executives",
+        "developers"
+      ],
+      "related_tools": [
+        "workflow_hipaa_compliance",
+        "dradis",
+        "faraday",
+        "workflow_pci_dss_assessment",
+        "impacket-scripts"
+      ]
     },
     {
       "id": "ai-reporting-tools-integration",
       "title": "AI Reporting Tools and Integration",
       "content": "OBJECTIVE: Learn practical AI tools and techniques for integrating AI into penetration testing report generation workflows.\n\nWHAT TO LOOK FOR:\n- Tool effectiveness for different tasks\n- Integration capabilities\n- Workflow efficiency improvements\n- Template customization options\n- Automation reliability\n\nSTEP-BY-STEP PROCESS:\n1. Review available AI reporting tools\n2. Explore integration capabilities\n3. Practice tool usage for report generation\n4. Customize templates and workflows\n5. Evaluate automation effectiveness\n\nPractical AI tools for report generation:\n\n- **Shell GPT**: Generate report sections and technical descriptions\n- **AI Writing Assistants**: Content creation and editing\n- **Visualization Generators**: Automated chart and diagram creation\n- **Template Systems**: AI-powered report template customization\n\n**Workflow Integration**:\n```bash\n# Generate executive summary from findings\nsgpt \"write an executive summary for a pentest report with 15 high-risk findings\"\n\n# Create remediation recommendations\nsgpt \"generate remediation steps for SQL injection vulnerabilities\"\n```",
-      "tags": ["tools", "integration", "automation", "templates"]
+      "tags": [
+        "tools",
+        "integration",
+        "automation",
+        "templates"
+      ],
+      "related_tools": [
+        "comparison_sql_testing",
+        "bugbounty_reporting_cvss",
+        "dradis",
+        "faraday",
+        "commix"
+      ]
     },
     {
       "id": "continuous-reporting",
       "title": "Continuous and Adaptive Reporting",
       "content": "OBJECTIVE: Understand how AI enables dynamic, living reports that evolve with the penetration testing process.\n\nWHAT TO LOOK FOR:\n- Real-time update capabilities\n- Incremental documentation effectiveness\n- Version control integration\n- Collaborative editing features\n- Quality assurance automation\n\nSTEP-BY-STEP PROCESS:\n1. Review traditional static reporting limitations\n2. Explore continuous reporting capabilities\n3. Practice incremental documentation\n4. Set up version control integration\n5. Implement quality assurance checks\n\nAI enables dynamic report maintenance:\n\n- **Real-time Updates**: Reports that update as testing progresses\n- **Incremental Documentation**: AI adds findings without recreating entire reports\n- **Version Control**: Automated tracking of report changes and revisions\n- **Collaborative Editing**: AI-assisted multi-author report creation\n- **Quality Assurance**: Automated proofreading and consistency checking\n\n**Living Documents**: Reports that evolve with the penetration testing process.",
-      "tags": ["continuous", "updates", "version-control", "collaboration"]
+      "tags": [
+        "continuous",
+        "updates",
+        "version-control",
+        "collaboration"
+      ],
+      "related_tools": [
+        "bugbounty_reporting_cvss",
+        "dradis",
+        "faraday",
+        "impacket-scripts",
+        "bloodhound-python"
+      ]
     },
     {
       "id": "practical-reporting-workshops",
       "title": "Practical AI Reporting Workshops",
       "content": "OBJECTIVE: Apply AI reporting techniques through hands-on exercises and workshops to build practical skills.\n\nWHAT TO LOOK FOR:\n- Report generation accuracy\n- Risk analysis effectiveness\n- Visualization quality\n- Stakeholder customization success\n- Quality assurance improvements\n\nSTEP-BY-STEP PROCESS:\n1. Set up AI reporting environment\n2. Practice automated report generation\n3. Perform AI-driven risk analysis\n4. Create visualizations and charts\n5. Customize reports for stakeholders\n6. Review and improve AI-generated content\n\nHands-on exercises for AI-driven reporting:\n\n1. **Automated Report Generation**: Create complete reports from scan data\n2. **Risk Analysis**: Use AI to prioritize and score vulnerabilities\n3. **Visualization Creation**: Generate charts and diagrams for reports\n4. **Stakeholder Customization**: Adapt reports for different audiences\n5. **Quality Assurance**: Review and improve AI-generated content\n\n**Best Practices**: Combine AI efficiency with human expertise for optimal results.",
-      "tags": ["workshops", "practice", "generation", "customization"]
+      "tags": [
+        "workshops",
+        "practice",
+        "generation",
+        "customization"
+      ],
+      "related_tools": [
+        "bugbounty_reporting_cvss",
+        "dradis",
+        "faraday",
+        "nuclei",
+        "impacket-scripts"
+      ]
     }
   ]
 }

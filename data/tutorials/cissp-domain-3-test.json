@@ -9,7 +9,8 @@
       "content": "Test content",
       "tags": [
         "test"
-      ]
+      ],
+      "related_tools": []
     }
   ]
 }

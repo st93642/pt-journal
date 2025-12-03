@@ -137,6 +137,9 @@ pub fn load_step_into_panel(state: &Rc<StateManager>, detail_panel: &Rc<DetailPa
 
             // Show quiz view and load quiz
             detail_panel.load_quiz_step(&quiz_step);
+
+            // Clear related tools for quiz steps
+            detail_panel.load_related_tools(&[]);
         } else {
             // Show tutorial view and load tutorial content
             detail_panel.set_completion(matches!(snapshot.status, StepStatus::Done));
@@ -144,6 +147,9 @@ pub fn load_step_into_panel(state: &Rc<StateManager>, detail_panel: &Rc<DetailPa
 
             // Update description
             detail_panel.load_tutorial_step(&snapshot.description, &snapshot.chat_history);
+
+            // Load related tools
+            detail_panel.load_related_tools(&snapshot.related_tools);
         }
     }
 }

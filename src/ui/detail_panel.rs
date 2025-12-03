@@ -1,4 +1,3 @@
-use crate::model::Step;
 use crate::ui::chat_panel::ChatPanel;
 use crate::ui::quiz_widget::QuizWidget;
 use crate::ui::tool_execution::ToolExecutionPanel;
@@ -312,59 +311,6 @@ pub fn create_detail_panel() -> DetailPanel {
     }
 }
 
-/// Load step content into detail panel (automatically switches between tutorial and quiz views)
-pub fn load_step_into_panel(panel: &DetailPanel, step: &Step) {
-    // Update title and checkbox (common to both views)
-    panel.title_label.set_text(&step.title);
-    panel
-        .checkbox
-        .set_active(step.status == crate::model::StepStatus::Done);
-
-    // Clear and populate related tools box
-    // Remove all children from related_tools_box
-    while let Some(child) = panel.related_tools_box.first_child() {
-        panel.related_tools_box.remove(&child);
-    }
-
-    // Add tool buttons for each related tool
-    for tool_id in &step.related_tools {
-        let button = gtk4::Button::with_label(tool_id);
-        button.set_css_classes(&["suggested-action", "pill"]);
-        button.set_size_request(120, -1);
-        panel.related_tools_box.append(&button);
-    }
-
-    // Switch view based on step type
-    if step.is_quiz() {
-        // Show quiz view
-        panel.content_stack.set_visible_child_name("quiz");
-
-        // Load quiz content
-        if let Some(quiz_step) = step.quiz_data.as_ref() {
-            panel.quiz_widget.hide_explanation(); // Clear explanation from previous quiz
-            panel.quiz_widget.load_quiz_step(quiz_step);
-            panel.quiz_widget.update_statistics(quiz_step);
-        }
-    } else {
-        // Show tutorial view
-        panel.content_stack.set_visible_child_name("tutorial");
-
-        // Load tutorial content
-        let description = &step.description;
-        let chat_history = &step.chat_history;
-
-        // Convert markdown to Pango markup
-        let pango_markup = markdown_to_pango(description);
-
-        // Clear the buffer and insert markup
-        let buffer = panel.desc_view.buffer();
-        buffer.set_text("");
-        buffer.insert_markup(&mut buffer.start_iter(), &pango_markup);
-
-        panel.chat_panel.load_history(chat_history);
-    }
-}
-
 impl DetailPanel {
     /// Get the center container widget
     pub fn container(&self) -> &GtkBox {
@@ -405,6 +351,29 @@ impl DetailPanel {
         self.chat_panel.load_history(chat_history);
     }
 
+    /// Load related tools into the panel
+    pub fn load_related_tools(&self, related_tools: &[String]) {
+        // Clear existing buttons
+        while let Some(child) = self.related_tools_box.first_child() {
+            self.related_tools_box.remove(&child);
+        }
+
+        // Add tool buttons for each related tool
+        for tool_id in related_tools {
+            let button = gtk4::Button::with_label(tool_id);
+            button.set_css_classes(&["suggested-action", "pill"]);
+            button.set_size_request(120, -1);
+
+            // Connect click handler to show tool instructions dialog
+            let tool_id_clone = tool_id.clone();
+            button.connect_clicked(move |btn| {
+                show_tool_instructions_dialog(btn, &tool_id_clone);
+            });
+
+            self.related_tools_box.append(&button);
+        }
+    }
+
     /// Load a quiz step into the panel
     pub fn load_quiz_step(&self, quiz_step: &crate::model::QuizStep) {
         self.content_stack.set_visible_child_name("quiz");
@@ -437,4 +406,81 @@ impl DetailPanel {
     pub fn checkbox(&self) -> &CheckButton {
         &self.checkbox
     }
+}
+
+/// Shows tool instructions dialog for a specific tool ID.
+///
+/// This function creates a modal dialog displaying the full instructions
+/// for the specified tool. It retrieves the parent window from the button
+/// widget to properly position the dialog.
+fn show_tool_instructions_dialog(button: &gtk4::Button, tool_id: &str) {
+    use crate::ui::tool_execution::renderer::resolve_instruction_state;
+    use gtk4::glib;
+    use std::process::Command;
+    use std::time::Duration;
+
+    // Get the root window from the button's widget hierarchy
+    let root = button.root();
+    let window = root.and_then(|r| r.downcast::<gtk4::Window>().ok());
+
+    // Resolve instruction state for the tool
+    let state = resolve_instruction_state(Some(tool_id));
+    let dialog_title = state.dialog_title();
+    let instruction_box = state.inline_widget();
+
+    // Create a new window for the dialog
+    let dialog = gtk4::Window::new();
+    dialog.set_title(Some(dialog_title.as_str()));
+    if let Some(ref win) = window {
+        dialog.set_transient_for(Some(win));
+    }
+    dialog.set_default_size(1000, 650);
+
+    // Create a box for the content with margins
+    let content_box = gtk4::Box::new(gtk4::Orientation::Vertical, 0);
+    content_box.set_margin_top(12);
+    content_box.set_margin_bottom(12);
+    content_box.set_margin_start(12);
+    content_box.set_margin_end(12);
+
+    // Create a header bar with close button
+    let header_bar = gtk4::HeaderBar::new();
+    let close_button = gtk4::Button::with_label("Close");
+    header_bar.pack_end(&close_button);
+    dialog.set_titlebar(Some(&header_bar));
+
+    // Connect close button
+    let dialog_clone = dialog.clone();
+    close_button.connect_clicked(move |_| {
+        dialog_clone.close();
+    });
+
+    // Connect window close event
+    let dialog_clone = dialog.clone();
+    dialog.connect_close_request(move |_| {
+        dialog_clone.close();
+        glib::Propagation::Proceed
+    });
+
+    let scroll = ScrolledWindow::new();
+    scroll.set_vexpand(true);
+    scroll.set_hexpand(true);
+    scroll.set_child(Some(&instruction_box));
+    content_box.append(&scroll);
+
+    dialog.set_child(Some(&content_box));
+
+    let window_title = dialog_title.clone();
+    dialog.present();
+
+    // Try to position the window (Linux-specific)
+    glib::timeout_add_local_once(Duration::from_millis(100), move || {
+        let _ = Command::new("wmctrl")
+            .args(["-r", &window_title, "-e", "0,0,0,-1,-1"])
+            .output();
+
+        let _ = Command::new("xdotool")
+            .args(["search", "--name", &window_title, "windowmove", "0", "0"])
+            .output();
+    });
 }

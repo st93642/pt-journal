@@ -167,6 +167,7 @@ impl AppModel {
             is_quiz: step.is_quiz(),
             quiz_data: step.quiz_data.clone(),
             chat_history: step.chat_history.clone(),
+            related_tools: step.related_tools.clone(),
         })
     }
 
@@ -283,4 +284,5 @@ pub struct ActiveStepSnapshot {
     pub is_quiz: bool,
     pub quiz_data: Option<QuizStep>,
     pub chat_history: Vec<ChatMessage>,
+    pub related_tools: Vec<String>,
 }

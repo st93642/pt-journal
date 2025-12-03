@@ -20,13 +20,13 @@ fn test_default_app_model() {
     assert_eq!(model.selected_phase(), 0);
     assert_eq!(model.selected_step(), Some(0));
     assert_eq!(model.current_path(), None);
-    assert_eq!(model.session().phases.len(), 56); // Updated: added CISSP Domain 8 tutorial
+    assert_eq!(model.session().phases.len(), 66); // Updated: added AI + SOC phases
 }
 
 fn test_session_creation() {
     let session = Session::default();
     assert!(!session.name.is_empty());
-    assert_eq!(session.phases.len(), 56); // Updated: added CISSP Domain 8 tutorial
+    assert_eq!(session.phases.len(), 66); // Updated: added AI + SOC phases
 }
 
 fn test_phase_structure() {

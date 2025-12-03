@@ -17,6 +17,13 @@
         "sast",
         "dast",
         "penetration-testing"
+      ],
+      "related_tools": [
+        "recon-ng",
+        "eslint-security",
+        "comparison_sql_testing",
+        "playbook_exploit_development_workflow",
+        "dependency-check"
       ]
     },
     {
@@ -31,6 +38,13 @@
         "sast",
         "dast",
         "penetration-testing"
+      ],
+      "related_tools": [
+        "eslint-security",
+        "comparison_sql_testing",
+        "dependency-check",
+        "ml-pipeline-audit",
+        "playbook_exploit_development_workflow"
       ]
     },
     {
@@ -41,6 +55,11 @@
         "quiz",
         "cissp",
         "software-development-security"
+      ],
+      "related_tools": [
+        "bloodhound-python",
+        "adrecon",
+        "impacket-scripts"
       ]
     }
   ]

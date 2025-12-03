@@ -12,6 +12,13 @@
         "least-privilege",
         "defense-in-depth",
         "cissp"
+      ],
+      "related_tools": [
+        "unix-privesc-check",
+        "playbook_multi_stage_credential_harvesting",
+        "federation-attack-scenarios",
+        "ml-pipeline-audit",
+        "bloodhound-python"
       ]
     },
     {
@@ -24,6 +31,13 @@
         "biba",
         "clark-wilson",
         "cissp"
+      ],
+      "related_tools": [
+        "bloodhound-python",
+        "kubeaudit",
+        "impacket-scripts",
+        "lynis",
+        "prowler"
       ]
     },
     {
@@ -35,6 +49,13 @@
         "sdl",
         "secure-coding",
         "cissp"
+      ],
+      "related_tools": [
+        "eslint-security",
+        "comparison_sql_testing",
+        "ml-pipeline-audit",
+        "playbook_multi_stage_credential_harvesting",
+        "bloodhound-python"
       ]
     },
     {
@@ -46,6 +67,13 @@
         "segmentation",
         "secure-protocols",
         "cissp"
+      ],
+      "related_tools": [
+        "workflow_cloud_security_assessment",
+        "cloud-iam-priv-esc-playbook",
+        "cloud-iam-enum",
+        "workflow_hipaa_compliance",
+        "dns-tunneling"
       ]
     },
     {
@@ -56,6 +84,11 @@
         "quiz",
         "cissp",
         "security-architecture"
+      ],
+      "related_tools": [
+        "bloodhound-python",
+        "adrecon",
+        "impacket-scripts"
       ]
     }
   ]

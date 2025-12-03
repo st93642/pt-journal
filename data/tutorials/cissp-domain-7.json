@@ -14,6 +14,13 @@
         "incident-response",
         "operational-security",
         "monitoring"
+      ],
+      "related_tools": [
+        "hunter-io",
+        "sso-oauth-oidc-misconfig-playbook",
+        "comparison_port_scanners",
+        "playbook_credential_spraying_brute_force",
+        "workflow_threat_hunting_lifecycle"
       ]
     },
     {
@@ -27,6 +34,13 @@
         "evidence-collection",
         "chain-of-custody",
         "forensic-analysis"
+      ],
+      "related_tools": [
+        "workflow_cloud_security_assessment",
+        "comparison_directory_fuzzers",
+        "serverless-framework",
+        "registry-scanner",
+        "bugbounty_reporting_cvss"
       ]
     },
     {
@@ -40,6 +54,13 @@
         "siem",
         "alerting",
         "security-operations"
+      ],
+      "related_tools": [
+        "workflow_cloud_security_assessment",
+        "comparison_port_scanners",
+        "ml-pipeline-audit",
+        "workflow_hipaa_compliance",
+        "burp-api-scanner"
       ]
     },
     {
@@ -50,6 +71,11 @@
         "quiz",
         "cissp",
         "security-operations"
+      ],
+      "related_tools": [
+        "bloodhound-python",
+        "adrecon",
+        "impacket-scripts"
       ]
     }
   ]

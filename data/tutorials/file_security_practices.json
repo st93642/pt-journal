@@ -13,6 +13,13 @@
         "cryptography",
         "file-security",
         "public-key"
+      ],
+      "related_tools": [
+        "hunter-io",
+        "comparison_directory_fuzzers",
+        "crunch",
+        "impacket-scripts",
+        "foremost"
       ]
     }
   ]

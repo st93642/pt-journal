@@ -8,139 +8,404 @@
       "id": "domain-1-1-security-controls",
       "title": "1.1 Security Controls",
       "content": "OBJECTIVE: Master the fundamental security controls and their implementation in information security frameworks.\n\nSTEP-BY-STEP PROCESS:\n1. Understand the CIA triad (Confidentiality, Integrity, Availability) as the foundation\n2. Learn the different types of security controls (Preventive, Detective, Corrective, etc.)\n3. Study implementation considerations (Defense in Depth, Least Privilege, etc.)\n4. Review common control types (Administrative, Technical, Physical)\n5. Examine security frameworks (ISO 27001, NIST, CIS Controls, COBIT)\n6. Analyze control objectives and implementation guidance\n7. Understand monitoring requirements and maintenance procedures\n8. Consider security implications and risk reduction strategies\n\nACADEMIC BACKGROUND:\nSecurity controls are the cornerstone of information security. NIST SP 800-53 defines security controls as safeguards or countermeasures prescribed for an information system or organization. The CIA triad (Confidentiality, Integrity, Availability) provides the foundation for understanding control objectives.\n\nKEY CONCEPTS:\n- Preventive Controls: Stop security incidents before they occur\n- Detective Controls: Identify security incidents as they happen\n- Corrective Controls: Restore systems after incidents\n- Deterrent Controls: Discourage security violations\n- Compensating Controls: Provide alternative protection when primary controls are not feasible\n\nIMPLEMENTATION CONSIDERATIONS:\n- Defense in Depth: Multiple layers of controls\n- Least Privilege: Minimum necessary access\n- Separation of Duties: Divide responsibilities among multiple people\n- Fail-Safe Defaults: Secure default configurations\n\nCOMMON CONTROL TYPES:\n- Administrative: Policies, procedures, training\n- Technical: Firewalls, encryption, access controls\n- Physical: Locks, guards, environmental controls\n\nSECURITY FRAMEWORKS:\n- ISO 27001: Information security management systems\n- NIST Cybersecurity Framework: Identify, Protect, Detect, Respond, Recover\n- CIS Controls: Critical security controls implementation\n- COBIT: Governance and management of IT\n\nWHAT TO LOOK FOR:\n- Control Objectives: What the control is designed to achieve\n- Control Types: Administrative, technical, or physical\n- Implementation Guidance: How to deploy the control effectively\n- Monitoring Requirements: How to verify control effectiveness\n- Maintenance Procedures: How to keep controls current\n\nSECURITY IMPLICATIONS:\n- Risk Reduction: Controls mitigate identified risks\n- Compliance Requirements: Many controls are mandated by regulations\n- Cost-Benefit Analysis: Controls must provide value exceeding implementation costs\n- Continuous Improvement: Controls need regular assessment and updates\n\nCOMMON PITFALLS:\n- Over-Reliance on Technology: Technical controls without administrative support\n- Weak Implementation: Controls that exist but aren't properly configured\n- Lack of Monitoring: Controls without verification of effectiveness\n- Ignoring Maintenance: Outdated controls that no longer provide protection\n- Single Points of Failure: Reliance on one control type without redundancy",
-      "tags": ["quiz", "comptia", "security-plus", "general-security", "security-controls"]
+      "tags": [
+        "quiz",
+        "comptia",
+        "security-plus",
+        "general-security",
+        "security-controls"
+      ],
+      "related_tools": [
+        "workflow_pci_dss_assessment",
+        "workflow_hipaa_compliance",
+        "impacket-scripts",
+        "lynis",
+        "bloodhound-python"
+      ]
     },
     {
       "id": "domain-1-2-fundamental-concepts",
       "title": "1.2 Fundamental Security Concepts",
       "content": "Quiz content loaded from comptia_secplus/1.0-general-security/1.2-security-concepts.txt",
-      "tags": ["quiz", "comptia", "security-plus", "general-security", "fundamental-concepts"]
+      "tags": [
+        "quiz",
+        "comptia",
+        "security-plus",
+        "general-security",
+        "fundamental-concepts"
+      ],
+      "related_tools": [
+        "bloodhound-python",
+        "adrecon",
+        "impacket-scripts"
+      ]
     },
     {
       "id": "domain-1-3-change-management",
       "title": "1.3 Change Management",
       "content": "Quiz content loaded from comptia_secplus/1.0-general-security/1.3-change-management.txt",
-      "tags": ["quiz", "comptia", "security-plus", "general-security", "change-management"]
+      "tags": [
+        "quiz",
+        "comptia",
+        "security-plus",
+        "general-security",
+        "change-management"
+      ],
+      "related_tools": [
+        "bloodhound-python",
+        "adrecon",
+        "impacket-scripts"
+      ]
     },
     {
       "id": "domain-1-4-cryptographic-solutions",
       "title": "1.4 Cryptographic Solutions",
       "content": "Quiz content loaded from comptia_secplus/1.0-general-security/1.4-cryptographic-solutions.txt",
-      "tags": ["quiz", "comptia", "security-plus", "general-security", "cryptographic-solutions"]
+      "tags": [
+        "quiz",
+        "comptia",
+        "security-plus",
+        "general-security",
+        "cryptographic-solutions"
+      ],
+      "related_tools": [
+        "bloodhound-python",
+        "adrecon",
+        "impacket-scripts"
+      ]
     },
     {
       "id": "domain-2-1-threat-actors",
       "title": "2.1 Threat Actors and Motivations",
       "content": "Quiz content loaded from comptia_secplus/2.0-threats-vulnerabilities/2.1-threat-actors.txt",
-      "tags": ["quiz", "comptia", "security-plus", "threats-vulnerabilities", "threat-actors"]
+      "tags": [
+        "quiz",
+        "comptia",
+        "security-plus",
+        "threats-vulnerabilities",
+        "threat-actors"
+      ],
+      "related_tools": [
+        "bloodhound-python",
+        "adrecon",
+        "impacket-scripts"
+      ]
     },
     {
       "id": "domain-2-2-threat-vectors",
       "title": "2.2 Threat Vectors and Attack Surfaces",
       "content": "Quiz content loaded from comptia_secplus/2.0-threats-vulnerabilities/2.2-threat-vectors.txt",
-      "tags": ["quiz", "comptia", "security-plus", "threats-vulnerabilities", "threat-vectors"]
+      "tags": [
+        "quiz",
+        "comptia",
+        "security-plus",
+        "threats-vulnerabilities",
+        "threat-vectors"
+      ],
+      "related_tools": [
+        "bloodhound-python",
+        "adrecon",
+        "impacket-scripts"
+      ]
     },
     {
       "id": "domain-2-3-vulnerabilities",
       "title": "2.3 Vulnerability Types",
       "content": "Quiz content loaded from comptia_secplus/2.0-threats-vulnerabilities/2.3-vulnerabilities.txt",
-      "tags": ["quiz", "comptia", "security-plus", "threats-vulnerabilities", "vulnerabilities"]
+      "tags": [
+        "quiz",
+        "comptia",
+        "security-plus",
+        "threats-vulnerabilities",
+        "vulnerabilities"
+      ],
+      "related_tools": [
+        "bloodhound-python",
+        "adrecon",
+        "impacket-scripts"
+      ]
     },
     {
       "id": "domain-2-4-malicious-activity",
       "title": "2.4 Indicators of Malicious Activity",
       "content": "Quiz content loaded from comptia_secplus/2.0-threats-vulnerabilities/2.4-indicators-malicious-activity.txt",
-      "tags": ["quiz", "comptia", "security-plus", "threats-vulnerabilities", "malicious-activity"]
+      "tags": [
+        "quiz",
+        "comptia",
+        "security-plus",
+        "threats-vulnerabilities",
+        "malicious-activity"
+      ],
+      "related_tools": [
+        "bloodhound-python",
+        "adrecon",
+        "impacket-scripts"
+      ]
     },
     {
       "id": "domain-2-5-mitigation-techniques",
       "title": "2.5 Mitigation Techniques",
       "content": "Quiz content loaded from comptia_secplus/2.0-threats-vulnerabilities/2.5-mitigation-techniques.txt",
-      "tags": ["quiz", "comptia", "security-plus", "threats-vulnerabilities", "mitigation-techniques"]
+      "tags": [
+        "quiz",
+        "comptia",
+        "security-plus",
+        "threats-vulnerabilities",
+        "mitigation-techniques"
+      ],
+      "related_tools": [
+        "bloodhound-python",
+        "adrecon",
+        "impacket-scripts"
+      ]
     },
     {
       "id": "domain-3-1-architecture-models",
       "title": "3.1 Architecture Models",
       "content": "Quiz content loaded from comptia_secplus/3.0-security-architecture/3.1-architecture-models.txt",
-      "tags": ["quiz", "comptia", "security-plus", "security-architecture", "architecture-models"]
+      "tags": [
+        "quiz",
+        "comptia",
+        "security-plus",
+        "security-architecture",
+        "architecture-models"
+      ],
+      "related_tools": [
+        "bloodhound-python",
+        "adrecon",
+        "impacket-scripts"
+      ]
     },
     {
       "id": "domain-3-2-security-infrastructure",
       "title": "3.2 Security Infrastructure",
       "content": "Quiz content loaded from comptia_secplus/3.0-security-architecture/3.2-security-infrastructure.txt",
-      "tags": ["quiz", "comptia", "security-plus", "security-architecture", "security-infrastructure"]
+      "tags": [
+        "quiz",
+        "comptia",
+        "security-plus",
+        "security-architecture",
+        "security-infrastructure"
+      ],
+      "related_tools": [
+        "bloodhound-python",
+        "adrecon",
+        "impacket-scripts"
+      ]
     },
     {
       "id": "domain-3-3-data-protection",
       "title": "3.3 Data Protection",
       "content": "Quiz content loaded from comptia_secplus/3.0-security-architecture/3.3-data-protection.txt",
-      "tags": ["quiz", "comptia", "security-plus", "security-architecture", "data-protection"]
+      "tags": [
+        "quiz",
+        "comptia",
+        "security-plus",
+        "security-architecture",
+        "data-protection"
+      ],
+      "related_tools": [
+        "bloodhound-python",
+        "adrecon",
+        "impacket-scripts"
+      ]
     },
     {
       "id": "domain-3-4-resilience-recovery",
       "title": "3.4 Resilience and Recovery",
       "content": "Quiz content loaded from comptia_secplus/3.0-security-architecture/3.4-resilience-recovery.txt",
-      "tags": ["quiz", "comptia", "security-plus", "security-architecture", "resilience-recovery"]
+      "tags": [
+        "quiz",
+        "comptia",
+        "security-plus",
+        "security-architecture",
+        "resilience-recovery"
+      ],
+      "related_tools": [
+        "bloodhound-python",
+        "adrecon",
+        "impacket-scripts"
+      ]
     },
     {
       "id": "domain-4-1-security-techniques",
       "title": "4.1 Security Techniques",
       "content": "Quiz content loaded from comptia_secplus/4.0-security-operations/4.1-security-techniques.txt",
-      "tags": ["quiz", "comptia", "security-plus", "security-operations", "security-techniques"]
+      "tags": [
+        "quiz",
+        "comptia",
+        "security-plus",
+        "security-operations",
+        "security-techniques"
+      ],
+      "related_tools": [
+        "bloodhound-python",
+        "adrecon",
+        "impacket-scripts"
+      ]
     },
     {
       "id": "domain-4-2-asset-management",
       "title": "4.2 Asset Management",
       "content": "Quiz content loaded from comptia_secplus/4.0-security-operations/4.2-asset-management.txt",
-      "tags": ["quiz", "comptia", "security-plus", "security-operations", "asset-management"]
+      "tags": [
+        "quiz",
+        "comptia",
+        "security-plus",
+        "security-operations",
+        "asset-management"
+      ],
+      "related_tools": [
+        "bloodhound-python",
+        "adrecon",
+        "impacket-scripts"
+      ]
     },
     {
       "id": "domain-4-3-vulnerability-management",
       "title": "4.3 Vulnerability Management",
       "content": "Quiz content loaded from comptia_secplus/4.0-security-operations/4.3-vulnerability-management.txt",
-      "tags": ["quiz", "comptia", "security-plus", "security-operations", "vulnerability-management"]
+      "tags": [
+        "quiz",
+        "comptia",
+        "security-plus",
+        "security-operations",
+        "vulnerability-management"
+      ],
+      "related_tools": [
+        "bloodhound-python",
+        "adrecon",
+        "impacket-scripts"
+      ]
     },
     {
       "id": "domain-4-4-monitoring-concepts",
       "title": "4.4 Monitoring Concepts and Tools",
       "content": "Quiz content loaded from comptia_secplus/4.0-security-operations/4.4-monitoring-concepts.txt",
-      "tags": ["quiz", "comptia", "security-plus", "security-operations", "monitoring-concepts"]
+      "tags": [
+        "quiz",
+        "comptia",
+        "security-plus",
+        "security-operations",
+        "monitoring-concepts"
+      ],
+      "related_tools": [
+        "bloodhound-python",
+        "adrecon",
+        "impacket-scripts"
+      ]
     },
     {
       "id": "domain-4-5-enterprise-capabilities",
       "title": "4.5 Enhancing Enterprise Capabilities",
       "content": "Quiz content loaded from comptia_secplus/4.0-security-operations/4.5-enterprise-capabilities.txt",
-      "tags": ["quiz", "comptia", "security-plus", "security-operations", "enterprise-capabilities"]
+      "tags": [
+        "quiz",
+        "comptia",
+        "security-plus",
+        "security-operations",
+        "enterprise-capabilities"
+      ],
+      "related_tools": [
+        "bloodhound-python",
+        "adrecon",
+        "impacket-scripts"
+      ]
     },
     {
       "id": "domain-5-1-governance-elements",
       "title": "5.1 Governance and Compliance Elements",
       "content": "Quiz content loaded from comptia_secplus/5.0-governance-risk-compliance/5.1-governance-elements.txt",
-      "tags": ["quiz", "comptia", "security-plus", "governance-risk-compliance", "governance-elements"]
+      "tags": [
+        "quiz",
+        "comptia",
+        "security-plus",
+        "governance-risk-compliance",
+        "governance-elements"
+      ],
+      "related_tools": [
+        "workflow_hipaa_compliance",
+        "workflow_pci_dss_assessment",
+        "impacket-scripts",
+        "lynis",
+        "bloodhound-python"
+      ]
     },
     {
       "id": "domain-5-2-risk-management",
       "title": "5.2 Risk Management Processes",
       "content": "Quiz content loaded from comptia_secplus/5.0-governance-risk-compliance/5.2-risk-management.txt",
-      "tags": ["quiz", "comptia", "security-plus", "governance-risk-compliance", "risk-management"]
+      "tags": [
+        "quiz",
+        "comptia",
+        "security-plus",
+        "governance-risk-compliance",
+        "risk-management"
+      ],
+      "related_tools": [
+        "workflow_hipaa_compliance",
+        "workflow_pci_dss_assessment",
+        "impacket-scripts",
+        "lynis",
+        "bloodhound-python"
+      ]
     },
     {
       "id": "domain-5-3-third-party-risk",
       "title": "5.3 Third-Party Risk and Compliance",
       "content": "Quiz content loaded from comptia_secplus/5.0-governance-risk-compliance/5.3-third-party-risk.txt",
-      "tags": ["quiz", "comptia", "security-plus", "governance-risk-compliance", "third-party-risk"]
+      "tags": [
+        "quiz",
+        "comptia",
+        "security-plus",
+        "governance-risk-compliance",
+        "third-party-risk"
+      ],
+      "related_tools": [
+        "workflow_hipaa_compliance",
+        "workflow_pci_dss_assessment",
+        "impacket-scripts",
+        "lynis",
+        "bloodhound-python"
+      ]
     },
     {
       "id": "domain-5-4-compliance-auditing",
       "title": "5.4 Compliance and Auditing",
       "content": "Quiz content loaded from comptia_secplus/5.0-governance-risk-compliance/5.4-compliance-auditing.txt",
-      "tags": ["quiz", "comptia", "security-plus", "governance-risk-compliance", "compliance-auditing"]
+      "tags": [
+        "quiz",
+        "comptia",
+        "security-plus",
+        "governance-risk-compliance",
+        "compliance-auditing"
+      ],
+      "related_tools": [
+        "workflow_hipaa_compliance",
+        "kubeaudit",
+        "workflow_pci_dss_assessment",
+        "impacket-scripts",
+        "lynis"
+      ]
     },
     {
       "id": "domain-5-5-security-awareness-ir",
       "title": "5.5 Security Awareness and Incident Response",
       "content": "Quiz content loaded from comptia_secplus/5.0-governance-risk-compliance/5.5-security-awareness-ir.txt",
-      "tags": ["quiz", "comptia", "security-plus", "governance-risk-compliance", "security-awareness-ir"]
+      "tags": [
+        "quiz",
+        "comptia",
+        "security-plus",
+        "governance-risk-compliance",
+        "security-awareness-ir"
+      ],
+      "related_tools": [
+        "workflow_hipaa_compliance",
+        "workflow_pci_dss_assessment",
+        "impacket-scripts",
+        "lynis",
+        "bloodhound-python"
+      ]
     }
   ]
 }

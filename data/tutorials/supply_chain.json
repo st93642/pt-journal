@@ -8,91 +8,278 @@
       "id": "sbom_fundamentals",
       "title": "SBOM Fundamentals",
       "content": "OBJECTIVE: Learn SBOM concepts and generation techniques\n\nSTEP-BY-STEP PROCESS:\n1. Install Syft: 'curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh'\n2. Generate SBOM for a container: 'syft alpine:latest'\n3. Analyze package dependencies\n4. Check for vulnerable components\n5. Export in multiple formats (JSON, SPDX, CycloneDX)\n\nWHAT TO LOOK FOR:\n- Package inventory completeness\n- Version information accuracy\n- License compliance data\n- Vulnerability correlations\n- Dependency tree depth",
-      "tags": ["tutorial", "supply-chain", "sbom", "analysis"]
+      "tags": [
+        "tutorial",
+        "supply-chain",
+        "sbom",
+        "analysis"
+      ],
+      "related_tools": [
+        "dependency-check",
+        "retire-js",
+        "workflow_hipaa_compliance",
+        "clair",
+        "falco"
+      ]
     },
     {
       "id": "sbom_based_vulnerability_scanning",
       "title": "SBOM-Based Vulnerability Scanning",
       "content": "OBJECTIVE: Use SBOM data for comprehensive vulnerability assessment\n\nSTEP-BY-STEP PROCESS:\n1. Install Grype: 'curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh'\n2. Scan SBOM with Grype: 'grype sbom:./sbom.json'\n3. Analyze vulnerability matches\n4. Check CVSS scores and exploitability\n5. Generate remediation reports\n\nWHAT TO LOOK FOR:\n- Known vulnerability matches\n- Severity classifications\n- Exploit availability\n- Patch availability\n- False positive identification",
-      "tags": ["tutorial", "supply-chain", "sbom", "vulnerability-scanning"]
+      "tags": [
+        "tutorial",
+        "supply-chain",
+        "sbom",
+        "vulnerability-scanning"
+      ],
+      "related_tools": [
+        "grype",
+        "linux-exploit-suggester",
+        "windows-exploit-suggester",
+        "bugbounty_reporting_cvss",
+        "dependency-check"
+      ]
     },
     {
       "id": "license_compliance_checking",
       "title": "License Compliance Checking",
       "content": "OBJECTIVE: Analyze software licenses using SBOM data\n\nSTEP-BY-STEP PROCESS:\n1. Extract license information from SBOM\n2. Identify license conflicts\n3. Check for copyleft licenses\n4. Analyze license compatibility\n5. Generate compliance reports\n\nWHAT TO LOOK FOR:\n- GPL/LGPL usage\n- License compatibility issues\n- Attribution requirements\n- Commercial license restrictions\n- Open source compliance gaps",
-      "tags": ["tutorial", "supply-chain", "sbom", "license-compliance"]
+      "tags": [
+        "tutorial",
+        "supply-chain",
+        "sbom",
+        "license-compliance"
+      ],
+      "related_tools": [
+        "workflow_hipaa_compliance",
+        "dependency-check",
+        "dradis",
+        "faraday",
+        "grype"
+      ]
     },
     {
       "id": "sbom_quality_validation",
       "title": "SBOM Quality Validation",
       "content": "OBJECTIVE: Evaluate SBOM completeness and accuracy\n\nSTEP-BY-STEP PROCESS:\n1. Check SBOM metadata completeness\n2. Validate package information\n3. Assess relationship mappings\n4. Test SBOM parsing tools\n5. Compare against known good SBOMs\n\nWHAT TO LOOK FOR:\n- Missing package data\n- Incomplete version info\n- Broken relationship links\n- Format validation errors\n- Tool compatibility issues",
-      "tags": ["tutorial", "supply-chain", "sbom", "quality-validation"]
+      "tags": [
+        "tutorial",
+        "supply-chain",
+        "sbom",
+        "quality-validation"
+      ],
+      "related_tools": [
+        "dependency-check",
+        "grype",
+        "semgrep",
+        "impacket-scripts",
+        "strings"
+      ]
     },
     {
       "id": "sbom_automation_monitoring",
       "title": "SBOM Automation & Monitoring",
       "content": "OBJECTIVE: Integrate SBOM generation into CI/CD pipelines\n\nSTEP-BY-STEP PROCESS:\n1. Create automated SBOM generation scripts\n2. Integrate with build pipelines\n3. Set up SBOM storage and versioning\n4. Implement continuous monitoring\n5. Configure alerting for issues\n\nWHAT TO LOOK FOR:\n- Pipeline integration points\n- Automation script reliability\n- Storage security measures\n- Monitoring effectiveness\n- Alert threshold tuning",
-      "tags": ["tutorial", "supply-chain", "sbom", "automation", "monitoring"]
+      "tags": [
+        "tutorial",
+        "supply-chain",
+        "sbom",
+        "automation",
+        "monitoring"
+      ],
+      "related_tools": [
+        "grype",
+        "semgrep",
+        "snyk",
+        "trufflehog",
+        "dependency-check"
+      ]
     },
     {
       "id": "dependency_resolution_mechanics",
       "title": "Dependency Resolution Mechanics",
       "content": "OBJECTIVE: Learn how package managers resolve dependencies\n\nSTEP-BY-STEP PROCESS:\n1. Examine npm package resolution: 'npm install lodash'\n2. Check Python pip resolution process\n3. Analyze Maven dependency resolution\n4. Test package registry precedence\n5. Understand version resolution algorithms\n\nWHAT TO LOOK FOR:\n- Registry search order\n- Version matching rules\n- Cache poisoning vectors\n- Namespace conflicts\n- Resolution algorithm weaknesses",
-      "tags": ["tutorial", "supply-chain", "dependency", "resolution"]
+      "tags": [
+        "tutorial",
+        "supply-chain",
+        "dependency",
+        "resolution"
+      ],
+      "related_tools": [
+        "dependency-check",
+        "registry-scanner",
+        "winpeas",
+        "grype",
+        "semgrep"
+      ]
     },
     {
       "id": "dependency_confusion_exploitation",
       "title": "Dependency Confusion Exploitation",
       "content": "OBJECTIVE: Execute dependency confusion attacks against package managers\n\nSTEP-BY-STEP PROCESS:\n1. Register malicious package with internal name\n2. Publish to public registry with higher version\n3. Trick internal systems into downloading malicious package\n4. Execute payload in compromised environment\n5. Maintain persistence through updates\n\nWHAT TO LOOK FOR:\n- Internal package name leaks\n- Registry precedence exploitation\n- Version manipulation\n- Payload execution\n- Update mechanism abuse",
-      "tags": ["tutorial", "supply-chain", "dependency", "confusion", "exploitation"]
+      "tags": [
+        "tutorial",
+        "supply-chain",
+        "dependency",
+        "confusion",
+        "exploitation"
+      ],
+      "related_tools": [
+        "dependency-check",
+        "linux-exploit-suggester",
+        "windows-exploit-suggester",
+        "registry-scanner",
+        "playbook_persistence_mechanism_installation"
+      ]
     },
     {
       "id": "typosquatting_package_creation",
       "title": "Typosquatting Package Creation",
       "content": "OBJECTIVE: Create and deploy typosquatting packages\n\nSTEP-BY-STEP PROCESS:\n1. Identify popular package names\n2. Generate similar-sounding names (lodash → loadsh)\n3. Create malicious packages with typos\n4. Publish to public registries\n5. Monitor for installation attempts\n\nWHAT TO LOOK FOR:\n- Common typos in package names\n- Similar character substitutions\n- Package name variations\n- Installation telemetry\n- Attack success rates",
-      "tags": ["tutorial", "supply-chain", "dependency", "typosquatting"]
+      "tags": [
+        "tutorial",
+        "supply-chain",
+        "dependency",
+        "typosquatting"
+      ],
+      "related_tools": [
+        "dependency-check",
+        "grype",
+        "semgrep",
+        "impacket-scripts",
+        "retire-js"
+      ]
     },
     {
       "id": "registry_poisoning_methods",
       "title": "Registry Poisoning Methods",
       "content": "OBJECTIVE: Poison package registries with malicious content\n\nSTEP-BY-STEP PROCESS:\n1. Compromise maintainer accounts\n2. Inject malicious code into legitimate packages\n3. Create fake package updates\n4. Abuse registry APIs\n5. Exploit CI/CD publishing workflows\n\nWHAT TO LOOK FOR:\n- Weak authentication mechanisms\n- API abuse opportunities\n- Publishing workflow vulnerabilities\n- Update notification exploitation\n- Social engineering vectors",
-      "tags": ["tutorial", "supply-chain", "dependency", "registry-poisoning"]
+      "tags": [
+        "tutorial",
+        "supply-chain",
+        "dependency",
+        "registry-poisoning"
+      ],
+      "related_tools": [
+        "workflow_social_engineering_campaign",
+        "registry-scanner",
+        "linux-exploit-suggester",
+        "burp-api-scanner",
+        "ffuf-api"
+      ]
     },
     {
       "id": "supply_chain_attack_mitigation",
       "title": "Supply Chain Attack Mitigation",
       "content": "OBJECTIVE: Implement defenses against dependency attacks\n\nSTEP-BY-STEP PROCESS:\n1. Set up private package registries\n2. Implement package signing\n3. Use dependency locking (package-lock.json)\n4. Deploy integrity checking\n5. Monitor for anomalous packages\n\nWHAT TO LOOK FOR:\n- Registry isolation effectiveness\n- Signature validation\n- Lockfile integrity\n- Anomaly detection accuracy\n- Response time improvements",
-      "tags": ["tutorial", "supply-chain", "dependency", "mitigation"]
+      "tags": [
+        "tutorial",
+        "supply-chain",
+        "dependency",
+        "mitigation"
+      ],
+      "related_tools": [
+        "dependency-check",
+        "registry-scanner",
+        "retire-js",
+        "falco",
+        "yara"
+      ]
     },
     {
       "id": "digital_signature_basics",
       "title": "Digital Signature Basics",
       "content": "OBJECTIVE: Understand digital signatures for software artifacts\n\nSTEP-BY-STEP PROCESS:\n1. Generate GPG keypair: 'gpg --gen-key'\n2. Sign a file: 'gpg --sign --armor file.txt'\n3. Verify signature: 'gpg --verify file.txt.asc'\n4. Check key trust levels\n5. Understand certificate chains\n\nWHAT TO LOOK FOR:\n- Key generation best practices\n- Signature verification process\n- Trust model understanding\n- Certificate validation\n- Key management procedures",
-      "tags": ["tutorial", "supply-chain", "artifact", "integrity", "signing"]
+      "tags": [
+        "tutorial",
+        "supply-chain",
+        "artifact",
+        "integrity",
+        "signing"
+      ],
+      "related_tools": [
+        "dependency-check",
+        "crtsh",
+        "sslyze",
+        "grype",
+        "semgrep"
+      ]
     },
     {
       "id": "package_signing_workflows",
       "title": "Package Signing Workflows",
       "content": "OBJECTIVE: Implement signing for different package types\n\nSTEP-BY-STEP PROCESS:\n1. Sign npm packages: 'npm publish --sign'\n2. Sign Python wheels: 'python -m twine upload --sign dist/*'\n3. Sign container images: 'cosign sign image:tag'\n4. Verify signed packages\n5. Set up automated signing\n\nWHAT TO LOOK FOR:\n- Package type support\n- Signing workflow integration\n- Verification procedures\n- Automation reliability\n- Key security measures",
-      "tags": ["tutorial", "supply-chain", "artifact", "integrity", "signing"]
+      "tags": [
+        "tutorial",
+        "supply-chain",
+        "artifact",
+        "integrity",
+        "signing"
+      ],
+      "related_tools": [
+        "bloodhound-python",
+        "clair",
+        "falco",
+        "docker",
+        "trivy"
+      ]
     },
     {
       "id": "cryptographic_hash_verification",
       "title": "Cryptographic Hash Verification",
       "content": "OBJECTIVE: Use cryptographic hashes for integrity verification\n\nSTEP-BY-STEP PROCESS:\n1. Generate file hashes: 'sha256sum file.txt'\n2. Create hash files for distributions\n3. Implement hash verification in downloads\n4. Use Merkle trees for large datasets\n5. Automate integrity checking\n\nWHAT TO LOOK FOR:\n- Hash algorithm selection\n- Collision resistance\n- Verification speed\n- Storage efficiency\n- Automation integration",
-      "tags": ["tutorial", "supply-chain", "artifact", "integrity", "hashing"]
+      "tags": [
+        "tutorial",
+        "supply-chain",
+        "artifact",
+        "integrity",
+        "hashing"
+      ],
+      "related_tools": [
+        "dependency-check",
+        "john",
+        "hashid",
+        "grype",
+        "semgrep"
+      ]
     },
     {
       "id": "provenance_tracking",
       "title": "Provenance Tracking",
       "content": "OBJECTIVE: Track artifact provenance through the supply chain\n\nSTEP-BY-STEP PROCESS:\n1. Implement SLSA framework\n2. Track build provenance\n3. Verify build environments\n4. Check dependency provenance\n5. Generate provenance attestations\n\nWHAT TO LOOK FOR:\n- Build environment isolation\n- Dependency chain tracking\n- Attestation formats\n- Verification procedures\n- Compliance requirements",
-      "tags": ["tutorial", "supply-chain", "artifact", "integrity", "provenance"]
+      "tags": [
+        "tutorial",
+        "supply-chain",
+        "artifact",
+        "integrity",
+        "provenance"
+      ],
+      "related_tools": [
+        "dependency-check",
+        "workflow_hipaa_compliance",
+        "grype",
+        "semgrep",
+        "workflow_pci_dss_assessment"
+      ]
     },
     {
       "id": "continuous_integrity_assurance",
       "title": "Continuous Integrity Assurance",
       "content": "OBJECTIVE: Set up continuous integrity monitoring systems\n\nSTEP-BY-STEP PROCESS:\n1. Deploy integrity scanners\n2. Monitor artifact registries\n3. Set up alerting for tampering\n4. Implement automated remediation\n5. Generate integrity reports\n\nWHAT TO LOOK FOR:\n- Detection accuracy\n- False positive rates\n- Response automation\n- Reporting comprehensiveness\n- System performance impact",
-      "tags": ["tutorial", "supply-chain", "artifact", "integrity", "monitoring"]
+      "tags": [
+        "tutorial",
+        "supply-chain",
+        "artifact",
+        "integrity",
+        "monitoring"
+      ],
+      "related_tools": [
+        "bugbounty_reporting_cvss",
+        "dradis",
+        "falco",
+        "faraday",
+        "yara"
+      ]
     }
   ]
 }

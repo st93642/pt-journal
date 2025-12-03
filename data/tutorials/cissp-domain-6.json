@@ -14,6 +14,13 @@
         "penetration-testing",
         "security-testing",
         "risk-assessment"
+      ],
+      "related_tools": [
+        "recon-ng",
+        "workflow_cloud_security_assessment",
+        "comparison_sql_testing",
+        "workflow_pci_dss_assessment",
+        "linux-exploit-suggester"
       ]
     },
     {
@@ -27,6 +34,13 @@
         "owasp-testing",
         "ptes",
         "security-frameworks"
+      ],
+      "related_tools": [
+        "recon-ng",
+        "serverless-framework",
+        "workflow_pci_dss_assessment",
+        "owasp-zap",
+        "windows-exploit-suggester"
       ]
     },
     {
@@ -40,6 +54,13 @@
         "vulnerability-scanning",
         "web-testing",
         "wireless-testing"
+      ],
+      "related_tools": [
+        "aircrack-ng",
+        "hunter-io",
+        "comparison_sql_testing",
+        "workflow_social_engineering_campaign",
+        "comparison_port_scanners"
       ]
     },
     {
@@ -52,6 +73,13 @@
         "risk-analysis",
         "remediation-planning",
         "security-assessment"
+      ],
+      "related_tools": [
+        "workflow_pci_dss_assessment",
+        "cloud-iam-priv-esc-playbook",
+        "linux-exploit-suggester",
+        "bugbounty_reporting_cvss",
+        "windows-exploit-suggester"
       ]
     },
     {
@@ -62,6 +90,11 @@
         "quiz",
         "cissp",
         "security-assessment-testing"
+      ],
+      "related_tools": [
+        "bloodhound-python",
+        "adrecon",
+        "impacket-scripts"
       ]
     }
   ]

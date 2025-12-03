@@ -13,6 +13,13 @@
         "vpn",
         "secure-architecture",
         "cissp"
+      ],
+      "related_tools": [
+        "hunter-io",
+        "recon-ng",
+        "aircrack-ng",
+        "ligolo-ng",
+        "workflow_cloud_security_assessment"
       ]
     },
     {
@@ -26,6 +33,13 @@
         "ssh",
         "cryptography",
         "cissp"
+      ],
+      "related_tools": [
+        "ligolo-ng",
+        "dns-tunneling",
+        "sso-oauth-oidc-misconfig-playbook",
+        "bloodhound-python",
+        "llm-guard"
       ]
     },
     {
@@ -39,6 +53,13 @@
         "ddos",
         "defense-in-depth",
         "cissp"
+      ],
+      "related_tools": [
+        "workflow_cloud_security_assessment",
+        "dns-tunneling",
+        "bloodhound-python",
+        "comparison_directory_fuzzers",
+        "linux-exploit-suggester"
       ]
     },
     {
@@ -49,6 +70,11 @@
         "quiz",
         "cissp",
         "communication-network-security"
+      ],
+      "related_tools": [
+        "bloodhound-python",
+        "adrecon",
+        "impacket-scripts"
       ]
     }
   ]

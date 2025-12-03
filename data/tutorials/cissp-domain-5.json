@@ -14,6 +14,13 @@
         "authorization",
         "iam",
         "cissp"
+      ],
+      "related_tools": [
+        "hunter-io",
+        "ml-pipeline-audit",
+        "cloud-iam-priv-esc-playbook",
+        "playbook_multi_stage_credential_harvesting",
+        "cloud-iam-enum"
       ]
     },
     {
@@ -27,6 +34,13 @@
         "policies",
         "access-control",
         "cissp"
+      ],
+      "related_tools": [
+        "ml-pipeline-audit",
+        "playbook_multi_stage_credential_harvesting",
+        "cloud-iam-enum",
+        "cloud-iam-priv-esc-playbook",
+        "aws-sam-cli"
       ]
     },
     {
@@ -40,6 +54,13 @@
         "security",
         "audit",
         "cissp"
+      ],
+      "related_tools": [
+        "hunter-io",
+        "workflow_hipaa_compliance",
+        "john",
+        "playbook_multi_stage_credential_harvesting",
+        "sso-oauth-oidc-misconfig-playbook"
       ]
     },
     {
@@ -50,6 +71,11 @@
         "quiz",
         "cissp",
         "identity-access-management"
+      ],
+      "related_tools": [
+        "bloodhound-python",
+        "adrecon",
+        "impacket-scripts"
       ]
     }
   ]

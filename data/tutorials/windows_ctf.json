@@ -14,6 +14,13 @@
         "lab-setup",
         "active-directory",
         "kali-linux"
+      ],
+      "related_tools": [
+        "windows-exploit-suggester",
+        "linux-smart-enumeration",
+        "linux-exploit-suggester",
+        "bloodhound-python",
+        "comparison_directory_fuzzers"
       ]
     },
     {
@@ -26,6 +33,13 @@
         "enumeration",
         "reconnaissance",
         "ldap"
+      ],
+      "related_tools": [
+        "recon-ng",
+        "linux-smart-enumeration",
+        "ligolo-ng",
+        "bloodhound-python",
+        "comparison_directory_fuzzers"
       ]
     },
     {
@@ -38,6 +52,13 @@
         "privilege-escalation",
         "exploitation",
         "system"
+      ],
+      "related_tools": [
+        "windows-exploit-suggester",
+        "unix-privesc-check",
+        "linux-exploit-suggester",
+        "registry-scanner",
+        "linux-smart-enumeration"
       ]
     },
     {
@@ -50,6 +71,13 @@
         "mimikatz",
         "dumping",
         "pth"
+      ],
+      "related_tools": [
+        "workflow_red_purple_team_collaboration",
+        "playbook_multi_stage_credential_harvesting",
+        "ligolo-ng",
+        "mimikatz",
+        "windows-exploit-suggester"
       ]
     },
     {
@@ -62,6 +90,13 @@
         "hashcat",
         "brute-force",
         "kerberos"
+      ],
+      "related_tools": [
+        "ligolo-ng",
+        "hashcat",
+        "playbook_credential_spraying_brute_force",
+        "john",
+        "windows-exploit-suggester"
       ]
     },
     {
@@ -74,6 +109,13 @@
         "golden-ticket",
         "as-rep-roasting",
         "delegation"
+      ],
+      "related_tools": [
+        "mimikatz",
+        "hashcat",
+        "windows-exploit-suggester",
+        "bloodhound-python",
+        "linux-exploit-suggester"
       ]
     },
     {
@@ -86,6 +128,13 @@
         "privilege-escalation",
         "bloodhound",
         "active-directory"
+      ],
+      "related_tools": [
+        "aircrack-ng",
+        "windows-exploit-suggester",
+        "bloodhound-python",
+        "comparison_directory_fuzzers",
+        "linux-exploit-suggester"
       ]
     },
     {
@@ -98,6 +147,13 @@
         "privilege-escalation",
         "lateral-movement",
         "administrative-model"
+      ],
+      "related_tools": [
+        "windows-exploit-suggester",
+        "unix-privesc-check",
+        "playbook_multi_stage_credential_harvesting",
+        "linux-exploit-suggester",
+        "playbook_persistence_mechanism_installation"
       ]
     },
     {
@@ -110,6 +166,13 @@
         "monitoring",
         "logs",
         "anti-forensics"
+      ],
+      "related_tools": [
+        "windows-exploit-suggester",
+        "workflow_evasion_obfuscation",
+        "edr-opsec-checklist",
+        "dns-tunneling",
+        "comparison_directory_fuzzers"
       ]
     }
   ]

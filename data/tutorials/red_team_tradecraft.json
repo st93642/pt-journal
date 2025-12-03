@@ -8,61 +8,183 @@
       "id": "edr_evasion_fundamentals",
       "title": "EDR Evasion Fundamentals",
       "content": "OBJECTIVE: Understand EDR detection surfaces and basic evasion techniques\n\nSTEP-BY-STEP PROCESS:\n1. Identify EDR products (CrowdStrike, Defender ATP, Carbon Black)\n2. Map detection capabilities (process injection, fileless malware, network beacons)\n3. Implement basic evasion (obfuscation, living-off-the-land)\n\nWHAT TO LOOK FOR:\n- EDR agent processes and services\n- Telemetry collection points\n- Behavioral analysis triggers",
-      "tags": ["redteam", "mitre", "edr", "evasion"]
+      "tags": [
+        "redteam",
+        "mitre",
+        "edr",
+        "evasion"
+      ],
+      "related_tools": [
+        "edr-opsec-checklist",
+        "workflow_evasion_obfuscation",
+        "sliver",
+        "falco",
+        "caldera"
+      ]
     },
     {
       "id": "living_off_the_land",
       "title": "Living Off The Land (LotL)",
       "content": "OBJECTIVE: Use native system tools to avoid custom malware detection\n\nSTEP-BY-STEP PROCESS:\n1. Enumerate built-in tools (PowerShell, WMI, BITS, COM objects)\n2. Chain native commands for persistence and lateral movement\n3. Avoid dropping files when possible\n\nWHAT TO LOOK FOR:\n- Suspicious command-line arguments\n- Unusual process parent-child relationships\n- Native tool abuse patterns",
-      "tags": ["redteam", "mitre", "edr", "living-off-the-land"]
+      "tags": [
+        "redteam",
+        "mitre",
+        "edr",
+        "living-off-the-land"
+      ],
+      "related_tools": [
+        "playbook_persistence_mechanism_installation",
+        "edr-opsec-checklist",
+        "sliver",
+        "falco",
+        "powersploit"
+      ]
     },
     {
       "id": "fileless_malware_techniques",
       "title": "Fileless Malware Techniques",
       "content": "OBJECTIVE: Execute code without touching disk to evade file-based detection\n\nSTEP-BY-STEP PROCESS:\n1. Use PowerShell reflection and memory-only execution\n2. Implement process injection (APC, thread hijacking)\n3. Leverage script engines (JScript, VBScript) for execution\n\nWHAT TO LOOK FOR:\n- Memory-resident code artifacts\n- Reflective loading indicators\n- Script engine abuse",
-      "tags": ["redteam", "mitre", "edr", "fileless-malware"]
+      "tags": [
+        "redteam",
+        "mitre",
+        "edr",
+        "fileless-malware"
+      ],
+      "related_tools": [
+        "edr-opsec-checklist",
+        "sliver",
+        "falco",
+        "powersploit",
+        "caldera"
+      ]
     },
     {
       "id": "command_control_obfuscation",
       "title": "Command & Control (C2) Obfuscation",
       "content": "OBJECTIVE: Hide C2 communications from network detection\n\nSTEP-BY-STEP PROCESS:\n1. Implement domain fronting and CDN abuse\n2. Use DNS tunneling and protocol smuggling\n3. Apply traffic encryption and shaping\n\nWHAT TO LOOK FOR:\n- Unusual outbound connections\n- Encrypted traffic patterns\n- DNS query anomalies",
-      "tags": ["redteam", "mitre", "edr", "c2", "obfuscation"]
+      "tags": [
+        "redteam",
+        "mitre",
+        "edr",
+        "c2",
+        "obfuscation"
+      ],
+      "related_tools": [
+        "ligolo-ng",
+        "dns-tunneling",
+        "burp-api-scanner",
+        "ffuf-api",
+        "edr-opsec-checklist"
+      ]
     },
     {
       "id": "credential_access_without_detection",
       "title": "Credential Access Without Detection",
       "content": "OBJECTIVE: Harvest credentials while avoiding authentication monitoring\n\nSTEP-BY-STEP PROCESS:\n1. Use LSASS dumping with evasion techniques\n2. Implement pass-the-hash/token theft\n3. Leverage Kerberoasting and ASREPRoasting\n\nWHAT TO LOOK FOR:\n- Memory access patterns\n- Authentication anomalies\n- Ticket manipulation indicators",
-      "tags": ["redteam", "mitre", "edr", "credential-access"]
+      "tags": [
+        "redteam",
+        "mitre",
+        "edr",
+        "credential-access"
+      ],
+      "related_tools": [
+        "playbook_multi_stage_credential_harvesting",
+        "edr-opsec-checklist",
+        "workflow_evasion_obfuscation",
+        "sliver",
+        "falco"
+      ]
     },
     {
       "id": "lateral_movement_tradecraft",
       "title": "Lateral Movement Tradecraft",
       "content": "OBJECTIVE: Move through networks using EDR-aware techniques\n\nSTEP-BY-STEP PROCESS:\n1. Use WMI and PowerShell remoting\n2. Implement DCOM/RPC abuse\n3. Leverage RDP and VNC with session hijacking\n\nWHAT TO LOOK FOR:\n- Remote execution artifacts\n- Network session anomalies\n- Administrative tool abuse",
-      "tags": ["redteam", "mitre", "edr", "lateral-movement"]
+      "tags": [
+        "redteam",
+        "mitre",
+        "edr",
+        "lateral-movement"
+      ],
+      "related_tools": [
+        "edr-opsec-checklist",
+        "sliver",
+        "powersploit",
+        "caldera",
+        "evil-winrm"
+      ]
     },
     {
       "id": "persistence_mechanisms",
       "title": "Persistence Mechanisms",
       "content": "OBJECTIVE: Maintain access using hard-to-detect persistence methods\n\nSTEP-BY-STEP PROCESS:\n1. Implement scheduled task abuse\n2. Use registry autoruns with camouflage\n3. Create service backdoors with legitimate names\n\nWHAT TO LOOK FOR:\n- Startup modification indicators\n- Service creation events\n- Registry key changes",
-      "tags": ["redteam", "mitre", "edr", "persistence"]
+      "tags": [
+        "redteam",
+        "mitre",
+        "edr",
+        "persistence"
+      ],
+      "related_tools": [
+        "playbook_persistence_mechanism_installation",
+        "registry-scanner",
+        "edr-opsec-checklist",
+        "sliver",
+        "caldera"
+      ]
     },
     {
       "id": "data_exfiltration_techniques",
       "title": "Data Exfiltration Techniques",
       "content": "OBJECTIVE: Extract data without triggering DLP or network monitoring\n\nSTEP-BY-STEP PROCESS:\n1. Use DNS exfiltration and covert channels\n2. Implement chunked transfers with encryption\n3. Leverage cloud storage abuse\n\nWHAT TO LOOK FOR:\n- Unusual data flows\n- Encrypted outbound traffic\n- Cloud service anomalies",
-      "tags": ["redteam", "mitre", "edr", "exfiltration"]
+      "tags": [
+        "redteam",
+        "mitre",
+        "edr",
+        "exfiltration"
+      ],
+      "related_tools": [
+        "workflow_cloud_security_assessment",
+        "dns-tunneling",
+        "edr-opsec-checklist",
+        "dnsenum",
+        "sliver"
+      ]
     },
     {
       "id": "anti_forensic_measures",
       "title": "Anti-Forensic Measures",
       "content": "OBJECTIVE: Cover tracks and avoid forensic detection\n\nSTEP-BY-STEP PROCESS:\n1. Implement log manipulation and clearing\n2. Use timestomping and artifact removal\n3. Deploy anti-forensic tools\n\nWHAT TO LOOK FOR:\n- Log modification events\n- File timestamp changes\n- Evidence destruction indicators",
-      "tags": ["redteam", "mitre", "edr", "anti-forensics"]
+      "tags": [
+        "redteam",
+        "mitre",
+        "edr",
+        "anti-forensics"
+      ],
+      "related_tools": [
+        "edr-opsec-checklist",
+        "sliver",
+        "falco",
+        "caldera",
+        "bulk_extractor"
+      ]
     },
     {
       "id": "attck_framework_mapping",
       "title": "ATT&CK Framework Mapping",
       "content": "OBJECTIVE: Structure operations using MITRE ATT&CK for comprehensive coverage\n\nSTEP-BY-STEP PROCESS:\n1. Map tactics (Recon, Initial Access, Execution, etc.)\n2. Select techniques based on target environment\n3. Chain techniques for realistic emulation\n\nWHAT TO LOOK FOR:\n- Technique implementation artifacts\n- Tactic progression indicators\n- Emulation scenario coverage",
-      "tags": ["redteam", "mitre", "edr", "attck", "framework"]
+      "tags": [
+        "redteam",
+        "mitre",
+        "edr",
+        "attck",
+        "framework"
+      ],
+      "related_tools": [
+        "adversary-emulation-playbook",
+        "edr-opsec-checklist",
+        "sliver",
+        "caldera",
+        "sliver"
+      ]
     }
   ]
 }

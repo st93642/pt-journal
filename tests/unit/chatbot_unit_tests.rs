@@ -1,8 +1,7 @@
-use pt_journal::chatbot::{ChatProvider, OpenAIProvider, AzureOpenAIProvider};
-use pt_journal::config::config::{OpenAIProviderConfig, AzureOpenAIProviderConfig, ModelProfile};
-use pt_journal::chatbot::ChatRequest;
-use pt_journal::model::{ChatMessage, ChatRole};
 use httpmock::prelude::*;
+use pt_journal::chatbot::ChatRequest;
+use pt_journal::chatbot::{AzureOpenAIProvider, ChatProvider, OpenAIProvider};
+use pt_journal::config::{AzureOpenAIProviderConfig, ModelProfile, OpenAIProviderConfig};
 
 #[test]
 fn test_openai_provider_configuration() {

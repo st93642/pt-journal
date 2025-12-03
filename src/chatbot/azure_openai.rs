@@ -1,6 +1,6 @@
 use crate::chatbot::provider::ChatProvider;
 use crate::chatbot::ChatRequest;
-use crate::config::config::{AzureOpenAIProviderConfig, ModelParameters};
+use crate::config::{AzureOpenAIProviderConfig, ModelParameters};
 use crate::error::{PtError, Result as PtResult};
 use crate::model::{ChatMessage, ChatRole};
 use reqwest::blocking::Client;
@@ -110,7 +110,11 @@ impl ChatProvider for AzureOpenAIProvider {
         }
 
         // Add the current user message if not already in history
-        if request.history.last().map_or(true, |msg| msg.role != ChatRole::User || msg.content != request.user_prompt) {
+        if request
+            .history
+            .last()
+            .is_none_or(|msg| msg.role != ChatRole::User || msg.content != request.user_prompt)
+        {
             openai_request.messages.push(OpenAIMessage {
                 role: "user".to_string(),
                 content: request.user_prompt.clone(),
@@ -247,12 +251,12 @@ struct OpenAIMessage {
     content: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 struct OpenAIResponse {
     choices: Vec<OpenAIChoice>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 struct OpenAIChoice {
     message: OpenAIMessage,
 }
@@ -268,7 +272,7 @@ struct AzureOpenAIDeployment {
     model: AzureOpenAIModel,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 struct AzureOpenAIModel {
     id: String,
     #[serde(rename = "type")]
@@ -284,7 +288,7 @@ struct OpenAIParameters {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::config::{ModelProfile, ModelProviderKind};
+    use crate::config::ModelProfile;
     use httpmock::prelude::*;
 
     #[test]
@@ -359,7 +363,7 @@ mod tests {
 
         let provider = AzureOpenAIProvider::new(config);
         let result = provider.check_availability();
-        assert_eq!(result.unwrap(), false);
+        assert!(!result.unwrap());
     }
 
     #[test]

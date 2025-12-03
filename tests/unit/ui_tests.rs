@@ -60,7 +60,7 @@ mod ui_integration_tests {
 
         // Since GTK is required, this is a placeholder test
         // In a real test, we would:
-        let models = vec![
+        let models = [
             ("llama3.2:latest".to_string(), "Meta Llama 3.2".to_string()),
             ("mistral:7b".to_string(), "Mistral 7B".to_string()),
             (
@@ -86,7 +86,7 @@ mod ui_integration_tests {
         // This would verify the populate_models method works correctly
 
         // Test data representing models from config
-        let test_models = vec![
+        let test_models = [
             ("model1".to_string(), "Model 1".to_string()),
             ("model2".to_string(), "Model 2".to_string()),
             ("model3".to_string(), "Model 3".to_string()),

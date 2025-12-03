@@ -106,7 +106,6 @@ pub fn resolve_instruction_state(tool_id: Option<&str>) -> InstructionState<'sta
 }
 
 /// Builds the fallback widget when instruction data is unavailable.
-#[allow(deprecated)]
 pub fn build_missing_instructions_box(tool_id: &str) -> GtkBox {
     let container = GtkBox::new(Orientation::Vertical, 12);
     container.set_margin_top(16);
@@ -131,7 +130,6 @@ pub fn build_missing_instructions_box(tool_id: &str) -> GtkBox {
 }
 
 /// Builds the complete inline instruction sections widget.
-#[allow(deprecated)]
 pub fn build_instruction_sections(instructions: &ToolInstructions) -> GtkBox {
     let root = GtkBox::new(Orientation::Vertical, 12);
     root.set_margin_top(8);
@@ -450,7 +448,10 @@ fn build_resources_section(resources: &[tool_instructions::ResourceLink]) -> Pre
         let row = ListBoxRow::new();
         let box_container = GtkBox::new(Orientation::Vertical, 4);
 
-        let link = LinkButton::with_label(&resource.url, &resource.label);
+        let link = LinkButton::builder()
+            .uri(&resource.url)
+            .label(&resource.label)
+            .build();
         link.set_halign(Align::Start);
         box_container.append(&link);
 
@@ -488,7 +489,9 @@ fn create_copyable_command_row(command: &str) -> GtkBox {
     cmd_label.add_css_class("monospace");
 
     let command_text = command.to_string();
-    let copy_button = Button::from_icon_name("edit-copy-symbolic");
+    let copy_button = Button::builder()
+        .icon_name("edit-copy-symbolic")
+        .build();
     copy_button.set_tooltip_text(Some("Copy full command to clipboard"));
     copy_button.connect_clicked(move |_| {
         if let Some(display) = gdk::Display::default() {

@@ -1,6 +1,6 @@
 use crate::chatbot::provider::ChatProvider;
 use crate::chatbot::ChatRequest;
-use crate::config::config::{OpenAIProviderConfig, ModelParameters};
+use crate::config::{ModelParameters, OpenAIProviderConfig};
 use crate::error::{PtError, Result as PtResult};
 use crate::model::{ChatMessage, ChatRole};
 use reqwest::blocking::Client;
@@ -83,7 +83,11 @@ impl ChatProvider for OpenAIProvider {
         }
 
         // Add the current user message if not already in history
-        if request.history.last().map_or(true, |msg| msg.role != ChatRole::User || msg.content != request.user_prompt) {
+        if request
+            .history
+            .last()
+            .is_none_or(|msg| msg.role != ChatRole::User || msg.content != request.user_prompt)
+        {
             openai_request.messages.push(OpenAIMessage {
                 role: "user".to_string(),
                 content: request.user_prompt.clone(),
@@ -92,7 +96,7 @@ impl ChatProvider for OpenAIProvider {
 
         let response = self
             .client
-            .post(&format!("{}/chat/completions", self.config.endpoint))
+            .post(format!("{}/chat/completions", self.config.endpoint))
             .header("Authorization", format!("Bearer {}", api_key))
             .header("Content-Type", "application/json")
             .json(&openai_request)
@@ -137,7 +141,7 @@ impl ChatProvider for OpenAIProvider {
         
         let response = self
             .client
-            .get(&format!("{}/models", self.config.endpoint))
+            .get(format!("{}/models", self.config.endpoint))
             .header("Authorization", format!("Bearer {}", api_key))
             .send()
             .map_err(|_| PtError::network(
@@ -156,7 +160,7 @@ impl ChatProvider for OpenAIProvider {
         
         let response = self
             .client
-            .get(&format!("{}/models", self.config.endpoint))
+            .get(format!("{}/models", self.config.endpoint))
             .header("Authorization", format!("Bearer {}", api_key))
             .send()
             .map_err(|e| PtError::network(
@@ -232,7 +236,7 @@ struct OpenAIParameters {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::config::{ModelProfile, ModelProviderKind};
+    use crate::config::ModelProfile;
     use httpmock::prelude::*;
 
     #[test]
@@ -278,7 +282,7 @@ mod tests {
 
         let provider = OpenAIProvider::new(config);
         let result = provider.check_availability();
-        assert_eq!(result.unwrap(), false);
+        assert!(!result.unwrap());
     }
 
     #[test]

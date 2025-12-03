@@ -3,8 +3,8 @@
 //! This module provides compile-time validation macros and runtime validation
 //! functions to ensure configuration integrity.
 
-use crate::config::config::AppConfig;
 use crate::config::validation::{validate_app_config, validate_manifest_instructions_cross_refs};
+use crate::config::AppConfig;
 use std::path::Path;
 
 /// Validates all configuration files at startup

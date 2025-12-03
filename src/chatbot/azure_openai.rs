@@ -257,12 +257,12 @@ struct OpenAIChoice {
     message: OpenAIMessage,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 struct AzureOpenAIDeploymentsResponse {
     data: Vec<AzureOpenAIDeployment>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 struct AzureOpenAIDeployment {
     id: String,
     model: AzureOpenAIModel,
@@ -321,7 +321,7 @@ mod tests {
 
         let result = provider.send_message(&request);
         assert!(result.is_err());
-        assert!(matches!(result.unwrap_err(), PtError::Configuration { .. }));
+        assert!(matches!(result.unwrap_err(), PtError::Config { .. }));
     }
 
     #[test]
@@ -344,7 +344,7 @@ mod tests {
 
         let result = provider.send_message(&request);
         assert!(result.is_err());
-        assert!(matches!(result.unwrap_err(), PtError::Configuration { .. }));
+        assert!(matches!(result.unwrap_err(), PtError::Config { .. }));
     }
 
     #[test]
@@ -388,7 +388,7 @@ mod tests {
 
         let config = AzureOpenAIProviderConfig {
             api_key: Some("test-key".to_string()),
-            endpoint: Some(server.url()),
+            endpoint: Some(server.url("")),
             deployment_name: Some("gpt-4".to_string()),
             api_version: Some("2024-02-15-preview".to_string()),
             timeout_seconds: 30,
@@ -404,7 +404,7 @@ mod tests {
 
         let result = provider.send_message(&request);
         assert!(result.is_ok());
-        assert_eq!(result.unwrap().content(), "Hello from Azure OpenAI!");
+        assert_eq!(result.unwrap().content, "Hello from Azure OpenAI!");
     }
 
     #[test]
@@ -449,7 +449,7 @@ mod tests {
 
         let config = AzureOpenAIProviderConfig {
             api_key: Some("test-key".to_string()),
-            endpoint: Some(server.url()),
+            endpoint: Some(server.url("")),
             deployment_name: None,
             api_version: Some("2024-02-15-preview".to_string()),
             timeout_seconds: 30,

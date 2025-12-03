@@ -130,7 +130,17 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         // ============================================
         load_tutorial_phase("reporting"),
         // ============================================
-        // SECTION 9: Certification Preparation (positions 52-62)
+        // SECTION 9: SOC Operations & Blue Team (positions 52-56)
+        // Security Operations Center tools, SIEM platforms, detection
+        // engineering, and incident response workflows
+        // ============================================
+        load_tutorial_phase("splunk_soc_fundamentals"),
+        load_tutorial_phase("elastic_siem_security"),
+        load_tutorial_phase("wazuh_xdr_siem"),
+        load_tutorial_phase("sigma_detection_rules"),
+        load_tutorial_phase("soc_incident_response_workflow"),
+        // ============================================
+        // SECTION 10: Certification Preparation (positions 57-67)
         // ============================================
         load_tutorial_phase("comptia_secplus"),
         load_tutorial_phase("pentest_exam"),
@@ -320,7 +330,13 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
         "automating-pt-reports-genai",
         // Section 8: Reporting
         "reporting",
-        // Section 9: Certification Preparation
+        // Section 9: SOC Operations & Blue Team
+        "splunk_soc_fundamentals",
+        "elastic_siem_security",
+        "wazuh_xdr_siem",
+        "sigma_detection_rules",
+        "soc_incident_response_workflow",
+        // Section 10: Certification Preparation
         "comptia_secplus",
         "pentest_exam",
         "ceh",

@@ -1,0 +1,121 @@
+{
+  "title": "Practical Cyber Intelligence",
+  "chapters": [
+    {
+      "title": "Intelligence Analysis",
+      "sections": [
+        {
+          "title": "Summary",
+          "paragraphs": [
+            {
+              "text": "Notes",
+              "page_number": 2,
+              "is_heading": false
+            }
+          ],
+          "page_number": 2
+        }
+      ],
+      "page_number": 2
+    },
+    {
+      "title": "Digital Forensics",
+      "sections": [
+        {
+          "title": "Summary",
+          "paragraphs": [
+            {
+              "text": "Note",
+              "page_number": 2,
+              "is_heading": false
+            }
+          ],
+          "page_number": 2
+        }
+      ],
+      "page_number": 2
+    },
+    {
+      "title": "Disk Forensics",
+      "sections": [
+        {
+          "title": "Summary",
+          "paragraphs": [
+            {
+              "text": "Notes",
+              "page_number": 3,
+              "is_heading": false
+            }
+          ],
+          "page_number": 3
+        }
+      ],
+      "page_number": 2
+    },
+    {
+      "title": "Memory Forensics",
+      "sections": [
+        {
+          "title": "Summary",
+          "paragraphs": [
+            {
+              "text": "Notes",
+              "page_number": 3,
+              "is_heading": false
+            }
+          ],
+          "page_number": 3
+        }
+      ],
+      "page_number": 3
+    },
+    {
+      "title": "SQLite Forensics",
+      "sections": [
+        {
+          "title": "Summary",
+          "paragraphs": [
+            {
+              "text": "Notes",
+              "page_number": 3,
+              "is_heading": false
+            }
+          ],
+          "page_number": 3
+        }
+      ],
+      "page_number": 3
+    },
+    {
+      "title": "Windows Forensics",
+      "sections": [
+        {
+          "title": "Summary",
+          "paragraphs": [
+            {
+              "text": "Notes",
+              "page_number": 3,
+              "is_heading": false
+            }
+          ],
+          "page_number": 3
+        }
+      ],
+      "page_number": 3
+    },
+    {
+      "title": "macOS Forensics",
+      "sections": [],
+      "page_number": 3
+    }
+  ],
+  "raw_text": "--- Page 1 ---\nAdam Tilmar Jakobsen\nPractical Cyber\nIntelligence\nA Hands-on Guide to Digital Forensics\n? = Lil rps —  — SS A J\n———\n\n--- Page 2 ---\nTable of Contents\nCover\nTable of Contents\nTitle Page\nCopyright\nDedication\nAbout the Author\nPreface\nAcknowledgments\nIntroduction\n1 Intelligence Analysis\n1.1 Intelligence Life Cycle\n1.2 Cyber Threat Intelligence Frameworks\n1.3 Summary\nNotes\n2 Digital Forensics\n2.1 Device Collection\n2.2 Preservation\n2.3 Acquisition\n2.4 Processing\n2.5 Analysis\n2.6 Documentation and Reporting\n2.7 Summary\nNote\n3 Disk Forensics\n3.1 Acquisition\n\n--- Page 3 ---\n3.2 Preparation\n3.3 Analysis\n3.4 File and Data Carving\n3.5 Summary\nNotes\n4 Memory Forensics\n4.1 Acquisition\n4.2 Analysis\n4.3 Summary\nNotes\n5 SQLite Forensics\n5.1 Analyzing\n5.2 Summary\nNotes\n6 Windows Forensics\n6.1 New Technology File System (NTFS)\n6.2 Acquisition\n6.3 Analysis\n6.4 Evidence Location\n6.5 Summary\nNotes\n7 macOS Forensics\n7.1 File System\n7.2 Security\n7.3 Acquisition\n7.4 Analysis\n7.5 Evidence Location\n7.6 Summary\n",
+  "extraction_stats": {
+    "total_pages": 3,
+    "text_extraction_pages": 3,
+    "ocr_pages": 0,
+    "chapters_detected": 7,
+    "total_sections": 6,
+    "total_paragraphs": 6
+  }
+}

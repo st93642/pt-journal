@@ -293,6 +293,42 @@ data/
 └── tool_instructions/# Tool documentation (80+ tools)
 ```
 
+### PDF Book Extraction
+
+The project includes a PDF extraction utility for processing educational content:
+
+```bash
+# Install Python dependencies
+pip install -r scripts/requirements.txt
+
+# Install system dependencies (Ubuntu/Debian)
+sudo apt install tesseract-ocr poppler-utils
+
+# Extract book content
+python3 scripts/extract_practical_cyber_intel.py \
+    --pdf "./Practical Cyber Intelligence.pdf" \
+    --output data/source_material/practical_cyber_intelligence
+
+# Extract specific page range
+python3 scripts/extract_practical_cyber_intel.py \
+    --pdf "./Practical Cyber Intelligence.pdf" \
+    --output data/source_material/practical_cyber_intelligence \
+    --pages 1-50
+```
+
+**Features:**
+- Text-first extraction using PyPDF2 with OCR fallback
+- Automatic chapter/section/paragraph hierarchy detection  
+- Structured JSON output with page numbers
+- Raw transcript for manual inspection
+- Dependency validation with actionable error messages
+- Comprehensive unit tests
+
+**Output:**
+- `structured_book.json` - Hierarchical content structure
+- `raw_transcript.txt` - Complete text with page markers
+- `extraction_stats.json` - Processing statistics
+
 ### Running Tests
 
 ```bash

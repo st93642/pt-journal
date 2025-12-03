@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 /// Role of a chat message participant
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum ChatRole {
+    System,
     User,
     Assistant,
 }

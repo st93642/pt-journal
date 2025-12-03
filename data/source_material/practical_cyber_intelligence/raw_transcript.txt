@@ -1,0 +1,65 @@
+--- Page 1 ---
+Adam Tilmar Jakobsen
+Practical Cyber
+Intelligence
+A Hands-on Guide to Digital Forensics
+? = Lil rps —  — SS A J
+———
+
+--- Page 2 ---
+Table of Contents
+Cover
+Table of Contents
+Title Page
+Copyright
+Dedication
+About the Author
+Preface
+Acknowledgments
+Introduction
+1 Intelligence Analysis
+1.1 Intelligence Life Cycle
+1.2 Cyber Threat Intelligence Frameworks
+1.3 Summary
+Notes
+2 Digital Forensics
+2.1 Device Collection
+2.2 Preservation
+2.3 Acquisition
+2.4 Processing
+2.5 Analysis
+2.6 Documentation and Reporting
+2.7 Summary
+Note
+3 Disk Forensics
+3.1 Acquisition
+
+--- Page 3 ---
+3.2 Preparation
+3.3 Analysis
+3.4 File and Data Carving
+3.5 Summary
+Notes
+4 Memory Forensics
+4.1 Acquisition
+4.2 Analysis
+4.3 Summary
+Notes
+5 SQLite Forensics
+5.1 Analyzing
+5.2 Summary
+Notes
+6 Windows Forensics
+6.1 New Technology File System (NTFS)
+6.2 Acquisition
+6.3 Analysis
+6.4 Evidence Location
+6.5 Summary
+Notes
+7 macOS Forensics
+7.1 File System
+7.2 Security
+7.3 Acquisition
+7.4 Analysis
+7.5 Evidence Location
+7.6 Summary

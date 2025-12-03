@@ -212,7 +212,7 @@ struct OpenAIChoice {
     message: OpenAIMessage,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 struct OpenAIModelsResponse {
     data: Vec<OpenAIModel>,
 }

@@ -1,0 +1,13 @@
+# Python dependencies for PT Journal scripts
+# Install with: pip install -r scripts/requirements.txt
+
+# PDF processing and text extraction
+PyPDF2>=3.0.0
+pdf2image>=1.16.0
+pytesseract>=0.3.10
+
+# Image processing (dependency for pdf2image)
+Pillow>=9.0.0
+
+# Data processing and validation
+jsonschema>=4.0.0

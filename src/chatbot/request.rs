@@ -11,6 +11,18 @@ pub struct StepContext {
     pub quiz_status: Option<String>,
 }
 
+impl Default for StepContext {
+    fn default() -> Self {
+        Self {
+            phase_name: "Test Phase".to_string(),
+            step_title: "Test Step".to_string(),
+            step_description: "Test Description".to_string(),
+            step_status: "Todo".to_string(),
+            quiz_status: None,
+        }
+    }
+}
+
 /// Bundle of all information needed for a chat request
 #[derive(Debug, Clone)]
 pub struct ChatRequest {

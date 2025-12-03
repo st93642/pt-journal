@@ -203,12 +203,12 @@ struct OpenAIMessage {
     content: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 struct OpenAIResponse {
     choices: Vec<OpenAIChoice>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 struct OpenAIChoice {
     message: OpenAIMessage,
 }
@@ -265,7 +265,7 @@ mod tests {
 
         let result = provider.send_message(&request);
         assert!(result.is_err());
-        assert!(matches!(result.unwrap_err(), PtError::Configuration { .. }));
+        assert!(matches!(result.unwrap_err(), PtError::Config { .. }));
     }
 
     #[test]
@@ -306,7 +306,7 @@ mod tests {
 
         let config = OpenAIProviderConfig {
             api_key: Some("test-key".to_string()),
-            endpoint: server.url(),
+            endpoint: server.url(""),
             timeout_seconds: 30,
         };
 
@@ -320,7 +320,7 @@ mod tests {
 
         let result = provider.send_message(&request);
         assert!(result.is_ok());
-        assert_eq!(result.unwrap().content(), "Hello from OpenAI!");
+        assert_eq!(result.unwrap().content, "Hello from OpenAI!");
     }
 
     #[test]
@@ -352,7 +352,7 @@ mod tests {
 
         let config = OpenAIProviderConfig {
             api_key: Some("test-key".to_string()),
-            endpoint: server.url(),
+            endpoint: server.url(""),
             timeout_seconds: 30,
         };
 

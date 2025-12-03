@@ -1,5 +1,5 @@
 use pt_journal::chatbot::{ChatProvider, OpenAIProvider, AzureOpenAIProvider};
-use pt_journal::config::{OpenAIProviderConfig, AzureOpenAIProviderConfig, ModelProfile};
+use pt_journal::config::config::{OpenAIProviderConfig, AzureOpenAIProviderConfig, ModelProfile};
 use pt_journal::chatbot::ChatRequest;
 use pt_journal::model::{ChatMessage, ChatRole};
 use httpmock::prelude::*;
@@ -58,12 +58,12 @@ fn test_openai_provider_successful_request() {
             .header("Content-Type", "application/json");
         then.status(200)
             .header("Content-Type", "application/json")
-            .json_body(&mock_response);
+            .json_body(mock_response);
     });
 
     let config = OpenAIProviderConfig {
         api_key: Some("test-key".to_string()),
-        endpoint: server.url(),
+        endpoint: server.url(""),
         timeout_seconds: 60,
     };
 
@@ -77,7 +77,7 @@ fn test_openai_provider_successful_request() {
 
     let result = provider.send_message(&request);
     assert!(result.is_ok());
-    assert_eq!(result.unwrap().content(), "Hello from OpenAI!");
+    assert_eq!(result.unwrap().content, "Hello from OpenAI!");
 }
 
 #[test]
@@ -163,12 +163,12 @@ fn test_azure_openai_provider_successful_request() {
             .query_param("api-version", "2024-02-15-preview");
         then.status(200)
             .header("Content-Type", "application/json")
-            .json_body(&mock_response);
+            .json_body(mock_response);
     });
 
     let config = AzureOpenAIProviderConfig {
         api_key: Some("test-key".to_string()),
-        endpoint: Some(server.url()),
+        endpoint: Some(server.url("")),
         deployment_name: Some("gpt-4".to_string()),
         api_version: Some("2024-02-15-preview".to_string()),
         timeout_seconds: 60,
@@ -184,7 +184,7 @@ fn test_azure_openai_provider_successful_request() {
 
     let result = provider.send_message(&request);
     assert!(result.is_ok());
-    assert_eq!(result.unwrap().content(), "Hello from Azure OpenAI!");
+    assert_eq!(result.unwrap().content, "Hello from Azure OpenAI!");
 }
 
 #[test]
@@ -210,7 +210,7 @@ fn test_openai_provider_availability_check() {
             .header("Authorization", "Bearer test-key");
         then.status(200)
             .header("Content-Type", "application/json")
-            .json_body(&serde_json::json!({
+            .json_body(serde_json::json!({
                 "data": [
                     {"id": "gpt-4"},
                     {"id": "gpt-3.5-turbo"}
@@ -220,7 +220,7 @@ fn test_openai_provider_availability_check() {
 
     let config = OpenAIProviderConfig {
         api_key: Some("test-key".to_string()),
-        endpoint: server.url(),
+        endpoint: server.url(""),
         timeout_seconds: 60,
     };
 
@@ -241,7 +241,7 @@ fn test_azure_openai_provider_availability_check() {
             .query_param("api-version", "2024-02-15-preview");
         then.status(200)
             .header("Content-Type", "application/json")
-            .json_body(&serde_json::json!({
+            .json_body(serde_json::json!({
                 "data": [
                     {
                         "id": "gpt-4",
@@ -256,7 +256,7 @@ fn test_azure_openai_provider_availability_check() {
 
     let config = AzureOpenAIProviderConfig {
         api_key: Some("test-key".to_string()),
-        endpoint: Some(server.url()),
+        endpoint: Some(server.url("")),
         deployment_name: None,
         api_version: Some("2024-02-15-preview".to_string()),
         timeout_seconds: 60,

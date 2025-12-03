@@ -585,6 +585,8 @@ timeout_seconds = 42
             default_model_id: String::new(),
             models: Vec::new(),
             ollama: OllamaProviderConfig::default(),
+            openai: OpenAIProviderConfig::default(),
+            azure_openai: AzureOpenAIProviderConfig::default(),
         };
         chatbot.ensure_valid();
         assert!(!chatbot.models.is_empty());

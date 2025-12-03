@@ -255,12 +255,15 @@ mod tests {
                             "Missing STEP-BY-STEP in: {}",
                             step.title
                         );
-                        // Most tutorials have "WHAT TO LOOK FOR" but Cloud & Identity tutorials have different sections
+                        // Most tutorials have "WHAT TO LOOK FOR" but CTI tutorials have different sections
                         assert!(
                             description.contains("WHAT TO LOOK FOR")
                                 || description.contains("DETECTION AND DEFENSE")
                                 || description.contains("REMEDIATION")
-                                || description.contains("TOOLS AND RESOURCES"),
+                                || description.contains("TOOLS AND RESOURCES")
+                                || description.contains("DETECTION INDICATORS")
+                                || description.contains("COMMON PITFALLS")
+                                || description.contains("FURTHER READING"),
                             "Missing educational sections in: {}",
                             step.title
                         );

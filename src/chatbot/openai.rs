@@ -39,6 +39,7 @@ impl OpenAIProvider {
                 role: match msg.role {
                     ChatRole::User => "user".to_string(),
                     ChatRole::Assistant => "assistant".to_string(),
+                    ChatRole::System => "system".to_string(),
                 },
                 content: msg.content.clone(),
             })
@@ -217,7 +218,7 @@ struct OpenAIModelsResponse {
     data: Vec<OpenAIModel>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 struct OpenAIModel {
     id: String,
 }

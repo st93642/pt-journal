@@ -17,7 +17,8 @@ A **GTK4/Libadwaita desktop application** for penetration testing education, bui
   - Linux CTF step-by-step guides
   - Cloud security (AWS, Azure, GCP, IAM, containers)
   - Modern web application security
-  - **AI Agent Operations** - Autonomous workflow orchestration using AutoGen, PentestGPT, and specialized agent frameworks for penetration testing automation
+  - **Practical Cyber Intelligence Curriculum** - 9-phase forensics program covering threat intelligence, digital forensics methodology, disk/memory/network forensics, and incident response
+  - **Streamlined AI Security** - 8 high-quality phases covering AI/ML security fundamentals, AI-powered offensive tools, and agentic operations
 
 - ❓ **Quiz System** - Test your knowledge with categorized questions organized by certification domains (1000+ questions across CEH, Security+, PenTest+)
 
@@ -25,7 +26,8 @@ A **GTK4/Libadwaita desktop application** for penetration testing education, bui
 
 - 🛠️ **Tool Instructions & Terminal** - Comprehensive security tool documentation with embedded terminal for hands-on practice:
   - 229+ security tools with detailed usage guides
-  - Expanded AI security coverage including PyRIT (Microsoft AI red teaming), PentestGPT (LLM-driven pentest automation), and NeMo Guardrails (NVIDIA AI safety controls)
+  - **Expanded Forensics Coverage** - Autopsy, Sleuth Kit, Volatility, FTK Imager, registry analysis tools
+  - **AI Security Tools** - PyRIT (Microsoft AI red teaming), PentestGPT (LLM-driven pentest automation), NeMo Guardrails (NVIDIA AI safety controls), and comprehensive LLM testing frameworks
   - Installation instructions for multiple platforms
   - Interactive terminal with copy/paste functionality
   - Non-modal tool instruction dialogs (can interact with terminal simultaneously)
@@ -36,28 +38,51 @@ A **GTK4/Libadwaita desktop application** for penetration testing education, bui
 
 ### Recent Enhancements
 
+- ✅ **Practical Cyber Intelligence Integration** - Added 9-phase forensics curriculum based on "Practical Cyber Intelligence: A Hands-on Guide to Digital Forensics"
+- ✅ **Curriculum Streamlining** - Reduced from 67 to 52 phases (15 deprecated AI phases removed), maintaining high-quality content while improving focus
+- ✅ **Enhanced Forensics Tool Coverage** - Added comprehensive documentation for Autopsy, Sleuth Kit, Volatility, and platform-specific forensics tools
+- ✅ **PDF Extraction Pipeline** - Complete book content extraction with OCR fallback and structured JSON output for tutorial generation
 - ✅ **Expanded Windows CTF Tutorial** - Added 3 new advanced steps covering ACL analysis, administrative tier model evasion, and security monitoring bypass
 - ✅ **Fixed Terminal Interaction** - Tool instruction dialogs are now non-modal, allowing simultaneous terminal usage
 - ✅ **Comprehensive Test Suite** - 110 unit tests + 10 integration tests with automated validation
-- ✅ **Enhanced Tool Documentation** - 80+ security tools with installation guides and usage examples
+- ✅ **Enhanced Tool Documentation** - 229 security tools with installation guides and usage examples
 - ✅ **Improved Quiz System** - Point-based scoring with first-attempt bonuses and progress tracking
 
 ### Content Coverage
 
-- **59 Tutorial Phases** spanning 420+ learning steps across penetration testing domains
-- **23 AI-Focused Phases** covering:
-  - GenAI-driven reconnaissance, exploitation, and automated reporting
-  - **AI Agent Operations** - Agentic frameworks (AutoGen, PentestGPT) and autonomous workflow orchestration
-  - **AI SecOps Copilots** - Intelligent incident triage, threat analysis, and security operations augmentation
-  - **AI Playbook Automation** - Adaptive playbook execution, threat hunting, and compliance automation
-- **1000+ Quiz Questions** covering CEH, Security+, PenTest+, CISSP, and AI agent operations certifications
-- **229 Security Tools** with detailed documentation and terminal integration, including comprehensive AI security coverage with PyRIT, PentestGPT, and NeMo Guardrails
+- **52 Tutorial Phases** spanning 371+ learning steps across penetration testing domains
+- **Practical Cyber Intelligence Curriculum** - 9-phase forensics program based on "Practical Cyber Intelligence: A Hands-on Guide to Digital Forensics" covering:
+  - Cyber Threat Intelligence Fundamentals
+  - Digital Forensics Methodology  
+  - Disk, Memory, SQLite, Windows, macOS, and Network Forensics
+  - Incident Response Methodology
+- **Streamlined AI Content** - 8 high-quality AI-focused phases (reduced from 23) covering essential modern topics:
+  - AI/ML Security fundamentals
+  - AI-powered offensive security tools
+  - AI agentic operations for penetration testing
+  - Advanced topics like RAG red teaming and bug bounty automation
+- **1000+ Quiz Questions** covering CEH, Security+, PenTest+, CISSP, and specialized forensics domains
+- **229 Security Tools** with detailed documentation and terminal integration, including comprehensive AI security coverage with PyRIT, PentestGPT, NeMo Guardrails, and forensics tools
 - **Multi-Platform Support** - Linux, macOS, Windows compatibility
-- 📄 **AI Content Audit** - Baseline of tutorial phases and tool instructions for upcoming GenAI enhancements (see [docs/roadmap/ai_content_audit.md](docs/roadmap/ai_content_audit.md))
+- 📄 **Curriculum Audit** - Complete tutorial catalog with Practical Cyber Intelligence integration (see [docs/curriculum/practical_cyber_intelligence.md](docs/curriculum/practical_cyber_intelligence.md))
 
-## Screenshots
+## Documentation
 
-Screenshots coming soon.
+### Curriculum Documentation
+- **[Practical Cyber Intelligence Curriculum](docs/curriculum/practical_cyber_intelligence.md)** - Complete forensics program documentation with phase details, tool integration, and learning objectives
+- **[Testing & Validation Guide](docs/curriculum/testing_validation.md)** - Comprehensive testing procedures for curriculum validation and UI testing
+- **[Curriculum Audit](docs/roadmap/ai_content_audit.md)** - Current curriculum status with phase counts and content analysis
+
+### Project Documentation
+- **[Project README](README.md)** - Main project documentation with installation and usage instructions
+- **[AI Content Audit](docs/roadmap/ai_content_audit.md)** - Historical audit of AI content changes and curriculum streamlining
+
+### Quick Reference
+- **Phase Count**: 52 total (down from 67, 15 deprecated AI phases removed)
+- **Step Count**: 371 total (down from 471)  
+- **New Content**: 9 Practical Cyber Intelligence phases (52 steps)
+- **Remaining AI**: 8 high-quality AI phases (15% of curriculum)
+- **Tools**: 229 documented security tools (15 forensics, 9 AI security)
 
 ## Installation
 
@@ -293,9 +318,9 @@ data/
 └── tool_instructions/# Tool documentation (80+ tools)
 ```
 
-### PDF Book Extraction
+### PDF Book Extraction & Curriculum Generation
 
-The project includes a PDF extraction utility for processing educational content:
+The project includes a comprehensive PDF extraction pipeline for processing educational content from "Practical Cyber Intelligence: A Hands-on Guide to Digital Forensics":
 
 ```bash
 # Install Python dependencies
@@ -304,46 +329,82 @@ pip install -r scripts/requirements.txt
 # Install system dependencies (Ubuntu/Debian)
 sudo apt install tesseract-ocr poppler-utils
 
-# Extract book content
+# Extract complete book content
 python3 scripts/extract_practical_cyber_intel.py \
-    --pdf "./Practical Cyber Intelligence.pdf" \
+    --pdf "./Practical Cyber Intelligence A Hands-on Guide to Digital Forensics (Jakobsen, Adam Tilmar) (Z-Library).pdf" \
     --output data/source_material/practical_cyber_intelligence
 
 # Extract specific page range
 python3 scripts/extract_practical_cyber_intel.py \
-    --pdf "./Practical Cyber Intelligence.pdf" \
+    --pdf "./Practical Cyber Intelligence*.pdf" \
     --output data/source_material/practical_cyber_intelligence \
     --pages 1-50
 ```
 
-**Features:**
-- Text-first extraction using PyPDF2 with OCR fallback
-- Automatic chapter/section/paragraph hierarchy detection  
-- Structured JSON output with page numbers
-- Raw transcript for manual inspection
+**Pipeline Features:**
+- Text-first extraction using PyPDF2 with OCR fallback for complex pages
+- Automatic chapter/section/paragraph hierarchy detection preserving book structure
+- Structured JSON output with page numbers for content traceability
+- Raw transcript for manual inspection and quality control
 - Dependency validation with actionable error messages
-- Comprehensive unit tests
+- Comprehensive unit tests for extraction reliability
 
-**Output:**
-- `structured_book.json` - Hierarchical content structure
-- `raw_transcript.txt` - Complete text with page markers
-- `extraction_stats.json` - Processing statistics
+**Output Files:**
+- `structured_book.json` - Hierarchical content structure (chapters → sections → paragraphs)
+- `raw_transcript.txt` - Complete text with page markers for reference
+- `extraction_stats.json` - Processing statistics and quality metrics
 
-### Running Tests
+**Tutorial Generation Workflow:**
+1. Extract book content using the pipeline above
+2. Review structured JSON in `data/source_material/practical_cyber_intelligence/`
+3. Tutorial JSON files are already created in `data/tutorials/` based on the book content:
+   - `cyber_threat_intelligence_fundamentals.json`
+   - `digital_forensics_methodology.json`
+   - `disk_forensics_analysis.json`
+   - `memory_forensics_analysis.json`
+   - `sqlite_forensics.json`
+   - `windows_forensics_deep_dive.json`
+   - `network_forensics_fundamentals.json`
+   - `macos_forensics.json`
+   - `incident_response_methodology.json`
+4. Run `cargo run` to test the new phases in the GTK UI
+5. Validate with `./test-all.sh` to ensure all tests pass
+
+### Running Tests & Validation
 
 ```bash
 # Full test suite (unit + integration + linting + formatting + JSON validation)
 ./test-all.sh
 
-# Unit tests only (110 tests covering all modules)
+# Unit tests only (comprehensive test coverage for all modules)
 cargo test --test unit_tests
 
-# Integration tests only (10 tests for cross-module functionality)
+# Integration tests only (cross-module functionality)
 cargo test --test integration_tests
+
+# Tutorial catalog audit (verify phase/step counts and categories)
+python3 scripts/tutorial_catalog_audit.py
 
 # With verbose output
 cargo test -- --nocapture
+
+# GTK UI validation
+cargo run --release
+# Navigate through the new Practical Cyber Intelligence phases:
+# 1. Cyber Threat Intelligence Fundamentals (Phase 20)
+# 2. Digital Forensics Methodology (Phase 21)
+# 3. Disk Forensics Analysis (Phase 22)
+# And verify all steps display correctly with proper formatting
 ```
+
+**Expected Test Results:**
+- **52 phases** loaded (down from 67)
+- **371 total steps** (down from 471)
+- **8 AI phases** remaining (high-quality content only)
+- **33 forensics-focused steps** across 9 phases
+- **47 cyber-intelligence tagged steps**
+- All JSON files valid and properly structured
+- Tutorial validation passes for all phases
 
 ### Code Quality
 

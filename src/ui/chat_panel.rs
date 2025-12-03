@@ -129,11 +129,13 @@ impl ChatPanel {
         let role_label = Label::new(Some(match message.role {
             ChatRole::User => "You",
             ChatRole::Assistant => "Assistant",
+            ChatRole::System => "System",
         }));
         role_label.set_xalign(0.0);
         role_label.add_css_class(match message.role {
             ChatRole::User => "user-message",
             ChatRole::Assistant => "assistant-message",
+            ChatRole::System => "system-message",
         });
 
         // Timestamp

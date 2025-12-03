@@ -3,7 +3,7 @@
 //! This module provides comprehensive validation for all configuration files
 //! used by PT Journal, including TOML configs and JSON manifests.
 
-use crate::config::config::{AppConfig, ChatbotConfig};
+use crate::config::{AppConfig, ChatbotConfig};
 use std::collections::HashSet;
 use std::fs;
 use std::path::Path;

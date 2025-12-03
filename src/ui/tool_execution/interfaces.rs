@@ -31,7 +31,6 @@ pub trait InstructionProvider {
 
 /// Abstracts terminal operations, allowing the panel to work with
 /// different terminal implementations or mocks.
-#[allow(dead_code)]
 pub trait TerminalInterface {
     /// Writes text to the terminal.
     fn write(&mut self, text: &str);
@@ -45,7 +44,6 @@ pub trait TerminalInterface {
 
 /// Abstracts the view operations needed by the controller,
 /// allowing the controller to work with different view implementations.
-#[allow(dead_code)]
 pub trait ToolPanelView {
     /// Updates the category selector with available categories.
     fn set_categories(&self, categories: &[String], default_index: usize);

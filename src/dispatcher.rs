@@ -269,7 +269,6 @@ mod tests {
     fn test_event_bus_creation() {
         let _bus = EventBus::new();
         // Should create without panicking
-        assert!(true);
     }
 
     #[test]
@@ -386,10 +385,12 @@ mod tests {
     fn test_legacy_compatibility() {
         // Test that legacy type aliases work
         let _dispatcher: SharedDispatcher = create_dispatcher();
-        let _message: AppMessage = AppEvent::Info("test".to_string());
+        let message: AppMessage = AppEvent::Info("test".to_string());
 
-        // Should compile and work
-        assert!(true);
+        match message {
+            AppEvent::Info(info) => assert_eq!(info, "test"),
+            other => panic!("Unexpected event: {:?}", other),
+        }
     }
 
     #[test]
@@ -426,6 +427,5 @@ mod tests {
         bus.emit(AppEvent::Info("info".to_string()));
 
         // If we get here, all events worked
-        assert!(true);
     }
 }

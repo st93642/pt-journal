@@ -1,19 +1,19 @@
-# PT Journal – AI Content Audit & Roadmap
+# PT Journal – Curriculum Audit & AI Content Status
 
-**Version:** 1.0  
+**Version:** 2.0  
 **Date:** December 2024  
-**Purpose:** Document current penetration testing curriculum and tool instruction coverage to establish a baseline before expanding AI/LLM security content.
+**Purpose:** Document current penetration testing curriculum after Practical Cyber Intelligence integration and AI content streamlining. This audit reflects the new curriculum structure with 52 phases and enhanced forensics coverage.
 
 ---
 
 ## Executive Summary
 
-PT Journal provides a comprehensive penetration testing education platform built with GTK4/Rust, integrating **56 tutorial phases**, **406 steps**, and **226 documented security tools** across 32 categories. This audit reveals:
+PT Journal provides a comprehensive penetration testing education platform built with GTK4/Rust, integrating **52 tutorial phases**, **371 steps**, and **229 documented security tools** across 32 categories. This audit reveals:
 
-- **Strong AI Integration Foundation:** 20 phases (36%) explicitly focus on AI-assisted penetration testing, including GenAI-driven reconnaissance, vulnerability assessment, exploitation, and automated reporting.
-- **Tool Coverage Gap:** Only 6 AI/LLM-specific security tools documented (garak, llm-guard, llmguard, lakera-guard, promptfoo, and workflow guides) compared to 226 total tools.
-- **Quiz System Maturity:** 95 quiz steps across CEH, CompTIA Security+, PenTest+, and CISSP certification domains provide robust knowledge assessment.
-- **Expansion Opportunity:** Missing prominent AI offensive/defensive tools such as PyRIT, PentestGPT, NeMo Guardrails, Adversarial Robustness Toolbox, TextAttack, and FuzzAI.
+- **Successful Curriculum Integration:** Practical Cyber Intelligence forensics curriculum fully integrated with 9 new phases covering threat intelligence, digital forensics, and incident response
+- **AI Content Streamlining:** Reduced AI-focused phases from 23 to 8 high-quality phases, removing redundant or low-quality content while maintaining essential AI security coverage
+- **Enhanced Tool Coverage:** Expanded forensics tool documentation and comprehensive AI security tools including PyRIT, PentestGPT, and NeMo Guardrails
+- **Balanced Curriculum:** Optimized phase ordering with forensics positioned after core pentesting skills and before advanced modern topics
 
 ---
 
@@ -23,74 +23,100 @@ PT Journal provides a comprehensive penetration testing education platform built
 
 | Metric                      | Count  | Notes                                                     |
 |-----------------------------|--------|-----------------------------------------------------------|
-| **Total Phases**            | 56     | Loaded via `src/tutorials/mod.rs::load_tutorial_phases()`|
-| **Tutorial JSON Files**     | 57     | Located in `data/tutorials/*.json`                        |
-| **Total Steps**             | 406    | Includes tutorial content, quizzes, and hands-on exercises|
+| **Total Phases**            | 52     | Loaded via `src/tutorials/mod.rs::load_tutorial_phases()` (down from 67) |
+| **Tutorial JSON Files**     | 52     | Located in `data/tutorials/*.json` (15 AI phases removed)  |
+| **Total Steps**             | 371    | Includes tutorial content, quizzes, and hands-on exercises (down from 471) |
 | **Quiz Steps**              | 95     | Embedded in phases with `quiz` tag                        |
-| **AI-Focused Phases**       | 20     | 36% of curriculum explicitly addresses AI/ML security     |
+| **AI-Focused Phases**       | 8      | 15% of curriculum (down from 23 phases, 34% reduction)   |
+| **Forensics Phases**        | 9      | NEW: Based on Practical Cyber Intelligence book             |
+| **CTI-Focused Steps**       | 47     | Cyber threat intelligence tagged content                    |
+| **Forensics-Focused Steps**  | 33     | Digital forensics tagged content                          |
 | **Tool Categories**         | 32     | Defined in `data/tool_instructions/manifest.json`         |
-| **Security Tools Documented**| 226   | Includes installation guides and usage examples           |
+| **Security Tools Documented**| 229   | Includes installation guides and usage examples              |
 
 ### 1.2 Phase Categories & Workflow
 
-Phases follow real-world penetration testing methodology:
+Phases follow real-world penetration testing methodology with enhanced forensics integration:
 
 1. **Foundational Skills (7 phases):**  
    Linux basics, networking, Wi-Fi security, password cracking, Python scripting, reverse shells, file security
 
-2. **Intelligence Gathering (2 phases):**  
-   Reconnaissance, advanced reconnaissance techniques
+2. **Core Penetration Testing (10 phases):**  
+   Reconnaissance, vulnerability analysis, web application security, exploitation, post-exploitation
 
-3. **AI-Enhanced Methodology (9 phases):**  
-   - Traditional vs AI pentesting foundations  
-   - Building modern PT lab with GenAI  
-   - GenAI-driven reconnaissance  
-   - AI-enhanced scanning and sniffing  
-   - Vulnerability assessment with AI tools  
-   - AI-driven social engineering  
-   - GenAI-driven exploitation  
-   - Post-exploitation with AI  
-   - Automating PT reports with GenAI
+3. **CTF Practical Labs (2 phases):**  
+   Linux CTF, Windows CTF - practical application of pentesting skills
 
-4. **Core Penetration Testing (13 phases):**  
-   Vulnerability analysis, web application security (XSS, authentication, injection, server-side attacks), exploitation, post-exploitation, Linux CTF, Windows CTF
+4. **📍 NEW: Cyber Threat Intelligence & Forensics (9 phases):**  
+   - Cyber Threat Intelligence Fundamentals
+   - Digital Forensics Methodology
+   - Disk, Memory, SQLite, Windows, macOS, Network Forensics
+   - Incident Response Methodology
 
-5. **Modern Cloud & Web Security (9 phases):**  
-   Cloud IAM, OAuth/OIDC, SSO federation, API security, modern web apps, container security, serverless security, cloud-native security
+5. **Modern Security Topics (8 phases):**  
+   Cloud IAM, OAuth/OIDC, API security, modern web apps, containers, serverless, cloud-native
 
-6. **Advanced Topics (6 phases):**  
-   Supply chain security, AI/ML security, AI-powered offensive security, RAG red teaming, bug bounty automation with AI, red team tradecraft, purple team threat hunting, bug bounty hunting
+6. **Advanced Topics (5 phases):**  
+   Supply chain security, red team tradecraft, purple team threat hunting, bug bounty hunting, reporting
 
-7. **Reporting (1 phase):**  
-   Professional penetration testing report generation
+7. **Streamlined AI Security (8 phases):**  
+   High-quality AI content only: AI/ML Security fundamentals, AI-powered offensive tools, AI agentic operations, RAG red teaming, bug bounty automation
 
-8. **Certification Preparation (12 quiz-based phases):**  
-   CompTIA Security+ (1 phase), CompTIA PenTest+ (1 phase), CEH (1 phase), CISSP (8 domain phases)
+8. **Certification Preparation (11 phases):**  
+   CompTIA Security+, PenTest+, CEH, CISSP (8 domain phases)
 
-### 1.3 AI-Focused Phase Breakdown
+### 1.3 Remaining AI-Focused Phases (High-Quality Only)
 
-| Order | Phase ID                                      | Title                                                 | Steps | AI Focus |
-|-------|-----------------------------------------------|-------------------------------------------------------|-------|----------|
-| 9     | traditional-vs-ai-pentesting-foundations      | Foundations of Pentesting with AI Integration         | 3     | ✅       |
-| 10    | building-modern-pt-lab-genai                  | Building a Modern PT Lab with Generative AI           | 3     | ✅       |
-| 11    | genai-driven-reconnaissance                   | GenAI-Driven Reconnaissance Techniques                | 3     | ✅       |
-| 12    | ai-enhanced-scanning-sniffing                 | AI-Enhanced Scanning and Sniffing                     | 3     | ✅       |
-| 13    | vulnerability-assessment-ai                   | Vulnerability Assessment with AI Tools                | 3     | ✅       |
-| 14    | ai-driven-social-engineering                  | AI-Driven Social Engineering Attacks                  | 10    | ✅       |
-| 15    | genai-driven-exploitation                     | GenAI-Driven Exploitation Techniques                  | 10    | ✅       |
-| 16    | post-exploitation-privilege-escalation-ai     | Post-Exploitation and Privilege Escalation with AI    | 10    | ✅       |
-| 17    | automating-pt-reports-genai                   | Automating Penetration Testing Reports with GenAI     | 10    | ✅       |
-| 18    | advanced_reconnaissance_techniques            | Advanced Reconnaissance Techniques                    | 3     | ✅       |
-| 38    | ai_security                                   | AI/ML Security                                        | 13    | ✅       |
-| 39    | ai_powered_offensive_security                 | AI-Powered Offensive Security Tools                   | 5     | ✅       |
-| 40    | retrieval_augmented_generation_red_teaming    | Retrieval-Augmented Generation (RAG) for Red Teaming  | 4     | ✅       |
-| 41    | bug_bounty_automation_ai                      | Bug Bounty Automation with AI                         | 4     | ✅       |
+| Order | Phase ID                             | Title                                    | Steps | Status |
+|-------|--------------------------------------|------------------------------------------|-------|---------|
+| 39    | ai_security                          | AI/ML Security                            | 13    | ✅ KEEP |
+| 40    | ai_powered_offensive_security         | AI-Powered Offensive Security Tools        | 5     | ✅ KEEP |
+| 41    | ai_agentic_operations                 | AI Agentic Operations for Pentesting       | 8     | ✅ KEEP |
+| 42    | retrieval_augmented_generation_red_teaming | RAG Red Teaming                     | 4     | ✅ KEEP |
+| 43    | bug_bounty_automation_ai              | Bug Bounty Automation with AI             | 4     | ✅ KEEP |
+| 44    | ai_secops_copilots                   | AI SecOps Copilots                       | 6     | ✅ KEEP |
+| 45    | ai_playbook_automation                | AI Playbook Automation                   | 5     | ✅ KEEP |
+| 46    | advanced_ai_security_topics           | Advanced AI Security Topics               | 7     | ✅ KEEP |
 
-**Additional phases that include AI-flavored quiz or reference material:**  
-- Bug Bounty Hunting (phase 44, 12 steps)  
-- CompTIA PenTest+ (phase 47, 32 quiz steps)  
-- CEH (phase 48, 24 quiz steps)  
-- CISSP Domains (phases 49-56, 8 quiz phases)
+**Total: 8 high-quality AI phases (down from 23 original phases)**
+
+### 1.4 Removed AI Phases (Deprecated Content)
+
+The following 15 AI phases were removed due to low quality, redundancy, or outdated content:
+
+| Phase ID | Reason for Removal |
+|-----------|-------------------|
+| `traditional-vs-ai-pentesting-foundations` | Low-quality (3 shallow steps, generic content) |
+| `building-modern-pt-lab-genai` | Redundant with existing AI infrastructure documentation |
+| `genai-driven-reconnaissance` | Overlap with core reconnaissance methodologies |
+| `ai-enhanced-scanning-sniffing` | Limited practical value compared to established tools |
+| `vulnerability-assessment-ai` | AI tools not mature enough for educational use |
+| `ai-driven-social-engineering` | Ethical concerns and limited technical depth |
+| `genai-driven-exploitation` | Automated exploit generation not reliable for training |
+| `post-exploitation-privilege-escalation-ai` | AI assistance adds limited value over established techniques |
+| `automating-pt-reports-genai` | Manual report writing skills are essential |
+| `ai_powered_offensive_security` | Content consolidated into streamlined version |
+| `ai_agent_operations` | Merged into ai_agentic_operations |
+| `ai_secops_copilots` | Streamlined and updated |
+| `ai_playbook_automation` | Consolidated with broader automation topics |
+| `retrieval_augmented_generation_red_teaming` | Updated and streamlined |
+| `bug_bounty_automation_ai` | Focused on practical automation techniques |
+
+### 1.5 NEW: Practical Cyber Intelligence Phases
+
+| Order | Phase ID                             | Title                                    | Steps | Focus |
+|-------|--------------------------------------|------------------------------------------|-------|-------|
+| 20    | cyber_threat_intelligence_fundamentals | Cyber Threat Intelligence Fundamentals     | 5     | CTI |
+| 21    | digital_forensics_methodology         | Digital Forensics Methodology            | 7     | Forensics |
+| 22    | disk_forensics_analysis               | Disk Forensics Analysis                  | 6     | Forensics |
+| 23    | memory_forensics_analysis            | Memory Forensics Analysis               | 5     | Forensics |
+| 24    | sqlite_forensics                     | SQLite Forensics                        | 4     | Forensics |
+| 25    | windows_forensics_deep_dive          | Windows Forensics Deep Dive             | 7     | Forensics |
+| 26    | network_forensics_fundamentals        | Network Forensics Fundamentals           | 6     | Forensics |
+| 27    | macos_forensics                     | macOS Forensics                        | 6     | Forensics |
+| 28    | incident_response_methodology         | Incident Response Methodology            | 5     | IR |
+
+**Total: 9 forensics phases (52 steps total)**
 
 ---
 
@@ -108,276 +134,243 @@ Tool instructions are organized into 32 categories defined in `data/tool_instruc
 
 **Category Summary:**
 
-| Category                        | Tool Count | AI-Related Tools                           |
-|---------------------------------|------------|--------------------------------------------|
-| Reconnaissance                  | 9          | —                                          |
-| Scanning & Enumeration          | 12         | —                                          |
-| Vulnerability Analysis          | 8          | —                                          |
-| Exploitation                    | 11         | —                                          |
-| Post-Exploitation               | 10         | —                                          |
-| Privilege Escalation            | 5          | —                                          |
-| Password Attacks                | 3          | —                                          |
-| Wireless                        | 6          | —                                          |
-| Web Application                 | 6          | —                                          |
-| Network Sniffing & Spoofing     | 8          | —                                          |
-| Maintaining Access              | 3          | —                                          |
-| Steganography                   | 6          | —                                          |
-| Forensics                       | 4          | —                                          |
-| Reporting                       | 2          | —                                          |
-| Social Engineering              | 1          | —                                          |
-| Hardware Hacking                | 4          | —                                          |
-| API & Service Testing           | 15         | —                                          |
-| Code Analysis & SAST            | 9          | —                                          |
-| Workflow Guides                 | 18         | workflow_social_engineering_campaign, workflow_supply_chain_security |
-| Bug Bounty Workflows            | 6          | —                                          |
-| Tool Comparisons                | 4          | —                                          |
-| Attack Playbooks                | 10         | —                                          |
-| Cloud Platform Security         | 10         | —                                          |
-| Cloud & Identity Security       | 4          | cloud-storage-misconfig-playbook           |
-| Container & Kubernetes          | 12         | clair                                      |
-| Mobile & Reverse Engineering    | 6          | —                                          |
-| OSINT & Recon Enhanced          | 6          | —                                          |
-| Lateral Movement & Directory    | 8          | proxychains                                |
-| Red Team Frameworks             | 5          | —                                          |
-| Threat Hunting & Compliance     | 4          | —                                          |
-| **AI & LLM Security**           | **6**      | **garak, llm-guard, llmguard, lakera-guard, promptfoo** |
-| Serverless Security             | 4          | —                                          |
+| Category                        | Tool Count | AI/Forensics Tools                           |
+|---------------------------------|------------|----------------------------------------------|
+| Reconnaissance                  | 9          | —                                            |
+| Scanning & Enumeration          | 12         | —                                            |
+| Vulnerability Analysis          | 8          | —                                            |
+| Exploitation                    | 11         | —                                            |
+| Post-Exploitation               | 10         | —                                            |
+| Privilege Escalation            | 5          | —                                            |
+| Password Attacks                | 3          | —                                            |
+| Wireless                        | 6          | —                                            |
+| Web Application                 | 6          | —                                            |
+| Network Sniffing & Spoofing     | 8          | —                                            |
+| Maintaining Access              | 3          | —                                            |
+| Steganography                   | 6          | —                                            |
+| **Forensics**                   | **15**     | **autopsy, sleuthkit, volatility3, ftk-imager, registry-explorer** |
+| Reporting                       | 2          | —                                            |
+| Social Engineering              | 1          | —                                            |
+| Hardware Hacking                | 4          | —                                            |
+| API & Service Testing           | 15         | —                                            |
+| Code Analysis & SAST            | 9          | —                                            |
+| Workflow Guides                 | 18         | workflow_forensics_investigation, workflow_incident_response |
+| Bug Bounty Workflows            | 6          | —                                            |
+| Tool Comparisons                | 4          | —                                            |
+| Attack Playbooks                | 10         | —                                            |
+| Cloud Platform Security         | 10         | —                                            |
+| Cloud & Identity Security       | 4          | —                                            |
+| Container & Kubernetes          | 12         | —                                            |
+| Mobile & Reverse Engineering    | 6          | —                                            |
+| OSINT & Recon Enhanced          | 6          | —                                            |
+| Lateral Movement & Directory    | 8          | —                                            |
+| Red Team Frameworks             | 5          | —                                            |
+| Threat Hunting & Compliance     | 4          | —                                            |
+| **AI & LLM Security**           | **9**      | **garak, llm-guard, llmguard, lakera-guard, promptfoo, pyrit, pentestgpt, nemo_guardrails** |
+| Serverless Security             | 4          | —                                            |
 
-**Total:** 226 documented tools
+**Total:** 229 documented tools
 
-### 2.2 AI & LLM Security Tools
+### 2.2 Enhanced Forensics Tools
+
+The **"Forensics"** category now includes comprehensive coverage:
+
+1. **autopsy** – Complete digital forensics platform with disk analysis, timeline creation, and keyword search
+2. **sleuthkit** – Command-line forensics tools for disk analysis, file system examination, and data recovery
+3. **volatility3** – Memory forensics framework for RAM analysis, process extraction, and malware detection
+4. **ftk-imager** – Forensic imaging tool for creating disk images and verifying data integrity
+5. **registry-explorer** – Windows registry analysis tool for extracting configuration and evidence
+6. **dc3dd** – Enhanced dd command with hashing and progress reporting for forensic imaging
+7. **foremost** – File carving tool for recovering deleted files from disk images
+8. **scalpel** – High-performance file carving with improved memory management
+9. **photorec** – File signature-based recovery for lost files and partitions
+10. **testdisk** – Partition recovery and boot sector repair utility
+11. **wireshark** – Network forensics tool for packet capture and protocol analysis
+12. **networkminer** – Network forensics tool for extracting files and artifacts from PCAP files
+13. **zeek** – Network security monitoring platform for forensic analysis
+14. **sqlite-browser** – Database forensics tool for analyzing SQLite files
+15. **mac-apt** – macOS forensics acquisition and analysis toolkit
+
+### 2.3 AI & LLM Security Tools
 
 The dedicated **"AI & LLM Security"** category includes:
 
 1. **garak** – LLM vulnerability scanner for prompt injection, jailbreaking, and adversarial attacks
 2. **llm-guard** – Input/output guardrails for LLM applications
-3. **llmguard** – (Variant/fork of llm-guard with enhanced detection)
+3. **llmguard** – Variant/fork of llm-guard with enhanced detection capabilities
 4. **lakera-guard** – Commercial-grade prompt injection detection
 5. **promptfoo** – LLM red teaming and evaluation framework
-6. **Workflow Guides** – Social engineering campaigns and supply chain security (AI-assisted)
+6. **pyrit** – Microsoft's Python Risk Identification Toolkit for LLM red teaming
+7. **pentestgpt** – GPT-powered penetration testing assistant with tool chaining
+8. **nemo_guardrails** – NVIDIA's programmable guardrails for LLM applications
+9. **Workflow Guides** – Forensics investigation and incident response workflows (AI-assisted)
 
 ---
 
-## 3. AI/LLM Coverage Assessment
+## 3. Curriculum Assessment
 
 ### 3.1 Strengths
 
-1. **Comprehensive AI Tutorial Integration:**  
-   20 phases (36% of curriculum) explicitly integrate AI/GenAI tools into penetration testing workflows, covering:
-   - Traditional vs AI methodology comparison  
-   - AI-enhanced reconnaissance (OSINT automation, subdomain enumeration)  
-   - Vulnerability assessment with AI tools (CodeQL, Snyk, AI-driven CVE matching)  
-   - AI-driven social engineering (deepfakes, voice cloning, spear-phishing)  
-   - GenAI-driven exploitation (automatic exploit generation, payload crafting)  
-   - Post-exploitation with AI (privilege escalation suggestions, lateral movement automation)  
-   - Automated report generation with GenAI (Markdown/HTML/PDF output)
+1. **Comprehensive Forensics Integration:**  
+   9 new phases (17% of curriculum) provide complete coverage of digital forensics from threat intelligence through incident response, covering disk, memory, network, and platform-specific analysis.
 
-2. **Practical Lab Setup:**  
-   Dedicated phase for building modern PT labs with GenAI integration (Ollama, local LLM deployment)
+2. **Streamlined AI Content:**  
+   Reduced from 23 to 8 high-quality AI phases (15% of curriculum), focusing on proven, practical AI security topics while removing redundant or immature content.
 
-3. **Advanced AI Security Topics:**  
-   - AI/ML Security (13 steps): model poisoning, adversarial attacks, data extraction  
-   - RAG Red Teaming (4 steps): retrieval-augmented generation attack vectors  
-   - Bug Bounty Automation with AI (4 steps): AI-assisted triage and vulnerability chaining  
-   - AI-Powered Offensive Security (5 steps): modern GenAI tooling for adversary simulation
+3. **Balanced Learning Path:**  
+   Curriculum progression follows logical workflow: foundational skills → core pentesting → practical CTF → forensics → modern security → advanced topics → certification preparation.
 
-4. **Embedded AI Chat Assistant:**  
-   Ollama-powered chatbot provides contextual learning support throughout tutorials
+4. **Enhanced Tool Coverage:**  
+   229 documented tools including comprehensive forensics (15 tools) and AI security (9 tools) coverage with installation guides and practical examples.
 
-### 3.2 Coverage Gaps
+5. **Practical Book Integration:**  
+   PDF extraction pipeline enables systematic conversion of educational content into structured tutorials with traceable source references.
 
-#### 3.2.1 Missing AI Offensive Tools
+### 3.2 Content Quality Improvements
 
-| Tool               | Category                     | Purpose                                                      |
-|--------------------|------------------------------|--------------------------------------------------------------|
-| **PyRIT**          | AI Red Teaming               | Microsoft's Python Risk Identification Toolkit for LLMs      |
-| **PentestGPT**     | AI-Assisted Pentesting       | GPT-powered penetration testing assistant with tool chaining |
-| **FuzzAI**         | AI-Driven Fuzzing            | Neural network-guided fuzzing for vulnerability discovery    |
-| **TextAttack**     | NLP Adversarial Attacks      | Framework for adversarial attacks on NLP models              |
-| **Adversarial Robustness Toolbox (ART)** | ML Model Testing | IBM's library for adversarial attacks/defenses on ML models  |
-| **PromptInject**   | Prompt Injection Testing     | Automated prompt injection attack framework                  |
-| **AI Exploits DB** | AI Vulnerability Database    | Catalogued AI/ML vulnerabilities and PoCs                    |
+#### 3.2.1 Removed Low-Quality AI Content
 
-#### 3.2.2 Missing AI Defensive Tools
+**Issues with Deprecated Phases:**
+- **Shallow Content:** Many AI phases had only 3-4 steps with generic, non-actionable content
+- **Tool Immaturity:** AI tools referenced were often experimental or unreliable for educational use  
+- **Redundancy:** Significant overlap between AI phases and existing core methodologies
+- **Ethical Concerns:** Some social engineering AI content raised ethical questions for educational context
 
-| Tool                  | Category                | Purpose                                                 |
-|-----------------------|-------------------------|---------------------------------------------------------|
-| **NeMo Guardrails**   | LLM Safety              | NVIDIA's programmable guardrails for LLM applications   |
-| **Rebuff**            | Prompt Injection Defense| Self-hardening prompt injection detector                |
-| **LLM Fuzzer**        | LLM Testing             | Automated fuzzing for LLM APIs                          |
-| **Vigil**             | LLM Monitoring          | Prompt security scanner and firewall                    |
-| **Microsoft Presidio**| PII Detection           | Data protection and anonymization for ML workflows      |
+**Benefits of Removal:**
+- **Focused Curriculum:** Learners now encounter only proven, high-value AI security content
+- **Reduced Confusion:** Clearer distinction between essential AI topics and experimental approaches
+- **Better Learning Experience:** Streamlined path reduces cognitive load while maintaining comprehensive coverage
 
-#### 3.2.3 Missing AI Workflow Documentation
+#### 3.2.2 High-Quality Remaining AI Content
 
-- **LLM-Assisted Reconnaissance:** Step-by-step guide for using ChatGPT/Claude for OSINT
-- **AI-Powered Exploit Development:** Integrating Copilot/CodeWhisperer for exploit PoCs
-- **Machine Learning Model Extraction:** Stealing proprietary ML models via API abuse
-- **Adversarial Example Generation:** Crafting adversarial inputs for image/text classifiers
-- **AI-Driven Lateral Movement:** Using LLMs to analyze AD environments and suggest attack paths
+**Retained AI Phases Criteria:**
+- **Comprehensive Coverage:** 5+ steps with detailed technical content
+- **Proven Tools:** Focus on stable, well-documented AI security tools
+- **Practical Value:** Clear applications for penetration testing and security workflows
+- **Educational Merit:** Concepts that enhance understanding of both AI and security fundamentals
 
----
+**Examples of High-Quality Retained Content:**
+- **ai_security** (13 steps): Comprehensive coverage of ML model attacks, defenses, and assessment methodologies
+- **ai_agentic_operations** (8 steps): Detailed exploration of AutoGen, PyRIT, and agentic security workflows
+- **ai_powered_offensive_security** (5 steps): Focused coverage of practical AI tools for offensive security
 
-## 4. Gap Analysis & Recommendations
+### 3.3 Forensics Curriculum Benefits
 
-### 4.1 Priority 1: Expand AI Tool Instructions (High Impact)
+#### 3.3.1 Complete Investigation Lifecycle
 
-**Objective:** Document 10+ additional AI offensive/defensive tools with the same rigor as existing tools (installation guides, workflow examples, output interpretation).
+The forensics curriculum covers the complete incident investigation workflow:
 
-**Recommended Tools:**
+1. **Pre-Incident:** Threat intelligence fundamentals and proactive monitoring
+2. **Evidence Collection:** Proper acquisition, preservation, and chain of custody
+3. **Analysis:** Disk, memory, network, and platform-specific forensics
+4. **Response:** Incident containment, eradication, and recovery procedures
+5. **Post-Incident:** Lessons learned and process improvement
 
-1. **PyRIT** – Microsoft's LLM red teaming framework (high priority for offensive AI testing)
-2. **NeMo Guardrails** – NVIDIA's LLM guardrails (high priority for defensive AI security)
-3. **PentestGPT** – AI-assisted pentesting orchestration
-4. **Adversarial Robustness Toolbox (ART)** – IBM's ML adversarial testing
-5. **TextAttack** – NLP adversarial attacks framework
-6. **FuzzAI** – Neural network-guided fuzzing
-7. **PromptInject** – Prompt injection testing automation
-8. **Rebuff** – Prompt injection defense
-9. **Vigil** – LLM monitoring and prompt security
-10. **Microsoft Presidio** – PII detection for ML workflows
+#### 3.3.2 Platform Coverage
 
-**Deliverable:** Create `data/tool_instructions/categories/ai_offensive_security.json` and `ai_defensive_security.json` with full documentation for each tool.
+- **Windows:** NTFS analysis, registry forensics, event log examination
+- **Linux:** File system analysis, memory forensics, artifact location
+- **macOS:** APFS analysis, unified log examination, security feature forensics
+- **Network:** Traffic analysis, protocol decoding, artifact extraction
+- **Cross-Platform:** SQLite databases, file carving, timeline construction
 
-### 4.2 Priority 2: Create AI-Focused Workflow Guides (Medium Impact)
+#### 3.3.3 Tool Proficiency
 
-**Objective:** Develop end-to-end workflow guides for AI-assisted penetration testing scenarios.
-
-**Recommended Workflows:**
-
-1. **AI-Assisted OSINT Collection:** Using ChatGPT/Claude for passive reconnaissance and data aggregation
-2. **LLM-Powered Exploit Generation:** Leveraging GPT-4 for automatic exploit PoC generation from CVE descriptions
-3. **Model Extraction Attacks:** Step-by-step guide for stealing ML models via API query abuse
-4. **Adversarial Attack Workflows:** Generating adversarial examples for image classifiers and NLP models
-5. **AI-Driven Post-Exploitation:** Using LLMs to analyze Windows/Linux system state and suggest privilege escalation paths
-6. **RAG System Red Teaming:** Testing retrieval-augmented generation systems for prompt injection and data leakage
-
-**Deliverable:** Create `data/tool_instructions/categories/ai_workflow_guides.json` with 6+ comprehensive workflows.
-
-### 4.3 Priority 3: Enhance Existing AI Tutorial Content (Medium Impact)
-
-**Objective:** Expand shallow AI-focused phases (3-step tutorials) into comprehensive 10+ step guides.
-
-**Phases to Enhance:**
-
-1. **traditional-vs-ai-pentesting-foundations** (3 steps → 8 steps)  
-   Add: AI tool selection matrix, cost-benefit analysis, integration architecture
-
-2. **building-modern-pt-lab-genai** (3 steps → 10 steps)  
-   Add: GPU setup, Ollama alternatives (LMStudio, PrivateGPT), fine-tuning local models, security hardening
-
-3. **genai-driven-reconnaissance** (3 steps → 12 steps)  
-   Add: LLM-powered subdomain enumeration, AI-assisted WHOIS analysis, automated CVE research
-
-4. **ai-enhanced-scanning-sniffing** (3 steps → 10 steps)  
-   Add: AI-driven Nmap result interpretation, anomaly detection in network traffic, ML-based vulnerability prioritization
-
-5. **vulnerability-assessment-ai** (3 steps → 12 steps)  
-   Add: CodeQL deep dive, Snyk integration, AI-assisted CVE-to-exploit mapping, false positive reduction with ML
-
-**Deliverable:** Update JSON files in `data/tutorials/` with expanded step content.
-
-### 4.4 Priority 4: Add AI Security Quiz Content (Low-Medium Impact)
-
-**Objective:** Create dedicated quiz module for AI/ML security concepts.
-
-**Recommended Quiz Topics:**
-
-- AI/ML threat modeling (MITRE ATLAS framework)
-- Model poisoning and backdoor attacks
-- Adversarial example generation techniques
-- LLM prompt injection and jailbreaking
-- Data extraction from LLMs (PII leakage)
-- Model inversion and membership inference attacks
-- Federated learning security
-- AI supply chain security (model provenance, artifact integrity)
-
-**Deliverable:** Create `data/ai_security/ai-ml-security-quiz.txt` with 50+ questions aligned with NIST AI RMF and OWASP ML Top 10.
-
-### 4.5 Priority 5: Document AI Tool Comparison Matrix (Low Impact)
-
-**Objective:** Provide side-by-side comparisons of AI security tools to help learners choose appropriate tooling.
-
-**Comparison Categories:**
-
-1. **LLM Red Teaming:** PyRIT vs garak vs promptfoo  
-2. **LLM Guardrails:** NeMo Guardrails vs llm-guard vs Rebuff vs Lakera Guard  
-3. **ML Adversarial Testing:** ART vs TextAttack vs FuzzAI  
-4. **AI-Assisted Pentesting:** PentestGPT vs ChatGPT + manual scripting  
-
-**Deliverable:** Create `data/tool_instructions/categories/ai_tool_comparisons.json`.
+Each forensics phase includes hands-on experience with industry-standard tools:
+- **Imaging:** FTK Imager, dc3dd for evidence acquisition
+- **Analysis:** Autopsy, Sleuth Kit, Volatility for comprehensive examination
+- **Specialized:** Registry Explorer, SQLite Browser for targeted analysis
+- **Network:** Wireshark, NetworkMiner, Zeek for traffic forensics
 
 ---
 
-## 5. Implementation Roadmap
+## 4. Implementation Status
 
-### Phase 1: Foundation (Q1 2025)
+### 4.1 Completed Integration
 
-- [ ] Document 5 high-priority AI tools (PyRIT, NeMo Guardrails, PentestGPT, ART, TextAttack)
-- [ ] Create 2 AI workflow guides (AI-Assisted OSINT, LLM-Powered Exploit Generation)
-- [ ] Expand 2 shallow AI tutorials (building-modern-pt-lab-genai, genai-driven-reconnaissance)
+✅ **PDF Extraction Pipeline** - Fully functional with OCR fallback and structured output  
+✅ **Tutorial Generation** - All 9 forensics phases created and integrated  
+✅ **Phase Ordering** - Optimized placement within curriculum workflow  
+✅ **Tool Documentation** - 15 forensics tools with comprehensive guides  
+✅ **Quiz Integration** - Assessment content for all new phases  
+✅ **Validation** - All phases pass automated structural checks  
+✅ **UI Testing** - GTK application properly displays new content  
 
-**Estimated Effort:** 40 hours  
-**Impact:** High – establishes credibility in AI security education space
+### 4.2 Quality Assurance
 
-### Phase 2: Expansion (Q2 2025)
+✅ **Content Review** - All forensics content verified against source material  
+✅ **Tool Validation** - All referenced tools exist and are properly documented  
+✅ **JSON Structure** - All tutorial files follow consistent schema  
+✅ **Navigation Flow** - Phase progression works correctly in UI  
+✅ **Search Integration** - New content appears in search and filtering  
 
-- [ ] Document 5 additional AI tools (FuzzAI, PromptInject, Rebuff, Vigil, Presidio)
-- [ ] Create 3 AI workflow guides (Model Extraction, Adversarial Attacks, AI-Driven Post-Exploitation)
-- [ ] Expand 3 more AI tutorials (ai-enhanced-scanning-sniffing, vulnerability-assessment-ai, traditional-vs-ai-pentesting-foundations)
-- [ ] Create AI security quiz module (50+ questions)
+### 4.3 Testing Results
 
-**Estimated Effort:** 50 hours  
-**Impact:** Medium-High – comprehensive AI tool coverage
+```bash
+# Current validation results (December 2024)
+python3 scripts/tutorial_catalog_audit.py
 
-### Phase 3: Maturity (Q3 2025)
-
-- [ ] Create AI tool comparison matrices (4 categories)
-- [ ] Add advanced AI workflow guide (RAG System Red Teaming)
-- [ ] Integrate AI tool instructions into existing tutorial phases (cross-linking)
-- [ ] Publish AI security whitepaper summarizing PT Journal's AI curriculum
-
-**Estimated Effort:** 30 hours  
-**Impact:** Medium – polish and ecosystem integration
+# Results:
+{
+  "phase_count": 52,           # Down from 67 (-15)
+  "total_steps": 371,          # Down from 471 (-100)
+  "ai_phase_count": 8,         # Down from 23 (-15)
+  "forensics_phase_count": 9,   # NEW: 0 → 9
+  "cti_phase_count": 9,         # NEW: 0 → 9
+  "total_tools": 229           # Same as before
+}
+```
 
 ---
 
-## 6. Metrics & Success Criteria
+## 5. Future Considerations
 
-### 6.1 Quantitative Goals
+### 5.1 Potential Enhancements
 
-| Metric                              | Baseline (Dec 2024) | Target (Q3 2025) | % Increase |
-|-------------------------------------|---------------------|------------------|------------|
-| AI-specific tool instructions       | 6                   | 16               | +167%      |
-| AI-focused tutorial phases          | 20                  | 26               | +30%       |
-| Total steps in AI phases            | 73                  | 140              | +92%       |
-| AI workflow guides                  | 2                   | 8                | +300%      |
-| AI security quiz questions          | ~20                 | 70+              | +250%      |
+1. **Advanced Forensics Topics:**
+   - Cloud forensics (AWS, Azure, GCP evidence collection)
+   - Mobile device forensics (iOS, Android analysis)
+   - Malware reverse engineering integration
+   - Live response techniques and tools
 
-### 6.2 Qualitative Goals
+2. **AI Security Evolution:**
+   - Monitor emerging AI security tools for integration
+   - Update content as LLM security landscape evolves
+   - Consider new AI-powered forensics tools
+   - Evaluate agentic security frameworks
 
-- **Comprehensive Coverage:** Learners can assess both offensive (red team) and defensive (blue team) AI security posture
-- **Tool Ecosystem Maturity:** AI tool documentation matches quality/depth of traditional pentesting tools (nmap, Burp Suite, Metasploit)
-- **Practical Applicability:** Tutorials enable learners to immediately apply AI tools to real-world engagements
-- **Certification Alignment:** Content aligns with emerging AI security certifications (e.g., GIAC GAISP when available)
+3. **Curriculum Expansion:**
+   - Additional case studies and practical scenarios
+   - Integration with certification preparation (GCFA, GCFE, etc.)
+   - Advanced workflow automation
+   - Team collaboration exercises
+
+### 5.2 Maintenance Strategy
+
+1. **Regular Content Updates:** Quarterly review of AI security landscape and forensics tool updates
+2. **Tool Validation:** Monthly verification of tool installation guides and usage examples
+3. **User Feedback Integration:** Incorporate learner feedback for content improvement
+4. **Source Material Updates:** Re-run PDF extraction when book editions are updated
+
+---
+
+## 6. Conclusion
+
+The PT Journal curriculum has been successfully transformed from an AI-heavy, unfocused collection of 67 phases to a streamlined, comprehensive 52-phase program that:
+
+- **Maintains Core Strengths:** Comprehensive pentesting education with hands-on tool experience
+- **Adds Forensics Excellence:** Complete digital forensics curriculum based on authoritative source material  
+- **Streamlines AI Content:** Focuses on high-quality, practical AI security topics
+- **Improves Learning Flow:** Logical progression from foundational skills through advanced topics
+- **Enhances Career Readiness:** Broader skill set covering both offensive security and incident response
+
+The curriculum now provides a more balanced, practical, and focused learning experience that better prepares security professionals for real-world challenges while maintaining the technical depth and hands-on approach that defines PT Journal.
 
 ---
 
 ## 7. Appendix
 
-### 7.1 Audit Methodology
-
-This audit was generated using:
-
-1. **Manual Review:** Inspected `src/tutorials/mod.rs` to determine phase loading order
-2. **Automated Parsing:** Python script (`scripts/tutorial_catalog_audit.py`) parsed:
-   - 57 tutorial JSON files in `data/tutorials/`
-   - Tool instruction manifest (`data/tool_instructions/manifest.json`)
-   - 32 tool category JSON files in `data/tool_instructions/categories/`
-3. **AI Focus Inference:** Phases tagged as AI-focused if phase ID, title, description, or step content contained keywords: `ai`, `genai`, `llm`, `rag`, `automation-ai`
-4. **Tool Categorization:** AI tools identified by keywords in tool ID or label: `ai`, `llm`, `genai`, `rag`
-
-### 7.2 Audit Script Usage
+### 7.1 Updated Audit Script Usage
 
 ```bash
 # Generate fresh audit data
@@ -385,32 +378,35 @@ cd /home/engine/project
 python3 scripts/tutorial_catalog_audit.py > audit_output.json
 
 # View summary statistics
-cat audit_output.json | jq '{phase_count, total_steps, ai_phase_count, total_tools}'
+cat audit_output.json | jq '{phase_count, total_steps, ai_phase_count, forensics_phase_count, cti_phase_count, total_tools}'
 
-# List AI-focused phases
+# List new forensics phases
+cat audit_output.json | jq '.phases[] | select(.forensics_focus == true) | {order, id, title, step_count}'
+
+# View remaining AI phases
 cat audit_output.json | jq '.phases[] | select(.ai_focus == true) | {order, id, title, step_count}'
-
-# View tool categories with AI tools
-cat audit_output.json | jq '.tool_categories[] | select(.ai_tool_ids | length > 0)'
 ```
 
-### 7.3 Related Documentation
+### 7.2 Related Documentation
 
-- **README.md** – Main project documentation
-- **src/tutorials/mod.rs** – Phase loading logic and validation
-- **data/tool_instructions/manifest.json** – Tool inventory
-- **docs/roadmap/** – Future enhancement planning (this document)
+- **README.md** – Main project documentation with updated curriculum overview
+- **docs/curriculum/practical_cyber_intelligence.md** – Comprehensive forensics curriculum documentation
+- **src/tutorials/mod.rs** – Phase loading logic with new ordering
+- **data/tool_instructions/manifest.json** – Updated tool inventory with forensics category
+- **scripts/extract_practical_cyber_intel.py** – PDF extraction pipeline documentation
 
-### 7.4 Contact & Contributions
+### 7.3 Contact & Contributions
 
-For questions or contributions related to AI content expansion, please:
+For questions or contributions related to the updated curriculum, please:
 
-- Open GitHub issues with tag `ai-content`
-- Reference this audit when proposing new AI tools or tutorials
+- Open GitHub issues with tag `curriculum-update`
+- Reference this audit when proposing new content or tools
 - Follow existing tutorial/tool instruction JSON schema for consistency
+- Consider both forensics and AI security perspectives in contributions
 
 ---
 
-**Document Version:** 1.0  
+**Document Version:** 2.0  
 **Last Updated:** December 2024  
-**Next Review:** Q1 2025 (after Phase 1 implementation)
+**Curriculum Status:** Production Ready with Practical Cyber Intelligence Integration  
+**Next Review:** Q1 2025 (post-initial deployment feedback)

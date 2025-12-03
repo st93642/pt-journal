@@ -99,6 +99,7 @@ impl ChatProvider for OllamaProvider {
                 "role": match msg.role {
                     ChatRole::User => "user",
                     ChatRole::Assistant => "assistant",
+                    ChatRole::System => "system",
                 },
                 "content": &msg.content
             }));

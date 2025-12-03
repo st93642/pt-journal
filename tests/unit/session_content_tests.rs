@@ -23,7 +23,7 @@ mod tests {
             assert_eq!(model.selected_step(), Some(0));
             assert!(model.current_path().is_none());
             assert_eq!(model.session().phases.len(), 52); // 52 phases loaded from JSON (AI security phases removed)
-                                                           // Config should be loaded (or default)
+                                                          // Config should be loaded (or default)
             assert_eq!(
                 model.config().chatbot.ollama.endpoint,
                 "http://localhost:11434"
@@ -408,16 +408,25 @@ mod tests {
                 "CISSP Domain 8: Software Development Security",
             ];
             for (idx, expected_name) in phase_names.iter().enumerate() {
-                assert_eq!(session.phases[idx].name, *expected_name, "Phase {} name mismatch", idx);
+                assert_eq!(
+                    session.phases[idx].name, *expected_name,
+                    "Phase {} name mismatch",
+                    idx
+                );
             }
 
             // Verify step counts are reasonable for all phases
             let expected_step_counts = [
-                4, 6, 6, 6, 6, 5, 1, 16, 3, 5, 5, 3, 3, 7, 3, 4, 4,
-                15, 9, 5, 7, 6, 6, 4, 4, 4, 5, 5, 2, 1, 1, 7, 7, 6, 7, 15, 15, 10, 10, 12, 4, 23, 32, 24, 7, 6, 5, 4, 4, 5, 4, 3,
+                4, 6, 6, 6, 6, 5, 1, 16, 3, 5, 5, 3, 3, 7, 3, 4, 4, 15, 9, 5, 7, 6, 6, 4, 4, 4, 5,
+                5, 2, 1, 1, 7, 7, 6, 7, 15, 15, 10, 10, 12, 4, 23, 32, 24, 7, 6, 5, 4, 4, 5, 4, 3,
             ]; // 52 phases loaded from JSON (AI security phases removed)
             for (idx, &expected_count) in expected_step_counts.iter().enumerate() {
-                assert_eq!(session.phases[idx].steps.len(), expected_count, "Phase {} step count mismatch", idx);
+                assert_eq!(
+                    session.phases[idx].steps.len(),
+                    expected_count,
+                    "Phase {} step count mismatch",
+                    idx
+                );
             }
 
             // Cloud IAM Abuse 101 phase should include tutorial + quiz steps (now at position 27)

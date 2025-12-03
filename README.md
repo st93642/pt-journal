@@ -69,15 +69,18 @@ A **GTK4/Libadwaita desktop application** for penetration testing education, bui
 ## Documentation
 
 ### Curriculum Documentation
+
 - **[Practical Cyber Intelligence Curriculum](docs/curriculum/practical_cyber_intelligence.md)** - Complete forensics program documentation with phase details, tool integration, and learning objectives
 - **[Testing & Validation Guide](docs/curriculum/testing_validation.md)** - Comprehensive testing procedures for curriculum validation and UI testing
 - **[Curriculum Audit](docs/roadmap/ai_content_audit.md)** - Current curriculum status with phase counts and content analysis
 
 ### Project Documentation
+
 - **[Project README](README.md)** - Main project documentation with installation and usage instructions
 - **[AI Content Audit](docs/roadmap/ai_content_audit.md)** - Historical audit of AI content changes and curriculum streamlining
 
 ### Quick Reference
+
 - **Phase Count**: 52 total (down from 67, 15 deprecated AI phases removed)
 - **Step Count**: 371 total (down from 471)  
 - **New Content**: 9 Practical Cyber Intelligence phases (52 steps)
@@ -320,7 +323,9 @@ data/
 
 ### PDF Book Extraction & Curriculum Generation
 
-The project includes a comprehensive PDF extraction pipeline for processing educational content from "Practical Cyber Intelligence: A Hands-on Guide to Digital Forensics":
+The project includes a comprehensive PDF extraction pipeline for processing educational content. The **structured extraction artifacts are already included** in `data/source_material/practical_cyber_intelligence/` — you only need to run the extraction script if you want to re-extract or update from the source PDF.
+
+> **Note**: The PDF file is **not included in the repository** due to size and licensing. Contributors must obtain "Practical Cyber Intelligence: A Hands-on Guide to Digital Forensics" by Adam Tilmar Jakobsen externally and place it in the project root before running the extraction script.
 
 ```bash
 # Install Python dependencies
@@ -329,19 +334,20 @@ pip install -r scripts/requirements.txt
 # Install system dependencies (Ubuntu/Debian)
 sudo apt install tesseract-ocr poppler-utils
 
-# Extract complete book content
+# Extract complete book content (PDF must be supplied externally)
 python3 scripts/extract_practical_cyber_intel.py \
-    --pdf "./Practical Cyber Intelligence A Hands-on Guide to Digital Forensics (Jakobsen, Adam Tilmar) (Z-Library).pdf" \
+    --pdf "./Practical Cyber Intelligence.pdf" \
     --output data/source_material/practical_cyber_intelligence
 
 # Extract specific page range
 python3 scripts/extract_practical_cyber_intel.py \
-    --pdf "./Practical Cyber Intelligence*.pdf" \
+    --pdf "./Practical Cyber Intelligence.pdf" \
     --output data/source_material/practical_cyber_intelligence \
     --pages 1-50
 ```
 
 **Pipeline Features:**
+
 - Text-first extraction using PyPDF2 with OCR fallback for complex pages
 - Automatic chapter/section/paragraph hierarchy detection preserving book structure
 - Structured JSON output with page numbers for content traceability
@@ -350,11 +356,13 @@ python3 scripts/extract_practical_cyber_intel.py \
 - Comprehensive unit tests for extraction reliability
 
 **Output Files:**
+
 - `structured_book.json` - Hierarchical content structure (chapters → sections → paragraphs)
 - `raw_transcript.txt` - Complete text with page markers for reference
 - `extraction_stats.json` - Processing statistics and quality metrics
 
 **Tutorial Generation Workflow:**
+
 1. Extract book content using the pipeline above
 2. Review structured JSON in `data/source_material/practical_cyber_intelligence/`
 3. Tutorial JSON files are already created in `data/tutorials/` based on the book content:
@@ -398,6 +406,7 @@ cargo run --release
 ```
 
 **Expected Test Results:**
+
 - **52 phases** loaded (down from 67)
 - **371 total steps** (down from 471)
 - **8 AI phases** remaining (high-quality content only)

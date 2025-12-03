@@ -5,3 +5,34 @@ target/
 .DS_Store
 models/
 *.gguf
+
+# Python artifacts
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+
+# Large book PDFs (contributors must supply externally)
+*.pdf
+!docs/**/*.pdf
+
+# Backup and temp files
+*.backup
+*.bak
+*.old
+*.orig
+*.tmp
+*.swp
+*~
+
+# Logs and debug output
+*.log
+debug.txt
+
+# OS artifacts
+Thumbs.db
+.Spotlight-V100
+.Trashes

@@ -387,13 +387,11 @@ fn default_model_profiles() -> Vec<ModelProfile> {
         ModelProfile::for_openai("gpt-4o-mini", "GPT-4o Mini (OpenAI)"),
         ModelProfile::for_openai("gpt-4-turbo", "GPT-4 Turbo (OpenAI)"),
         ModelProfile::for_openai("gpt-3.5-turbo", "GPT-3.5 Turbo (OpenAI)"),
-        
         // Azure OpenAI models (examples - users need to configure deployment names)
         ModelProfile::for_azure_openai("azure-gpt-4o", "GPT-4o (Azure OpenAI)"),
         ModelProfile::for_azure_openai("azure-gpt-4o-mini", "GPT-4o Mini (Azure OpenAI)"),
         ModelProfile::for_azure_openai("azure-gpt-4-turbo", "GPT-4 Turbo (Azure OpenAI)"),
         ModelProfile::for_azure_openai("azure-gpt-3.5-turbo", "GPT-3.5 Turbo (Azure OpenAI)"),
-        
         // Ollama models (primary - requires Ollama server)
         ModelProfile::for_ollama("llama3.2:latest", "Meta Llama 3.2 (Ollama)"),
         ModelProfile::for_ollama("mistral:7b", "Mistral 7B Instruct (Ollama)"),

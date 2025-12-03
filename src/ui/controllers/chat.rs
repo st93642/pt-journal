@@ -71,7 +71,7 @@ impl ChatController {
 
                     // Create display names for models
                     let mut models: Vec<(String, String)> = Vec::new();
-                    
+
                     // First, add models that are available from providers
                     for model_id in available_models {
                         let display_name = configured_models
@@ -86,7 +86,10 @@ impl ChatController {
                     // (useful for remote providers that can't enumerate models)
                     for configured_model in configured_models {
                         if !models.iter().any(|(id, _)| id == &configured_model.id) {
-                            models.push((configured_model.id.clone(), configured_model.display_name.clone()));
+                            models.push((
+                                configured_model.id.clone(),
+                                configured_model.display_name.clone(),
+                            ));
                         }
                     }
 
@@ -110,13 +113,18 @@ impl ChatController {
                         }
                     } else {
                         // No models available - show error
-                        chat_panel.show_error("No models available. Please configure at least one model provider.");
+                        chat_panel.show_error(
+                            "No models available. Please configure at least one model provider.",
+                        );
                     }
                 }
                 Err(e) => {
                     // Failed to get available models - show error with provider-specific message
                     let error_msg = if e.to_string().contains("OpenAI") {
-                        format!("OpenAI provider error: {}. Please check your API key configuration.", e)
+                        format!(
+                            "OpenAI provider error: {}. Please check your API key configuration.",
+                            e
+                        )
                     } else if e.to_string().contains("Azure OpenAI") {
                         format!("Azure OpenAI provider error: {}. Please check your API key, endpoint, and deployment configuration.", e)
                     } else {

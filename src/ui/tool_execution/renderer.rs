@@ -489,9 +489,7 @@ fn create_copyable_command_row(command: &str) -> GtkBox {
     cmd_label.add_css_class("monospace");
 
     let command_text = command.to_string();
-    let copy_button = Button::builder()
-        .icon_name("edit-copy-symbolic")
-        .build();
+    let copy_button = Button::builder().icon_name("edit-copy-symbolic").build();
     copy_button.set_tooltip_text(Some("Copy full command to clipboard"));
     copy_button.connect_clicked(move |_| {
         if let Some(display) = gdk::Display::default() {

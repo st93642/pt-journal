@@ -62,16 +62,18 @@ The forensics curriculum consists of **9 integrated phases** positioned strategi
 
 ### Extraction Pipeline
 
-The curriculum is generated using an automated PDF extraction pipeline:
+The curriculum is generated using an automated PDF extraction pipeline. The **structured extraction artifacts are already included** in `data/source_material/practical_cyber_intelligence/` — you only need to run the extraction script if you want to re-extract or update from the source PDF.
+
+> **Note**: The PDF file is **not included in the repository** due to size and licensing. Contributors must obtain "Practical Cyber Intelligence: A Hands-on Guide to Digital Forensics" by Adam Tilmar Jakobsen externally and place it in the project root before running the extraction script.
 
 ```bash
 # Install dependencies
 pip install -r scripts/requirements.txt
 sudo apt install tesseract-ocr poppler-utils
 
-# Extract complete book content
+# Extract complete book content (PDF must be supplied externally)
 python3 scripts/extract_practical_cyber_intel.py \
-    --pdf "./Practical Cyber Intelligence A Hands-on Guide to Digital Forensics (Jakobsen, Adam Tilmar) (Z-Library).pdf" \
+    --pdf "./Practical Cyber Intelligence.pdf" \
     --output data/source_material/practical_cyber_intelligence
 ```
 

@@ -1,6 +1,7 @@
 {
   "id": "automating-pt-reports-genai",
   "title": "Automating Penetration Testing Reports with GenAI",
+  "description": "Transform penetration testing documentation with AI-powered report generation, intelligent risk analysis, automated visualizations, and stakeholder-customized deliverables using LLM assistants.",
   "type": "tutorial",
   "steps": [
     {

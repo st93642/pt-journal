@@ -24,20 +24,16 @@ impl AzureOpenAIProvider {
     }
 
     fn get_api_key(&self) -> PtResult<String> {
-        self.config.api_key.clone().ok_or_else(|| {
-            PtError::Config {
-                message: "Azure OpenAI API key is required but not configured".to_string(),
-                source: None,
-            }
+        self.config.api_key.clone().ok_or_else(|| PtError::Config {
+            message: "Azure OpenAI API key is required but not configured".to_string(),
+            source: None,
         })
     }
 
     fn get_endpoint(&self) -> PtResult<String> {
-        self.config.endpoint.clone().ok_or_else(|| {
-            PtError::Config {
-                message: "Azure OpenAI endpoint is required but not configured".to_string(),
-                source: None,
-            }
+        self.config.endpoint.clone().ok_or_else(|| PtError::Config {
+            message: "Azure OpenAI endpoint is required but not configured".to_string(),
+            source: None,
         })
     }
 
@@ -87,18 +83,18 @@ impl ChatProvider for AzureOpenAIProvider {
         let endpoint = self.get_endpoint()?;
         let deployment_name = self.get_deployment_name(&request.model_profile.id)?;
         let api_version = self.get_api_version();
-        
+
         let openai_request = OpenAIRequest {
             messages: Self::convert_to_openai_messages(&request.history),
-            max_tokens: None, // Will be set from parameters
+            max_tokens: None,  // Will be set from parameters
             temperature: None, // Will be set from parameters
-            top_p: None, // Will be set from parameters
+            top_p: None,       // Will be set from parameters
             stream: false,
         };
 
         let mut openai_request = openai_request;
         let params = Self::convert_parameters(&request.model_profile.parameters);
-        
+
         if let Some(temp) = params.temperature {
             openai_request.temperature = Some(temp);
         }
@@ -133,9 +129,9 @@ impl ChatProvider for AzureOpenAIProvider {
             .header("Content-Type", "application/json")
             .json(&openai_request)
             .send()
-            .map_err(|e| PtError::network(
-                format!("Failed to send request to Azure OpenAI: {}", e),
-            ))?;
+            .map_err(|e| {
+                PtError::network(format!("Failed to send request to Azure OpenAI: {}", e))
+            })?;
 
         if !response.status().is_success() {
             let status = response.status();
@@ -148,12 +144,15 @@ impl ChatProvider for AzureOpenAIProvider {
             ));
         }
 
-        let openai_response: OpenAIResponse = response.json().map_err(|e| PtError::network(
-            format!("Failed to parse Azure OpenAI response: {}", e),
-        ))?;
+        let openai_response: OpenAIResponse = response.json().map_err(|e| {
+            PtError::network(format!("Failed to parse Azure OpenAI response: {}", e))
+        })?;
 
         if let Some(choice) = openai_response.choices.first() {
-            Ok(ChatMessage::new(ChatRole::Assistant, choice.message.content.clone()))
+            Ok(ChatMessage::new(
+                ChatRole::Assistant,
+                choice.message.content.clone(),
+            ))
         } else {
             Err(PtError::provider(
                 "Azure OpenAI".to_string(),
@@ -172,9 +171,12 @@ impl ChatProvider for AzureOpenAIProvider {
         let api_key = self.get_api_key()?;
         let endpoint = self.get_endpoint()?;
         let api_version = self.get_api_version();
-        
-        let url = format!("{}/openai/deployments?api-version={}", endpoint, api_version);
-        
+
+        let url = format!(
+            "{}/openai/deployments?api-version={}",
+            endpoint, api_version
+        );
+
         let response = self
             .client
             .get(&url)
@@ -195,17 +197,20 @@ impl ChatProvider for AzureOpenAIProvider {
         let api_key = self.get_api_key()?;
         let endpoint = self.get_endpoint()?;
         let api_version = self.get_api_version();
-        
-        let url = format!("{}/openai/deployments?api-version={}", endpoint, api_version);
-        
+
+        let url = format!(
+            "{}/openai/deployments?api-version={}",
+            endpoint, api_version
+        );
+
         let response = self
             .client
             .get(&url)
             .header("api-key", api_key)
             .send()
-            .map_err(|e| PtError::network(
-                format!("Failed to list Azure OpenAI deployments: {}", e),
-            ))?;
+            .map_err(|e| {
+                PtError::network(format!("Failed to list Azure OpenAI deployments: {}", e))
+            })?;
 
         if !response.status().is_success() {
             let status = response.status();
@@ -218,18 +223,22 @@ impl ChatProvider for AzureOpenAIProvider {
             ));
         }
 
-        let deployments_response: AzureOpenAIDeploymentsResponse = response.json().map_err(|e| PtError::network(
-            format!("Failed to parse Azure OpenAI deployments response: {}", e),
-        ))?;
+        let deployments_response: AzureOpenAIDeploymentsResponse =
+            response.json().map_err(|e| {
+                PtError::network(format!(
+                    "Failed to parse Azure OpenAI deployments response: {}",
+                    e
+                ))
+            })?;
 
         Ok(deployments_response
             .data
             .into_iter()
             .filter(|deployment| {
                 // Filter for chat models (GPT models)
-                deployment.model.r#type == "text-generation" || 
-                deployment.model.r#type == "chat-completion" ||
-                deployment.model.id.contains("gpt")
+                deployment.model.r#type == "text-generation"
+                    || deployment.model.r#type == "chat-completion"
+                    || deployment.model.id.contains("gpt")
             })
             .map(|deployment| deployment.id)
             .collect())
@@ -369,7 +378,7 @@ mod tests {
     #[test]
     fn test_azure_openai_provider_send_message_success() {
         let server = MockServer::start();
-        
+
         let mock_response = OpenAIResponse {
             choices: vec![OpenAIChoice {
                 message: OpenAIMessage {
@@ -414,7 +423,7 @@ mod tests {
     #[test]
     fn test_azure_openai_provider_list_deployments() {
         let server = MockServer::start();
-        
+
         let mock_response = AzureOpenAIDeploymentsResponse {
             data: vec![
                 AzureOpenAIDeployment {

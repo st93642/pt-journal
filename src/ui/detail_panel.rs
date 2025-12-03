@@ -251,11 +251,11 @@ pub fn create_detail_panel() -> DetailPanel {
     related_tools_box.set_margin_bottom(4);
     related_tools_box.set_margin_start(4);
     related_tools_box.set_margin_end(4);
-    
+
     let related_tools_label = Label::new(Some("Related Tools:"));
     related_tools_label.set_xalign(0.0);
     related_tools_label.add_css_class("heading");
-    
+
     let related_tools_frame = Frame::builder()
         .label_widget(&related_tools_label)
         .child(&related_tools_box)

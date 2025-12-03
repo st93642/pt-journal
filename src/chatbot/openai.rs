@@ -24,11 +24,9 @@ impl OpenAIProvider {
     }
 
     fn get_api_key(&self) -> PtResult<String> {
-        self.config.api_key.clone().ok_or_else(|| {
-            PtError::Config {
-                message: "OpenAI API key is required but not configured".to_string(),
-                source: None,
-            }
+        self.config.api_key.clone().ok_or_else(|| PtError::Config {
+            message: "OpenAI API key is required but not configured".to_string(),
+            source: None,
         })
     }
 
@@ -59,19 +57,19 @@ impl OpenAIProvider {
 impl ChatProvider for OpenAIProvider {
     fn send_message(&self, request: &ChatRequest) -> PtResult<ChatMessage> {
         let api_key = self.get_api_key()?;
-        
+
         let openai_request = OpenAIRequest {
             model: request.model_profile.id.clone(),
             messages: Self::convert_to_openai_messages(&request.history),
-            max_tokens: None, // Will be set from parameters
+            max_tokens: None,  // Will be set from parameters
             temperature: None, // Will be set from parameters
-            top_p: None, // Will be set from parameters
+            top_p: None,       // Will be set from parameters
             stream: false,
         };
 
         let mut openai_request = openai_request;
         let params = Self::convert_parameters(&request.model_profile.parameters);
-        
+
         if let Some(temp) = params.temperature {
             openai_request.temperature = Some(temp);
         }
@@ -101,9 +99,7 @@ impl ChatProvider for OpenAIProvider {
             .header("Content-Type", "application/json")
             .json(&openai_request)
             .send()
-            .map_err(|e| PtError::network(
-                format!("Failed to send request to OpenAI: {}", e),
-            ))?;
+            .map_err(|e| PtError::network(format!("Failed to send request to OpenAI: {}", e)))?;
 
         if !response.status().is_success() {
             let status = response.status();
@@ -116,12 +112,15 @@ impl ChatProvider for OpenAIProvider {
             ));
         }
 
-        let openai_response: OpenAIResponse = response.json().map_err(|e| PtError::network(
-            format!("Failed to parse OpenAI response: {}", e),
-        ))?;
+        let openai_response: OpenAIResponse = response
+            .json()
+            .map_err(|e| PtError::network(format!("Failed to parse OpenAI response: {}", e)))?;
 
         if let Some(choice) = openai_response.choices.first() {
-            Ok(ChatMessage::new(ChatRole::Assistant, choice.message.content.clone()))
+            Ok(ChatMessage::new(
+                ChatRole::Assistant,
+                choice.message.content.clone(),
+            ))
         } else {
             Err(PtError::provider(
                 "OpenAI".to_string(),
@@ -138,15 +137,13 @@ impl ChatProvider for OpenAIProvider {
 
         // Try to list models as a simple availability check
         let api_key = self.get_api_key()?;
-        
+
         let response = self
             .client
             .get(format!("{}/models", self.config.endpoint))
             .header("Authorization", format!("Bearer {}", api_key))
             .send()
-            .map_err(|_| PtError::network(
-                "Failed to connect to OpenAI".to_string(),
-            ))?;
+            .map_err(|_| PtError::network("Failed to connect to OpenAI".to_string()))?;
 
         Ok(response.status().is_success())
     }
@@ -157,15 +154,13 @@ impl ChatProvider for OpenAIProvider {
 
     fn list_available_models(&self) -> PtResult<Vec<String>> {
         let api_key = self.get_api_key()?;
-        
+
         let response = self
             .client
             .get(format!("{}/models", self.config.endpoint))
             .header("Authorization", format!("Bearer {}", api_key))
             .send()
-            .map_err(|e| PtError::network(
-                format!("Failed to list OpenAI models: {}", e),
-            ))?;
+            .map_err(|e| PtError::network(format!("Failed to list OpenAI models: {}", e)))?;
 
         if !response.status().is_success() {
             let status = response.status();
@@ -178,9 +173,9 @@ impl ChatProvider for OpenAIProvider {
             ));
         }
 
-        let models_response: OpenAIModelsResponse = response.json().map_err(|e| PtError::network(
-            format!("Failed to parse OpenAI models response: {}", e),
-        ))?;
+        let models_response: OpenAIModelsResponse = response.json().map_err(|e| {
+            PtError::network(format!("Failed to parse OpenAI models response: {}", e))
+        })?;
 
         Ok(models_response
             .data
@@ -288,7 +283,7 @@ mod tests {
     #[test]
     fn test_openai_provider_send_message_success() {
         let server = MockServer::start();
-        
+
         let mock_response = OpenAIResponse {
             choices: vec![OpenAIChoice {
                 message: OpenAIMessage {
@@ -330,7 +325,7 @@ mod tests {
     #[test]
     fn test_openai_provider_list_models() {
         let server = MockServer::start();
-        
+
         let mock_response = OpenAIModelsResponse {
             data: vec![
                 OpenAIModel {

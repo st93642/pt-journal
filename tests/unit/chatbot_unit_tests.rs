@@ -24,7 +24,7 @@ fn test_openai_provider_missing_api_key() {
     };
 
     let provider = OpenAIProvider::new(config);
-    
+
     let request = ChatRequest::new(
         pt_journal::chatbot::StepContext::default(),
         vec![],
@@ -40,7 +40,7 @@ fn test_openai_provider_missing_api_key() {
 #[test]
 fn test_openai_provider_successful_request() {
     let server = MockServer::start();
-    
+
     let mock_response = serde_json::json!({
         "choices": [{
             "message": {
@@ -104,7 +104,7 @@ fn test_azure_openai_provider_missing_api_key() {
     };
 
     let provider = AzureOpenAIProvider::new(config);
-    
+
     let request = ChatRequest::new(
         pt_journal::chatbot::StepContext::default(),
         vec![],
@@ -128,7 +128,7 @@ fn test_azure_openai_provider_missing_endpoint() {
     };
 
     let provider = AzureOpenAIProvider::new(config);
-    
+
     let request = ChatRequest::new(
         pt_journal::chatbot::StepContext::default(),
         vec![],
@@ -144,7 +144,7 @@ fn test_azure_openai_provider_missing_endpoint() {
 #[test]
 fn test_azure_openai_provider_successful_request() {
     let server = MockServer::start();
-    
+
     let mock_response = serde_json::json!({
         "choices": [{
             "message": {
@@ -191,18 +191,24 @@ fn test_provider_model_profiles() {
     let openai_profile = ModelProfile::for_openai("gpt-4", "GPT-4 (OpenAI)");
     assert_eq!(openai_profile.id, "gpt-4");
     assert_eq!(openai_profile.display_name, "GPT-4 (OpenAI)");
-    assert!(matches!(openai_profile.provider, pt_journal::config::ModelProviderKind::OpenAI));
+    assert!(matches!(
+        openai_profile.provider,
+        pt_journal::config::ModelProviderKind::OpenAI
+    ));
 
     let azure_profile = ModelProfile::for_azure_openai("gpt-4", "GPT-4 (Azure)");
     assert_eq!(azure_profile.id, "gpt-4");
     assert_eq!(azure_profile.display_name, "GPT-4 (Azure)");
-    assert!(matches!(azure_profile.provider, pt_journal::config::ModelProviderKind::AzureOpenAI));
+    assert!(matches!(
+        azure_profile.provider,
+        pt_journal::config::ModelProviderKind::AzureOpenAI
+    ));
 }
 
 #[test]
 fn test_openai_provider_availability_check() {
     let server = MockServer::start();
-    
+
     server.mock(|when, then| {
         when.method(GET)
             .path("/models")
@@ -232,7 +238,7 @@ fn test_openai_provider_availability_check() {
 #[test]
 fn test_azure_openai_provider_availability_check() {
     let server = MockServer::start();
-    
+
     server.mock(|when, then| {
         when.method(GET)
             .path("/openai/deployments")

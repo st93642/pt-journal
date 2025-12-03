@@ -6,9 +6,7 @@ use gtk4::{Button, HeaderBar};
 pub fn create_header_bar() -> (HeaderBar, Button) {
     let header = HeaderBar::new();
 
-    let btn_sidebar = Button::builder()
-        .icon_name("open-menu-symbolic")
-        .build();
+    let btn_sidebar = Button::builder().icon_name("open-menu-symbolic").build();
     btn_sidebar.set_tooltip_text(Some("Toggle sidebar"));
 
     header.pack_start(&btn_sidebar);

@@ -112,11 +112,25 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         load_tutorial_phase("purple_team_threat_hunting"),
         load_tutorial_phase("bug_bounty_hunting"),
         // ============================================
-        // SECTION 7: Reporting (position 42)
+        // SECTION 7: AI-Augmented Penetration Testing (positions 42-50)
+        // Modern AI security content covering OWASP LLM Top 10 2025,
+        // MITRE ATLAS framework, and AI-enhanced pentesting techniques
+        // ============================================
+        load_tutorial_phase("traditional-vs-ai-pentesting-foundations"),
+        load_tutorial_phase("building-modern-pt-lab-genai"),
+        load_tutorial_phase("genai-driven-reconnaissance"),
+        load_tutorial_phase("ai-enhanced-scanning-sniffing"),
+        load_tutorial_phase("vulnerability-assessment-ai"),
+        load_tutorial_phase("ai-driven-social-engineering"),
+        load_tutorial_phase("genai-driven-exploitation"),
+        load_tutorial_phase("post-exploitation-privilege-escalation-ai"),
+        load_tutorial_phase("automating-pt-reports-genai"),
+        // ============================================
+        // SECTION 8: Reporting (position 51)
         // ============================================
         load_tutorial_phase("reporting"),
         // ============================================
-        // SECTION 8: Certification Preparation (positions 43-53)
+        // SECTION 9: Certification Preparation (positions 52-62)
         // ============================================
         load_tutorial_phase("comptia_secplus"),
         load_tutorial_phase("pentest_exam"),
@@ -193,7 +207,7 @@ fn load_tutorial_phase(phase_name: &str) -> Phase {
                                             )
                                         }
                                     }
-                                    } else {
+                                } else {
                                     // Fallback to tutorial step if content doesn't reference a file
                                     Step::new_tutorial_with_tools(
                                         Uuid::new_v4(),
@@ -202,17 +216,17 @@ fn load_tutorial_phase(phase_name: &str) -> Phase {
                                         step_data.tags,
                                         step_data.related_tools,
                                     )
-                                    }
-                                    } else {
-                                    // Regular tutorial step
-                                    Step::new_tutorial_with_tools(
+                                }
+                            } else {
+                                // Regular tutorial step
+                                Step::new_tutorial_with_tools(
                                     Uuid::new_v4(),
                                     step_data.title,
                                     step_data.content,
                                     step_data.tags,
                                     step_data.related_tools,
-                                    )
-                                    }
+                                )
+                            }
                         })
                         .collect();
 
@@ -294,9 +308,19 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
         "red_team_tradecraft",
         "purple_team_threat_hunting",
         "bug_bounty_hunting",
-        // Section 7: Reporting
+        // Section 7: AI-Augmented Penetration Testing
+        "traditional-vs-ai-pentesting-foundations",
+        "building-modern-pt-lab-genai",
+        "genai-driven-reconnaissance",
+        "ai-enhanced-scanning-sniffing",
+        "vulnerability-assessment-ai",
+        "ai-driven-social-engineering",
+        "genai-driven-exploitation",
+        "post-exploitation-privilege-escalation-ai",
+        "automating-pt-reports-genai",
+        // Section 8: Reporting
         "reporting",
-        // Section 8: Certification Preparation
+        // Section 9: Certification Preparation
         "comptia_secplus",
         "pentest_exam",
         "ceh",
@@ -314,7 +338,7 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
     for phase_id in &phase_ids {
         let phase = load_tutorial_phase(phase_id);
         validate_step_structure(&phase.steps, phase_id)?;
-        
+
         // Check that module has at least one step
         if phase.steps.is_empty() {
             return Err(format!("{} module has no steps", phase_id));

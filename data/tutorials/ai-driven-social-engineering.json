@@ -1,6 +1,7 @@
 {
   "id": "ai-driven-social-engineering",
   "title": "AI-Driven Social Engineering Attacks",
+  "description": "Master AI-powered social engineering including LLM-generated phishing campaigns, deepfake technology, behavioral analysis, automated pretexting, and defensive countermeasures against AI-enhanced attacks.",
   "type": "tutorial",
   "steps": [
     {

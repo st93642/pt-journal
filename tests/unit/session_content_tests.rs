@@ -22,8 +22,8 @@ mod tests {
             assert_eq!(model.selected_phase(), 0);
             assert_eq!(model.selected_step(), Some(0));
             assert!(model.current_path().is_none());
-            assert_eq!(model.session().phases.len(), 56); // 56 phases loaded from JSON
-                                                          // Config should be loaded (or default)
+            assert_eq!(model.session().phases.len(), 52); // 52 phases loaded from JSON (AI security phases removed)
+                                                           // Config should be loaded (or default)
             assert_eq!(
                 model.config().chatbot.ollama.endpoint,
                 "http://localhost:11434"
@@ -35,7 +35,7 @@ mod tests {
         fn test_session_creation() {
             let session = Session::default();
             assert!(!session.name.is_empty());
-            assert_eq!(session.phases.len(), 56); // 56 phases loaded from JSON
+            assert_eq!(session.phases.len(), 52); // 52 phases loaded from JSON (AI security phases removed)
         }
 
         #[test]
@@ -88,80 +88,85 @@ mod tests {
             assert_eq!(recon_phase.name, "Reconnaissance");
             assert_eq!(recon_phase.steps.len(), 16); // 16 reconnaissance steps
 
-            // Test Advanced Reconnaissance Techniques phase (now at position 17)
-            let advanced_recon_phase = &session.phases[17];
+            // Test Advanced Reconnaissance Techniques phase (now at position 8)
+            let advanced_recon_phase = &session.phases[8];
             assert_eq!(
                 advanced_recon_phase.name,
                 "Advanced Reconnaissance Techniques"
             );
             assert_eq!(advanced_recon_phase.steps.len(), 3); // 3 advanced reconnaissance steps
 
-            // Test Vulnerability Analysis phase (now at position 18)
-            let vuln_phase = &session.phases[18];
+            // Test Vulnerability Analysis phase (now at position 9)
+            let vuln_phase = &session.phases[9];
             assert_eq!(vuln_phase.name, "Vulnerability Analysis");
             assert_eq!(vuln_phase.steps.len(), 5); // 5 vulnerability analysis steps
 
-            // Test Advanced Web Application Security Fundamentals phase (now at position 19)
-            let web_app_phase = &session.phases[19];
+            // Test Advanced Web Application Security Fundamentals phase (now at position 10)
+            let web_app_phase = &session.phases[10];
             assert_eq!(
                 web_app_phase.name,
                 "Advanced Web Application Security Fundamentals"
             );
             assert_eq!(web_app_phase.steps.len(), 5); // 5 web app security steps
 
-            // Test Cross-Site Scripting (XSS) Exploitation and Prevention phase (now at position 20)
-            let xss_phase = &session.phases[20];
+            // Test Cross-Site Scripting (XSS) Exploitation and Prevention phase (now at position 11)
+            let xss_phase = &session.phases[11];
             assert_eq!(
                 xss_phase.name,
                 "Cross-Site Scripting (XSS) Exploitation and Prevention"
             );
             assert_eq!(xss_phase.steps.len(), 3); // 3 XSS steps
 
-            // Test Authentication and Authorization Vulnerabilities phase (now at position 21)
-            let auth_phase = &session.phases[21];
+            // Test Authentication and Authorization Vulnerabilities phase (now at position 12)
+            let auth_phase = &session.phases[12];
             assert_eq!(
                 auth_phase.name,
                 "Authentication and Authorization Vulnerabilities"
             );
             assert_eq!(auth_phase.steps.len(), 3); // 3 authentication steps
 
-            // Test Injection Vulnerabilities Deep Dive phase (now at position 22)
-            let injection_phase = &session.phases[22];
+            // Test Injection Vulnerabilities Deep Dive phase (now at position 13)
+            let injection_phase = &session.phases[13];
             assert_eq!(injection_phase.name, "Injection Vulnerabilities Deep Dive");
             assert_eq!(injection_phase.steps.len(), 7); // 7 injection vulnerability steps
 
-            // Test Server-Side Attacks phase (now at position 23)
-            let server_side_phase = &session.phases[23];
+            // Test Server-Side Attacks phase (now at position 14)
+            let server_side_phase = &session.phases[14];
             assert_eq!(
                 server_side_phase.name,
                 "Server-Side Attacks: CSRF, SSRF, and File Inclusion"
             );
             assert_eq!(server_side_phase.steps.len(), 3); // 3 server-side attack steps
 
-            // Test Exploitation phase (now at position 24)
-            let exploit_phase = &session.phases[24];
+            // Test Exploitation phase (now at position 15)
+            let exploit_phase = &session.phases[15];
             assert_eq!(exploit_phase.name, "Exploitation");
             assert_eq!(exploit_phase.steps.len(), 4); // 4 exploitation steps
 
-            // Test Post-Exploitation phase (now at position 25)
-            let post_phase = &session.phases[25];
+            // Test Post-Exploitation phase (now at position 16)
+            let post_phase = &session.phases[16];
             assert_eq!(post_phase.name, "Post-Exploitation");
             assert_eq!(post_phase.steps.len(), 4); // 4 post-exploitation steps
 
-            // Test Linux CTF phase (now at position 26)
-            let linux_ctf_phase = &session.phases[26];
+            // Test Linux CTF phase (now at position 17)
+            let linux_ctf_phase = &session.phases[17];
             assert_eq!(linux_ctf_phase.name, "Linux CTF");
             assert!(!linux_ctf_phase.steps.is_empty()); // Has tutorial steps
 
-            // Test Windows CTF phase (now at position 27)
-            let windows_ctf_phase = &session.phases[27];
+            // Test Windows CTF phase (now at position 18)
+            let windows_ctf_phase = &session.phases[18];
             assert_eq!(windows_ctf_phase.name, "Windows CTF");
             assert!(!windows_ctf_phase.steps.is_empty()); // Has tutorial steps
 
-            // Test Cloud IAM Abuse 101 phase (now at position 28)
-            let cloud_iam_phase = &session.phases[28];
-            assert_eq!(cloud_iam_phase.name, "Cloud IAM Abuse 101");
-            assert!(!cloud_iam_phase.steps.is_empty()); // Has tutorial and quiz steps
+            // Test Cyber Threat Intelligence Fundamentals phase (now at position 19)
+            let cti_phase = &session.phases[19];
+            assert_eq!(cti_phase.name, "Cyber Threat Intelligence Fundamentals");
+            assert!(!cti_phase.steps.is_empty()); // Has tutorial steps
+
+            // Test Digital Forensics Methodology phase (now at position 20)
+            let forensics_phase = &session.phases[20];
+            assert_eq!(forensics_phase.name, "Digital Forensics Methodology");
+            assert!(!forensics_phase.steps.is_empty()); // Has tutorial steps
 
             // Test Container & Kubernetes Security phase (now at position 33)
             let container_security_phase = &session.phases[33];
@@ -171,18 +176,18 @@ mod tests {
             );
             assert!(!container_security_phase.steps.is_empty()); // Has tutorial and quiz steps
 
-            // Test Bug Bounty Hunting phase (now at position 43)
-            let bug_bounty_phase = &session.phases[43];
+            // Test Bug Bounty Hunting phase (now at position 39)
+            let bug_bounty_phase = &session.phases[39];
             assert_eq!(bug_bounty_phase.name, "Bug Bounty Hunting");
             assert!(!bug_bounty_phase.steps.is_empty()); // Has steps
 
-            // Test Reporting phase (now at position 44)
-            let report_phase = &session.phases[44];
+            // Test Reporting phase (now at position 40)
+            let report_phase = &session.phases[40];
             assert_eq!(report_phase.name, "Reporting");
             assert_eq!(report_phase.steps.len(), 4); // 4 reporting steps
 
-            // Test CompTIA Security+ phase (now at position 45)
-            let comptia_phase = &session.phases[45];
+            // Test CompTIA Security+ phase (now at position 41)
+            let comptia_phase = &session.phases[41];
             assert_eq!(comptia_phase.name, "CompTIA Security+");
             assert_eq!(comptia_phase.steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
         }
@@ -343,7 +348,8 @@ mod tests {
             let session = Session::default();
 
             // Verify logical phase progression (reordered to reflect real-world workflow)
-            // Phases are ordered: linux basics first, then recon, core pentesting, modern topics, advanced topics, reporting, quizzes last
+            // Phases are ordered: foundational skills, core pentesting, CTF, CTI/forensics, modern topics, advanced topics, reporting, quizzes last
+            // Deprecated AI security phases have been removed
             let phase_names = [
                 "Linux Basics for Hackers",
                 "Networking Fundamentals for Hackers",
@@ -353,15 +359,6 @@ mod tests {
                 "Reverse Shells and Post Exploitation",
                 "File Security Practices",
                 "Reconnaissance",
-                "Foundations of Pentesting with AI Integration",
-                "Building a Modern PT Lab with Generative AI",
-                "GenAI-Driven Reconnaissance Techniques",
-                "AI-Enhanced Scanning and Sniffing",
-                "Vulnerability Assessment with AI Tools",
-                "AI-Driven Social Engineering Attacks",
-                "GenAI-Driven Exploitation Techniques",
-                "Post-Exploitation and Privilege Escalation with AI",
-                "Automating Penetration Testing Reports with GenAI",
                 "Advanced Reconnaissance Techniques",
                 "Vulnerability Analysis",
                 "Advanced Web Application Security Fundamentals",
@@ -373,6 +370,15 @@ mod tests {
                 "Post-Exploitation",
                 "Linux CTF",
                 "Windows CTF",
+                "Cyber Threat Intelligence Fundamentals",
+                "Digital Forensics Methodology",
+                "Disk Forensics Analysis",
+                "Memory Forensics Analysis",
+                "SQLite Forensics",
+                "Windows Forensics Deep Dive",
+                "Network Forensics Fundamentals",
+                "macOS Forensics",
+                "Incident Response Methodology",
                 "Cloud IAM Abuse 101",
                 "Practical OAuth/OIDC Abuse",
                 "SSO & Federation Misconfigurations",
@@ -382,10 +388,6 @@ mod tests {
                 "Serverless Security",
                 "Cloud Native Security",
                 "Supply Chain Security",
-                "AI/ML Security",
-                "AI-Powered Offensive Security Tools",
-                "Retrieval-Augmented Generation (RAG) for Red Teaming",
-                "Bug Bounty Automation with AI",
                 "Red Team Tradecraft",
                 "Purple Team/Threat Hunting",
                 "Bug Bounty Hunting",
@@ -400,32 +402,32 @@ mod tests {
                 "CISSP Domain 5: Identity and Access Management",
                 "CISSP Domain 6: Security Assessment and Testing",
                 "CISSP Domain 7: Security Operations",
+                "CISSP Domain 8: Software Development Security",
             ];
             for (idx, expected_name) in phase_names.iter().enumerate() {
-                assert_eq!(session.phases[idx].name, *expected_name);
+                assert_eq!(session.phases[idx].name, *expected_name, "Phase {} name mismatch", idx);
             }
 
             // Verify step counts are reasonable for all phases
             let expected_step_counts = [
-                4, 6, 6, 6, 6, 5, 1, 16, 3, 3, 3, 3, 3, 10, 10, 10, 10, 3, 5, 5, 3, 3, 7, 3, 4, 4,
-                15, 9, 2, 1, 1, 7, 7, 6, 7, 15, 15, 13, 5, 4, 4, 10, 10, 12, 4, 23, 32, 24, 7, 6,
-                5, 4, 4, 5, 4,
-            ]; // 54 phases loaded from JSON
+                4, 6, 6, 6, 6, 5, 1, 16, 3, 5, 5, 3, 3, 7, 3, 4, 4,
+                15, 9, 5, 7, 6, 6, 4, 4, 4, 5, 5, 2, 1, 1, 7, 7, 6, 7, 15, 15, 10, 10, 12, 4, 23, 32, 24, 7, 6, 5, 4, 4, 5, 4, 3,
+            ]; // 52 phases loaded from JSON (AI security phases removed)
             for (idx, &expected_count) in expected_step_counts.iter().enumerate() {
-                assert_eq!(session.phases[idx].steps.len(), expected_count);
+                assert_eq!(session.phases[idx].steps.len(), expected_count, "Phase {} step count mismatch", idx);
             }
 
-            // Cloud IAM Abuse 101 phase should include tutorial + quiz steps (now at position 28)
-            assert!(session.phases[28].steps.len() >= 2);
+            // Cloud IAM Abuse 101 phase should include tutorial + quiz steps (now at position 27)
+            assert!(session.phases[27].steps.len() >= 2);
 
             // Container & Kubernetes Security phase should have steps (now at position 33)
             assert!(!session.phases[33].steps.is_empty());
 
-            // Bug Bounty Hunting phase should have steps (now at position 43)
-            assert!(!session.phases[43].steps.is_empty());
+            // Bug Bounty Hunting phase should have steps (now at position 39)
+            assert!(!session.phases[39].steps.is_empty());
 
-            // CompTIA Security+ phase should have quiz steps (now at position 45)
-            assert_eq!(session.phases[45].steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
+            // CompTIA Security+ phase should have quiz steps (now at position 41)
+            assert_eq!(session.phases[41].steps.len(), 23); // All 5 domains: D1(4) + D2(5) + D3(4) + D4(5) + D5(5)
         }
 
         #[test]
@@ -433,13 +435,12 @@ mod tests {
             let session = Session::default();
 
             // Cloud Identity Security tutorials have a different structure
-            const CLOUD_IDENTITY_PHASES: [&str; 6] = [
+            const CLOUD_IDENTITY_PHASES: [&str; 5] = [
                 "Cloud IAM Abuse 101",
                 "Practical OAuth/OIDC Abuse",
                 "SSO & Federation Misconfigurations",
                 "API Security",
                 "Reporting",
-                "AI/ML Security Integrations",
             ];
 
             for phase in &session.phases {
@@ -536,13 +537,12 @@ mod tests {
             let session = Session::default();
 
             // Cloud Identity Security tutorials have a different structure
-            const CLOUD_IDENTITY_PHASES: [&str; 6] = [
+            const CLOUD_IDENTITY_PHASES: [&str; 5] = [
                 "Cloud IAM Abuse 101",
                 "Practical OAuth/OIDC Abuse",
                 "SSO & Federation Misconfigurations",
                 "API Security",
                 "Reporting",
-                "AI/ML Security Integrations",
             ];
 
             // Test that all required fields are present

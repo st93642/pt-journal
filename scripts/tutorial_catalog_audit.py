@@ -28,6 +28,10 @@ TOOL_MANIFEST = BASE_DIR / "data" / "tool_instructions" / "manifest.json"
 AI_KEYWORDS = {"ai", "genai", "llm", "rag", "rag-based", "ai-powered", "automation-ai"}
 AI_TAGS = {"ai", "llm", "genai", "rag", "machine-learning", "ai-assisted", "ai-security"}
 
+# Forensics and Cyber Threat Intelligence keywords for categorization
+FORENSICS_KEYWORDS = {"forensics", "dfir", "memory", "disk", "sqlite", "incident-response", "evidence", "acquisition", "volatility", "autopsy", "carving"}
+CTI_KEYWORDS = {"cyber-intel", "threat-intelligence", "cti", "osint", "intel", "indicators", "ioc", "mitre", "attack", "ttps"}
+
 
 @dataclass
 class PhaseSummary:
@@ -39,6 +43,8 @@ class PhaseSummary:
     quiz_step_count: int
     quiz_file_refs: List[str]
     ai_focus: bool
+    forensics_focus: bool
+    cti_focus: bool
     description: str
 
 
@@ -54,6 +60,19 @@ def tokenize(text: str) -> List[str]:
     return re.split(r"[\s_\-/]+", text.lower()) if text else []
 
 
+def infer_focus(phase_id: str, title: str, description: str, steps: List[dict], keywords: set, tags_set: set) -> bool:
+    """Generic function to infer if a phase focuses on a particular topic based on keywords and tags."""
+    tokens = set(tokenize(phase_id) + tokenize(title) + tokenize(description))
+    if tokens & keywords:
+        return True
+    for step in steps:
+        step_tokens = set(tokenize(step.get("title", "")) + tokenize(step.get("content", "")))
+        tags = {t.lower() for t in step.get("tags", [])}
+        if step_tokens & keywords or tags & tags_set:
+            return True
+    return False
+
+
 def infer_ai_focus(phase_id: str, title: str, description: str, steps: List[dict]) -> bool:
     tokens = set(tokenize(phase_id) + tokenize(title) + tokenize(description))
     if tokens & AI_KEYWORDS:
@@ -64,6 +83,18 @@ def infer_ai_focus(phase_id: str, title: str, description: str, steps: List[dict
         if step_tokens & AI_KEYWORDS or tags & AI_TAGS:
             return True
     return False
+
+
+def infer_forensics_focus(phase_id: str, title: str, description: str, steps: List[dict]) -> bool:
+    """Detect if phase focuses on digital forensics / DFIR topics."""
+    forensics_tags = {"forensics", "dfir", "incident-response", "evidence", "memory-forensics", "disk-forensics"}
+    return infer_focus(phase_id, title, description, steps, FORENSICS_KEYWORDS, forensics_tags)
+
+
+def infer_cti_focus(phase_id: str, title: str, description: str, steps: List[dict]) -> bool:
+    """Detect if phase focuses on Cyber Threat Intelligence topics."""
+    cti_tags = {"threat-intelligence", "cti", "osint", "intel", "ioc", "mitre-attack"}
+    return infer_focus(phase_id, title, description, steps, CTI_KEYWORDS, cti_tags)
 
 
 def parse_phase_order() -> List[str]:
@@ -108,6 +139,8 @@ def load_phase_summary(phase_id: str, order: int) -> PhaseSummary:
             if content.startswith(prefix):
                 quiz_refs.append(content.removeprefix(prefix))
     ai_focus = infer_ai_focus(phase_id, data.get("title", phase_id), data.get("description", ""), steps)
+    forensics_focus = infer_forensics_focus(phase_id, data.get("title", phase_id), data.get("description", ""), steps)
+    cti_focus = infer_cti_focus(phase_id, data.get("title", phase_id), data.get("description", ""), steps)
     return PhaseSummary(
         order=order,
         id=phase_id,
@@ -117,6 +150,8 @@ def load_phase_summary(phase_id: str, order: int) -> PhaseSummary:
         quiz_step_count=quiz_step_count,
         quiz_file_refs=quiz_refs,
         ai_focus=ai_focus,
+        forensics_focus=forensics_focus,
+        cti_focus=cti_focus,
         description=data.get("description", ""),
     )
 
@@ -155,6 +190,8 @@ def main() -> None:
     total_steps = sum(phase.step_count for phase in phases)
     total_quiz_steps = sum(phase.quiz_step_count for phase in phases)
     ai_phases = [phase.id for phase in phases if phase.ai_focus]
+    forensics_phases = [phase.id for phase in phases if phase.forensics_focus]
+    cti_phases = [phase.id for phase in phases if phase.cti_focus]
 
     tool_categories = load_tool_categories()
     total_tools = sum(cat.tool_count for cat in tool_categories)
@@ -164,6 +201,8 @@ def main() -> None:
         "total_steps": total_steps,
         "total_quiz_steps": total_quiz_steps,
         "ai_phase_count": len(ai_phases),
+        "forensics_phase_count": len(forensics_phases),
+        "cti_phase_count": len(cti_phases),
         "phases": [asdict(phase) for phase in phases],
         "tool_category_count": len(tool_categories),
         "tool_categories": [asdict(cat) for cat in tool_categories],

@@ -1,0 +1,254 @@
+{
+  "manifest_version": "1.0.0",
+  "source_book": {
+    "title": "Practical Cyber Intelligence: A Hands-on Guide to Digital Forensics",
+    "author": "Adam Tilmar Jakobsen",
+    "extraction_status": "partial",
+    "pages_extracted": 3,
+    "extraction_note": "Table of Contents only - full extraction required"
+  },
+  "chapters": [
+    {
+      "number": 1,
+      "title": "Intelligence Analysis",
+      "sections": ["1.1 Intelligence Life Cycle", "1.2 Cyber Threat Intelligence Frameworks", "1.3 Summary"],
+      "source_pages": null
+    },
+    {
+      "number": 2,
+      "title": "Digital Forensics",
+      "sections": ["2.1 Device Collection", "2.2 Preservation", "2.3 Acquisition", "2.4 Processing", "2.5 Analysis", "2.6 Documentation and Reporting", "2.7 Summary"],
+      "source_pages": null
+    },
+    {
+      "number": 3,
+      "title": "Disk Forensics",
+      "sections": ["3.1 Acquisition", "3.2 Preparation", "3.3 Analysis", "3.4 File and Data Carving", "3.5 Summary"],
+      "source_pages": null
+    },
+    {
+      "number": 4,
+      "title": "Memory Forensics",
+      "sections": ["4.1 Acquisition", "4.2 Analysis", "4.3 Summary"],
+      "source_pages": null
+    },
+    {
+      "number": 5,
+      "title": "SQLite Forensics",
+      "sections": ["5.1 Analyzing", "5.2 Summary"],
+      "source_pages": null
+    },
+    {
+      "number": 6,
+      "title": "Windows Forensics",
+      "sections": ["6.1 New Technology File System (NTFS)", "6.2 Acquisition", "6.3 Analysis", "6.4 Evidence Location", "6.5 Summary"],
+      "source_pages": null
+    },
+    {
+      "number": 7,
+      "title": "macOS Forensics",
+      "sections": ["7.1 File System", "7.2 Security", "7.3 Acquisition", "7.4 Analysis", "7.5 Evidence Location", "7.6 Summary"],
+      "source_pages": null
+    }
+  ],
+  "planned_phases": [
+    {
+      "phase_id": "cyber_threat_intelligence_fundamentals",
+      "title": "Cyber Threat Intelligence Fundamentals",
+      "description": "Intelligence lifecycle, CTI frameworks, and strategic threat analysis methodologies",
+      "source_chapters": [1],
+      "expected_steps": 5,
+      "canonical_tags": ["threat-intelligence", "intelligence-cycle", "frameworks", "analysis", "cti"],
+      "related_tools": ["misp", "maltego", "opencti", "yeti"],
+      "replaces_existing": null,
+      "quiz_file": "threat_intelligence/cti-fundamentals-quiz.txt",
+      "tutorial_file": "cyber_threat_intelligence_fundamentals.json"
+    },
+    {
+      "phase_id": "digital_forensics_methodology",
+      "title": "Digital Forensics Methodology",
+      "description": "End-to-end forensic investigation process from evidence collection to court-ready reporting",
+      "source_chapters": [2],
+      "expected_steps": 8,
+      "canonical_tags": ["forensics", "dfir", "evidence", "chain-of-custody", "acquisition"],
+      "related_tools": ["autopsy", "ftk", "encase", "sleuthkit", "dc3dd"],
+      "replaces_existing": null,
+      "quiz_file": "forensics/dfir-methodology-quiz.txt",
+      "tutorial_file": "digital_forensics_methodology.json"
+    },
+    {
+      "phase_id": "disk_forensics_analysis",
+      "title": "Disk Forensics Analysis",
+      "description": "File system analysis, data carving, and disk-level evidence extraction",
+      "source_chapters": [3],
+      "expected_steps": 6,
+      "canonical_tags": ["forensics", "disk", "file-carving", "filesystem", "evidence"],
+      "related_tools": ["autopsy", "sleuthkit", "foremost", "scalpel", "photorec", "testdisk"],
+      "replaces_existing": null,
+      "quiz_file": "forensics/disk-forensics-quiz.txt",
+      "tutorial_file": "disk_forensics_analysis.json"
+    },
+    {
+      "phase_id": "memory_forensics_analysis",
+      "title": "Memory Forensics Analysis",
+      "description": "RAM acquisition and volatile memory analysis for incident response",
+      "source_chapters": [4],
+      "expected_steps": 5,
+      "canonical_tags": ["forensics", "memory", "volatility", "ram", "malware"],
+      "related_tools": ["volatility3", "rekall", "winpmem", "lime", "dumpit"],
+      "replaces_existing": null,
+      "quiz_file": "forensics/memory-forensics-quiz.txt",
+      "tutorial_file": "memory_forensics_analysis.json"
+    },
+    {
+      "phase_id": "sqlite_forensics",
+      "title": "SQLite Forensics",
+      "description": "Analyzing SQLite databases for browser history, messaging apps, and application data",
+      "source_chapters": [5],
+      "expected_steps": 4,
+      "canonical_tags": ["forensics", "sqlite", "database", "browser", "messaging"],
+      "related_tools": ["sqlite-browser", "sqlitebrowser", "autopsy"],
+      "replaces_existing": null,
+      "quiz_file": "forensics/disk-forensics-quiz.txt",
+      "tutorial_file": "sqlite_forensics.json"
+    },
+    {
+      "phase_id": "windows_forensics_deep_dive",
+      "title": "Windows Forensics Deep Dive",
+      "description": "NTFS analysis, Windows artifacts, registry forensics, and event log analysis",
+      "source_chapters": [6],
+      "expected_steps": 7,
+      "canonical_tags": ["forensics", "windows", "ntfs", "registry", "eventlog", "artifacts"],
+      "related_tools": ["autopsy", "regripper", "registry-explorer", "evtx-dump", "timeline-explorer"],
+      "replaces_existing": null,
+      "quiz_file": "forensics/windows-forensics-quiz.txt",
+      "tutorial_file": "windows_forensics_deep_dive.json"
+    },
+    {
+      "phase_id": "macos_forensics",
+      "title": "macOS Forensics",
+      "description": "APFS analysis, macOS security features, and Apple-specific artifacts",
+      "source_chapters": [7],
+      "expected_steps": 7,
+      "canonical_tags": ["forensics", "macos", "apfs", "apple", "unified-log"],
+      "related_tools": ["mac-apt", "plist-parser", "unified-log-parser"],
+      "replaces_existing": null,
+      "quiz_file": "forensics/macos-forensics-quiz.txt",
+      "tutorial_file": "macos_forensics.json"
+    }
+  ],
+  "ai_phase_decisions": {
+    "keep": [
+      {
+        "phase_id": "ai_security",
+        "rationale": "High-quality (13 comprehensive steps, detailed content, proper methodology structure)"
+      },
+      {
+        "phase_id": "ai_powered_offensive_security",
+        "rationale": "High-quality (5 detailed steps with code examples, realistic tooling)"
+      },
+      {
+        "phase_id": "ai_agentic_operations",
+        "rationale": "High-quality (8 comprehensive steps covering AutoGen, PyRIT, safety guardrails)"
+      }
+    ],
+    "replace": [
+      {
+        "phase_id": "traditional-vs-ai-pentesting-foundations",
+        "rationale": "Low-quality (3 shallow steps, generic content)",
+        "action": "Remove from load_tutorial_phases() once new content is ready"
+      }
+    ],
+    "retain_review": [
+      {
+        "phase_id": "building-modern-pt-lab-genai",
+        "rationale": "Potentially useful, needs quality assessment"
+      },
+      {
+        "phase_id": "genai-driven-reconnaissance",
+        "rationale": "Topic valid, content quality unknown"
+      },
+      {
+        "phase_id": "ai-enhanced-scanning-sniffing",
+        "rationale": "Topic valid, content quality unknown"
+      },
+      {
+        "phase_id": "vulnerability-assessment-ai",
+        "rationale": "Topic valid, content quality unknown"
+      },
+      {
+        "phase_id": "ai-driven-social-engineering",
+        "rationale": "Topic valid, content quality unknown"
+      },
+      {
+        "phase_id": "genai-driven-exploitation",
+        "rationale": "Topic valid, content quality unknown"
+      },
+      {
+        "phase_id": "post-exploitation-privilege-escalation-ai",
+        "rationale": "Topic valid, content quality unknown"
+      },
+      {
+        "phase_id": "automating-pt-reports-genai",
+        "rationale": "Topic valid, content quality unknown"
+      },
+      {
+        "phase_id": "retrieval_augmented_generation_red_teaming",
+        "rationale": "Specialized topic, needs assessment"
+      },
+      {
+        "phase_id": "bug_bounty_automation_ai",
+        "rationale": "Topic valid, content quality unknown"
+      },
+      {
+        "phase_id": "ai_secops_copilots",
+        "rationale": "Topic valid, content quality unknown"
+      },
+      {
+        "phase_id": "ai_playbook_automation",
+        "rationale": "Topic valid, content quality unknown"
+      }
+    ]
+  },
+  "ordering_rules": {
+    "insertion_point": "After linux_ctf and windows_ctf, before cloud_iam",
+    "section_name": "Cyber Threat Intelligence & Forensics",
+    "position_range": "~28-34",
+    "rationale": "CTF exercises establish practical pentesting skills; forensics is the post-incident analysis phase"
+  },
+  "quiz_requirements": {
+    "new_files": [
+      {
+        "path": "data/threat_intelligence/cti-fundamentals-quiz.txt",
+        "estimated_questions": 25
+      },
+      {
+        "path": "data/forensics/dfir-methodology-quiz.txt",
+        "estimated_questions": 30
+      },
+      {
+        "path": "data/forensics/disk-forensics-quiz.txt",
+        "estimated_questions": 35
+      },
+      {
+        "path": "data/forensics/memory-forensics-quiz.txt",
+        "estimated_questions": 22
+      },
+      {
+        "path": "data/forensics/windows-forensics-quiz.txt",
+        "estimated_questions": 35
+      },
+      {
+        "path": "data/forensics/macos-forensics-quiz.txt",
+        "estimated_questions": 22
+      }
+    ],
+    "existing_retained": [
+      "ai_security/ai-security-quiz.txt",
+      "ai_powered_offensive_security/ai-offensive-security-quiz.txt",
+      "ai_agent_operations/ai-agent-operations-assessment.txt"
+    ]
+  },
+  "created_at": "2025-12-03",
+  "last_updated": "2025-12-03"
+}

@@ -43,14 +43,18 @@ pub struct TutorialStep {
 
 /// Load all tutorial phases with their default content
 /// Phases are ordered to reflect real-world penetration testing workflow:
-/// 1. Initial reconnaissance and intelligence gathering
-/// 2. Core penetration testing methodology
-/// 3. Modern security topics (cloud, web, containers, etc.)
-/// 4. Advanced techniques (red team, bug bounty, supply chain)
-/// 5. Quiz-based certification preparation (at the end)
+/// 1. Foundational skills (Linux, networking, Python)
+/// 2. Core pentesting methodology (reconnaissance through exploitation)
+/// 3. CTF practical labs
+/// 4. Cyber Threat Intelligence & Digital Forensics
+/// 5. Modern security topics (cloud, web, containers)
+/// 6. Advanced techniques (AI, red team, bug bounty)
+/// 7. Quiz-based certification preparation (at the end)
 pub fn load_tutorial_phases() -> Vec<Phase> {
     vec![
-        // Phase 1: Linux basics and foundational skills
+        // ============================================
+        // SECTION 1: Foundational Skills (positions 1-7)
+        // ============================================
         load_tutorial_phase("linux_basics_for_hackers"),
         load_tutorial_phase("networking_fundamentals"),
         load_tutorial_phase("wifi_security_attacks"),
@@ -58,29 +62,22 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         load_tutorial_phase("python_penetration_testing"),
         load_tutorial_phase("reverse_shells_guide"),
         load_tutorial_phase("file_security_practices"),
-        // Phase 2: Initial reconnaissance (intelligence gathering)
+        // ============================================
+        // SECTION 2: Reconnaissance & Scanning (positions 8-17)
+        // ============================================
         load_tutorial_phase("reconnaissance"),
-        // Phase 2: Foundations of pentesting with AI integration
-        load_tutorial_phase("traditional-vs-ai-pentesting-foundations"),
-        // Phase 3: Building a modern PT lab with GenAI
         load_tutorial_phase("building-modern-pt-lab-genai"),
-        // Phase 4: GenAI-driven reconnaissance techniques
         load_tutorial_phase("genai-driven-reconnaissance"),
-        // Phase 5: AI-enhanced scanning and sniffing
         load_tutorial_phase("ai-enhanced-scanning-sniffing"),
-        // Phase 6: Vulnerability assessment with AI tools
         load_tutorial_phase("vulnerability-assessment-ai"),
-        // Phase 7: AI-driven social engineering attacks
         load_tutorial_phase("ai-driven-social-engineering"),
-        // Phase 8: GenAI-driven exploitation techniques
         load_tutorial_phase("genai-driven-exploitation"),
-        // Phase 9: Post-exploitation and privilege escalation with AI
         load_tutorial_phase("post-exploitation-privilege-escalation-ai"),
-        // Phase 10: Automating penetration testing reports with GenAI
         load_tutorial_phase("automating-pt-reports-genai"),
-        // Phase 7: Advanced reconnaissance techniques (AI-powered OSINT, certificates, metadata)
         load_tutorial_phase("advanced_reconnaissance_techniques"),
-        // Phase 3-8: Core penetration testing methodology
+        // ============================================
+        // SECTION 3: Core PT Methodology (positions 18-25)
+        // ============================================
         load_tutorial_phase("vulnerability_analysis"),
         load_tutorial_phase("advanced-web-app-security-fundamentals"),
         load_tutorial_phase("cross-site-scripting-xss-exploitation-prevention"),
@@ -89,11 +86,27 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         load_tutorial_phase("server-side-attacks-csrf-ssrf-file-inclusion"),
         load_tutorial_phase("exploitation"),
         load_tutorial_phase("post_exploitation"),
-        // Phase 8: Linux CTF (practical application of methodology)
+        // ============================================
+        // SECTION 4: CTF Practical Labs (positions 26-27)
+        // ============================================
         load_tutorial_phase("linux_ctf"),
-        // Phase 9: Windows CTF (Windows/AD practical application)
         load_tutorial_phase("windows_ctf"),
-        // Phase 10-17: Modern security topics (cloud, identity, web, containers)
+        // ============================================
+        // SECTION 5: Cyber Threat Intelligence & Forensics (positions 28-36)
+        // NEW: Based on Practical Cyber Intelligence book curriculum
+        // ============================================
+        load_tutorial_phase("cyber_threat_intelligence_fundamentals"),
+        load_tutorial_phase("digital_forensics_methodology"),
+        load_tutorial_phase("disk_forensics_analysis"),
+        load_tutorial_phase("memory_forensics_analysis"),
+        load_tutorial_phase("sqlite_forensics"),
+        load_tutorial_phase("windows_forensics_deep_dive"),
+        load_tutorial_phase("network_forensics_fundamentals"),
+        load_tutorial_phase("macos_forensics"),
+        load_tutorial_phase("incident_response_methodology"),
+        // ============================================
+        // SECTION 6: Modern Security Topics (positions 37-44)
+        // ============================================
         load_tutorial_phase("cloud_iam"),
         load_tutorial_phase("practical_oauth"),
         load_tutorial_phase("sso_federation"),
@@ -102,7 +115,9 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         load_tutorial_phase("container_security"),
         load_tutorial_phase("serverless_security"),
         load_tutorial_phase("cloud_native"),
-        // Phase 18-23: Advanced topics (supply chain, AI, RAG, red/purple team)
+        // ============================================
+        // SECTION 7: Advanced Topics (positions 45-54)
+        // ============================================
         load_tutorial_phase("supply_chain"),
         load_tutorial_phase("ai_security"),
         load_tutorial_phase("ai_powered_offensive_security"),
@@ -111,13 +126,16 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         load_tutorial_phase("red_team_tradecraft"),
         load_tutorial_phase("purple_team_threat_hunting"),
         load_tutorial_phase("bug_bounty_hunting"),
-        // Phase 24-26: AI Agent Operations (orchestration and automation)
         load_tutorial_phase("ai_agentic_operations"),
         load_tutorial_phase("ai_secops_copilots"),
         load_tutorial_phase("ai_playbook_automation"),
-        // Phase 27: Reporting (final documentation phase)
+        // ============================================
+        // SECTION 8: Reporting (position 55)
+        // ============================================
         load_tutorial_phase("reporting"),
-        // Phase 24-26: Quiz-based certification preparation (post-testing validation)
+        // ============================================
+        // SECTION 9: Certification Preparation (positions 56-66)
+        // ============================================
         load_tutorial_phase("comptia_secplus"),
         load_tutorial_phase("pentest_exam"),
         load_tutorial_phase("ceh"),
@@ -129,13 +147,6 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         load_tutorial_phase("cissp-domain-6"),
         load_tutorial_phase("cissp-domain-7"),
         load_tutorial_phase("cissp-domain-8"),
-        // create_cicd_pipeline_attacks_phase(), // Now part of cloud_native JSON
-        // create_sbom_analysis_phase(), // Now part of supply_chain JSON
-        // create_dependency_confusion_phase(), // Now part of supply_chain JSON
-        // create_artifact_integrity_phase(), // Now part of supply_chain JSON
-        // create_red_team_tradecraft_phase(), // Now loaded from JSON
-        // create_purple_team_threat_hunting_phase(), // Now loaded from JSON
-        // create_ai_security_phase(), // Now loaded from JSON
     ]
 }
 
@@ -251,463 +262,97 @@ fn load_tutorial_phase(phase_name: &str) -> Phase {
 }
 
 /// Validate tutorial structure consistency across all modules
+/// This function validates all phases that are loaded by load_tutorial_phases()
 pub fn validate_tutorial_structure() -> Result<(), String> {
-    // Validate Linux basics for hackers module (loaded from JSON)
-    let linux_basics_phase = load_tutorial_phase("linux_basics_for_hackers");
-    validate_step_structure(&linux_basics_phase.steps, "linux_basics_for_hackers")?;
-
-    // Validate networking fundamentals module (loaded from JSON)
-    let networking_fundamentals_phase = load_tutorial_phase("networking_fundamentals");
-    validate_step_structure(
-        &networking_fundamentals_phase.steps,
+    // Define all phase IDs that should be validated (matches load_tutorial_phases order)
+    let phase_ids = vec![
+        // Section 1: Foundational Skills
+        "linux_basics_for_hackers",
         "networking_fundamentals",
-    )?;
-
-    // Validate Wi-Fi security attacks module (loaded from JSON)
-    let wifi_security_phase = load_tutorial_phase("wifi_security_attacks");
-    validate_step_structure(&wifi_security_phase.steps, "wifi_security_attacks")?;
-
-    // Validate password cracking techniques module (loaded from JSON)
-    let password_cracking_phase = load_tutorial_phase("password_cracking_techniques");
-    validate_step_structure(
-        &password_cracking_phase.steps,
+        "wifi_security_attacks",
         "password_cracking_techniques",
-    )?;
-
-    // Validate Python penetration testing module (loaded from JSON)
-    let python_penetration_phase = load_tutorial_phase("python_penetration_testing");
-    validate_step_structure(
-        &python_penetration_phase.steps,
         "python_penetration_testing",
-    )?;
-
-    // Validate reverse shells guide module (loaded from JSON)
-    let reverse_shells_phase = load_tutorial_phase("reverse_shells_guide");
-    validate_step_structure(&reverse_shells_phase.steps, "reverse_shells_guide")?;
-
-    // Validate file security practices module (loaded from JSON)
-    let file_security_phase = load_tutorial_phase("file_security_practices");
-    validate_step_structure(&file_security_phase.steps, "file_security_practices")?;
-
-    // Validate reconnaissance module (loaded from JSON)
-    let recon_phase = load_tutorial_phase("reconnaissance");
-    validate_step_structure(&recon_phase.steps, "reconnaissance")?;
-
-    // Validate traditional vs AI pentesting foundations module (loaded from JSON)
-    let foundations_phase = load_tutorial_phase("traditional-vs-ai-pentesting-foundations");
-    validate_step_structure(
-        &foundations_phase.steps,
-        "traditional-vs-ai-pentesting-foundations",
-    )?;
-
-    // Validate building modern PT lab with GenAI module (loaded from JSON)
-    let lab_phase = load_tutorial_phase("building-modern-pt-lab-genai");
-    validate_step_structure(&lab_phase.steps, "building-modern-pt-lab-genai")?;
-
-    // Validate GenAI-driven reconnaissance module (loaded from JSON)
-    let genai_recon_phase = load_tutorial_phase("genai-driven-reconnaissance");
-    validate_step_structure(&genai_recon_phase.steps, "genai-driven-reconnaissance")?;
-
-    // Validate AI-enhanced scanning and sniffing module (loaded from JSON)
-    let scanning_phase = load_tutorial_phase("ai-enhanced-scanning-sniffing");
-    validate_step_structure(&scanning_phase.steps, "ai-enhanced-scanning-sniffing")?;
-
-    // Validate vulnerability assessment with AI module (loaded from JSON)
-    let vuln_ai_phase = load_tutorial_phase("vulnerability-assessment-ai");
-    validate_step_structure(&vuln_ai_phase.steps, "vulnerability-assessment-ai")?;
-
-    // Validate AI-driven social engineering module (loaded from JSON)
-    let social_engineering_phase = load_tutorial_phase("ai-driven-social-engineering");
-    validate_step_structure(
-        &social_engineering_phase.steps,
+        "reverse_shells_guide",
+        "file_security_practices",
+        // Section 2: Reconnaissance & Scanning
+        "reconnaissance",
+        "building-modern-pt-lab-genai",
+        "genai-driven-reconnaissance",
+        "ai-enhanced-scanning-sniffing",
+        "vulnerability-assessment-ai",
         "ai-driven-social-engineering",
-    )?;
-
-    // Validate GenAI-driven exploitation module (loaded from JSON)
-    let exploitation_phase = load_tutorial_phase("genai-driven-exploitation");
-    validate_step_structure(&exploitation_phase.steps, "genai-driven-exploitation")?;
-
-    // Validate post-exploitation and privilege escalation with AI module (loaded from JSON)
-    let post_exploitation_phase = load_tutorial_phase("post-exploitation-privilege-escalation-ai");
-    validate_step_structure(
-        &post_exploitation_phase.steps,
+        "genai-driven-exploitation",
         "post-exploitation-privilege-escalation-ai",
-    )?;
-
-    // Validate automating PT reports with GenAI module (loaded from JSON)
-    let reports_phase = load_tutorial_phase("automating-pt-reports-genai");
-    validate_step_structure(&reports_phase.steps, "automating-pt-reports-genai")?;
-
-    // Validate advanced reconnaissance techniques module (loaded from JSON)
-    let advanced_recon_phase = load_tutorial_phase("advanced_reconnaissance_techniques");
-    validate_step_structure(
-        &advanced_recon_phase.steps,
+        "automating-pt-reports-genai",
         "advanced_reconnaissance_techniques",
-    )?;
-
-    // Validate vulnerability analysis module (loaded from JSON)
-    let vuln_analysis_phase = load_tutorial_phase("vulnerability_analysis");
-    validate_step_structure(&vuln_analysis_phase.steps, "vulnerability_analysis")?;
-
-    // Validate advanced web app security fundamentals module (loaded from JSON)
-    let advanced_web_phase = load_tutorial_phase("advanced-web-app-security-fundamentals");
-    validate_step_structure(
-        &advanced_web_phase.steps,
+        // Section 3: Core PT Methodology
+        "vulnerability_analysis",
         "advanced-web-app-security-fundamentals",
-    )?;
-
-    // Validate cross-site scripting module (loaded from JSON)
-    let xss_phase = load_tutorial_phase("cross-site-scripting-xss-exploitation-prevention");
-    validate_step_structure(
-        &xss_phase.steps,
         "cross-site-scripting-xss-exploitation-prevention",
-    )?;
-
-    // Validate authentication and authorization vulnerabilities module (loaded from JSON)
-    let auth_phase = load_tutorial_phase("authentication-authorization-vulnerabilities");
-    validate_step_structure(
-        &auth_phase.steps,
         "authentication-authorization-vulnerabilities",
-    )?;
-
-    // Validate injection vulnerabilities deep dive module (loaded from JSON)
-    let injection_phase = load_tutorial_phase("injection-vulnerabilities-deep-dive");
-    validate_step_structure(
-        &injection_phase.steps,
         "injection-vulnerabilities-deep-dive",
-    )?;
-
-    // Validate server-side attacks module (loaded from JSON)
-    let server_side_attacks_phase =
-        load_tutorial_phase("server-side-attacks-csrf-ssrf-file-inclusion");
-    validate_step_structure(
-        &server_side_attacks_phase.steps,
         "server-side-attacks-csrf-ssrf-file-inclusion",
-    )?;
-
-    // Validate exploitation module (loaded from JSON)
-    let exploit_phase = load_tutorial_phase("exploitation");
-    validate_step_structure(&exploit_phase.steps, "exploitation")?;
-
-    // Validate post-exploitation module (loaded from JSON)
-    let post_phase = load_tutorial_phase("post_exploitation");
-    validate_step_structure(&post_phase.steps, "post_exploitation")?;
-
-    // Validate Linux CTF module (loaded from JSON)
-    let linux_ctf_phase = load_tutorial_phase("linux_ctf");
-    validate_step_structure(&linux_ctf_phase.steps, "linux_ctf")?;
-
-    // Validate Windows CTF module (loaded from JSON)
-    let windows_ctf_phase = load_tutorial_phase("windows_ctf");
-    validate_step_structure(&windows_ctf_phase.steps, "windows_ctf")?;
-
-    // Validate cloud IAM module (loaded from JSON)
-    let cloud_iam_phase = load_tutorial_phase("cloud_iam");
-    validate_step_structure(&cloud_iam_phase.steps, "cloud_iam")?;
-
-    // Validate practical OAuth module (loaded from JSON)
-    let oauth_phase = load_tutorial_phase("practical_oauth");
-    validate_step_structure(&oauth_phase.steps, "practical_oauth")?;
-
-    // Validate SSO federation module (loaded from JSON)
-    let federation_phase = load_tutorial_phase("sso_federation");
-    validate_step_structure(&federation_phase.steps, "sso_federation")?;
-
-    // Validate API security module (loaded from JSON)
-    let api_security_phase = load_tutorial_phase("api_security");
-    validate_step_structure(&api_security_phase.steps, "api_security")?;
-
-    // Validate reporting module (loaded from JSON)
-    let reporting_phase = load_tutorial_phase("reporting");
-    validate_step_structure(&reporting_phase.steps, "reporting")?;
-
-    // Validate container security module (loaded from JSON)
-    let container_security_phase = load_tutorial_phase("container_security");
-    validate_step_structure(&container_security_phase.steps, "container_security")?;
-
-    // Validate serverless security module (loaded from JSON)
-    let serverless_security_phase = load_tutorial_phase("serverless_security");
-    validate_step_structure(&serverless_security_phase.steps, "serverless_security")?;
-
-    // Validate bug bounty hunting module (loaded from JSON)
-    let bug_bounty_hunting_phase = load_tutorial_phase("bug_bounty_hunting");
-    validate_step_structure(&bug_bounty_hunting_phase.steps, "bug_bounty_hunting")?;
-
-    // Validate CompTIA Security+ module (loaded from JSON)
-    let comptia_secplus_phase = load_tutorial_phase("comptia_secplus");
-    validate_step_structure(&comptia_secplus_phase.steps, "comptia_secplus")?;
-
-    // Validate PenTest+ module (loaded from JSON)
-    let pentest_exam_phase = load_tutorial_phase("pentest_exam");
-    validate_step_structure(&pentest_exam_phase.steps, "pentest_exam")?;
-
-    // Validate CEH module (loaded from JSON)
-    let ceh_phase = load_tutorial_phase("ceh");
-    validate_step_structure(&ceh_phase.steps, "ceh")?;
-
-    // Validate CISSP Domain 1 module (loaded from JSON)
-    let cissp_domain_1_phase = load_tutorial_phase("cissp-domain-1");
-    validate_step_structure(&cissp_domain_1_phase.steps, "cissp-domain-1")?;
-
-    // Validate CISSP Domain 2 module (loaded from JSON)
-    let cissp_domain_2_phase = load_tutorial_phase("cissp-domain-2");
-    validate_step_structure(&cissp_domain_2_phase.steps, "cissp-domain-2")?;
-
-    // Validate CISSP Domain 3 module (loaded from JSON)
-    let cissp_domain_3_phase = load_tutorial_phase("cissp-domain-3");
-    validate_step_structure(&cissp_domain_3_phase.steps, "cissp-domain-3")?;
-
-    // Validate CISSP Domain 4 module (loaded from JSON)
-    let cissp_domain_4_phase = load_tutorial_phase("cissp-domain-4");
-    validate_step_structure(&cissp_domain_4_phase.steps, "cissp-domain-4")?;
-
-    // Validate CISSP Domain 5 module (loaded from JSON)
-    let cissp_domain_5_phase = load_tutorial_phase("cissp-domain-5");
-    validate_step_structure(&cissp_domain_5_phase.steps, "cissp-domain-5")?;
-
-    // Validate CISSP Domain 6 module (loaded from JSON)
-    let cissp_domain_6_phase = load_tutorial_phase("cissp-domain-6");
-    validate_step_structure(&cissp_domain_6_phase.steps, "cissp-domain-6")?;
-
-    // Validate CISSP Domain 7 module (loaded from JSON)
-    let cissp_domain_7_phase = load_tutorial_phase("cissp-domain-7");
-    validate_step_structure(&cissp_domain_7_phase.steps, "cissp-domain-7")?;
-
-    // Validate Cloud Native module (loaded from JSON)
-    let cloud_native_phase = load_tutorial_phase("cloud_native");
-    validate_step_structure(&cloud_native_phase.steps, "cloud_native")?;
-
-    // Validate AI Security module (loaded from JSON)
-    let ai_security_phase = load_tutorial_phase("ai_security");
-    validate_step_structure(&ai_security_phase.steps, "ai_security")?;
-
-    // Validate AI-Powered Offensive Security module (loaded from JSON)
-    let ai_powered_offensive_security_phase = load_tutorial_phase("ai_powered_offensive_security");
-    validate_step_structure(
-        &ai_powered_offensive_security_phase.steps,
+        "exploitation",
+        "post_exploitation",
+        // Section 4: CTF Practical Labs
+        "linux_ctf",
+        "windows_ctf",
+        // Section 5: Cyber Threat Intelligence & Forensics (NEW)
+        "cyber_threat_intelligence_fundamentals",
+        "digital_forensics_methodology",
+        "disk_forensics_analysis",
+        "memory_forensics_analysis",
+        "sqlite_forensics",
+        "windows_forensics_deep_dive",
+        "network_forensics_fundamentals",
+        "macos_forensics",
+        "incident_response_methodology",
+        // Section 6: Modern Security Topics
+        "cloud_iam",
+        "practical_oauth",
+        "sso_federation",
+        "api_security",
+        "modern_web",
+        "container_security",
+        "serverless_security",
+        "cloud_native",
+        // Section 7: Advanced Topics
+        "supply_chain",
+        "ai_security",
         "ai_powered_offensive_security",
-    )?;
-
-    // Validate Retrieval-Augmented Generation Red Teaming module (loaded from JSON)
-    let rag_red_teaming_phase = load_tutorial_phase("retrieval_augmented_generation_red_teaming");
-    validate_step_structure(
-        &rag_red_teaming_phase.steps,
         "retrieval_augmented_generation_red_teaming",
-    )?;
-
-    // Validate Bug Bounty Automation with AI module (loaded from JSON)
-    let bug_bounty_automation_ai_phase = load_tutorial_phase("bug_bounty_automation_ai");
-    validate_step_structure(
-        &bug_bounty_automation_ai_phase.steps,
         "bug_bounty_automation_ai",
-    )?;
-
-    // Validate Supply Chain module (loaded from JSON)
-    let supply_chain_phase = load_tutorial_phase("supply_chain");
-    validate_step_structure(&supply_chain_phase.steps, "supply_chain")?;
-
-    // Validate Purple Team Threat Hunting module (loaded from JSON)
-    let purple_team_phase = load_tutorial_phase("purple_team_threat_hunting");
-    validate_step_structure(&purple_team_phase.steps, "purple_team_threat_hunting")?;
-
-    // Validate Red Team Tradecraft module (loaded from JSON)
-    let red_team_phase = load_tutorial_phase("red_team_tradecraft");
-    validate_step_structure(&red_team_phase.steps, "red_team_tradecraft")?;
-
-    // Validate Modern Web module (loaded from JSON)
-    let modern_web_phase = load_tutorial_phase("modern_web");
-    validate_step_structure(&modern_web_phase.steps, "modern_web")?;
-
-    // Validate AI Agentic Operations module (loaded from JSON)
-    let ai_agentic_operations_phase = load_tutorial_phase("ai_agentic_operations");
-    validate_step_structure(&ai_agentic_operations_phase.steps, "ai_agentic_operations")?;
-
-    // Validate AI SecOps Copilots module (loaded from JSON)
-    let ai_secops_copilots_phase = load_tutorial_phase("ai_secops_copilots");
-    validate_step_structure(&ai_secops_copilots_phase.steps, "ai_secops_copilots")?;
-
-    // Validate AI Playbook Automation module (loaded from JSON)
-    let ai_playbook_automation_phase = load_tutorial_phase("ai_playbook_automation");
-    validate_step_structure(
-        &ai_playbook_automation_phase.steps,
+        "red_team_tradecraft",
+        "purple_team_threat_hunting",
+        "bug_bounty_hunting",
+        "ai_agentic_operations",
+        "ai_secops_copilots",
         "ai_playbook_automation",
-    )?;
+        // Section 8: Reporting
+        "reporting",
+        // Section 9: Certification Preparation
+        "comptia_secplus",
+        "pentest_exam",
+        "ceh",
+        "cissp-domain-1",
+        "cissp-domain-2",
+        "cissp-domain-3",
+        "cissp-domain-4",
+        "cissp-domain-5",
+        "cissp-domain-6",
+        "cissp-domain-7",
+        "cissp-domain-8",
+    ];
 
-    // Validate that all modules have at least one step
-    if linux_basics_phase.steps.is_empty() {
-        return Err("Linux basics for hackers module has no steps".to_string());
-    }
-    if networking_fundamentals_phase.steps.is_empty() {
-        return Err("Networking fundamentals module has no steps".to_string());
-    }
-    if wifi_security_phase.steps.is_empty() {
-        return Err("Wi-Fi security attacks module has no steps".to_string());
-    }
-    if password_cracking_phase.steps.is_empty() {
-        return Err("Password cracking techniques module has no steps".to_string());
-    }
-    if python_penetration_phase.steps.is_empty() {
-        return Err("Python penetration testing module has no steps".to_string());
-    }
-    if reverse_shells_phase.steps.is_empty() {
-        return Err("Reverse shells guide module has no steps".to_string());
-    }
-    if file_security_phase.steps.is_empty() {
-        return Err("File security practices module has no steps".to_string());
-    }
-    if recon_phase.steps.is_empty() {
-        return Err("Reconnaissance module has no steps".to_string());
-    }
-    if foundations_phase.steps.is_empty() {
-        return Err("Traditional vs AI pentesting foundations module has no steps".to_string());
-    }
-    if lab_phase.steps.is_empty() {
-        return Err("Building modern PT lab with GenAI module has no steps".to_string());
-    }
-    if genai_recon_phase.steps.is_empty() {
-        return Err("GenAI-driven reconnaissance module has no steps".to_string());
-    }
-    if scanning_phase.steps.is_empty() {
-        return Err("AI-enhanced scanning and sniffing module has no steps".to_string());
-    }
-    if vuln_ai_phase.steps.is_empty() {
-        return Err("Vulnerability assessment with AI module has no steps".to_string());
-    }
-    if social_engineering_phase.steps.is_empty() {
-        return Err("AI-driven social engineering module has no steps".to_string());
-    }
-    if exploitation_phase.steps.is_empty() {
-        return Err("GenAI-driven exploitation module has no steps".to_string());
-    }
-    if post_exploitation_phase.steps.is_empty() {
-        return Err(
-            "Post-exploitation and privilege escalation with AI module has no steps".to_string(),
-        );
-    }
-    if reports_phase.steps.is_empty() {
-        return Err("Automating PT reports with GenAI module has no steps".to_string());
-    }
-    if advanced_recon_phase.steps.is_empty() {
-        return Err("Advanced reconnaissance techniques module has no steps".to_string());
-    }
-    if vuln_analysis_phase.steps.is_empty() {
-        return Err("Vulnerability analysis module has no steps".to_string());
-    }
-    if advanced_web_phase.steps.is_empty() {
-        return Err("Advanced web app security fundamentals module has no steps".to_string());
-    }
-    if xss_phase.steps.is_empty() {
-        return Err("Cross-site scripting module has no steps".to_string());
-    }
-    if auth_phase.steps.is_empty() {
-        return Err(
-            "Authentication and authorization vulnerabilities module has no steps".to_string(),
-        );
-    }
-    if injection_phase.steps.is_empty() {
-        return Err("Injection vulnerabilities deep dive module has no steps".to_string());
-    }
-    if server_side_attacks_phase.steps.is_empty() {
-        return Err("Server-side attacks module has no steps".to_string());
-    }
-    if exploit_phase.steps.is_empty() {
-        return Err("Exploitation module has no steps".to_string());
-    }
-    if post_phase.steps.is_empty() {
-        return Err("Post-exploitation module has no steps".to_string());
-    }
-    if linux_ctf_phase.steps.is_empty() {
-        return Err("Linux CTF module has no steps".to_string());
-    }
-    if windows_ctf_phase.steps.is_empty() {
-        return Err("Windows CTF module has no steps".to_string());
-    }
-    if cloud_iam_phase.steps.is_empty() {
-        return Err("Cloud IAM module has no steps".to_string());
-    }
-    if oauth_phase.steps.is_empty() {
-        return Err("Practical OAuth module has no steps".to_string());
-    }
-    if federation_phase.steps.is_empty() {
-        return Err("SSO Federation module has no steps".to_string());
-    }
-    if api_security_phase.steps.is_empty() {
-        return Err("API Security module has no steps".to_string());
-    }
-    if reporting_phase.steps.is_empty() {
-        return Err("Reporting module has no steps".to_string());
-    }
-    if container_security_phase.steps.is_empty() {
-        return Err("Container Security module has no steps".to_string());
-    }
-    if serverless_security_phase.steps.is_empty() {
-        return Err("Serverless Security module has no steps".to_string());
-    }
-    if bug_bounty_hunting_phase.steps.is_empty() {
-        return Err("Bug Bounty Hunting module has no steps".to_string());
-    }
-    if comptia_secplus_phase.steps.is_empty() {
-        return Err("CompTIA Security+ module has no steps".to_string());
-    }
-    if pentest_exam_phase.steps.is_empty() {
-        return Err("PenTest+ module has no steps".to_string());
-    }
-    if ceh_phase.steps.is_empty() {
-        return Err("CEH module has no steps".to_string());
-    }
-    if cissp_domain_6_phase.steps.is_empty() {
-        return Err("CISSP Domain 6 module has no steps".to_string());
-    }
-    if cissp_domain_7_phase.steps.is_empty() {
-        return Err("CISSP Domain 7 module has no steps".to_string());
-    }
-    if cissp_domain_2_phase.steps.is_empty() {
-        return Err("CISSP Domain 2 module has no steps".to_string());
-    }
-    if cissp_domain_3_phase.steps.is_empty() {
-        return Err("CISSP Domain 3 module has no steps".to_string());
-    }
-    if cissp_domain_4_phase.steps.is_empty() {
-        return Err("CISSP Domain 4 module has no steps".to_string());
-    }
-    if cissp_domain_5_phase.steps.is_empty() {
-        return Err("CISSP Domain 5 module has no steps".to_string());
-    }
-    if cloud_native_phase.steps.is_empty() {
-        return Err("Cloud Native module has no steps".to_string());
-    }
-    if ai_security_phase.steps.is_empty() {
-        return Err("AI Security module has no steps".to_string());
-    }
-    if ai_powered_offensive_security_phase.steps.is_empty() {
-        return Err("AI-Powered Offensive Security module has no steps".to_string());
-    }
-    if rag_red_teaming_phase.steps.is_empty() {
-        return Err("Retrieval-Augmented Generation Red Teaming module has no steps".to_string());
-    }
-    if bug_bounty_automation_ai_phase.steps.is_empty() {
-        return Err("Bug Bounty Automation with AI module has no steps".to_string());
-    }
-    if supply_chain_phase.steps.is_empty() {
-        return Err("Supply Chain module has no steps".to_string());
-    }
-    if purple_team_phase.steps.is_empty() {
-        return Err("Purple Team Threat Hunting module has no steps".to_string());
-    }
-    if red_team_phase.steps.is_empty() {
-        return Err("Red Team Tradecraft module has no steps".to_string());
-    }
-    if modern_web_phase.steps.is_empty() {
-        return Err("Modern Web module has no steps".to_string());
-    }
-    if ai_agentic_operations_phase.steps.is_empty() {
-        return Err("AI Agentic Operations module has no steps".to_string());
-    }
-    if ai_secops_copilots_phase.steps.is_empty() {
-        return Err("AI SecOps Copilots module has no steps".to_string());
-    }
-    if ai_playbook_automation_phase.steps.is_empty() {
-        return Err("AI Playbook Automation module has no steps".to_string());
+    // Validate each phase
+    for phase_id in &phase_ids {
+        let phase = load_tutorial_phase(phase_id);
+        validate_step_structure(&phase.steps, phase_id)?;
+        
+        // Check that module has at least one step
+        if phase.steps.is_empty() {
+            return Err(format!("{} module has no steps", phase_id));
+        }
     }
 
     Ok(())

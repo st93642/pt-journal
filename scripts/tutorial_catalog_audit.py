@@ -29,8 +29,8 @@ AI_KEYWORDS = {"ai", "genai", "llm", "rag", "rag-based", "ai-powered", "automati
 AI_TAGS = {"ai", "llm", "genai", "rag", "machine-learning", "ai-assisted", "ai-security"}
 
 # Forensics and Cyber Threat Intelligence keywords for categorization
-FORENSICS_KEYWORDS = {"forensics", "dfir", "memory", "disk", "sqlite", "incident-response", "evidence", "acquisition", "volatility", "autopsy", "carving"}
-CTI_KEYWORDS = {"cyber-intel", "threat-intelligence", "cti", "osint", "intel", "indicators", "ioc", "mitre", "attack", "ttps"}
+FORENSICS_KEYWORDS = {"forensics", "dfir", "memory", "disk", "sqlite", "incident-response", "incident-response-methodology", "evidence", "acquisition", "volatility", "autopsy", "carving", "windows-forensics", "macos-forensics", "memory-forensics", "disk-forensics"}
+CTI_KEYWORDS = {"cyber-intel", "threat-intelligence", "cti", "osint", "intel", "indicators", "ioc", "mitre", "attack", "ttps", "threat", "intelligence"}
 
 
 @dataclass

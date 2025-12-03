@@ -46,9 +46,9 @@ pub struct TutorialStep {
 /// 1. Foundational skills (Linux, networking, Python)
 /// 2. Core pentesting methodology (reconnaissance through exploitation)
 /// 3. CTF practical labs
-/// 4. Cyber Threat Intelligence & Digital Forensics
+/// 4. Cyber Threat Intelligence & Digital Forensics (from Practical Cyber Intelligence book)
 /// 5. Modern security topics (cloud, web, containers)
-/// 6. Advanced techniques (AI, red team, bug bounty)
+/// 6. Advanced techniques (red team, bug bounty, supply chain)
 /// 7. Quiz-based certification preparation (at the end)
 pub fn load_tutorial_phases() -> Vec<Phase> {
     vec![
@@ -63,21 +63,10 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         load_tutorial_phase("reverse_shells_guide"),
         load_tutorial_phase("file_security_practices"),
         // ============================================
-        // SECTION 2: Reconnaissance & Scanning (positions 8-17)
+        // SECTION 2: Core PT Methodology (positions 8-17)
         // ============================================
         load_tutorial_phase("reconnaissance"),
-        load_tutorial_phase("building-modern-pt-lab-genai"),
-        load_tutorial_phase("genai-driven-reconnaissance"),
-        load_tutorial_phase("ai-enhanced-scanning-sniffing"),
-        load_tutorial_phase("vulnerability-assessment-ai"),
-        load_tutorial_phase("ai-driven-social-engineering"),
-        load_tutorial_phase("genai-driven-exploitation"),
-        load_tutorial_phase("post-exploitation-privilege-escalation-ai"),
-        load_tutorial_phase("automating-pt-reports-genai"),
         load_tutorial_phase("advanced_reconnaissance_techniques"),
-        // ============================================
-        // SECTION 3: Core PT Methodology (positions 18-25)
-        // ============================================
         load_tutorial_phase("vulnerability_analysis"),
         load_tutorial_phase("advanced-web-app-security-fundamentals"),
         load_tutorial_phase("cross-site-scripting-xss-exploitation-prevention"),
@@ -87,13 +76,13 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         load_tutorial_phase("exploitation"),
         load_tutorial_phase("post_exploitation"),
         // ============================================
-        // SECTION 4: CTF Practical Labs (positions 26-27)
+        // SECTION 3: CTF Practical Labs (positions 18-19)
         // ============================================
         load_tutorial_phase("linux_ctf"),
         load_tutorial_phase("windows_ctf"),
         // ============================================
-        // SECTION 5: Cyber Threat Intelligence & Forensics (positions 28-36)
-        // NEW: Based on Practical Cyber Intelligence book curriculum
+        // SECTION 4: Cyber Threat Intelligence & Forensics (positions 20-28)
+        // Based on Practical Cyber Intelligence book curriculum
         // ============================================
         load_tutorial_phase("cyber_threat_intelligence_fundamentals"),
         load_tutorial_phase("digital_forensics_methodology"),
@@ -105,7 +94,7 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         load_tutorial_phase("macos_forensics"),
         load_tutorial_phase("incident_response_methodology"),
         // ============================================
-        // SECTION 6: Modern Security Topics (positions 37-44)
+        // SECTION 5: Modern Security Topics (positions 29-36)
         // ============================================
         load_tutorial_phase("cloud_iam"),
         load_tutorial_phase("practical_oauth"),
@@ -116,25 +105,18 @@ pub fn load_tutorial_phases() -> Vec<Phase> {
         load_tutorial_phase("serverless_security"),
         load_tutorial_phase("cloud_native"),
         // ============================================
-        // SECTION 7: Advanced Topics (positions 45-54)
+        // SECTION 6: Advanced Topics (positions 37-41)
         // ============================================
         load_tutorial_phase("supply_chain"),
-        load_tutorial_phase("ai_security"),
-        load_tutorial_phase("ai_powered_offensive_security"),
-        load_tutorial_phase("retrieval_augmented_generation_red_teaming"),
-        load_tutorial_phase("bug_bounty_automation_ai"),
         load_tutorial_phase("red_team_tradecraft"),
         load_tutorial_phase("purple_team_threat_hunting"),
         load_tutorial_phase("bug_bounty_hunting"),
-        load_tutorial_phase("ai_agentic_operations"),
-        load_tutorial_phase("ai_secops_copilots"),
-        load_tutorial_phase("ai_playbook_automation"),
         // ============================================
-        // SECTION 8: Reporting (position 55)
+        // SECTION 7: Reporting (position 42)
         // ============================================
         load_tutorial_phase("reporting"),
         // ============================================
-        // SECTION 9: Certification Preparation (positions 56-66)
+        // SECTION 8: Certification Preparation (positions 43-53)
         // ============================================
         load_tutorial_phase("comptia_secplus"),
         load_tutorial_phase("pentest_exam"),
@@ -274,18 +256,9 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
         "python_penetration_testing",
         "reverse_shells_guide",
         "file_security_practices",
-        // Section 2: Reconnaissance & Scanning
+        // Section 2: Core PT Methodology
         "reconnaissance",
-        "building-modern-pt-lab-genai",
-        "genai-driven-reconnaissance",
-        "ai-enhanced-scanning-sniffing",
-        "vulnerability-assessment-ai",
-        "ai-driven-social-engineering",
-        "genai-driven-exploitation",
-        "post-exploitation-privilege-escalation-ai",
-        "automating-pt-reports-genai",
         "advanced_reconnaissance_techniques",
-        // Section 3: Core PT Methodology
         "vulnerability_analysis",
         "advanced-web-app-security-fundamentals",
         "cross-site-scripting-xss-exploitation-prevention",
@@ -294,10 +267,10 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
         "server-side-attacks-csrf-ssrf-file-inclusion",
         "exploitation",
         "post_exploitation",
-        // Section 4: CTF Practical Labs
+        // Section 3: CTF Practical Labs
         "linux_ctf",
         "windows_ctf",
-        // Section 5: Cyber Threat Intelligence & Forensics (NEW)
+        // Section 4: Cyber Threat Intelligence & Forensics (from Practical Cyber Intelligence book)
         "cyber_threat_intelligence_fundamentals",
         "digital_forensics_methodology",
         "disk_forensics_analysis",
@@ -307,7 +280,7 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
         "network_forensics_fundamentals",
         "macos_forensics",
         "incident_response_methodology",
-        // Section 6: Modern Security Topics
+        // Section 5: Modern Security Topics
         "cloud_iam",
         "practical_oauth",
         "sso_federation",
@@ -316,21 +289,14 @@ pub fn validate_tutorial_structure() -> Result<(), String> {
         "container_security",
         "serverless_security",
         "cloud_native",
-        // Section 7: Advanced Topics
+        // Section 6: Advanced Topics
         "supply_chain",
-        "ai_security",
-        "ai_powered_offensive_security",
-        "retrieval_augmented_generation_red_teaming",
-        "bug_bounty_automation_ai",
         "red_team_tradecraft",
         "purple_team_threat_hunting",
         "bug_bounty_hunting",
-        "ai_agentic_operations",
-        "ai_secops_copilots",
-        "ai_playbook_automation",
-        // Section 8: Reporting
+        // Section 7: Reporting
         "reporting",
-        // Section 9: Certification Preparation
+        // Section 8: Certification Preparation
         "comptia_secplus",
         "pentest_exam",
         "ceh",

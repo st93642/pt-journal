@@ -104,6 +104,20 @@ pub fn build_ui(app: &Application, model: AppModel) {
             background-color: #f0f0f0;
             color: #000000;
         }
+        
+        /* Phase selector dropdown - make popup take full height */
+        .phase-selector popover contents {
+            min-height: 600px;
+            max-height: 800px;
+        }
+        
+        .phase-selector popover scrolledwindow {
+            min-height: 580px;
+        }
+        
+        .phase-selector popover listview {
+            min-height: 560px;
+        }
         "#,
     );
 

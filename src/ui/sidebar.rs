@@ -15,7 +15,10 @@ pub fn create_sidebar(model: &Rc<RefCell<AppModel>>) -> (GtkBox, DropDown, ListB
     let phase_combo = DropDown::new(Some(phase_model), None::<gtk4::Expression>);
     phase_combo.set_selected(model.borrow().selected_phase() as u32);
 
-    // Set factory for proper display
+    // Enable search for easier navigation through many phases
+    phase_combo.set_enable_search(true);
+
+    // Set factory for proper display in the dropdown button
     let factory = gtk4::SignalListItemFactory::new();
     factory.connect_setup(|_, item| {
         let label = gtk4::Label::new(None);
@@ -39,6 +42,38 @@ pub fn create_sidebar(model: &Rc<RefCell<AppModel>>) -> (GtkBox, DropDown, ListB
         label.set_text(&string_object.string());
     });
     phase_combo.set_factory(Some(&factory));
+
+    // Set list factory for the popup list items
+    let list_factory = gtk4::SignalListItemFactory::new();
+    list_factory.connect_setup(|_, item| {
+        let label = gtk4::Label::new(None);
+        label.set_halign(gtk4::Align::Start);
+        label.set_margin_top(4);
+        label.set_margin_bottom(4);
+        label.set_margin_start(8);
+        label.set_margin_end(8);
+        item.downcast_ref::<gtk4::ListItem>()
+            .unwrap()
+            .set_child(Some(&label));
+    });
+    list_factory.connect_bind(|_, item| {
+        let list_item = item.downcast_ref::<gtk4::ListItem>().unwrap();
+        let label = list_item
+            .child()
+            .unwrap()
+            .downcast::<gtk4::Label>()
+            .unwrap();
+        let string_object = list_item
+            .item()
+            .unwrap()
+            .downcast::<gtk4::StringObject>()
+            .unwrap();
+        label.set_text(&string_object.string());
+    });
+    phase_combo.set_list_factory(Some(&list_factory));
+
+    // Add CSS class for styling the dropdown popup height
+    phase_combo.add_css_class("phase-selector");
 
     // Steps list
     let steps_scroller = ScrolledWindow::builder()

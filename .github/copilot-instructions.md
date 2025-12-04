@@ -1,75 +1,91 @@
 # PT Journal - AI Agent Instructions
 
+> 📖 **Full architecture details:** See [`ARCHITECTURE.md`](../ARCHITECTURE.md) for comprehensive codebase index
+
 ## Project Overview
 
-GTK4/Libadwaita desktop app for penetration testing education, built with **Rust + Relm4**. Features interactive tutorials (CEH, Security+, PenTest+), pipe-delimited quiz system, multi-provider LLM chatbot, and 229+ security tool references.
+GTK4/Libadwaita desktop app for penetration testing education, built with **Rust**. Features 66+ tutorial phases (CEH, Security+, PenTest+, CISSP, forensics), pipe-delimited quiz system (1000+ questions), multi-provider LLM chatbot (Ollama/OpenAI/Azure), and 229+ security tool references.
 
 ## Architecture
 
-**State Flow:** UI → `StateManager` → `AppModel` (via `Rc<RefCell<>>`) → `EventBus` → UI updates
+**State Flow:** `UI Component` → `StateManager` → `AppModel` (via `Rc<RefCell<>>`) → `EventBus::emit()` → UI callbacks
 
 ```
 src/
-├── main.rs              # GTK Application entry
-├── dispatcher.rs        # EventBus with AppEvent enum (PhaseSelected, ChatMessageAdded, etc.)
-├── error.rs             # PtError enum (use thiserror), Result<T> alias
-├── ui/state.rs          # StateManager: mutates model, emits events
-├── model/app_model.rs   # AppModel: Session, Phase, Step, Quiz state
-├── chatbot/             # LLM providers: ollama.rs, openai.rs, azure_openai.rs
-│   └── provider.rs      # ChatProvider trait (implement for new backends)
-├── quiz/mod.rs          # parse_question_line() for pipe-delimited quizzes
-└── tutorials/mod.rs     # load_tutorial_phases() loads JSON from data/tutorials/
+├── dispatcher.rs        # EventBus + AppEvent enum (PhaseSelected, QuizAnswerChecked, etc.)
+├── error.rs             # PtError variants (thiserror) - use specific variants, not generic
+├── ui/state.rs          # StateManager: coordinates model mutations + event dispatch
+├── model/               # AppModel, Phase, Step, QuizStep, ChatMessage
+├── chatbot/             # ChatProvider trait + ollama.rs, openai.rs, azure_openai.rs
+├── quiz/mod.rs          # parse_question_line() for pipe-delimited format
+├── tutorials/mod.rs     # load_tutorial_phases() → register JSON tutorials here
+└── ui/tool_instructions.rs  # has_tool(), get_tool_instructions() → tool registry
 ```
 
-**Why Rc<RefCell<>>?** GTK is single-threaded; this pattern provides safe interior mutability.
+**Why `Rc<RefCell<>>`?** GTK is single-threaded; provides safe interior mutability without `Arc<Mutex<>>` overhead. Use `Arc<RwLock<>>` only for thread-safe components like `ProviderRegistry`.
 
 ## Development Commands
 
 ```bash
-./test-all.sh                      # Full suite: unit + integration + clippy + fmt + JSON validation
-cargo test --test unit_tests       # Unit tests only (tests/unit/)
+./test-all.sh                       # Full suite: unit + integration + clippy + fmt + JSON validation
+cargo test --test unit_tests        # Unit tests only (tests/unit/)
 cargo test --test integration_tests # Integration tests (tests/integration/)
-cargo run                          # Launch app (requires GTK4 + libadwaita system libs)
+cargo run                           # Launch app (requires GTK4 libs)
+cargo clippy                        # Linting
+cargo fmt --check                   # Format check
 ```
 
-**System deps:** `libgtk-4-dev libadwaita-1-dev libvte-2.91-gtk4-dev` (Ubuntu/Debian)
+**System deps (Ubuntu/Debian):** `libgtk-4-dev libadwaita-1-dev libvte-2.91-gtk4-dev`
 
 ## Data Formats
 
-### Quiz Questions (`data/{domain}/{subdomain}.txt`)
-9 pipe-delimited fields per line:
+### Quiz Questions (`data/{domain}/*.txt`)
+9 pipe-delimited fields - **all fields required, no empty values**:
 ```
-question|answer_a|answer_b|answer_c|answer_d|correct_index|explanation|domain|subdomain
+question|answer_a|answer_b|answer_c|answer_d|correct_index(0-3)|explanation|domain|subdomain
 ```
-Example: `What is CIA triad?|Confidentiality...|...|...|...|0|The CIA triad...|ceh|linux-basics`
 
-### Tutorials (`data/tutorials/{name}.json`)
+### Tutorials (`data/tutorials/{id}.json`)
 ```json
 {
-  "id": "linux_basics_for_hackers",
-  "title": "Linux Basics for Hackers",
+  "id": "tutorial_id",
+  "title": "Display Title",
   "type": "tutorial",
-  "steps": [{ "id": "step_id", "title": "Step", "content": "...", "tags": [], "related_tools": [] }]
+  "steps": [{
+    "id": "step_id",
+    "title": "Step Title",
+    "content": "Markdown content...",
+    "tags": ["lowercase-hyphenated"],
+    "related_tools": ["tool-id-from-registry"]
+  }]
 }
 ```
-**Register new tutorials** in `src/tutorials/mod.rs` → `load_tutorial_phases()` vec.
+
+**Registration required:** Add `load_tutorial_phase("tutorial_id")` to `src/tutorials/mod.rs` → `load_tutorial_phases()` vec.
+
+**Quiz steps:** Use tag `"quiz"` + content `"Quiz content loaded from {path}"` to trigger quiz file loading.
+
+**Tool validation:** `related_tools` IDs must exist in `src/ui/tool_instructions.rs` registry (validated by `./test-all.sh`).
 
 ## Key Patterns
 
-### Adding UI Components
-1. Create in `src/ui/`, use `StateManager` for mutations
-2. Emit `AppEvent` variants for cross-component updates
-3. Handle events via `EventBus` callbacks in `dispatcher.rs`
-
-### Error Handling
-Always use `PtError` variants from `src/error.rs`:
+### State Mutations (ALWAYS through StateManager)
 ```rust
-use crate::error::{PtError, Result as PtResult};
-// Return PtError::InvalidPhaseIndex, PtError::Chat, PtError::Config, etc.
+// In UI code - never mutate AppModel directly
+state_manager.select_phase(idx);           // Emits PhaseSelected + RefreshStepList
+state_manager.check_answer(p, s, q, ans);  // Emits QuizAnswerChecked + QuizStatisticsUpdated
+state_manager.add_chat_message(p, s, msg); // Emits ChatMessageAdded
 ```
 
-### New Chat Provider
-Implement `ChatProvider` trait in `src/chatbot/`:
+### Error Handling
+Use specific `PtError` variants from `src/error.rs`:
+```rust
+use crate::error::{PtError, Result as PtResult};
+// PtError::InvalidPhaseIndex, InvalidStepIndex, Config, Chat, Validation, etc.
+```
+
+### Adding New Chat Provider
+1. Implement `ChatProvider` trait in `src/chatbot/`:
 ```rust
 pub trait ChatProvider: Send + Sync {
     fn send_message(&self, request: &ChatRequest) -> PtResult<ChatMessage>;
@@ -77,13 +93,14 @@ pub trait ChatProvider: Send + Sync {
     fn provider_name(&self) -> &str;
 }
 ```
-Register in `src/chatbot/registry.rs`.
+2. Register in `src/chatbot/registry.rs`
+3. Add config struct in `src/config/loader.rs`
 
 ## Configuration
 
 - **File:** `~/.config/pt-journal/config.toml`
-- **Types:** `src/config/config.rs` → `AppConfig`, `ChatbotConfig`
-- **Env overrides:** `PT_JOURNAL_*` prefix (e.g., `PT_JOURNAL_OPENAI_API_KEY`)
+- **Types:** `src/config/loader.rs` → `AppConfig`, `ChatbotConfig`, `ModelProfile`
+- **Env overrides:** `PT_JOURNAL_*` prefix (e.g., `PT_JOURNAL_OPENAI_API_KEY`, `PT_JOURNAL_OLLAMA_ENDPOINT`)
 - **Defaults:** Ollama at `http://localhost:11434`, model `llama3.2:latest`
 
 ## Test Organization
@@ -93,4 +110,4 @@ Register in `src/chatbot/registry.rs`.
 | `tests/unit/` | Module tests (chatbot, config, controllers, UI, tools) |
 | `tests/integration/` | Cross-module integration scenarios |
 
-Tests use `tempfile` crate for isolation. Mock HTTP with `httpmock`.
+Tests use `tempfile` for isolation. Run `./test-all.sh` before committing - includes JSON validation.
